@@ -1,0 +1,8 @@
+To create an embedded IzPack installation in the future prepare a directory
+with only the minimal content and create a Jar named
+izpack-embedded.jar by calling
+
+jar cvf izpack-embedded.jar -C izpackdir/ .
+
+from the *parent* directory. 'izpackdir' denotes the name of the directory
+containing the minimal installation. Adjust this to your needs.

@@ -1,0 +1,42 @@
+Copied project from tarent cvs to evolvis svn
+-- Diese und die folgenden Zeilen werden ignoriert --
+
+_M   .
+A    TODO
+A    src
+A    src/main
+A    src/main/java
+A    src/main/java/_Starter.java
+A    src/main/java/de
+A    src/main/java/de/tarent
+A    src/main/java/de/tarent/maven
+A    src/main/java/de/tarent/maven/plugins
+A    src/main/java/de/tarent/maven/plugins/pkg
+A    src/main/java/de/tarent/maven/plugins/pkg/Visitor.java
+A    src/main/java/de/tarent/maven/plugins/pkg/IzPackDescriptor.java
+A    src/main/java/de/tarent/maven/plugins/pkg/Utils.java
+A    src/main/java/de/tarent/maven/plugins/pkg/IzPackPackaging.java
+A    src/main/java/de/tarent/maven/plugins/pkg/ControlFileGenerator.java
+A    src/main/java/de/tarent/maven/plugins/pkg/DebianPackaging.java
+A    src/main/java/de/tarent/maven/plugins/pkg/IpkPackaging.java
+A    src/main/java/de/tarent/maven/plugins/pkg/AbstractManagedPackagingMojo.java
+A    src/main/java/de/tarent/maven/plugins/pkg/DebianPackageMap.java
+A    src/main/java/de/tarent/maven/plugins/pkg/WrapperScriptGenerator.java
+A    src/main/java/de/tarent/maven/plugins/pkg/AbstractPackagingMojo.java
+A    src/main/java/de/tarent/maven/plugins/pkg/AotCompileUtils.java
+A    src/main/resources
+A    src/main/resources/de
+A    src/main/resources/de/tarent
+A    src/main/resources/de/tarent/maven
+A    src/main/resources/de/tarent/maven/plugins
+A    src/main/resources/de/tarent/maven/plugins/pkg
+A    src/main/resources/de/tarent/maven/plugins/pkg/3rdparty.properties
+AM   src/main/resources/de/tarent/maven/plugins/pkg/izpack-embedded.jar
+A    src/main/resources/de/tarent/maven/plugins/pkg/postinst
+A    src/main/resources/de/tarent/maven/plugins/pkg/fix-classmap
+A    src/main/resources/de/tarent/maven/plugins/pkg/tarent.properties
+AM   src/main/resources/de/tarent/maven/plugins/pkg/fix-classmap-1.0.jar
+A    src/site
+A    src/site/izpack-embedded-howto.txt
+A    COPYING
+A    pom.xml

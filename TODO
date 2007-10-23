@@ -1,0 +1,38 @@
+cvs
+---
+
+When releasing tag with PKG_PLUGIN_<version>
+(or use the maven-release-plugin).
+
+deb
+---
+ControlFile generation:
+- format description
+
+izpack
+------
+- document methods
+- 'automagic mode' (generate most stuff from POM)
+- automatically add license if LicensePanel is in use
+
+- remove the AOT section automatically if AOT-compilation is disabled
+- compile all dependency Jars with AOT
+- add more logging messages to IzPackDescriptor methods
+
+deb:
+- when localDebianDepot (a directory) is given:
+  - copy *.debs into ${depotDir}/binary
+  - execute an update script for the depot
+  - that is: dpkg-scanpackages binary /dev/null | gzip -9c > binary/Packages.gz
+  - (if there is no depot dir it will be created)
+- properly calculate the installed size (all files should be summed up)
+
+all
+---
+- fix that CVS and SVN files are not copied
+
+misc:
+- write documentation
+- automatic injection of JAF dependency if axis (or whatever library this
+was) is detected
+
