@@ -34,10 +34,6 @@
   </issueManagement>
   <inceptionYear>2006</inceptionYear>
 
-  <scm>
-    <connection>scm:cvs:local:/cvs/newcvsroot:maven2/plugins/maven-pkg-plugin/</connection>
-  </scm>
-
   <developers>
     <developer>
       <id>fkoest</id>
@@ -76,37 +72,25 @@
 	  </plugins>
 	</build>
 
-  <!-- this section is required for deployment -->
-  <distributionManagement>
- <!--
-    <repository>
-      <id>tarent2-repository</id>
-      <name>tarent Maven2 Repository</name>
-      <url>scp://kassandra.tarent.de/home/maven/repository2/</url>
-    </repository>
-    <snapshotRepository>
-      <id>tarent2-repository</id>
-      <name>tarent Maven2 Repository</name>
-      <url>scp://kassandra.tarent.de/home/maven/repository2/</url>
-    </snapshotRepository>
-  -->
+	<!-- this section is required for deployment -->
+	<distributionManagement>
+		<repository>
+			<id>evolvis-release-repository</id>
+			<name>evolvis.org release repository</name>
+			<url>scpexe://maven-repo.evolvis.org/var/www/maven_repo/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>evolvis-snapshot-repository</id>
+			<name>evolvis.org snapshot repository</name>
+			<url>scpexe://maven-repo.evolvis.org/var/www/maven_repo/snapshots</url>
+		</snapshotRepository>
+		<site>
+			<id>evolvis-site-repository</id>
+			<name>evolvis.org site repository</name>
+			<url>scpexe://maven@svn.evolvis.org/site/mvn-pkg-plugin/htdocs/</url>
+		</site>
+	</distributionManagement>
 
-    <repository>
-      <id>jalimo-repository</id>
-      <name>jalimo Maven2 Repository</name>
-      <url>scp://jalimo.org/opt/xampp/var/www/tarent-jalimo/maven/</url>
-    </repository>
-    <snapshotRepository>
-      <id>jalimo-repository</id>
-      <name>jalimo Maven2 Repository</name>
-      <url>scp://jalimo.org/opt/xampp/var/www/tarent-jalimo/maven/</url>
-    </snapshotRepository>
-
-    <site>
-      <id>maven-site-projects</id>
-      <url>scp://kassandra.tarent.de/home/maven/projects/maven-pkg-plugin</url>
-    </site>
-  </distributionManagement>
   <prerequisites>
     <maven>2.0</maven>
   </prerequisites>
@@ -154,4 +138,15 @@
     </dependency>
 		
   </dependencies>
+  
+  <scm>
+		<connection>scm:svn:svn://svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</connection>
+		<developerConnection>scm:svn:svn+ssh://developername@svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</developerConnection>
+		<url>https://evolvis.org/plugins/scmsvn/viewcvs.php/?root=mvn-pkg-plugin</url>
+  </scm>
+    
+    <ciManagement>
+    	<system>continuum</system>
+   		<url>http://cis.evolvis.org:8080/continuum/</url>
+    </ciManagement>
 </project>
