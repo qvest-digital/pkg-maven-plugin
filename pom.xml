@@ -141,7 +141,7 @@
   
   <scm>
 		<connection>scm:svn:svn+ssh://fkoester@svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</connection>
-		<developerConnection>scm:svn:svn+ssh://developername@svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</developerConnection>
+		<developerConnection>scm:svn:svn+ssh://fkoester@svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</developerConnection>
 		<url>https://evolvis.org/plugins/scmsvn/viewcvs.php/?root=mvn-pkg-plugin</url>
   </scm>
     
