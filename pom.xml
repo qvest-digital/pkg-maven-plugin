@@ -27,7 +27,7 @@
     </license>
   </licenses>
 
-  <url>https://kassandra.tarent.de/maven-projects/maven-pkg-plugin</url>
+  <url>http://mvn-pkg-plugin.evolvis.org/</url>
   <issueManagement>
     <system>Bugzilla</system>
     <url>https://bugzilla.tarent.de/</url>
@@ -77,17 +77,17 @@
 		<repository>
 			<id>evolvis-release-repository</id>
 			<name>evolvis.org release repository</name>
-			<url>scpexe://maven-repo.evolvis.org/var/www/maven_repo/releases</url>
+			<url>scpexe://maven-repo.evolvis.org:/var/www/maven_repo/releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>evolvis-snapshot-repository</id>
 			<name>evolvis.org snapshot repository</name>
-			<url>scpexe://maven-repo.evolvis.org/var/www/maven_repo/snapshots</url>
+			<url>scpexe://maven-repo.evolvis.org:/var/www/maven_repo/snapshots</url>
 		</snapshotRepository>
 		<site>
 			<id>evolvis-site-repository</id>
 			<name>evolvis.org site repository</name>
-			<url>scpexe://maven@svn.evolvis.org/site/mvn-pkg-plugin/htdocs/</url>
+			<url>scpexe://maven@svn.evolvis.org:/site/mvn-pkg-plugin/htdocs/</url>
 		</site>
 	</distributionManagement>
 
@@ -140,7 +140,7 @@
   </dependencies>
   
   <scm>
-		<connection>scm:svn:svn://svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</connection>
+		<connection>scm:svn:svn+ssh://fkoester@svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</connection>
 		<developerConnection>scm:svn:svn+ssh://developername@svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</developerConnection>
 		<url>https://evolvis.org/plugins/scmsvn/viewcvs.php/?root=mvn-pkg-plugin</url>
   </scm>
