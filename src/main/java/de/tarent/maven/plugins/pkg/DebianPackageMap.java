@@ -49,7 +49,7 @@ class DebianPackageMap
    */
   private static String defaults = "java-gcj-compat | java2-runtime";
   
-  private static String ipkDefaults = "virtual/java";
+  private static String ipkDefaults = "java2-runtime";
   
   private static Map mapping;
   
