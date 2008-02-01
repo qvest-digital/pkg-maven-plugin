@@ -23,32 +23,6 @@
  * Elmar Geese, CEO tarent GmbH.
  */
 
-/* $Id: DebianPackaging.java,v 1.21 2007/10/15 22:00:38 asteban Exp $
- *
- * maven-pkg-plugin, Packaging plugin for Maven2 
- * Copyright (C) 2007 tarent GmbH
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * tarent GmbH., hereby disclaims all copyright
- * interest in the program 'maven-pkg-plugin'
- * written by Robert Schuster, Fabian Koester. 
- * signature of Elmar Geese, 1 June 2002
- * Elmar Geese, CEO tarent GmbH
- */
-
 package de.tarent.maven.plugins.pkg;
 
 import java.io.File;
@@ -121,14 +95,25 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
    * @parameter default-value="all"
    */
   private String debArchitecture;
-
   
+  /**
+   * Distribution id for the .deb packaging.
+   *  
+   * @parameter default-value="debian_etch"
+   */
+  private String debDistribution;
+
   public void execute() throws MojoExecutionException
   {
     checkEnvironment();
+    
+    PackageMap packageMap = new PackageMap(defaultPackageMapURL,
+                                           auxPackageMapURL,
+                                           distro != null ? distro : debDistribution,
+                                           new HashSet());
 
-    String packageName = DebianPackageMap.debianise(artifactId, section);
-    String packageVersion = fixVersion(version);
+    String packageName = PackageMap.debianise(artifactId, section);
+    String packageVersion = fixVersion(version) + "-0" + (distro != null ? distro : debDistribution);
 
     /*
      * Not using File.separator in this class because we assume being on a UNIXy machine!
@@ -145,16 +130,16 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
     File srcArtifactFile = new File(outputDirectory.getPath(), finalName + ".jar");
 
     // The destination file for the project's artifact inside the the package.
-    File dstArtifactFile = new File(basePkgDir, "usr/share/java/" + artifactId + ".jar");
+    File dstArtifactFile = new File(basePkgDir, packageMap.getDefaultJarPath() + "/" + artifactId + ".jar");
     
     // The destination directory for JNI libraries
-    File dstJNIDir = new File(basePkgDir, "usr/lib/jni");
+    File dstJNIDir = new File(basePkgDir, packageMap.getDefaultJNIPath());
     
     // The destination directory for the jars bundled with the project.
-    File dstBundledArtifactsDir = new File(basePkgDir, "usr/share/java/" + artifactId);
+    File dstBundledArtifactsDir = new File(basePkgDir, packageMap.getDefaultJarPath() + "/" + artifactId);
 
     // The wrapper script to launch an application (This is unused for libraries).
-    File wrapperScriptFile = new File(basePkgDir, "usr/bin/" + artifactId);
+    File wrapperScriptFile = new File(basePkgDir, packageMap.getDefaultBinPath() + "/" + artifactId);
 
     String gcjPackageName = gcjise(artifactId);
     
@@ -165,7 +150,7 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
     String aotExtension = ".jar.so";
     
     // The destination directory for all aot-compiled binaries.
-    File aotDstDir = new File(aotPkgDir, "usr/share/java");
+    File aotDstDir = new File(aotPkgDir, packageMap.getDefaultJarPath());
     
     // The file name of the aot-compiled binary of the project's own artifact.
     File aotCompiledBinaryFile = new File(aotDstDir, artifactId + aotExtension);
@@ -185,8 +170,6 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
     // A set which will be filled with the artifacts which need to be bundled with the
     // application.
     Set bundledArtifacts = new HashSet();
-    
-    String classpath;
     
     long byteAmount = srcArtifactFile.length();
 
@@ -211,19 +194,18 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
         // start script only if the project is an application.
         if (mainClass != null)
           {
-            classpath = createClasspathLine(l, bundledArtifacts);
-            
             // TODO: Handle native library artifacts properly.
-            byteAmount += copyArtifacts(l, bundledArtifacts, dstBundledArtifactsDir);
 
-            generateWrapperScript(l, wrapperScriptFile, classpath);
+            generateWrapperScript(l, packageMap, bundledArtifacts, wrapperScriptFile);
+
+            byteAmount += copyArtifacts(l, bundledArtifacts, dstBundledArtifactsDir);
           }
         
         generateControlFile(l,
         		            controlFile,
         		            packageName,
         		            packageVersion,
-        		            createDependencyLine(),
+        		            createDependencyLine(packageMap),
         		            debArchitecture,
         		            byteAmount);
 
@@ -243,7 +225,7 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
                                              aotClassmapFile,
                                              srcArtifactFile,
                                              aotCompiledBinaryFile,
-                                             "/usr/share/java");
+                                             packageMap.getDefaultJarPath());
 
             // AOT-compile and classmap generation for bundled Jar libraries
             // are only needed for applications.
@@ -253,7 +235,7 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
             		                aotDstDir,
             		                aotExtension,
             		                aotDstClassmapDir,
-            		                "/usr/share/java");
+                                    packageMap.getDefaultJarPath());
             
 /*            gen.setShortDescription(gen.getShortDescription() + " (GCJ version)");
             gen.setDescription("This is the ahead-of-time compiled version of "
@@ -297,6 +279,9 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
   {
 	Log l = getLog();
 	l.info("package system           : Debian (.deb)");
+    l.info("distribution             : " + (distro != null ? distro : debDistribution));
+    l.info("default package map      : " + ((defaultPackageMapURL != null) ? defaultPackageMapURL.toString() : "built-in"));
+    l.info("auxiliary package map    : " + ((auxPackageMapURL != null) ? auxPackageMapURL.toString() : "no"));
 	l.info("type of project          : " + ((mainClass != null) ? "application" : "library"));
 	l.info("Debian section           : " + section);
 	l.info("bundle all dependencies  : " + ((bundleDependencies) ? "yes" : "no"));
@@ -372,38 +357,6 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
 
   }
 
-  private void generateWrapperScript(Log l, File wrapperScriptFile, String classpathLine)
-      throws MojoExecutionException
-  {
-    l.info("creating wrapper script file: "
-           + wrapperScriptFile.getAbsolutePath());
-    Utils.createFile(wrapperScriptFile, "wrapper script");
-
-    WrapperScriptGenerator gen = new WrapperScriptGenerator();
-    
-    gen.setClasspath(classpathLine);
-    gen.setMainClass(mainClass);
-    gen.setMaxJavaMemory(maxJavaMemory);
-    gen.setLibraryPath(libraryPath);
-    gen.setProperties(systemProperties);
-    
-    // Set to default Classmap file on Debian/Ubuntu systems.
-    gen.setClassmapFile("/var/lib/gcj-4.1/classmap.db");
-
-    try
-      {
-        gen.generate(wrapperScriptFile);
-      }
-    catch (IOException ioe)
-      {
-        throw new MojoExecutionException("IOException while generating wrapper script",
-                                         ioe);
-      }
-
-    // Make the wrapper script executable.
-    Utils.makeExecutable(wrapperScriptFile, "wrapper script");
-  }
-  
   private void createPackage(Log l, File basePkgDir) throws MojoExecutionException
   {
     l.info("calling dpkg-deb to create binary package");
@@ -430,18 +383,6 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
                                         : artifactId + "-gcj";
     
   }
-
-  /**
-   * Investigates the project's runtime dependencies and creates a dependency
-   * line suitable for a Debian control file from them.
-   * 
-   * @return
-   */
-  private String createDependencyLine() throws MojoExecutionException
-  {
-    return createDependencyLine(DebianPackageMap.getDefaults());
-  }
-
 
   /** Converts a byte amount to the unit used by the Debian control file
    * (usually KiB). That value can then be used in a ControlFileGenerator

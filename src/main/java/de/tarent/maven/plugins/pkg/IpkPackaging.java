@@ -68,12 +68,24 @@ public class IpkPackaging extends AbstractManagedPackagingMojo
    */
   protected File tempRoot;
   
+  /**
+   * Distribution id for the .deb packaging.
+   *  
+   * @parameter default-value="debian_etch"
+   */
+  private String ipkDistribution;
+  
   public void execute() throws MojoExecutionException
   {
     checkEnvironment();
+    
+    PackageMap packageMap = new PackageMap(defaultPackageMapURL,
+                                           auxPackageMapURL,
+                                           distro != null ? distro : ipkDistribution,
+                                           new HashSet());
 
-    String packageName = DebianPackageMap.debianise(artifactId, section);
-    String packageVersion = fixVersion(version);
+    String packageName = PackageMap.debianise(artifactId, section);
+    String packageVersion = fixVersion(version) + "-0" + (distro != null ? distro : ipkDistribution);
 
     /*
      * Not using File.separator in this class because we assume being on a UNIXy machine!
@@ -90,22 +102,20 @@ public class IpkPackaging extends AbstractManagedPackagingMojo
     File srcArtifactFile = new File(outputDirectory.getPath(), finalName + ".jar");
 
     // The destination file for the project's artifact inside the the package.
-    File dstArtifactFile = new File(basePkgDir, "usr/share/java/" + artifactId + ".jar");
+    File dstArtifactFile = new File(basePkgDir, packageMap.getDefaultJarPath() + "/" + artifactId + ".jar");
     
     // The destination directory for JNI libraries
-    File dstJNIDir = new File(basePkgDir, "usr/lib/jni");
+    File dstJNIDir = new File(basePkgDir, packageMap.getDefaultJNIPath());
     
     // The destination directory for the jars bundled with the project.
-    File dstBundledArtifactsDir = new File(basePkgDir, "usr/share/java/" + artifactId);
+    File dstBundledArtifactsDir = new File(basePkgDir, packageMap.getDefaultJarPath() + "/" + artifactId);
 
     // The wrapper script to launch an application (This is unused for libraries).
-    File wrapperScriptFile = new File(basePkgDir, "usr/bin/" + artifactId);
+    File wrapperScriptFile = new File(basePkgDir, packageMap.getDefaultBinPath() + "/" + artifactId);
 
     // A set which will be filled with the artifacts which need to be bundled with the
     // application.
     Set bundledArtifacts = new HashSet();
-    
-    String classpath;
     
     long byteAmount = srcArtifactFile.length();
 
@@ -130,19 +140,18 @@ public class IpkPackaging extends AbstractManagedPackagingMojo
         // start script only if the project is an application.
         if (mainClass != null)
           {
-            classpath = createClasspathLine(l, bundledArtifacts);
-            
             // TODO: Handle native library artifacts properly.
-            byteAmount += copyArtifacts(l, bundledArtifacts, dstBundledArtifactsDir);
 
-            generateWrapperScript(l, wrapperScriptFile, classpath);
+            generateWrapperScript(l, packageMap, bundledArtifacts, wrapperScriptFile);
+
+            byteAmount += copyArtifacts(l, bundledArtifacts, dstBundledArtifactsDir);
           }
         
         generateControlFile(l,
         		            controlFile,
         		            packageName,
         		            packageVersion,
-        		            createDependencyLine(),
+        		            createDependencyLine(packageMap),
         		            ipkArchitecture);
 
         createPackage(l, basePkgDir);
@@ -168,6 +177,9 @@ public class IpkPackaging extends AbstractManagedPackagingMojo
   {
 	Log l = getLog();
 	l.info("package system           : Itsy Package Management (.ipk)");
+    l.info("distribution             : " + (distro != null ? distro : ipkDistribution));
+    l.info("default package map      : " + ((defaultPackageMapURL != null) ? defaultPackageMapURL.toString() : "built-in"));
+    l.info("supplemental package map : " + ((auxPackageMapURL != null) ? auxPackageMapURL.toString() : "no"));
 	l.info("type of project          : " + ((mainClass != null) ? "application" : "library"));
 	l.info("IPK section              : " + section);
 	l.info("bundle all dependencies  : " + ((bundleDependencies) ? "yes" : "no"));
@@ -248,40 +260,6 @@ public class IpkPackaging extends AbstractManagedPackagingMojo
 
   }
 
-  // TODO: This method can be shared with DebianPackaging
-  private void generateWrapperScript(Log l, File wrapperScriptFile, String classpathLine)
-      throws MojoExecutionException
-  {
-    l.info("creating wrapper script file: "
-           + wrapperScriptFile.getAbsolutePath());
-    Utils.createFile(wrapperScriptFile, "wrapper script");
-
-    WrapperScriptGenerator gen = new WrapperScriptGenerator();
-    
-    gen.setClasspath(classpathLine);
-    gen.setMainClass(mainClass);
-    gen.setMaxJavaMemory(maxJavaMemory);
-    
-    // Set to default JNI path on Debian/Ubuntu systems.
-    gen.setLibraryPath("/usr/lib/jni");
-    
-    // Set to default Classmap file on Debian/Ubuntu systems.
-    gen.setClassmapFile("/var/lib/gcj-4.1/classmap.db");
-
-    try
-      {
-        gen.generate(wrapperScriptFile);
-      }
-    catch (IOException ioe)
-      {
-        throw new MojoExecutionException("IOException while generating wrapper script",
-                                         ioe);
-      }
-
-    // Make the wrapper script executable.
-    Utils.makeExecutable(wrapperScriptFile, "wrapper script");
-  }
-
   private void createPackage(Log l, File basePkgDir) throws MojoExecutionException
   {
     l.info("calling ipkg-build to create binary package");
@@ -296,11 +274,6 @@ public class IpkPackaging extends AbstractManagedPackagingMojo
                 tempRoot,
                 "'ipkg-build failed.",
                 "Error creating the .ipk file.");
-  }
-
-  protected String createDependencyLine() throws MojoExecutionException
-  {
-    return createDependencyLine(DebianPackageMap.getIpkDefaults());
   }
 
 }

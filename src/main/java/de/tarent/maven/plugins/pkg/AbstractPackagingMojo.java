@@ -53,6 +53,7 @@ package de.tarent.maven.plugins.pkg;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -163,6 +164,29 @@ abstract class AbstractPackagingMojo extends AbstractMojo
    * @readonly
    */
   protected ArchiverManager archiverManager;
+
+  /**
+   * Location of the custom package map file. When specifying this one
+   * the internal package map will be overridden completely. 
+   * 
+   * @parameter expression="${defPackageMapURL}" ;
+   */
+  protected URL defaultPackageMapURL;
+
+  /**
+   * Location of the auxiliary package map file. When this is specified
+   * the information in the document will be added to the default one.
+   * 
+   * @parameter expression="${auxPackageMapURL}" ;
+   */
+  protected URL auxPackageMapURL;
+
+  /**
+   * Override distribution id for packaging.
+   * 
+   * @parameter expression="${distro}";
+   */
+  protected String distro;
 
   /**
    * Gathers the project's artifacts and the artifacts of all its (transitive)

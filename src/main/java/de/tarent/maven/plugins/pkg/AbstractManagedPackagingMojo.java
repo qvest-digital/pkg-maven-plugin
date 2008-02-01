@@ -190,15 +190,19 @@ public abstract class AbstractManagedPackagingMojo
   }
 
   /**
-   * Creates a classpath line from the given dependency artifacts.
+   * Creates the bootclasspath and classpath line from the given dependency artifacts.
    * 
-   * @param dependencies
-   *          A set of artifacts.
+   * @param pm The package map used to resolve the Jar file names.
+   * @param bundled A set used to track the bundled jars for later file-size calculations.
+   * @param bcp StringBuilder which contains the boot classpath line at the end of the method.
+   * @param cp StringBuilder which contains the classpath line at the end of the method.
    * @return
    */
-  protected final String createClasspathLine(final Log l, final Set bundled) throws MojoExecutionException
+  protected final void createClasspathLine(final Log l, final PackageMap pm,
+                                             final Set bundled,
+                                             final StringBuilder bcp,
+                                             final StringBuilder cp) throws MojoExecutionException
   {
-    final StringBuilder b = new StringBuilder();
     l.info("resolving dependency artifacts");
     
     Set dependencies = null;
@@ -235,13 +239,11 @@ public abstract class AbstractManagedPackagingMojo
       }
   
     // Handle the project's own artifact first.
-    DebianPackageMap.Entry e = DebianPackageMap.getEntry(project.getArtifactId(), section);
-    b.append(e.location + "/");
-    b.append(e.jarNames[0]);
+    PackageMap.Entry e = pm.getEntry(project.getArtifactId(), section);
     
-    Visitor v = new Visitor()
+    PackageMap.Visitor v = new PackageMap.Visitor()
     {
-      public void visit(Artifact artifact, DebianPackageMap.Entry entry)
+      public void visit(Artifact artifact, PackageMap.Entry entry)
       {
     	// If all dependencies should be bundled take a short-cut to bundle()
     	// thereby overriding what was configured through property files.
@@ -250,44 +252,42 @@ public abstract class AbstractManagedPackagingMojo
     		bundle(artifact);
     		return;
     	  }
+        
+          StringBuilder b = (entry.isBootClasspath) ? bcp : cp;
     	  
-        if (entry == null)
-          {
-            l.warn("No proper Debian package for artifactId '"
-                              + artifactId + "'.");
-            l.warn("Please specify a correct entry in this plugin's property files.");
-            
-            return;
-          }
-  
-        for (int i=0; i<entry.jarNames.length;i++)
-          {
-            b.append(":");
-            b.append(entry.location + "/");
-            b.append(entry.jarNames[i]);
-          }
+          Iterator ite = entry.jarFileNames.iterator();
+          while (ite.hasNext())
+            {
+              String fileName = (String) ite.next();
+              b.append(fileName);
+              b.append(":");
+            }
       }
       
       public void bundle(Artifact artifact)
       {
         // Put to artifacts which will be bundled (allows copying and filesize summing later).
-    	bundled.add(artifact);  
-  
-        b.append(":");
-  
+    	bundled.add(artifact);
+        
+        // TODO: Perhaps one want a certain bundled dependency in boot classpath.
+
     	// Bundled Jar will always live in /usr/share/java/ + artifactId (of the project)
         File file = artifact.getFile();
         if (file != null)
-          b.append("/usr/share/java/" + artifactId + "/" + file.getName());
+          cp.append(pm.getDefaultJarPath() + artifactId + "/" + file.getName() + ":");
         else
         	l.warn("Cannot put bundled artifact " + artifact.getArtifactId() + " to Classpath.");
       }
       
     };
   
-    DebianPackageMap.iterateDependencyArtifacts(dependencies, v);
-  
-    return b.toString();
+    pm.iterateDependencyArtifacts(dependencies, v, true);
+
+    if (cp.length() > 0)
+      cp.deleteCharAt(cp.length() - 1);
+    
+    if (bcp.length() > 0)
+      bcp.deleteCharAt(bcp.length() - 1);
   }
 
   /**
@@ -296,32 +296,29 @@ public abstract class AbstractManagedPackagingMojo
    * 
    * @return
    */
-  protected final String createDependencyLine(String defaults) throws MojoExecutionException
+  protected final String createDependencyLine(PackageMap pm) throws MojoExecutionException
   {
+    String defaults = pm.getDefaultDependencyLine();
     StringBuffer manualDeps = new StringBuffer();
     if (manualDependencies != null)
       {
     	Iterator ite = manualDependencies.iterator();
-    	boolean first = true;
     	while (ite.hasNext())
           {
     		String dep = (String) ite.next();
     		
-    		if (!first)
-    			manualDeps.append(", ");
-    		else
-    			first = false;
-  
-    		manualDeps.append(dep);
+      		manualDeps.append(dep);
+            manualDeps.append(", ");
     	  }
+        
+        manualDeps.delete(manualDeps.length() - 2, manualDeps.length());
       }
-      
+
     // If all dependencies should be bundled the package will only
     // need the default Java dependencies of the system and the remainder
     // of the method can be skipped.
     if (bundleDependencies)
-     return joinDependencyLines(defaults,
-    		                    manualDeps.toString());
+      return joinDependencyLines(defaults, manualDeps.toString());
     
     Set runtimeDeps = null;
     
@@ -367,22 +364,14 @@ public abstract class AbstractManagedPackagingMojo
     line.append(defaults);
   
     // Visitor implementation which creates the dependency line.
-    Visitor v = new Visitor()
+    PackageMap.Visitor v = new PackageMap.Visitor()
     {
       Set processedDeps = new HashSet();
       
-      public void visit(Artifact artifact, DebianPackageMap.Entry entry)
+      public void visit(Artifact artifact, PackageMap.Entry entry)
       {
-        // TODO: Add an ignore list to get rid of this warning
-        if (entry == null)
-          {
-            l.warn("No proper Debian package for artifactId '" + artifactId
-                   + "'.");
-            return;
-          }
-        
-        // Certain Maven Packages have only one Debian package. If that one
-        // was already added we should not add it any more.
+        // Certain Maven Packages have only one package in the target system.
+        // If that one was already added we should not add it any more.
         if (processedDeps.contains(entry.packageName))
           return;
         
@@ -402,7 +391,7 @@ public abstract class AbstractManagedPackagingMojo
      }
     };
   
-    DebianPackageMap.iterateDependencyArtifacts(runtimeDeps, v);
+    pm.iterateDependencyArtifacts(runtimeDeps, v, true);
   
     return joinDependencyLines(line.toString(), manualDeps.toString());
   }
@@ -547,6 +536,51 @@ public abstract class AbstractManagedPackagingMojo
           throw new MojoExecutionException("Could not create JNI directory.");
       }
     	
+  }
+
+  /**
+   * Configures a wrapper script generator with all kinds of values and
+   * creates a wrapper script.
+   * 
+   * @param l
+   * @param wrapperScriptFile
+   * @throws MojoExecutionException
+   */
+  protected void generateWrapperScript(Log l, PackageMap pm, Set bundled, File wrapperScriptFile)
+  throws MojoExecutionException
+  {
+    l.info("creating wrapper script file: "
+           + wrapperScriptFile.getAbsolutePath());
+    Utils.createFile(wrapperScriptFile, "wrapper script");
+  
+    WrapperScriptGenerator gen = new WrapperScriptGenerator();
+    
+    StringBuilder bcp = new StringBuilder();
+    StringBuilder cp = new StringBuilder();
+    createClasspathLine(l, pm, bundled, bcp, cp);
+    
+    gen.setBootClasspath(bcp.toString());
+    gen.setClasspath(cp.toString());
+    gen.setMainClass(mainClass);
+    gen.setMaxJavaMemory(maxJavaMemory);
+    gen.setLibraryPath(pm.getDefaultJNIPath());
+    gen.setProperties(systemProperties);
+    
+    // Set to default Classmap file on Debian/Ubuntu systems.
+    gen.setClassmapFile("/var/lib/gcj-4.1/classmap.db");
+  
+    try
+      {
+        gen.generate(wrapperScriptFile);
+      }
+    catch (IOException ioe)
+      {
+        throw new MojoExecutionException("IOException while generating wrapper script",
+                                         ioe);
+      }
+  
+    // Make the wrapper script executable.
+    Utils.makeExecutable(wrapperScriptFile, "wrapper script");
   }
   
 }

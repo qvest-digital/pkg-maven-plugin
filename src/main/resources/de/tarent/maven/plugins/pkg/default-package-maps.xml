@@ -1,11 +1,19 @@
 <package-maps>
-<!--	<version>1.0</version> optional at first -->
+	<version>1.0</version>
+
+<!--
+	Allows to spread information through several files. 
+	Content must be a valid URL!
+	
+	<include>file://otherFile.xml</include>
+-->
 
 	<distro>
 		<id>debian_etch</id>
-		<label> Debian GNU/Linux Etch</label>
-		<defaultDependencyLine>java-gcj-compat | java2-runtime</defaultDependencyLine>
+		<label>Debian GNU/Linux Etch</label>
 		<packaging>deb</packaging>
+		<defaultJarPath>/usr/share/java</defaultJarPath>
+		<defaultDependencyLine>java-gcj-compat | java2-runtime</defaultDependencyLine>
 		
 		<map>
 			<!-- This replaces proprietary Java Activation Framework with GNU JAF. -->
@@ -55,7 +63,7 @@
 			<entry>
 				<artifactId>velocity-dep</artifactId>
 				<!-- No equivalent in distro but classes provided by velocity. -->
-				<ignore>true</ignore>
+				<ignore/>
 			</entry>
 
 			<!-- Eclipse RCP stuff -->
@@ -149,14 +157,48 @@
 					<jar>swt-gtk.jar</jar>
 				</jars>
 			</entry>
+
+			<entry>
+				<artifactId>asm</artifactId>
+				<dependencyLine>libasm3-java</dependencyLine>
+				<jars>
+					<jar>asm3.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactId>asm-util</artifactId>
+				<dependencyLine>libasm3-java</dependencyLine>
+				<jars>
+					<jar>asm3-util.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactId>asm-commons</artifactId>
+				<dependencyLine>libasm3-java</dependencyLine>
+				<jars>
+					<jar>asm3-commons.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactId>asm-tree</artifactId>
+				<dependencyLine>libasm3-java</dependencyLine>
+				<jars>
+					<jar>asm3-tree.jar</jar>
+				</jars>
+			</entry>
+
 		</map>
-	<distro>
+	</distro>
 
 	<!-- OpenMoko late 2007 snapshot -->
 	<distro>
 		<id>openmoko-2007.11</id>
-		<packaging>ipk</packaging>
 		<label>OpenMoko 2007.11</label>
+		<packaging>ipk</packaging>
+		<defaultJarPath>/usr/share/java</defaultJarPath>
 		<defaultDependencyLine>java2-runtime</defaultDependencyLine>
 
 		<map>
@@ -201,7 +243,7 @@
 				<artifactId>xmlpull</artifactId>
 				<dependencyLine>libxmlpull-java</dependencyLine>
 				<!-- Needed for cacao-cldc in bootclasspath. -->
-				<boot>true</boot>
+				<boot/>
 				<jars>
 					<jar>xmlpull.jar</jar>
 				</jars>
@@ -211,7 +253,7 @@
 				<artifactId>kxml2</artifactId>
 				<dependencyLine>libkxml2-java</dependencyLine>
 				<!-- Needed for cacao-cldc in bootclasspath. -->
-				<boot>true</boot>
+				<boot/>
 				<jars>
 					<jar>kxml2.jar</jar>
 				</jars>
