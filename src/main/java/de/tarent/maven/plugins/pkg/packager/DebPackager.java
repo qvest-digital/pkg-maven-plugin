@@ -23,7 +23,7 @@
  * Elmar Geese, CEO tarent GmbH.
  */
 
-package de.tarent.maven.plugins.pkg;
+package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,118 +33,40 @@ import java.util.Set;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
+import de.tarent.maven.plugins.pkg.AotCompileUtils;
+import de.tarent.maven.plugins.pkg.DistroConfiguration;
+import de.tarent.maven.plugins.pkg.PackageMap;
+import de.tarent.maven.plugins.pkg.Utils;
+import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
+
 /**
- * Creates a Debian package file (.deb) for the project. If the project is an application
- * a proper wrapper script is generated.
+ * Creates a Debian package file (.deb)
  * 
  * TODO: Description needs to formatted in a Debian-specific way 
- * 
- * @execute phase="package"
- * @goal deb
  */
-public class DebianPackaging extends AbstractManagedPackagingMojo
+public class DebPackager extends Packager
 {
 
-  /**
-   * Temporary directory that contains the files to be assembled.
-   * 
-   * @parameter expression="${project.build.directory}/deb-tmp"
-   * @required
-   * @readonly
-   */
-  private File tempRoot;
-  
-  /**
-   * Allows overriding the name of the gcj executable.
-   * It is intended to be used from the command-line.
-   * 
-   * @parameter expression="${gcjExec}" default-value="gcj-4.1"
-   * @required
-   */
-  private String gcjExec;
-  
-  /**
-   * Allows overriding the name of the gcj-dbtool executable.
-   * It is intended to be used from the command-line.
-   * 
-   * @parameter expression="${gcjDbToolExec}" default-value="gcj-dbtool-4.1"
-   * @required
-   */
-  private String gcjDbToolExec;
-
-  /**
-   * A String of the form "name <email-address>" (without quotes).
-   * 
-   * @parameter default-value="tarent GmbH <debian-packages@tarent.de>"
-   * @required
-   */
-  private String debianMaintainer;   
-
-  /**
-   * If this is set to true the jar will be precompiled with gcj and
-   * everything needed to get this working is added to the package.
-   * 
-   * @parameter
-   */
-  private boolean aotCompile;
-  
-  /**
-   * The architecture used for the package. If nothing is
-   * specified it defaults to <code>all</code>.
-   * 
-   * @parameter default-value="all"
-   */
-  private String debArchitecture;
-  
-  /**
-   * Distribution id for the .deb packaging.
-   *  
-   * @parameter default-value="debian_etch"
-   */
-  private String debDistribution;
-
-  public void execute() throws MojoExecutionException
+  public void execute(Log l,
+                      PackagerHelper ph,
+                      DistroConfiguration distroConfig,
+                      PackageMap packageMap) throws MojoExecutionException
   {
-    checkEnvironment();
-    
-    PackageMap packageMap = new PackageMap(defaultPackageMapURL,
-                                           auxPackageMapURL,
-                                           distro != null ? distro : debDistribution,
-                                           new HashSet());
+    String packageName = ph.getPackageName();
+    String packageVersion = ph.getPackageVersion();
 
-    String packageName = PackageMap.debianise(artifactId, section);
-    String packageVersion = fixVersion(version) + "-0" + (distro != null ? distro : debDistribution);
-
-    /*
-     * Not using File.separator in this class because we assume being on a UNIXy machine!
-     */
-
-    // All files belonging to the package are put into this directory. The layout inside
-    // it is done according to `man dpkg-deb`
-    File basePkgDir = new File(tempRoot, packageName + "-" + packageVersion);
+    File basePkgDir = ph.getBasePkgDir();
     
     // The Debian control file (package name, dependencies etc).
     File controlFile = new File(basePkgDir, "DEBIAN/control");
 
-    // A file pointing at the source jar (it *MUST* be a jar).
-    File srcArtifactFile = new File(outputDirectory.getPath(), finalName + ".jar");
+    File srcArtifactFile = ph.getSourceArtifactFile();
 
-    // The destination file for the project's artifact inside the the package.
-    File dstArtifactFile = new File(basePkgDir, packageMap.getDefaultJarPath() + "/" + artifactId + ".jar");
-    
-    // The destination directory for JNI libraries
-    File dstJNIDir = new File(basePkgDir, packageMap.getDefaultJNIPath());
-    
-    // The destination directory for the jars bundled with the project.
-    File dstBundledArtifactsDir = new File(basePkgDir, packageMap.getDefaultJarPath() + "/" + artifactId);
+    File dstBundledArtifactsDir = ph.getDefaultDestBundledArtifactsDir();
 
-    // The wrapper script to launch an application (This is unused for libraries).
-    File wrapperScriptFile = new File(basePkgDir, packageMap.getDefaultBinPath() + "/" + artifactId);
-
-    String gcjPackageName = gcjise(artifactId);
+    String gcjPackageName = ph.getAotPackageName();
     
-    // The base directory for the gcj package.
-    File aotPkgDir = new File(tempRoot, gcjPackageName + "-" + packageVersion);
+    File aotPkgDir = ph.getAotPkgDir();
     
     // The file extension for aot-compiled binaries.
     String aotExtension = ".jar.so";
@@ -153,13 +75,13 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
     File aotDstDir = new File(aotPkgDir, packageMap.getDefaultJarPath());
     
     // The file name of the aot-compiled binary of the project's own artifact.
-    File aotCompiledBinaryFile = new File(aotDstDir, artifactId + aotExtension);
+    File aotCompiledBinaryFile = new File(aotDstDir, ph.getArtifactId() + aotExtension);
     
     // The destination directory for all classmap files. 
     File aotDstClassmapDir = new File(aotPkgDir, "usr/share/gcj-4.1/classmap.d");
     
     // The file name of the classmap of the project's own artifact. 
-    File aotClassmapFile = new File(aotDstClassmapDir, artifactId + ".db");
+    File aotClassmapFile = new File(aotDstClassmapDir, ph.getArtifactId() + ".db");
     
     // The destination file for the 'postinst' script.
     File aotPostinstFile = new File(aotPkgDir, "DEBIAN/postinst");
@@ -173,7 +95,6 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
     
     long byteAmount = srcArtifactFile.length();
 
-    Log l = getLog();
     try
       {
     	// The following section does the coarse-grained steps
@@ -182,38 +103,47 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
     	// into the existing methods or create a new one and add it
     	// here.
     	
-        prepareDirectories(l, tempRoot, basePkgDir, dstJNIDir);
+        ph.prepareInitialDirectories();
 
-        copyArtifact(l, srcArtifactFile, dstArtifactFile);
+        ph.copyArtifact();
         
-        copyJNILibraries(l, dstJNIDir);
+        ph.copyJNILibraries();
         
-        copyResources(l, basePkgDir, resources, "/usr/bin:/usr/local/bin:/sbin");
+        ph.copyResources();
 
         // Create classpath line, copy bundled jars and generate wrapper
         // start script only if the project is an application.
-        if (mainClass != null)
+        if (distroConfig.getMainClass() != null)
           {
             // TODO: Handle native library artifacts properly.
+            StringBuilder bcp = new StringBuilder();
+            StringBuilder cp = new StringBuilder();
+            ph.createClasspathLine(bundledArtifacts, bcp, cp);
 
-            generateWrapperScript(l, packageMap, bundledArtifacts, wrapperScriptFile);
+            ph.generateWrapperScript(bundledArtifacts, bcp.toString(), cp.toString());
+            
+            byteAmount += Utils.copyAuxFiles(l,
+                                             ph.getDefaultAuxFileSrcDir(),
+                                             ph.getBasePkgDir(),
+                                             distroConfig.getAuxFiles());
 
-            byteAmount += copyArtifacts(l, bundledArtifacts, dstBundledArtifactsDir);
+            byteAmount += ph.copyArtifacts(bundledArtifacts, dstBundledArtifactsDir);
           }
         
         generateControlFile(l,
+                            ph,
+                            distroConfig,
         		            controlFile,
         		            packageName,
         		            packageVersion,
-        		            createDependencyLine(packageMap),
-        		            debArchitecture,
+        		            ph.createDependencyLine(),
         		            byteAmount);
 
-        createPackage(l, basePkgDir);
+        createPackage(l, ph, basePkgDir);
         
-        if (aotCompile)
+        if (distroConfig.isAotCompile())
           {
-            prepareDirectories(l, tempRoot, aotPkgDir, null);
+            ph.prepareAotDirectories();
             // At this point anything created in the basePkgDir cannot be used
             // any more as it was removed by the above method.
             
@@ -229,7 +159,7 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
 
             // AOT-compile and classmap generation for bundled Jar libraries
             // are only needed for applications.
-            if (mainClass != null)
+            if (distroConfig.getMainClass() != null)
               byteAmount += AotCompileUtils.compileAndMap(l,
             		                bundledArtifacts,
             		                aotDstDir,
@@ -245,17 +175,19 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
             // The dependencies of a "-gcj" package are always java-gcj-compat
             // and the corresponding 'bytecode' version of the package.
             // GCJ can only compile for one architecture.
+            distroConfig.setArchitecture(System.getProperty("os.arch"));
             generateControlFile(l,
-            		            aotControlFile,
+                                ph,
+                                distroConfig,
+                                aotControlFile,
             		            gcjPackageName,
             		            packageVersion,
             		            "java-gcj-compat",
-            		            System.getProperty("os.arch"),
             		            byteAmount);
             
             AotCompileUtils.depositPostinstFile(l, aotPostinstFile);
             
-            createPackage(l, aotPkgDir);
+            createPackage(l, ph, aotPkgDir);
           }
         
       }
@@ -275,47 +207,9 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
    * 
    * @throws MojoExecutionException
    */
-  private void checkEnvironment() throws MojoExecutionException
+  public void checkEnvironment(Log l, DistroConfiguration dc) throws MojoExecutionException
   {
-	Log l = getLog();
-	l.info("package system           : Debian (.deb)");
-    l.info("distribution             : " + (distro != null ? distro : debDistribution));
-    l.info("default package map      : " + ((defaultPackageMapURL != null) ? defaultPackageMapURL.toString() : "built-in"));
-    l.info("auxiliary package map    : " + ((auxPackageMapURL != null) ? auxPackageMapURL.toString() : "no"));
-	l.info("type of project          : " + ((mainClass != null) ? "application" : "library"));
-	l.info("Debian section           : " + section);
-	l.info("bundle all dependencies  : " + ((bundleDependencies) ? "yes" : "no"));
-	l.info("ahead of time compilation: " + ((aotCompile) ? "yes" : "no"));
-	l.info("JNI libraries            : " + ((jniLibraries == null) ? "none" : String.valueOf(jniLibraries.size())));
-	
-	if (aotCompile)
-	  {
-	    l.info("aot compiler             : " + gcjExec);
-	    l.info("aot classmap generator   : " + gcjDbToolExec);
-	  }
-
-	if (mainClass == null)
-	  {
-		  if (!section.equals("libs"))
-			  throw new MojoExecutionException("<debianSection> should be libs if no main class is given.");
-		  
-		  if (bundleDependencies)
-			  throw new MojoExecutionException("bundling dependencies to a library makes no sense.");
-	  }
-	  else
-	  {
-        if (section.equals("libs"))
-          throw new MojoExecutionException("Set a proper debian section if main class parameter is set.");
-	  }
-    
-    if (aotCompile)
-      {
-        AotCompileUtils.setGcjExecutable(gcjExec);
-        AotCompileUtils.setGcjDbToolExecutable(gcjDbToolExec);
-        
-        AotCompileUtils.checkToolAvailability();
-      }
-    
+    // No specifics to show or test.
   }
 
   /**
@@ -328,18 +222,25 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
    * @param installedSize
    * @throws MojoExecutionException
    */
-  private void generateControlFile(Log l, File controlFile, String packageName, String packageVersion, String dependencyLine, String architecture, long byteAmount)
+  private void generateControlFile(Log l,
+                                   PackagerHelper ph,
+                                   DistroConfiguration dc,
+                                   File controlFile,
+                                   String packageName,
+                                   String packageVersion,
+                                   String dependencyLine,
+                                   long byteAmount)
       throws MojoExecutionException
   {
 	ControlFileGenerator cgen = new ControlFileGenerator();
 	cgen.setPackageName(packageName);
 	cgen.setVersion(packageVersion);
-	cgen.setSection(section);
+	cgen.setSection(dc.getSection());
 	cgen.setDependencies(dependencyLine);
-	cgen.setMaintainer(debianMaintainer);
-	cgen.setShortDescription(project.getDescription());
-	cgen.setDescription(project.getDescription());
-	cgen.setArchitecture(architecture);
+	cgen.setMaintainer(dc.getMaintainer());
+	cgen.setShortDescription(ph.getProjectDescription());
+	cgen.setDescription(ph.getProjectDescription());
+	cgen.setArchitecture(dc.getArchitecture());
 	cgen.setInstalledSize(getInstalledSize(byteAmount));
 	    
     l.info("creating control file: " + controlFile.getAbsolutePath());
@@ -357,15 +258,15 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
 
   }
 
-  private void createPackage(Log l, File basePkgDir) throws MojoExecutionException
+  private void createPackage(Log l, PackagerHelper ph, File base) throws MojoExecutionException
   {
     l.info("calling dpkg-deb to create binary package");
     
     Utils.exec(new String[] {"dpkg-deb",
                              "--build",
-                             basePkgDir.getName(),
-                             outputDirectory.getAbsolutePath() },
-                tempRoot,
+                             base.getName(),
+                             ph.getOutputDirectory().getAbsolutePath() },
+                ph.getTempRoot(),
                 "'dpkg --build' failed.",
                 "Error creating the .deb file.");
   }
@@ -377,7 +278,7 @@ public class DebianPackaging extends AbstractManagedPackagingMojo
    * @param artifactId
    * @return
    */
-  private String gcjise(String artifactId)
+  private String gcjise(String artifactId, String section)
   {
     return section.equals("libs") ? "lib" + artifactId + "-gcj"
                                         : artifactId + "-gcj";

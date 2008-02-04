@@ -7,14 +7,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.xml.pull.MXParser;
 import org.codehaus.plexus.util.xml.pull.XmlPullParser;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-class PackageMap
+public class PackageMap
 {
   
   private static final Entry BUNDLE_ENTRY = new Entry();
@@ -23,17 +25,20 @@ class PackageMap
   
   private Mapping mapping;
   
-  PackageMap(URL packageMapURL, URL auxPackageMapURL, String distribution, HashSet bundleOverrides)
+  private Set bundleOverrides;
+  
+  PackageMap(URL packageMapURL, URL auxPackageMapURL, String distribution, Set bundleOverrides)
     throws MojoExecutionException
   {
+    this.bundleOverrides = bundleOverrides;
+    
     if (packageMapURL == null)
       packageMapURL = PackageMap.class.getResource("default-package-maps.xml");
     
     try
     {
       mapping = new Parser(packageMapURL,
-                           auxPackageMapURL,
-                           bundleOverrides).getMapping(distribution);
+                           auxPackageMapURL).getMapping(distribution);
     }
     catch (ParseException pe)
     {
@@ -41,48 +46,71 @@ class PackageMap
     }
     
   }
+  
+  public String getPackaging()
+  {
+    return mapping.packaging;
+  }
 
-  String getDefaultDependencyLine()
+  public String getDefaultDependencyLine()
   {
     return (mapping.defaultDependencyLine != null ? mapping.defaultDependencyLine : "java2-runtime");
   }
   
-  String getDefaultJarPath()
+  public String getDefaultJarPath()
   {
     return (mapping.defaultJarPath != null ? mapping.defaultJarPath : "/usr/share/java");
   }
 
-  String getDefaultJNIPath()
+  public String getDefaultJNIPath()
   {
     return (mapping.defaultJNIPath != null ? mapping.defaultJNIPath : "/usr/lib/jni");
   }
   
-  String getDefaultBinPath()
+  public String getDefaultBinPath()
   {
     return (mapping.defaultBinPath != null ? mapping.defaultBinPath : "/usr/bin");
   }
+  
+  public boolean isDebianNaming()
+  {
+    // Only supporting Debian-styled distribution atm.
+    return true;
+  }
 
-  void iterateDependencyArtifacts(Collection deps, Visitor v, boolean bundleNonExisting)
+  public void iterateDependencyArtifacts(Log l, Collection deps, Visitor v, boolean bundleNonExisting)
   {
    for (Iterator ite = deps.iterator(); ite.hasNext(); )
      {
        Artifact a = (Artifact) ite.next();
+       String aid = a.getArtifactId();
        
-       Entry e = (Entry) mapping.getEntry(a.getArtifactId());
+       // Bundle dependencies which have been explicitly
+       // marked as such.
+       if (bundleOverrides.contains(aid))
+         {
+           v.bundle(a);
+           continue;
+         }
+       
+       Entry e = (Entry) mapping.getEntry(aid);
        if (e == BUNDLE_ENTRY)
            v.bundle(a);
        else if (e == null)
          {
+           l.warn(mapping.distro + " has no entry for: " + a);
+           
            if (bundleNonExisting)
              v.bundle(a);
          }
        else if (e != IGNORE_ENTRY)
          v.visit(a, e);
+       
      }
      
   }
   
-  Entry getEntry(String artifactId, String debianSection)
+  public Entry getEntry(String artifactId, String debianSection)
   {
     Entry e = (Entry) mapping.getEntry(artifactId);
     
@@ -103,21 +131,21 @@ class PackageMap
    * @param artifactId
    * @return
    */
-  static String debianise(String artifactId, String debianSection)
+  public static String debianise(String artifactId, String debianSection)
   {
     return debianSection.equals("libs") ? "lib" + artifactId + "-java"
                                        : artifactId;
   }
   
-  static class Entry
+  public static class Entry
   {
-    String artifactId;
+    public String artifactId;
     
-    String packageName;
+    public String packageName;
     
-    HashSet jarFileNames;
+    public HashSet jarFileNames;
     
-    boolean isBootClasspath;
+    public boolean isBootClasspath;
 
     private Entry(){
       // Special constructor for internal instances.
@@ -132,7 +160,7 @@ class PackageMap
     }
   }
   
-  interface Visitor
+  public interface Visitor
   {
     public void visit(Artifact artifact, Entry entry);
     
@@ -197,15 +225,28 @@ class PackageMap
   
   private static class Parser
   {
-    HashSet overrides;
-    
     HashMap/*<String, Mapping>*/ mappings = new HashMap();
     
-    Parser(URL packageMapDocument, URL auxMapDocument, HashSet bundleOverrides)
+    Parser(URL packageMapDocument, URL auxMapDocument)
       throws ParseException
     {
-      this.overrides = bundleOverrides;
+      // Creates a special entry for izpack packaging.
+      Mapping mapping = new Mapping("izpack");
+      mapping.label = "Default IzPack packaging";
       
+      mapping.packaging = "izpack";
+      
+      // Not used but is otherwise a sane value.
+      mapping.defaultBinPath = "";
+      mapping.defaultDependencyLine = "";
+      
+      // Not used.
+      mapping.defaultJarPath = "libs";
+      mapping.defaultJNIPath = "libs";
+      
+      mappings.put("izpack", mapping);
+
+      // Initialize the XML parsing part.
       State s = new State(packageMapDocument);
       
       s.nextMatch("package-maps");

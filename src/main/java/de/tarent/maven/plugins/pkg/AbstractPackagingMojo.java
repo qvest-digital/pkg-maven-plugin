@@ -104,6 +104,15 @@ abstract class AbstractPackagingMojo extends AbstractMojo
   protected MavenProjectBuilder mavenProjectBuilder;
 
   /**
+   * Temporary directory that contains the files to be assembled.
+   * 
+   * @parameter expression="${project.build.directory}"
+   * @required
+   * @readonly
+   */
+  protected File buildDir;
+  
+  /**
    * Used to look up Artifacts in the remote repository.
    * @parameter expression="${component.org.apache.maven.artifact.factory.ArtifactFactory}"
    * @required
@@ -164,12 +173,42 @@ abstract class AbstractPackagingMojo extends AbstractMojo
    * @readonly
    */
   protected ArchiverManager archiverManager;
+  
+  /**
+   * @parameter expression="${project.build.finalName}"
+   * @required
+   * @readonly
+   */
+  protected String finalName;
 
+  /**
+   * @parameter expression="${project.build.directory}"
+   * @required
+   * @readonly
+   */
+  protected File outputDirectory;
+
+  /**
+   * @parameter expression="${project.version}"
+   * @required
+   * @readonly
+   */
+  protected String version;
+
+  /**
+   * JVM binary used to run Java programs from within the Mojo.
+   * 
+   * @parameter expression="${javaExec}" default-value="java"
+   * @required
+   * 
+   */
+  protected String javaExec;
+  
   /**
    * Location of the custom package map file. When specifying this one
    * the internal package map will be overridden completely. 
    * 
-   * @parameter expression="${defPackageMapURL}" ;
+   * @parameter expression="${defPackageMapURL}"
    */
   protected URL defaultPackageMapURL;
 
@@ -177,14 +216,23 @@ abstract class AbstractPackagingMojo extends AbstractMojo
    * Location of the auxiliary package map file. When this is specified
    * the information in the document will be added to the default one.
    * 
-   * @parameter expression="${auxPackageMapURL}" ;
+   * @parameter expression="${auxPackageMapURL}"
    */
   protected URL auxPackageMapURL;
 
+
   /**
-   * Override distribution id for packaging.
+   * Set default distribution to package for.
    * 
-   * @parameter expression="${distro}";
+   * @parameter expression="${defaultDistro}"
+   * @required
+   */
+  protected String defaultDistro;
+
+  /**
+   * Overrides "defaultDistro" parameter. For use on the command-line. 
+   * 
+   * @parameter expression="${distro}"
    */
   protected String distro;
 
@@ -335,4 +383,22 @@ abstract class AbstractPackagingMojo extends AbstractMojo
                                          + e.toString(), e);
       }
   }
+  
+  /**
+   * Makes the version string compatible to the system's requirements.
+   * TODO: Really check the format and try to fix it and not just remove
+   * "-SNAPSHOT"
+   * 
+   * @param v
+   * @return
+   */
+  protected final String fixVersion(String v)
+  {
+    int i = v.indexOf("-SNAPSHOT");
+    if (i > 0)
+      return v.substring(0, i);
+  
+    return v;
+  }
+  
 }

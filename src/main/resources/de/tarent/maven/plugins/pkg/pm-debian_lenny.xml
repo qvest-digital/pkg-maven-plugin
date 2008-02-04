@@ -1,0 +1,89 @@
+<!--
+	Package maps document for Debian GNU/Linux Lenny.
+-->
+<package-maps>
+  <version>1.0</version>
+
+	<distro>
+		<id>debian_lenny</id>
+		<label>Debian GNU/Linux Lenny</label>
+		<inherit>debian_etch</inherit>
+
+		<map>
+			<entry>
+				<artifactId>swt-gtk-linux</artifactId>
+				<dependencyLine>libswt3.2-gtk-java | libswt3.3-gtk-java</dependencyLine>
+				<jars>
+					<jar>swt-gtk.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactId>asm</artifactId>
+				<dependencyLine>libasm3-java</dependencyLine>
+				<jars>
+					<jar>asm3.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactId>asm-util</artifactId>
+				<dependencyLine>libasm3-java</dependencyLine>
+				<jars>
+					<jar>asm3-util.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactId>asm-commons</artifactId>
+				<dependencyLine>libasm3-java</dependencyLine>
+				<jars>
+					<jar>asm3-commons.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactId>asm-tree</artifactId>
+				<dependencyLine>libasm3-java</dependencyLine>
+				<jars>
+					<jar>asm3-tree.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactId>axis</artifactId>
+				<dependencyLine>libaxis-java</dependencyLine>
+				<jars>
+					<jar>axis.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactId>axis-jaxrpc</artifactId>
+				<dependencyLine>libaxis-java</dependencyLine>
+				<jars>
+					<jar>jaxrpc.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactId>axis-saaj</artifactId>
+				<dependencyLine>libaxis-java</dependencyLine>
+				<jars>
+					<jar>saaj.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactId>axis-wsdl4j</artifactId>
+				<dependencyLine>libwsdl4j-java</dependencyLine>
+				<jars>
+					<jar>wsdl4j.jar</jar>
+					<jar>qname.jar</jar>
+				</jars>
+			</entry>
+
+		</map>
+	</distro>
+
+</package-maps>

@@ -23,7 +23,7 @@
  * Elmar Geese, CEO tarent GmbH.
  */
 
-package de.tarent.maven.plugins.pkg;
+package de.tarent.maven.plugins.pkg.generator;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -61,6 +61,11 @@ public class ControlFileGenerator
   private String homepage;
   
   private String source;
+  
+  public ControlFileGenerator()
+  {
+    
+  }
   
   public String getOE()
   {

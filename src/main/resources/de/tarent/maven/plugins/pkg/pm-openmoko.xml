@@ -1,0 +1,77 @@
+<!--
+	Joint package maps document for OpenMoko-based distributions.
+-->
+<package-maps>
+
+  <version>1.0</version>
+
+	<!-- OpenMoko late 2007 snapshot -->
+	<distro>
+		<id>openmoko-2007.11</id>
+		<label>OpenMoko 2007.11</label>
+		<packaging>ipk</packaging>
+		<defaultJarPath>/usr/share/java</defaultJarPath>
+		<defaultDependencyLine>java2-runtime</defaultDependencyLine>
+
+		<map>
+			<!--
+				Synthetic dependency is resolved to create a dependency on the 
+				classpath-gtk package.
+			-->
+			<entry>
+				<artifactId>awt</artifactId>
+				<dependencyLine>classpath-gtk</dependencyLine>
+				<jars/>
+			</entry>
+
+			<entry>
+				<artifactId>swt-gtk-linux</artifactId>
+				<dependencyLine>libswt3.4-gtk-java</dependencyLine>
+				<jars>
+					<jar>swt.jar</jar>
+					<jar>swt-gtk.jar</jar>
+					<jar>swt-pi.jar</jar>
+					<jar>swt-cairo.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactId>dbus-java</artifactId>
+				<dependencyLine>libdbus-java</dependencyLine>
+			</entry>
+
+			<entry>
+				<artifactId>libmatthew-java</artifactId>
+				<dependencyLine>libdbus-java</dependencyLine>
+				<jars>
+					<jar>io.jar</jar>
+					<jar>cgi.jar</jar>
+					<jar>hexdump.jar</jar>
+					<jar>unix.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactId>xmlpull</artifactId>
+				<dependencyLine>libxmlpull-java</dependencyLine>
+				<!-- Needed for cacao-cldc in bootclasspath. -->
+				<boot/>
+				<jars>
+					<jar>xmlpull.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactId>kxml2</artifactId>
+				<dependencyLine>libkxml2-java</dependencyLine>
+				<!-- Needed for cacao-cldc in bootclasspath. -->
+				<boot/>
+				<jars>
+					<jar>kxml2.jar</jar>
+				</jars>
+			</entry>
+
+		</map>
+	</distro>
+
+</package-maps>

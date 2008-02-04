@@ -23,7 +23,7 @@
  * Elmar Geese, CEO tarent GmbH.
  */
 
-package de.tarent.maven.plugins.pkg;
+package de.tarent.maven.plugins.pkg.generator;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,7 +32,7 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Properties;
 
-class WrapperScriptGenerator
+public class WrapperScriptGenerator
 {
   String bootClasspath;
   
