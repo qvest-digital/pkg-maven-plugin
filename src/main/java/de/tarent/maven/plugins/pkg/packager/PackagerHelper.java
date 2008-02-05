@@ -45,8 +45,6 @@ public interface PackagerHelper
   
   void copyJNILibraries() throws MojoExecutionException;
   
-  void copyResources() throws MojoExecutionException;
-  
   Set copyDependencies(File libraryRoot, File artifactFile) throws MojoExecutionException;
   
   void generateWrapperScript(Set bundledArtifacts, String bootclasspath, String classpath) throws MojoExecutionException;

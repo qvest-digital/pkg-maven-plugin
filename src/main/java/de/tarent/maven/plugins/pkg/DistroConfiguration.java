@@ -9,50 +9,216 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+/**
+ * A <code>DistroConfiguration</code> provides the properties
+ * to configure the packaging for a particular target system.
+ * 
+ * <p>Except for the boolean properties every field can be accessed
+ * directly. The boolean properties are using <code>Boolean</code>
+ * to allow them to be <code>null</code> which means 'not set' and
+ * is an important state for the merging of two
+ * <code>DistroConfiguration</code> instances.
+ * 
+ * @author Robert Schuster (robert.schuster@tarent.de)
+ *
+ */
 public class DistroConfiguration
 {
+  /**
+   * Denotes the distribution id this configuration is for. There should
+   * be only one configuration per distribution.
+   */
   String distro;
 
+  /**
+   * Denotes wether the packager should invoke ahead of time compilation
+   * (if it supports this).
+   * 
+   * <p>Default is <code>null</code>, after merging it is <code>false</code>
+   * or the parent's value.</p>
+   */
   Boolean aotCompile;
 
+  /**
+   * Denotes the architecure string to be used. This is only effective for
+   * packagers supporting this feature (= ipk, deb).
+   * 
+   * <p>Default is <code>null</code>, after merging it is <code>all</code>
+   * or the parent's value.</p>
+   */
   String architecture;
 
+  /**
+   * Denotes whether the packager should use a special starter class to run
+   * the application which allows working around platform limitations as
+   * fixed command-line length. 
+   * 
+   * <p>Default is <code>null</code>, after merging it is <code>false</code>
+   * or the parent's value.</p>
+   */
   Boolean advancedStarter;
 
+  /**
+   * Denotes whether the packager should bundle every dependency regardless
+   * of whether a particular item is available from the system's native package
+   * management or not. This can be used to work around problems with those
+   * packages.
+   * 
+   * <p>Default is <code>null</code>, after merging it is <code>false</code>
+   * or the parent's value.</p>
+   */
   Boolean bundleAll;
 
+  /**
+   * Denotes the directory in which the packager looks for auxiliary files to
+   * copy into the package.
+   * 
+   * <p>By using this property one can define a common filename set which has
+   * to be copied but works on different files since the <code>auxFileSrcDir</code>
+   * property can be changed on a per distribution basis.</p>
+   * 
+   * <p>Note: The path must be relative to the project's base dir.</p>
+   * 
+   * <p>Default is <code>null</code>, after merging it is <code>src/main/auxfiles</code>
+   * or the parent's value.</p>
+   */
   String auxFileSrcDir;
 
+  /**
+   * Denotes the name of the gcj-dbtool executable. This allows the use of e.g. "gcj-dbtool-4.2"
+   * or "gcj-dbtool-4.3" depending on the targeted distribution.
+   * 
+   * <p>Default is <code>null</code>, after merging it is <code>gcj-dbtool</code>
+   * or the parent's value.</p>
+   */
   String gcjDbToolExec;
 
+  /**
+   * Denotes the name of the gcj executable. This allows the use of e.g. "gcj-4.2"
+   * or "gcj-4.3" depending on the targeted distribution.
+   * 
+   * <p>Default is <code>null</code>, after merging it is <code>gcj</code>
+   * or the parent's value.</p>
+   */
   String gcjExec;
 
+  /**
+   * Denotes a set of dependencies (in Maven's artifact id naming) that should
+   * be bundled with the application regardless of their existence in the target system's
+   * native package management.
+   * 
+   * <p>Default is <code>null</code>, after merging it is an empty set
+   * or the parent's value.</p>
+   */
   Set bundleDependencies;
 
+  /**
+   * Denotes a list of native libraries. These are copied to their respective destination
+   * suitable for the chosen target system. 
+   * 
+   * <p>Default is <code>null</code>, after merging it is an empty list
+   * or the parent's value.</p>
+   */
   List jniLibraries;
 
+  /**
+   * Denotes the <code>java.library.path</code> value of the application. In case
+   * of IzPack packaging do not forget to use the "$install_path" variable. 
+   * 
+   * <p>Default is <code>null</code>, after merging it is an empty string
+   * or the parent's value.</p>
+   */
   String jniLibraryPath;
 
+  /**
+   * Denotes the applications' main class. It can be different per distribution, which
+   * might be handy for different start screens or workarounds. 
+   * 
+   * <p>Default is <code>null</code>, after merging it is <code>null</code>
+   * or the parent's value.</p>
+   */
   String mainClass;
 
+  /**
+   * Denotes the value of the maintainer field in common packaging systems. It is 
+   * basically an email address. 
+   * 
+   * <p>Default is <code>null</code>, after merging it is <code>null</code>
+   * or the parent's value.</p>
+   */
   String maintainer;
 
+  /**
+   * Denotes a list of dependency strings which should be added to the automatically
+   * generated ones. This allows to specify dependencies which Maven does not know
+   * about. 
+   * 
+   * <p>Default is <code>null</code>, after merging it is an empty list
+   * or the parent's value.</p>
+   */
   List manualDependencies;
   
+  /**
+   * Denotes a list of {@link AuxFile} instances specifying additional files
+   * that need to be added to the package. 
+   * 
+   * <p>Default is <code>null</code>, after merging it is an empty list
+   * or the parent's value.</p>
+   */
   List auxFiles;
 
+  /**
+   * Denotes the value of the "-Xmx" argument. 
+   * 
+   * <p>Default is <code>null</code>, after merging it is <code>null</code>
+   * or the parent's value.</p>
+   */
   String maxJavaMemory;
 
-  Properties resources;
-
+  /**
+   * Denotes the value of the section property supported by packaging systems.   
+   * 
+   * <p>Default is <code>null</code>, after merging it is "libs"
+   * or the parent's value.</p>
+   */
   String section;
 
+  /**
+   * Denotes a bunch of system properties keys and their values which are added
+   * to the starter script and thus provided to the application.  
+   * 
+   * <p>Default is <code>null</code>, after merging it is an empty <code>Properties</code>
+   * instance or the parent's value.</p>
+   */
   Properties systemProperties;
   
+  /**
+   * Denotes the name of the wrapper script that is used to run the application. This property
+   * is optional and will default to the <code>artifactId</code> is the Maven project. For
+   * Windows targets ".bat" is appended to this name.
+   * 
+   * <p>Default is <code>null</code>, after merging it is <code>null</code>
+   * or the parent's value.</p>
+   */
   String wrapperScriptName;
   
+  /**
+   * Denotes the directory in which the packager looks for the izpack configuration and
+   * files. 
+   * 
+   * <p>Note: The path must be relative to the project's base dir.</p>
+   * 
+   * <p>Default is <code>null</code>, after merging it is <code>src/main/izpack</code>
+   * or the parent's value.</p>
+   */
   String izPackSrcDir;
   
+  /**
+   * Denotes the name of the IzPack descriptor file.
+   * 
+   * <p>Default is <code>null</code>, after merging it is <code>installer.xml</code>
+   * or the parent's value.</p>
+   */
   String izPackInstallerXml;
 
   public DistroConfiguration()
@@ -108,11 +274,6 @@ public class DistroConfiguration
   public String getMaxJavaMemory()
   {
     return maxJavaMemory;
-  }
-
-  public Properties getResources()
-  {
-    return resources;
   }
 
   public String getSection()
@@ -195,11 +356,6 @@ public class DistroConfiguration
     this.maxJavaMemory = maxJavaMemory;
   }
 
-  public void setResources(Properties resources)
-  {
-    this.resources = resources;
-  }
-
   public void setSection(String section)
   {
     this.section = section;
@@ -262,10 +418,6 @@ public class DistroConfiguration
           }
       }
 
-    sb.append("resources:\n");
-    sb.append(resources);
-    sb.append("\n");
-
     sb.append("systemProperties:\n");
     sb.append(systemProperties);
     sb.append("\n");
@@ -286,6 +438,9 @@ public class DistroConfiguration
   /**
    * Sets all unset properties, either to the values of the parent or to a (hard-coded) 
    * default value if the property is not set in the parent.
+   * 
+   * <p>Using this method the packaging plugin can generate a merge of the default
+   * and a distro-specific configuration.</p>
    * 
    * @param parent
    * @return
@@ -325,8 +480,6 @@ public class DistroConfiguration
     manualDependencies = (List) merge(jniLibraries, parent.jniLibraries,
                                          new ArrayList());
 
-    resources = (Properties) merge(resources, parent.resources,
-                                      new Properties());
     systemProperties = (Properties) merge(systemProperties,
                                              parent.systemProperties,
                                              new Properties());

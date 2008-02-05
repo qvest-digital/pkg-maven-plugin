@@ -67,9 +67,9 @@ import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.FileUtils;
 
 import de.tarent.maven.plugins.pkg.DistroConfiguration;
-import de.tarent.maven.plugins.pkg.PackageMap;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.generator.WrapperScriptGenerator;
+import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 public class IzPackPackager extends Packager
 {

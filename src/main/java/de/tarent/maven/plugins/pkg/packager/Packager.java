@@ -4,7 +4,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.DistroConfiguration;
-import de.tarent.maven.plugins.pkg.PackageMap;
+import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 public abstract class Packager
 {

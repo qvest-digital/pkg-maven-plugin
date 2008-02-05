@@ -1,5 +1,26 @@
 package de.tarent.maven.plugins.pkg;
 
+/**
+ * Data type for the elements of the 'auxFiles' property of the {@link DistroConfiguration}
+ * class.
+ * 
+ * <p>An instance of this class denotes a file or directory that has to be copied
+ * into the package. By default the file or directory is copied into the directory
+ * specified by the <code>to</code> property. If the <code>rename</code> property
+ * is set to <code>true</code> the source file will be copied into the parent directory
+ * specified by <code>to</code> an renamed according to the file name part of that
+ * property.</p>
+ * 
+ * <p>If the executable bit is set the file will be flagged as exectuable after
+ * copying. This property is only used for file copies not (yet) for directories.</p>
+ * 
+ * <p>This class is automatically picked up by Maven. Property accessors exist for the
+ * sake of Java Bean compatibility. There is nothing special involved into them and the
+ * field can be accessed directly.</p>
+ * 
+ * @author Robert Schuster (robert.schuster@tarent.de)
+ *
+ */
 public class AuxFile
 {
 
@@ -7,8 +28,10 @@ public class AuxFile
   
   String to;
   
-  Boolean rename = Boolean.FALSE;
-
+  boolean rename;
+  
+  boolean executable;
+  
   public String getFrom()
   {
     return from;
@@ -19,14 +42,25 @@ public class AuxFile
     this.from = from;
   }
 
+  public boolean isExecutable()
+  {
+    return executable;
+  }
+
+  public void setExecutable(boolean executable)
+  {
+    this.executable = executable;
+  }
+
   public boolean isRename()
   {
-    return rename.booleanValue();
+    return rename;
   }
 
   public void setRename(boolean rename)
   {
-    this.rename = Boolean.valueOf(rename);
+    this.rename = rename;
   }
+
   
 }

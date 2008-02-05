@@ -24,6 +24,9 @@ import org.apache.maven.project.artifact.InvalidDependencyVersionException;
 import org.codehaus.plexus.util.FileUtils;
 
 import de.tarent.maven.plugins.pkg.generator.WrapperScriptGenerator;
+import de.tarent.maven.plugins.pkg.map.Entry;
+import de.tarent.maven.plugins.pkg.map.PackageMap;
+import de.tarent.maven.plugins.pkg.map.Visitor;
 import de.tarent.maven.plugins.pkg.packager.DebPackager;
 import de.tarent.maven.plugins.pkg.packager.IpkPackager;
 import de.tarent.maven.plugins.pkg.packager.IzPackPackager;
@@ -244,73 +247,6 @@ public class Packaging
   }
 
   /**
-   * Copies the files in the map to their destination inside the package base
-   * directory.
-   * <p>
-   * Interprets the entries in the map as source file and their corresponding
-   * destination directory. The destination directory is prepended by the
-   * package base directory forming the correct location for the package
-   * creation.
-   * </p>
-   * <p>
-   * All necessary directories are created on the fly.
-   * </p>
-   * 
-   * @param l
-   * @param basePkgDir
-   * @param resources
-   * @param executablePath path for which the resources are marked executable,
-   *          may be null. Don't put trailing / on the directories.
-   * @throws MojoExecutionException
-   */
-  protected final void copyResources(Log l, File basePkgDir, Map resources,
-                                     String executablePath)
-      throws MojoExecutionException
-  {
-    executablePath = executablePath == null ? "" : ":" + executablePath + ":";
-
-    if (resources == null || resources.isEmpty())
-      return;
-
-    Iterator ite = resources.entrySet().iterator();
-    while (ite.hasNext())
-      {
-        Map.Entry entry = (Map.Entry) ite.next();
-        File srcFile = new File(project.getBasedir(), (String) entry.getKey());
-        File dstDir = new File(basePkgDir, (String) entry.getValue());
-        File dstFile = new File(dstDir, srcFile.getName());
-
-        if (! dstDir.exists())
-          {
-            l.info("creating directory for resource: "
-                   + dstDir.getAbsolutePath());
-            Utils.createParentDirs(dstFile, "resource file");
-          }
-
-        l.info("copying resource: " + srcFile.getAbsolutePath());
-        l.info("destination: " + dstFile.getAbsolutePath());
-
-        try
-          {
-            FileUtils.copyFile(srcFile, dstFile);
-          }
-        catch (IOException ioe)
-          {
-            throw new MojoExecutionException(
-                                             "IOException while copying resource file.",
-                                             ioe);
-          }
-
-        String path = (String) entry.getValue();
-        if (path.endsWith("/"))
-          path = path.substring(0, path.length() - 1);
-        if (executablePath.contains(":" + path + ":"))
-          Utils.makeExecutable(dstFile, dstFile.getName());
-      }
-
-  }
-
-  /**
    * Configures a wrapper script generator with all kinds of values and creates
    * a wrapper script.
    * 
@@ -430,11 +366,11 @@ public class Packaging
     line.append(defaults);
 
     // Visitor implementation which creates the dependency line.
-    PackageMap.Visitor v = new PackageMap.Visitor()
+    Visitor v = new Visitor()
     {
       Set processedDeps = new HashSet();
 
-      public void visit(Artifact artifact, PackageMap.Entry entry)
+      public void visit(Artifact artifact, Entry entry)
       {
         // Certain Maven Packages have only one package in the target system.
         // If that one was already added we should not add it any more.
@@ -520,9 +456,9 @@ public class Packaging
                                          are);
       }
 
-    PackageMap.Visitor v = new PackageMap.Visitor()
+    Visitor v = new Visitor()
     {
-      public void visit(Artifact artifact, PackageMap.Entry entry)
+      public void visit(Artifact artifact, Entry entry)
       {
         // If all dependencies should be bundled take a short-cut to bundle()
         // thereby overriding what was configured through property files.
@@ -685,7 +621,7 @@ public class Packaging
 
       tempRoot = new File(buildDir, pm.getPackaging() + "-tmp");
 
-      packageName = (pm.isDebianNaming() ? PackageMap.debianise(artifactId,
+      packageName = (pm.isDebianNaming() ? Utils.createPackageName(artifactId,
                                                                 dc.getSection())
                                         : artifactId);
       packageVersion = fixVersion(version) + "-0" + dc.getDistro();
@@ -731,12 +667,6 @@ public class Packaging
     public void copyJNILibraries() throws MojoExecutionException
     {
       Packaging.this.copyJNILibraries(getLog(), dc.jniLibraries, dstJNIDir);
-    }
-
-    public void copyResources() throws MojoExecutionException
-    {
-      Packaging.this.copyResources(getLog(), basePkgDir, dc.resources,
-                                   "/usr/bin:/usr/local/bin:/sbin");
     }
 
     public String createDependencyLine() throws MojoExecutionException

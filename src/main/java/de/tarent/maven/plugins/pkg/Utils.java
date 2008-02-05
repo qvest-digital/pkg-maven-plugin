@@ -283,8 +283,10 @@ public class Utils
    * @return
    * @throws MojoExecutionException
    */
-  public static long copyAuxFiles(Log l, File auxFileSrcDir,
-                                  File auxFileDstDir, List auxFiles)
+  public static long copyAuxFiles(Log l,
+                                  File auxFileSrcDir,
+                                  File auxFileDstDir,
+                                  List auxFiles)
       throws MojoExecutionException
   {
     long size = 0;
@@ -313,11 +315,17 @@ public class Utils
               {
                 FileUtils.copyFile(from, to);
                 size += from.length();
+                
+                if (af.isExecutable())
+                  makeExecutable(to, to.getName());
               }
             else
               {
                 FileUtils.copyFileToDirectory(from, to);
                 size += from.length();
+
+                if (af.isExecutable())
+                  makeExecutable(to, to.getName());
               }
           }
         catch (IOException ioe)
@@ -328,6 +336,20 @@ public class Utils
       }
     
     return size;
+  }
+
+  /**
+   * Convert the artifactId into a Debian package name. Currently this only
+   * applies to libraries which get a "lib" prefix and a "-java" suffix.
+   * 
+   * @param artifactId
+   * @return
+   */
+  public static String createPackageName(String artifactId, String section, boolean debianise)
+  {
+    return debianise && section.equals("libs")
+                          ? "lib" + artifactId + "-java"
+                          : artifactId;
   }
 
 }
