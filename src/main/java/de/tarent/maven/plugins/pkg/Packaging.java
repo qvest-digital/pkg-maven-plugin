@@ -621,9 +621,8 @@ public class Packaging
 
       tempRoot = new File(buildDir, pm.getPackaging() + "-tmp");
 
-      packageName = (pm.isDebianNaming() ? Utils.createPackageName(artifactId,
-                                                                dc.getSection())
-                                        : artifactId);
+      packageName = Utils.createPackageName(artifactId, dc.getSection(), pm.isDebianNaming());
+      
       packageVersion = fixVersion(version) + "-0" + dc.getDistro();
 
       basePkgDir = new File(tempRoot, packageName + "-" + packageVersion);
