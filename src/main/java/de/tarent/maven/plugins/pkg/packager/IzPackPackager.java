@@ -120,7 +120,6 @@ public class IzPackPackager extends Packager
     File wrapperScriptFile = ph.getWrapperScriptFile(tempDescriptorRoot);
     File windowsWrapperScriptFile = new File(wrapperScriptFile.getAbsolutePath() + ".bat");
     
-    // The following is only neccessary when aot compilation is enabled.
     String libraryPrefix = "%{INSTALL_PATH}/" + dstBundledArtifactsDir.getName();  
     String starterPrefix = "%{INSTALL_PATH}/" + starterRoot.getName(); 
     

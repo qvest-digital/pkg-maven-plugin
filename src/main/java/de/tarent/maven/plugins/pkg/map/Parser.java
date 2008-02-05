@@ -29,22 +29,6 @@ class Parser
     Parser(URL packageMapDocument, URL auxMapDocument)
       throws Exception
     {
-      // Creates a special entry for izpack packaging.
-      Mapping mapping = new Mapping("izpack");
-      mapping.label = "Default IzPack packaging";
-      
-      mapping.packaging = "izpack";
-      
-      // Not used but is otherwise a sane value.
-      mapping.defaultBinPath = "";
-      mapping.defaultDependencyLine = "";
-      
-      // Not used.
-      mapping.defaultJarPath = "libs";
-      mapping.defaultJNIPath = "libs";
-      
-      mappings.put("izpack", mapping);
-
       // Initialize the XML parsing part.
       Parser.State s = new State(packageMapDocument);
       

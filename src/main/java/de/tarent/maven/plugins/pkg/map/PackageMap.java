@@ -47,6 +47,10 @@ import de.tarent.maven.plugins.pkg.Utils;
  * functions the name of the targeted distribution has to be provided upon
  * instantiation.</p>
  * 
+ * <p><em>Important:</em>IzPack packaging is a bit different from the other packaging
+ * variants in that it does not have a special target distribution. IzPack packaging
+ * is provided through the 'izpack' distribution.</p>
+ * 
  * @author Robert Schuster (robert.schuster@tarent.de)
  *
  */
