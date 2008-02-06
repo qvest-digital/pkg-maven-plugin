@@ -159,22 +159,22 @@ class Parser
 
     private void parseEntry(Parser.State s, Mapping distroMapping) throws Exception
     {
-      String artifactId;
+      String artifactSpec;
       String dependencyLine;
       
-      s.nextMatch("artifactId");
-      dependencyLine = artifactId = s.nextElement();
+      s.nextMatch("artifactSpec");
+      dependencyLine = getArtifactId(artifactSpec = s.nextElement());
       
       s.nextElement();
       if (s.peek("ignore"))
         {
-          distroMapping.putEntry(artifactId, Entry.IGNORE_ENTRY);
+          distroMapping.putEntry(artifactSpec, Entry.IGNORE_ENTRY);
           s.nextElement();
           return;
         }
       else if (s.peek("bundle"))
         {
-          distroMapping.putEntry(artifactId, Entry.BUNDLE_ENTRY);
+          distroMapping.putEntry(artifactSpec, Entry.BUNDLE_ENTRY);
           s.nextElement();
           return;
         }
@@ -197,7 +197,18 @@ class Parser
           parseJars(s, jarFileNames);
         }
       
-      distroMapping.putEntry(artifactId, new Entry(artifactId, dependencyLine, jarFileNames, isBootClaspath));
+      distroMapping.putEntry(artifactSpec, new Entry(artifactSpec, dependencyLine, jarFileNames, isBootClaspath));
+    }
+    
+    /**
+     * Returns the artifactId of an artifactSpec string. Eg. "foo" from "org.baz:foo". 
+     * 
+     * @param artifactSpec
+     * @return
+     */
+    private String getArtifactId(String artifactSpec)
+    {
+      return artifactSpec.substring(artifactSpec.indexOf(':') + 1);
     }
 
     private void parseJars(Parser.State s, HashSet jarFileNames) throws Exception
@@ -291,11 +302,11 @@ class Parser
             }
             catch (XmlPullParserException xmlppe)
             {
-              throw new Exception("XML document malformed");
+              throw new Exception("XML document malformed", xmlppe);
             }
             catch (IOException ioe)
             {
-              throw new Exception("I/O error when accessing XML document: " + url);
+              throw new Exception("I/O error when accessing XML document: " + url, ioe);
             }
           }
         while (true);

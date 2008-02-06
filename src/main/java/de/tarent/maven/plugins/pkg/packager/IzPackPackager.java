@@ -55,16 +55,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.maven.artifact.Artifact;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.codehaus.plexus.util.FileUtils;
 
 import de.tarent.maven.plugins.pkg.DistroConfiguration;
 import de.tarent.maven.plugins.pkg.Packaging;
@@ -85,9 +82,22 @@ public class IzPackPackager extends Packager
                       DistroConfiguration distroConfig,
                       PackageMap packageMap) throws MojoExecutionException
   {
+    // The root directory into which everything from srcRoot is copied
+    // into (inside the outputDirectory).
+    File tempDescriptorRoot = new File(ph.getTempRoot(), "descriptor");
+    ph.setBasePkgDir(tempDescriptorRoot);
+    
+    // The root directory into which the jars from the dependencies
+    // are put.
+    ph.setDstBundledArtifactsDir(new File(tempDescriptorRoot, "lib"));
+    File dstBundledArtifactsDir = ph.getDstBundledArtifactsDir();
+    
+    // Sets the location of the jar files. Since dstBundledArtifactsDir has been set already
+    // it will not interfere with it.
+    ph.setTargetJarPath(new File("%{INSTALL_PATH}", dstBundledArtifactsDir.getName()));
+
     // Overrides default dst artifact file.
-    ph.setDstArtifactFile(new File(ph.getOutputDirectory(), ph.getArtifactId() + ".jar"));
-    File artifactFile = ph.getDstArtifactFile();
+    ph.setDstArtifactFile(new File(ph.getDstBundledArtifactsDir(), ph.getArtifactId() + ".jar"));
     
     // The destination file for the embedded IzPack installation.
     File izPackEmbeddedJarFile = new File(ph.getTempRoot(), IZPACK_EMBEDDED_JAR);
@@ -99,16 +109,6 @@ public class IzPackPackager extends Packager
     // The root directory containing the IzPack installer XML file and
     // all accompanying resource files.
     File srcRoot = ph.getIzPackSrcDir();
-    
-    // The root directory into which everything from srcRoot is copied
-    // into (inside the outputDirectory).
-    File tempDescriptorRoot = new File(ph.getTempRoot(), "descriptor");
-    ph.setBasePkgDir(tempDescriptorRoot);
-    
-    // The root directory into which the jars from the dependencies
-    // are put.
-    ph.setDstBundledArtifactsDir(new File(tempDescriptorRoot, "lib"));
-    File dstBundledArtifactsDir = ph.getDstBundledArtifactsDir();
     
     // The root directory into which the starter and the classpath
     // properties file are put.
@@ -126,14 +126,14 @@ public class IzPackPackager extends Packager
     File wrapperScriptFile = ph.getWrapperScriptFile();
     File windowsWrapperScriptFile = new File(wrapperScriptFile.getAbsolutePath() + ".bat");
     
-    String libraryPrefix = "%{INSTALL_PATH}/" + dstBundledArtifactsDir.getName();  
-    String starterPrefix = "%{INSTALL_PATH}/" + starterRoot.getName(); 
+    String starterPrefix = "%{INSTALL_PATH}/" + starterRoot.getName();
     
-    Set deps = null;
+    Set bundledArtifacts = null;
+    StringBuilder bcp = new StringBuilder();
+    StringBuilder cp = new StringBuilder();
     
     try
       {
-        
         prepareDirectories(l,
                            ph.getTempRoot(),
                            izPackEmbeddedRoot,
@@ -143,7 +143,11 @@ public class IzPackPackager extends Packager
         
         unpackIzPack(l, izPackEmbeddedJarFile, izPackEmbeddedRoot);
         
-        deps = ph.copyDependencies();
+        bundledArtifacts = ph.createClasspathLine(bcp, cp, (distroConfig.isAdvancedStarter() ? "\n" : ":"));
+        
+        ph.copyArtifacts(bundledArtifacts);
+        
+        ph.copyJNILibraries();
 
         Utils.copyAuxFiles(l, ph.getAuxFileSrcDir(), tempDescriptorRoot, distroConfig.getAuxFiles());
 
@@ -155,19 +159,19 @@ public class IzPackPackager extends Packager
         
         desc.removeAotPack();
         
-        WrapperScriptGenerator gen = createWrapperScriptGenerator(libraryPrefix, distroConfig);
+        WrapperScriptGenerator gen = createWrapperScriptGenerator(ph.getTargetJarPath(), distroConfig);
         
         if (distroConfig.isAdvancedStarter())
           {
         	l.info("setting up advanced starter");
-        	setupStarter(l, distroConfig.getMainClass(), starterRoot, deps, artifactFile, libraryPrefix);
+        	setupStarter(l, distroConfig.getMainClass(), starterRoot, cp.toString());
         	
         	assignStarterClasspath(gen, distroConfig, desc, starterPrefix);
           }
         else
           {
         	l.info("using traditional starter");
-        	assignTraditionalClasspath(gen, distroConfig, libraryPrefix, dstBundledArtifactsDir);
+        	assignTraditionalClasspath(gen, distroConfig, cp.toString());
           }
         
         generateWrapperScripts(gen, wrapperScriptFile, windowsWrapperScriptFile);
@@ -249,7 +253,7 @@ public class IzPackPackager extends Packager
     l.info("copying IzPack descriptor data");
     try
     {
-      FileUtils.copyDirectoryStructure(srcDir, tempDescriptorRoot);
+      FileUtils.copyDirectory(srcDir, tempDescriptorRoot, Utils.FILTER);
     }
     catch (IOException ioe)
     {
@@ -342,10 +346,10 @@ public class IzPackPackager extends Packager
    * Creates a {@link WrapperScriptGenerator} instance and initializes
    * with basic values.
    * 
-   * @param libraryPrefix
+   * @param targetJarPath
    * @return
    */
-  private WrapperScriptGenerator createWrapperScriptGenerator(String libraryPrefix, DistroConfiguration dc)
+  private WrapperScriptGenerator createWrapperScriptGenerator(File targetJarPath, DistroConfiguration dc)
   {
     WrapperScriptGenerator gen = new WrapperScriptGenerator();
 	    
@@ -355,7 +359,7 @@ public class IzPackPackager extends Packager
 	// Sets a library path that assumes that the JNI libraries
     // lie in the libraryRoot. %{INSTALL_PATH} is replaced with
     // the actual installation location by IzPack.
-    gen.setLibraryPath(libraryPrefix);
+    gen.setLibraryPath(targetJarPath.toString());
 
 	return gen;
   }
@@ -369,7 +373,7 @@ public class IzPackPackager extends Packager
    * @param libraryPrefix
    * @throws MojoExecutionException
    */
-  private void setupStarter(Log l, String mainClass, File starterRoot, Set dependencies, File artifactFile, String libraryPrefix)
+  private void setupStarter(Log l, String mainClass, File starterRoot, String classpath)
   throws MojoExecutionException
   {
 	File destStarterClassFile = new File(starterRoot, STARTER_CLASS);
@@ -392,20 +396,10 @@ public class IzPackPackager extends Packager
         writer.println("# The next line is the fully-classified name of the main class:");
         writer.println(mainClass);
         writer.println("# The following lines are the classpath entries:");
-        int i = 0;
-        Iterator ite = dependencies.iterator();
-    
-        while (ite.hasNext())
-          {
-    	    Artifact a = (Artifact) ite.next();
-    	    String entry = libraryPrefix + "/" + a.getFile().getName();
-    	    writer.println(entry);
-    	    i++;
-          }
-        writer.println(libraryPrefix + "/" + artifactFile.getName());
-        i++;
-    
-        l.info("created " + i + " library entries");
+  
+        writer.println(classpath);
+        
+        l.info("created library entries");
       }
     catch (IOException e)
       {
@@ -447,15 +441,14 @@ public class IzPackPackager extends Packager
    */
   private void assignTraditionalClasspath(WrapperScriptGenerator gen,
                                           DistroConfiguration dc,
-                                          String libraryPrefix,
-                                          File libraryRoot)
+                                          String classpath)
   throws MojoExecutionException
   {
     gen.setMainClass(dc.getMainClass());
     gen.setMaxJavaMemory(dc.getMaxJavaMemory());
 
     // All Jars have to reside inside the libraryRoot.
-	gen.setClasspath(createClasspath(":", libraryRoot, libraryPrefix));
+	gen.setClasspath(classpath);
   }
   
   /**
@@ -493,36 +486,6 @@ public class IzPackPackager extends Packager
       throw new MojoExecutionException("IOException while generating Windows wrapper script.");
     }
     
-  }
-  
-  private String createClasspath(String delimiter, File libraryRoot, String prefix)
-  throws MojoExecutionException
-  {
-    StringBuilder b = new StringBuilder();
-   
-    try
-    {
-      List files = FileUtils.getFiles(libraryRoot, "*.jar", null);
-      
-      boolean first = true;
-      
-      for (Iterator ite = files.iterator(); ite.hasNext(); )
-        {
-          if (first)
-            first = false;
-          else 
-            b.append(delimiter);
-            
-          File f = (File) ite.next();
-          b.append(prefix + "/" + f.getName());
-        }
-    }
-    catch (IOException ioe)
-    {
-      throw new MojoExecutionException("IOException while listing libraries from directory.");
-    }
-    
-    return b.toString();
   }
    
 }

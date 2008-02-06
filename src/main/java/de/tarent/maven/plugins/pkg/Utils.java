@@ -26,9 +26,9 @@
 
 package de.tarent.maven.plugins.pkg;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,9 +36,13 @@ import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.NotFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.codehaus.plexus.util.FileUtils;
 
 /**
  * A bunch of method with often used functionality. There is nothing special
@@ -48,6 +52,11 @@ import org.codehaus.plexus.util.FileUtils;
  */
 public class Utils
 {
+  
+  /**
+   * File filter that ignores files ending with "~" and CVS and SVN files.
+   */
+  public static final FileFilter FILTER = FileFilterUtils.makeSVNAware(FileFilterUtils.makeCVSAware(new NotFileFilter(new SuffixFileFilter("~"))));
 
   public static void createParentDirs(File f, String item)
       throws MojoExecutionException
@@ -91,9 +100,9 @@ public class Utils
   public static void makeExecutable(File f, String item)
       throws MojoExecutionException
   {
-    Utils.exec(new String[] { "chmod", "+x", f.getAbsolutePath() },
-               "Changing the " + item + " file attributes failed.",
-               "Unable to make " + item + " file executable.");
+    exec(new String[] { "chmod", "+x", f.getAbsolutePath() },
+         "Changing the " + item + " file attributes failed.",
+         "Unable to make " + item + " file executable.");
 
   }
 
@@ -164,21 +173,13 @@ public class Utils
     if (is == null)
       throw new MojoExecutionException("InputStream must not be null.");
     
-    BufferedInputStream bis = new BufferedInputStream(is);
-
     try
       {
         FileOutputStream fos = new FileOutputStream(file);
 
-        // Transfer bytes from in to out
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = bis.read(buf)) > 0)
-          {
-            fos.write(buf, 0, len);
-          }
+        IOUtils.copy(is, fos);
 
-        bis.close();
+        is.close();
         fos.close();
       }
     catch (IOException ioe)
@@ -315,8 +316,7 @@ public class Utils
             if (from.isDirectory())
               {
                 to = new File(to, from.getName());
-                to.mkdirs();
-                FileUtils.copyDirectoryStructure(from, to);
+                FileUtils.copyDirectory(from, to, FILTER);
               }
             else if (af.isRename())
               {

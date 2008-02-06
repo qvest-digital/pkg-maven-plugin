@@ -73,17 +73,17 @@ class Mapping
     defaultDependencyLine = (child.defaultDependencyLine != null) ? child.defaultDependencyLine : parent.defaultDependencyLine;
     
     entries = (HashMap) parent.entries.clone();
-    entries.putAll(entries);
+    entries.putAll(child.entries);
   }
   
-  Entry getEntry(String artifactId)
+  Entry getEntry(String groupId, String artifactId)
   {
-    return (Entry) entries.get(artifactId);
+    return (Entry) entries.get(groupId + ":" + artifactId);
   }
   
-  void putEntry (String artifactId, Entry e)
+  void putEntry (String artifactSpec, Entry e)
   {
-    entries.put(artifactId, e);
+    entries.put(artifactSpec, e);
   }
 
 }

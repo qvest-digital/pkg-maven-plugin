@@ -184,7 +184,7 @@ public class PackageMap
            continue;
          }
        
-       Entry e = (Entry) mapping.getEntry(aid);
+       Entry e = (Entry) mapping.getEntry(a.getGroupId(), aid);
        if (e == Entry.BUNDLE_ENTRY)
            v.bundle(a);
        else if (e == null)
@@ -201,9 +201,9 @@ public class PackageMap
      
   }
   
-  public Entry getEntry(String artifactId, String section)
+  public Entry getEntry(String groupId, String artifactId, String section)
   {
-    Entry e = (Entry) mapping.getEntry(artifactId);
+    Entry e = (Entry) mapping.getEntry(groupId, artifactId);
     
     // If an entry does not exist create one based on the artifact id.
     // This is needed if the project is a library and is going to be packaged.

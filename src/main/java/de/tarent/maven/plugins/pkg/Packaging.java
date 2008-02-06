@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
@@ -20,7 +21,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.artifact.InvalidDependencyVersionException;
-import org.codehaus.plexus.util.FileUtils;
 
 import de.tarent.maven.plugins.pkg.generator.WrapperScriptGenerator;
 import de.tarent.maven.plugins.pkg.map.Entry;
@@ -50,6 +50,8 @@ public class Packaging
    * - benutzer von Packaging.Helper müssen die Werte fest nach ihren eigenen Regeln setzen
    * - die Aktions-Methoden (copy<...> arbeiten mit so wenig wie möglich parametern)
    *  und beziehen alles aus den übrigen methoden
+   *  
+   *  TODO: Explain and document the design idea of this class. 
    * 
    * @author Robert Schuster (robert.schuster@tarent.de)
    *
@@ -96,6 +98,17 @@ public class Packaging
      * classpath construction). (e.g. /usr/share/java/app-2.0-SNAPSHOT.jar)
      */
     File targetArtifactFile;
+    
+    /**
+     * Location of the project's dependency artifacts on the target system (needed
+     * for classpath construction.).
+     * 
+     * <p>The path may not be used for actual copy operation as it is assumed to
+     * be valid after installation only!</p>
+     * 
+     * (e.g. ${INSTALL_DIR}/libs)
+     */
+    File targetJarPath;
 
     File tempRoot;
 
@@ -160,23 +173,25 @@ public class Packaging
     }
 
     /**
-     * Creates a classpath line that consists of all the artifacts in the set as well as
+     * Creates a classpath line that consists of all the project' artifacts as well as
      * the project's own artifact.
      * 
      * <p>The filename of the project's own artifact is taken from the result of
      * {@link #getTargetArtifactFile()}.</p>
      * 
-     * @param bundledArtifacts
+     * <p>The method returns a set of artifact instance which will be bundled
+     * with the package.</p>
+     * 
      * @param bcp
      * @param cp
      * @throws MojoExecutionException
      */
-    public void createClasspathLine(Set bundledArtifacts, StringBuilder bcp,
-                                    StringBuilder cp)
+    public Set createClasspathLine(StringBuilder bcp, StringBuilder cp, String delimiter)
         throws MojoExecutionException
     {
-      Packaging.this.createClasspathLine(getLog(), bundledArtifacts, bcp, cp,
-                                         getTargetArtifactFile());
+      return Packaging.this.createClasspathLine(getLog(), bcp, cp,
+                                         getTargetArtifactFile(),
+                                         delimiter);
     }
 
     public String createDependencyLine() throws MojoExecutionException
@@ -232,8 +247,7 @@ public class Packaging
     public File getDstBundledArtifactsDir()
     {
       if (dstBundledArtifactsDir == null)
-        dstBundledArtifactsDir = new File(basePkgDir, pm.getDefaultJarPath()
-                      + "/" + artifactId);
+        dstBundledArtifactsDir = new File(new File(basePkgDir, getTargetJarPath().toString()), artifactId);
       
       return dstBundledArtifactsDir;
     }
@@ -242,7 +256,7 @@ public class Packaging
     {
       if (dstArtifactFile == null)
         dstArtifactFile = new File(getBasePkgDir(),
-                                   targetArtifactFile.getAbsolutePath());
+                                   getTargetArtifactFile().getAbsolutePath());
 
       return dstArtifactFile;
     }
@@ -307,7 +321,7 @@ public class Packaging
     public File getTargetArtifactFile()
     {
       if (targetArtifactFile == null)
-          targetArtifactFile = new File(pm.getDefaultJarPath(), artifactId + ".jar");
+          targetArtifactFile = new File(getTargetJarPath(), artifactId + ".jar");
 
       return targetArtifactFile;
     }
@@ -393,6 +407,19 @@ public class Packaging
     public void setWrapperScriptFile(File wrapperScriptFile)
     {
       this.wrapperScriptFile = wrapperScriptFile;
+    }
+
+    public File getTargetJarPath()
+    {
+      if (targetJarPath == null)
+        targetJarPath = new File(pm.getDefaultJarPath());
+      
+      return targetJarPath;
+    }
+
+    public void setTargetJarPath(File targetJarPath)
+    {
+      this.targetJarPath = targetJarPath;
     }
   }
 
@@ -549,8 +576,8 @@ public class Packaging
   }
 
   /**
-   * Creates the bootclasspath and classpath line from the given dependency
-   * artifacts.
+   * Creates the bootclasspath and classpath line from the project's dependencies
+   * and returns the artifacts which will be bundled with the package.
    * 
    * @param pm The package map used to resolve the Jar file names.
    * @param bundled A set used to track the bundled jars for later file-size
@@ -561,12 +588,15 @@ public class Packaging
    *          method.
    * @return
    */
-  protected final void createClasspathLine(final Log l, final Set bundled,
+  protected final Set createClasspathLine(final Log l,
                                            final StringBuilder bcp,
                                            final StringBuilder cp,
-                                           File targetArtifactFile)
+                                           File targetArtifactFile,
+                                           final String delimiter)
       throws MojoExecutionException
   {
+    final Set bundled = new HashSet();
+    
     l.info("resolving dependency artifacts");
 
     Set dependencies = null;
@@ -617,12 +647,12 @@ public class Packaging
         // TODO: Perhaps one want a certain bundled dependency in boot
         // classpath.
 
-        // Bundled Jar will always live in /usr/share/java/ + artifactId (of the
+        // Bundled Jar will always live in /usr/share/java + / + artifactId (of the
         // project)
         File file = artifact.getFile();
         if (file != null)
-          cp.append(pm.getDefaultJarPath() + artifactId + "/" + file.getName()
-                    + ":");
+          cp.append(pm.getDefaultJarPath() + "/" + artifactId + "/" + file.getName()
+                    + delimiter);
         else
           l.warn("Cannot put bundled artifact " + artifact.getArtifactId()
                  + " to Classpath.");
@@ -644,8 +674,16 @@ public class Packaging
         while (ite.hasNext())
           {
             String fileName = (String) ite.next();
+            
+            // Prepend default Jar path if file is not absolute.
+            if (fileName.charAt(0) != '/')
+              {
+                b.append(pm.getDefaultJarPath());
+                b.append("/");
+              }
+            
             b.append(fileName);
-            b.append(":");
+            b.append(delimiter);
           }
       }
 
@@ -658,7 +696,9 @@ public class Packaging
     cp.append(targetArtifactFile.getAbsolutePath());
 
     if (bcp.length() > 0)
-      bcp.deleteCharAt(bcp.length() - 1);
+      bcp.delete(bcp.length() - delimiter.length(), bcp.length());
+    
+    return bundled;
   }
 
   /**
@@ -873,7 +913,10 @@ public class Packaging
         // dc.distro must not be 'null'.
         if (dc.distro.equals(distro))
           {
-            return dc.merge(defaults);
+            DistroConfiguration parent = (dc.parent != null)
+              ? getMergedConfiguration(dc.parent) : defaults;
+            
+            return dc.merge(parent);
           }
       }
 

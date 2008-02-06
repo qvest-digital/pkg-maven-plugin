@@ -24,6 +24,8 @@ import java.util.Set;
  */
 public class DistroConfiguration
 {
+  String parent;
+  
   /**
    * Denotes the distribution id this configuration is for. There should
    * be only one configuration per distribution.

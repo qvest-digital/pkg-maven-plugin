@@ -19,13 +19,13 @@
 				classpath-gtk package.
 			-->
 			<entry>
-				<artifactId>awt</artifactId>
+				<artifactSpec>awt</artifactSpec>
 				<dependencyLine>classpath-gtk</dependencyLine>
 				<jars/>
 			</entry>
 
 			<entry>
-				<artifactId>swt-gtk-linux</artifactId>
+				<artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
 				<dependencyLine>libswt3.4-gtk-java</dependencyLine>
 				<jars>
 					<jar>swt.jar</jar>
@@ -36,12 +36,12 @@
 			</entry>
 
 			<entry>
-				<artifactId>dbus-java</artifactId>
+				<artifactSpec>org.freedesktop.dbus:dbus-java</artifactSpec>
 				<dependencyLine>libdbus-java</dependencyLine>
 			</entry>
 
 			<entry>
-				<artifactId>libmatthew-java</artifactId>
+				<artifactSpec>cx.ath.matthew:libmatthew-java</artifactSpec>
 				<dependencyLine>libdbus-java</dependencyLine>
 				<jars>
 					<jar>io.jar</jar>
@@ -52,7 +52,7 @@
 			</entry>
 
 			<entry>
-				<artifactId>xmlpull</artifactId>
+				<artifactSpec>xmlpull:xmlpull</artifactSpec>
 				<dependencyLine>libxmlpull-java</dependencyLine>
 				<!-- Needed for cacao-cldc in bootclasspath. -->
 				<boot/>
@@ -62,7 +62,7 @@
 			</entry>
 
 			<entry>
-				<artifactId>kxml2</artifactId>
+				<artifactSpec>kxml2:kxml2</artifactSpec>
 				<dependencyLine>libkxml2-java</dependencyLine>
 				<!-- Needed for cacao-cldc in bootclasspath. -->
 				<boot/>

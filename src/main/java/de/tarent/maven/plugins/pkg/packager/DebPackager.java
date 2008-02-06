@@ -90,7 +90,9 @@ public class DebPackager extends Packager
     
     // A set which will be filled with the artifacts which need to be bundled with the
     // application.
-    Set bundledArtifacts = new HashSet();
+    Set bundledArtifacts = null;
+    StringBuilder bcp = new StringBuilder();
+    StringBuilder cp = new StringBuilder();
     
     long byteAmount = srcArtifactFile.length();
 
@@ -118,12 +120,9 @@ public class DebPackager extends Packager
         if (distroConfig.getMainClass() != null)
           {
             // TODO: Handle native library artifacts properly.
-            StringBuilder bcp = new StringBuilder();
-            StringBuilder cp = new StringBuilder();
-            ph.createClasspathLine(bundledArtifacts, bcp, cp);
+            bundledArtifacts = ph.createClasspathLine(bcp, cp, ":");
 
             ph.generateWrapperScript(bundledArtifacts, bcp.toString(), cp.toString());
-            
 
             byteAmount += ph.copyArtifacts(bundledArtifacts);
           }
