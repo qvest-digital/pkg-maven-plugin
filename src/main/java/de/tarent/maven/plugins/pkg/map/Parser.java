@@ -102,7 +102,7 @@ class Parser
         distroMapping.parent = s.nextElement();
       else if(s.peek("packaging"))
         distroMapping.packaging = s.nextElement();
-      else 
+      else
         throw new Exception("malformed document: unexpected token " + s.token);
       
       s.nextElement();
@@ -145,6 +145,8 @@ class Parser
         {
           parseMap(s, distroMapping);
         }
+      else if (s.peek("noPackages"))
+        distroMapping.hasNoPackages = true;
       
     }
     

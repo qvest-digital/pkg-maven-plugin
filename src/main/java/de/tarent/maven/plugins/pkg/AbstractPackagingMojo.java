@@ -304,6 +304,7 @@ abstract class AbstractPackagingMojo extends AbstractMojo
       }
 
     l.info("copying " + artifacts.size() + " dependency artifacts.");
+    l.info("destination: " + dst.toString());
 
     try
       {

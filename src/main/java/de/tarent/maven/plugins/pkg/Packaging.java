@@ -103,8 +103,9 @@ public class Packaging
      * Location of the project's dependency artifacts on the target system (needed
      * for classpath construction.).
      * 
-     * <p>The path may not be used for actual copy operation as it is assumed to
-     * be valid after installation only!</p>
+     * <p>If the path contains a variable that is to be replaced by an installer
+     * it must not be used in actual file operations! To prevent this from happening
+     * provide explicit value for all properties which use {@link #getTargetArtifactFile()}</p>
      * 
      * (e.g. ${INSTALL_DIR}/libs)
      */
@@ -126,9 +127,9 @@ public class Packaging
      * 
      * @throws MojoExecutionException
      */
-    public void copyArtifact() throws MojoExecutionException
+    public void copyProjectArtifact() throws MojoExecutionException
     {
-      Utils.copyArtifact(getLog(), getSrcArtifactFile(), getDstArtifactFile());
+      Utils.copyProjectArtifact(getLog(), getSrcArtifactFile(), getDstArtifactFile());
     }
     
     /**
@@ -144,21 +145,6 @@ public class Packaging
         throws MojoExecutionException
     {
       return Packaging.this.copyArtifacts(getLog(), artifacts, getDstBundledArtifactsDir());
-    }
-
-    /**
-     * Inspects the project's dependencies and copies all of them into the location
-     * specified by {@link #getDstBundledArtifactsDir()}. Additionally the project's
-     * own artifact is copied (using {@link #getSrcArtifactFile()} as the source and
-     * {@link #getDstArtifactFile() as the destination).
-     * 
-     * @return
-     * @throws MojoExecutionException
-     */
-    public Set copyDependencies() 
-    throws MojoExecutionException
-    {
-      return Packaging.this.copyDependencies(getLog(), getDstBundledArtifactsDir(), getSrcArtifactFile(), getDstArtifactFile());
     }
 
     /**
@@ -189,9 +175,11 @@ public class Packaging
     public Set createClasspathLine(StringBuilder bcp, StringBuilder cp, String delimiter)
         throws MojoExecutionException
     {
-      return Packaging.this.createClasspathLine(getLog(), bcp, cp,
-                                         getTargetArtifactFile(),
-                                         delimiter);
+      return Packaging.this.createClasspathLine(getLog(),
+                                                getTargetJarPath(),
+                                                bcp, cp,
+                                                getTargetArtifactFile(),
+                                                delimiter);
     }
 
     public String createDependencyLine() throws MojoExecutionException
@@ -247,7 +235,7 @@ public class Packaging
     public File getDstBundledArtifactsDir()
     {
       if (dstBundledArtifactsDir == null)
-        dstBundledArtifactsDir = new File(new File(basePkgDir, getTargetJarPath().toString()), artifactId);
+        dstBundledArtifactsDir = new File(basePkgDir, getTargetJarPath().toString());
       
       return dstBundledArtifactsDir;
     }
@@ -256,7 +244,7 @@ public class Packaging
     {
       if (dstArtifactFile == null)
         dstArtifactFile = new File(getBasePkgDir(),
-                                   getTargetArtifactFile().getAbsolutePath());
+                                   getTargetArtifactFile().toString());
 
       return dstArtifactFile;
     }
@@ -412,7 +400,7 @@ public class Packaging
     public File getTargetJarPath()
     {
       if (targetJarPath == null)
-        targetJarPath = new File(pm.getDefaultJarPath());
+        targetJarPath = new File(pm.getDefaultJarPath(),  artifactId);
       
       return targetJarPath;
     }
@@ -490,61 +478,6 @@ public class Packaging
       }
   }
 
-  /**
-   * Copies the project's dependency artifacts as well as the main artifact
-   * of the project itself.
-   * 
-   * <p>The set of dependency artifacts and the project's artifact are then
-   * returned.</p>
-   * 
-   * @param l
-   * @param libraryRoot
-   * @param srcArtifactFile
-   * @return
-   * @throws MojoExecutionException
-   */
-  Set copyDependencies(Log l, File libraryRoot, File srcArtifactFile, File dstArtifactFile)
-  throws MojoExecutionException
-  {
-    l.info("retrieving dependencies");
-    Set artifacts = null;
-    try
-    {
-      artifacts = findArtifacts();
-    }
-    catch (ArtifactNotFoundException e)
-    {
-      throw new MojoExecutionException("Unable to retrieve artifact.", e);
-    }
-    catch (ArtifactResolutionException e)
-      {
-        throw new MojoExecutionException("Unable to resolve artifact.", e);
-      }
-    catch (ProjectBuildingException e)
-      {
-        throw new MojoExecutionException("Unable to build project.", e);
-      }
-    catch (InvalidDependencyVersionException e)
-      {
-        throw new MojoExecutionException("Invalid dependency version.", e);
-      }
-    
-    copyArtifacts(l, artifacts, libraryRoot);
-    
-    try
-    {
-      // Copies the project's own artifact into the library root directory.
-      l.info("copying project's artifact file: " + srcArtifactFile.getAbsolutePath());
-      FileUtils.copyFile(srcArtifactFile, dstArtifactFile);
-    }
-    catch (IOException ioe)
-    {
-      throw new MojoExecutionException("IOException while copying project's artifact file.");
-    }
-
-    return artifacts;
-  }
-
   final void copyJNILibraries(Log l, List jniLibraries, File dstDir)
       throws MojoExecutionException
   {
@@ -589,6 +522,7 @@ public class Packaging
    * @return
    */
   protected final Set createClasspathLine(final Log l,
+                                          final File targetJarPath,
                                            final StringBuilder bcp,
                                            final StringBuilder cp,
                                            File targetArtifactFile,
@@ -647,11 +581,10 @@ public class Packaging
         // TODO: Perhaps one want a certain bundled dependency in boot
         // classpath.
 
-        // Bundled Jar will always live in /usr/share/java + / + artifactId (of the
-        // project)
+        // Bundled Jars will always live in targetJarPath 
         File file = artifact.getFile();
         if (file != null)
-          cp.append(pm.getDefaultJarPath() + "/" + artifactId + "/" + file.getName()
+          cp.append(targetJarPath.toString() + "/" + file.getName()
                     + delimiter);
         else
           l.warn("Cannot put bundled artifact " + artifact.getArtifactId()
@@ -693,7 +626,7 @@ public class Packaging
 
     // Add the project's own artifact at last. This way we can
     // save the deletion of the colon added in the loop.
-    cp.append(targetArtifactFile.getAbsolutePath());
+    cp.append(targetArtifactFile.toString());
 
     if (bcp.length() > 0)
       bcp.delete(bcp.length() - delimiter.length(), bcp.length());

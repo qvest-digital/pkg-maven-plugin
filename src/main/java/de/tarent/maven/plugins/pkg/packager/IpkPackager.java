@@ -76,7 +76,7 @@ public class IpkPackager extends Packager
     	
         ph.prepareInitialDirectories();
 
-        ph.copyArtifact();
+        ph.copyProjectArtifact();
         
         ph.copyJNILibraries();
         

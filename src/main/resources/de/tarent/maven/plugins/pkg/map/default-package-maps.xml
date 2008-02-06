@@ -17,7 +17,7 @@
 		<defaultJarPath>libs</defaultJarPath>
 		<defaultJNIPath>libs</defaultJNIPath>
 		
-		<!-- IzPack has no mappings. :) -->
-		<map/>
+		<!-- IzPack has no packages. :) -->
+		<noPackages/>
 	</distro>
 </package-maps>

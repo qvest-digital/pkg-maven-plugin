@@ -34,6 +34,8 @@ class Mapping
   
   Boolean debianNaming;
   
+  boolean hasNoPackages;
+  
   HashMap/*<String, Entry>*/ entries = new HashMap();
   
   /**
@@ -63,6 +65,9 @@ class Mapping
   {
     distro = child.distro;
     packaging = parent.packaging;
+    
+    // Whether packages exist or not is always inherit from the parent.
+    hasNoPackages = parent.hasNoPackages;
 
     // These values may be null. If the merging has been done from the root to the child
     // they will be non-null for the parent however.

@@ -215,7 +215,7 @@ public class Utils
 
   }
 
-  public static final void copyArtifact(Log l, File src, File dst)
+  public static final void copyProjectArtifact(Log l, File src, File dst)
       throws MojoExecutionException
   {
     l.info("copying artifact: " + src.getAbsolutePath());

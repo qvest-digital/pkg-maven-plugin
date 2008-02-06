@@ -92,9 +92,10 @@ public class IzPackPackager extends Packager
     ph.setDstBundledArtifactsDir(new File(tempDescriptorRoot, "lib"));
     File dstBundledArtifactsDir = ph.getDstBundledArtifactsDir();
     
-    // Sets the location of the jar files. Since dstBundledArtifactsDir has been set already
-    // it will not interfere with it.
-    ph.setTargetJarPath(new File("%{INSTALL_PATH}", dstBundledArtifactsDir.getName()));
+    // Sets the location of the jar files. As it contains a substituatio variable
+    // dstBundledArtifactsDir has been set already (prevents the use of targetJarPath
+    // for IO operations).
+    ph.setTargetJarPath(new File("%{INSTALL_PATH}", "lib"));
 
     // Overrides default dst artifact file.
     ph.setDstArtifactFile(new File(ph.getDstBundledArtifactsDir(), ph.getArtifactId() + ".jar"));
@@ -144,6 +145,8 @@ public class IzPackPackager extends Packager
         unpackIzPack(l, izPackEmbeddedJarFile, izPackEmbeddedRoot);
         
         bundledArtifacts = ph.createClasspathLine(bcp, cp, (distroConfig.isAdvancedStarter() ? "\n" : ":"));
+        
+        ph.copyProjectArtifact();
         
         ph.copyArtifacts(bundledArtifacts);
         

@@ -27,7 +27,6 @@ package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -106,7 +105,7 @@ public class DebPackager extends Packager
     	
         ph.prepareInitialDirectories();
 
-        ph.copyArtifact();
+        ph.copyProjectArtifact();
         
         ph.copyJNILibraries();
         

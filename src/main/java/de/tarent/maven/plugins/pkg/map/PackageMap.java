@@ -185,16 +185,26 @@ public class PackageMap
          }
        
        Entry e = (Entry) mapping.getEntry(a.getGroupId(), aid);
-       if (e == Entry.BUNDLE_ENTRY)
-           v.bundle(a);
+       // If a distro is explicitly declared to have no packages everything
+       // will be bundled (without warning).
+       if (mapping.hasNoPackages)
+         v.bundle(a);
+       else if (e == Entry.BUNDLE_ENTRY)
+         // If a package is explicitly said to be bundled this will be done
+         // without warning.
+         v.bundle(a);
        else if (e == null)
          {
+           // If a package as not been declared a warning reminds to fix the
+           // package map.
            l.warn(mapping.distro + " has no entry for: " + a);
            
            if (bundleNonExisting)
              v.bundle(a);
          }
        else if (e != Entry.IGNORE_ENTRY)
+         // If a package is explicitly said to be bundled this will be done
+         // without warning.
          v.visit(a, e);
        
      }
