@@ -34,6 +34,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.DistroConfiguration;
+import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
@@ -46,7 +47,7 @@ public class IpkPackager extends Packager
 {
   
   public void execute(Log l,
-                      PackagerHelper ph,
+                      Packaging.Helper ph,
                       DistroConfiguration distroConfig,
                       PackageMap packageMap) throws MojoExecutionException
   {
@@ -55,8 +56,8 @@ public class IpkPackager extends Packager
 
     File basePkgDir = ph.getBasePkgDir();
     File controlFile = new File(basePkgDir, "CONTROL/control");
-    File srcArtifactFile = ph.getSourceArtifactFile();
-    File dstBundledArtifactsDir = ph.getDefaultDestBundledArtifactsDir();
+    File srcArtifactFile = ph.getSrcArtifactFile();
+    File dstBundledArtifactsDir = ph.getDstBundledArtifactsDir();
 
     // A set which will be filled with the artifacts which need to be bundled with the
     // application.
@@ -79,7 +80,7 @@ public class IpkPackager extends Packager
         ph.copyJNILibraries();
         
         byteAmount += Utils.copyAuxFiles(l,
-                                         ph.getDefaultAuxFileSrcDir(),
+                                         ph.getAuxFileSrcDir(),
                                          ph.getBasePkgDir(),
                                          distroConfig.getAuxFiles());
 
@@ -95,7 +96,7 @@ public class IpkPackager extends Packager
 
             ph.generateWrapperScript(bundledArtifacts, bcp.toString(), cp.toString());
 
-            byteAmount += ph.copyArtifacts(bundledArtifacts, dstBundledArtifactsDir);
+            byteAmount += ph.copyArtifacts(bundledArtifacts);
           }
         
         generateControlFile(l,
@@ -138,7 +139,7 @@ public class IpkPackager extends Packager
    * 
    */
   private void generateControlFile(Log l,
-                                   PackagerHelper ph,
+                                   Packaging.Helper ph,
                                    DistroConfiguration dc,
                                    File controlFile,
                                    String packageName,
@@ -188,7 +189,7 @@ public class IpkPackager extends Packager
 
   }
 
-  private void createPackage(Log l, PackagerHelper ph, File base) throws MojoExecutionException
+  private void createPackage(Log l, Packaging.Helper ph, File base) throws MojoExecutionException
   {
     l.info("calling ipkg-build to create binary package");
     

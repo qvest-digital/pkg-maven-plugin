@@ -161,6 +161,9 @@ public class Utils
                                       String ioExceptionMsg)
       throws MojoExecutionException
   {
+    if (is == null)
+      throw new MojoExecutionException("InputStream must not be null.");
+    
     BufferedInputStream bis = new BufferedInputStream(is);
 
     try
@@ -310,7 +313,11 @@ public class Utils
         try
           {
             if (from.isDirectory())
-              FileUtils.copyDirectoryStructure(from, to);
+              {
+                to = new File(to, from.getName());
+                to.mkdirs();
+                FileUtils.copyDirectoryStructure(from, to);
+              }
             else if (af.isRename())
               {
                 FileUtils.copyFile(from, to);

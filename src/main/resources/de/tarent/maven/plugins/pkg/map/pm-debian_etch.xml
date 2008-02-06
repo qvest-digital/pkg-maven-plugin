@@ -32,6 +32,22 @@
 			</entry>
 
 			<entry>
+				<artifactId>gnumail</artifactId>
+				<dependencyLine>libgnumail-java</dependencyLine>
+				<jars>
+					<jar>gnumail.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactId>gnumail-providers</artifactId>
+				<dependencyLine>libgnumail-java</dependencyLine>
+				<jars>
+					<jar>gnumail-providers.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
 				<artifactId>bouncycastle-jdk14-provider</artifactId>
 				<dependencyLine>libbcprov-java</dependencyLine>
 				<jars>
@@ -135,6 +151,27 @@
 				<jars>
 					<jar>/usr/share/java/openoffice/jurt.jar</jar>
 				</jars>
+			</entry>
+			
+			<!-- Axis is not available in Etch. So bundle everything. -->
+			<entry>
+				<artifactId>axis</artifactId>
+				<bundle/>
+			</entry>
+
+			<entry>
+				<artifactId>axis-jaxrpc</artifactId>
+				<bundle/>
+			</entry>
+
+			<entry>
+				<artifactId>axis-saaj</artifactId>
+				<bundle/>
+			</entry>
+
+			<entry>
+				<artifactId>axis-wsdl4j</artifactId>
+				<bundle/>
 			</entry>
 
 		</map>

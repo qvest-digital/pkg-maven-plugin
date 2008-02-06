@@ -14,6 +14,10 @@ package de.tarent.maven.plugins.pkg;
  * <p>If the executable bit is set the file will be flagged as exectuable after
  * copying. This property is only used for file copies not (yet) for directories.</p>
  * 
+ * <p>The <code>to</code> property is optional. If it is not set it will mean copying
+ * the file into the package's base director. For IzPack this means the application's
+ * own directory.</p>
+ * 
  * <p>This class is automatically picked up by Maven. Property accessors exist for the
  * sake of Java Bean compatibility. There is nothing special involved into them and the
  * field can be accessed directly.</p>
@@ -26,7 +30,7 @@ public class AuxFile
 
   String from;
   
-  String to;
+  String to = "";
   
   boolean rename;
   

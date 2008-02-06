@@ -35,6 +35,7 @@ import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.AotCompileUtils;
 import de.tarent.maven.plugins.pkg.DistroConfiguration;
+import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
@@ -48,7 +49,7 @@ public class DebPackager extends Packager
 {
 
   public void execute(Log l,
-                      PackagerHelper ph,
+                      Packaging.Helper ph,
                       DistroConfiguration distroConfig,
                       PackageMap packageMap) throws MojoExecutionException
   {
@@ -60,9 +61,7 @@ public class DebPackager extends Packager
     // The Debian control file (package name, dependencies etc).
     File controlFile = new File(basePkgDir, "DEBIAN/control");
 
-    File srcArtifactFile = ph.getSourceArtifactFile();
-
-    File dstBundledArtifactsDir = ph.getDefaultDestBundledArtifactsDir();
+    File srcArtifactFile = ph.getSrcArtifactFile();
 
     String gcjPackageName = ph.getAotPackageName();
     
@@ -110,7 +109,7 @@ public class DebPackager extends Packager
         ph.copyJNILibraries();
         
         byteAmount += Utils.copyAuxFiles(l,
-                                         ph.getDefaultAuxFileSrcDir(),
+                                         ph.getAuxFileSrcDir(),
                                          ph.getBasePkgDir(),
                                          distroConfig.getAuxFiles());
 
@@ -126,7 +125,7 @@ public class DebPackager extends Packager
             ph.generateWrapperScript(bundledArtifacts, bcp.toString(), cp.toString());
             
 
-            byteAmount += ph.copyArtifacts(bundledArtifacts, dstBundledArtifactsDir);
+            byteAmount += ph.copyArtifacts(bundledArtifacts);
           }
         
         generateControlFile(l,
@@ -222,7 +221,7 @@ public class DebPackager extends Packager
    * @throws MojoExecutionException
    */
   private void generateControlFile(Log l,
-                                   PackagerHelper ph,
+                                   Packaging.Helper ph,
                                    DistroConfiguration dc,
                                    File controlFile,
                                    String packageName,
@@ -257,7 +256,7 @@ public class DebPackager extends Packager
 
   }
 
-  private void createPackage(Log l, PackagerHelper ph, File base) throws MojoExecutionException
+  private void createPackage(Log l, Packaging.Helper ph, File base) throws MojoExecutionException
   {
     l.info("calling dpkg-deb to create binary package");
     

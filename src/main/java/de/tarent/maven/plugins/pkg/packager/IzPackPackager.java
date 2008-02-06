@@ -67,6 +67,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.FileUtils;
 
 import de.tarent.maven.plugins.pkg.DistroConfiguration;
+import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.generator.WrapperScriptGenerator;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
@@ -80,11 +81,13 @@ public class IzPackPackager extends Packager
   private static final String CLASSPATH = "_classpath";
   
   public void execute(Log l,
-                      PackagerHelper ph,
+                      Packaging.Helper ph,
                       DistroConfiguration distroConfig,
                       PackageMap packageMap) throws MojoExecutionException
   {
-    File artifactFile = new File(ph.getOutputDirectory(), ph.getPackageName() + ".jar");
+    // Overrides default dst artifact file.
+    ph.setDstArtifactFile(new File(ph.getOutputDirectory(), ph.getArtifactId() + ".jar"));
+    File artifactFile = ph.getDstArtifactFile();
     
     // The destination file for the embedded IzPack installation.
     File izPackEmbeddedJarFile = new File(ph.getTempRoot(), IZPACK_EMBEDDED_JAR);
@@ -100,10 +103,12 @@ public class IzPackPackager extends Packager
     // The root directory into which everything from srcRoot is copied
     // into (inside the outputDirectory).
     File tempDescriptorRoot = new File(ph.getTempRoot(), "descriptor");
+    ph.setBasePkgDir(tempDescriptorRoot);
     
     // The root directory into which the jars from the dependencies
     // are put.
-    File dstBundledArtifactsDir = new File(tempDescriptorRoot, "lib");
+    ph.setDstBundledArtifactsDir(new File(tempDescriptorRoot, "lib"));
+    File dstBundledArtifactsDir = ph.getDstBundledArtifactsDir();
     
     // The root directory into which the starter and the classpath
     // properties file are put.
@@ -114,10 +119,11 @@ public class IzPackPackager extends Packager
     File modifiedInstallerXmlFile = new File(tempDescriptorRoot, "modified-" + distroConfig.getIzPackInstallerXml());
     
     // The resulting Jar file which contains the runnable installer.
-    File resultFile = new File(ph.getOutputDirectory(), ph.getPackageName() + "-installer.jar");
+    File resultFile = new File(ph.getOutputDirectory(), ph.getPackageName() + "-" + ph.getPackageVersion() + "-installer.jar");
     
     // This is only neccessary when a wrapper script should be created
-    File wrapperScriptFile = ph.getWrapperScriptFile(tempDescriptorRoot);
+    ph.setWrapperScriptFile(new File(tempDescriptorRoot, (distroConfig.getWrapperScriptName() != null ? distroConfig.getWrapperScriptName() : ph.getArtifactId())));
+    File wrapperScriptFile = ph.getWrapperScriptFile();
     File windowsWrapperScriptFile = new File(wrapperScriptFile.getAbsolutePath() + ".bat");
     
     String libraryPrefix = "%{INSTALL_PATH}/" + dstBundledArtifactsDir.getName();  
@@ -128,13 +134,18 @@ public class IzPackPackager extends Packager
     try
       {
         
-        prepareDirectories(l, izPackEmbeddedRoot, srcRoot, tempDescriptorRoot, dstBundledArtifactsDir, null);
+        prepareDirectories(l,
+                           ph.getTempRoot(),
+                           izPackEmbeddedRoot,
+                           srcRoot,
+                           tempDescriptorRoot,
+                           dstBundledArtifactsDir);
         
         unpackIzPack(l, izPackEmbeddedJarFile, izPackEmbeddedRoot);
         
-        deps = ph.copyDependencies(dstBundledArtifactsDir, artifactFile);
+        deps = ph.copyDependencies();
 
-        Utils.copyAuxFiles(l, ph.getDefaultAuxFileSrcDir(), tempDescriptorRoot, distroConfig.getAuxFiles());
+        Utils.copyAuxFiles(l, ph.getAuxFileSrcDir(), tempDescriptorRoot, distroConfig.getAuxFiles());
 
         l.info("parsing installer xml file: " + installerXmlFile);
         IzPackDescriptor desc = new IzPackDescriptor(installerXmlFile, "Unable to parse installer xml file.");
