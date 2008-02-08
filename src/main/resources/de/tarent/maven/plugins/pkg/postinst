@@ -1,0 +1,8 @@
+#! /bin/sh -e
+# This postinst file is automatically deposited by the 'deb' goal
+# of the maven-pkg-plugin.
+
+find /usr/share/gcj-4.1/classmap.d -name '*.db' -print0 \
+	| /usr/bin/gcj-dbtool-4.1 -0 -m /var/lib/gcj-4.1/classmap.db.tmp || exit 1
+
+mv /var/lib/gcj-4.1/classmap.db.tmp /var/lib/gcj-4.1/classmap.db

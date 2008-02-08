@@ -1,0 +1,23 @@
+<package-maps>
+	<version>1.0</version>
+
+	<include>pm-openmoko.xml</include>
+
+	<include>pm-debian_etch.xml</include>
+	<include>pm-debian_lenny.xml</include>
+	
+	<!-- Default Entry for IzPack packaging -->
+	<distro>
+		<id>izpack</id>
+		<label>Default IzPack packaging</label>
+		<packaging>izpack</packaging>
+		<debianNaming>false</debianNaming>
+		<defaultBinPath/>
+		<defaultDependencyLine/>
+		<defaultJarPath>libs</defaultJarPath>
+		<defaultJNIPath>libs</defaultJNIPath>
+		
+		<!-- IzPack has no packages. :) -->
+		<noPackages/>
+	</distro>
+</package-maps>

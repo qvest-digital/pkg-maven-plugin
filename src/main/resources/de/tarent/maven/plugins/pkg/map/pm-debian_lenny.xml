@@ -1,0 +1,133 @@
+<!--
+	Package maps document for Debian GNU/Linux Lenny.
+-->
+<package-maps>
+  <version>1.0</version>
+
+	<distro>
+		<id>debian_lenny</id>
+		<label>Debian GNU/Linux Lenny</label>
+		<inherit>debian_etch</inherit>
+
+		<map>
+			<entry>
+				<artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
+				<dependencyLine>libswt3.2-gtk-java | libswt3.3-gtk-java</dependencyLine>
+				<jars>
+					<jar>swt-gtk.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>asm:asm</artifactSpec>
+				<dependencyLine>libasm3-java</dependencyLine>
+				<jars>
+					<jar>asm3.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>asm:asm-util</artifactSpec>
+				<dependencyLine>libasm3-java</dependencyLine>
+				<jars>
+					<jar>asm3-util.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>asm:asm-commons</artifactSpec>
+				<dependencyLine>libasm3-java</dependencyLine>
+				<jars>
+					<jar>asm3-commons.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>asm:asm-tree</artifactSpec>
+				<dependencyLine>libasm3-java</dependencyLine>
+				<jars>
+					<jar>asm3-tree.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>axis:axis</artifactSpec>
+				<dependencyLine>libaxis-java</dependencyLine>
+				<jars>
+					<jar>axis.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>axis:axis-jaxrpc</artifactSpec>
+				<dependencyLine>libaxis-java</dependencyLine>
+				<jars>
+					<jar>jaxrpc.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>axis:axis-saaj</artifactSpec>
+				<dependencyLine>libaxis-java</dependencyLine>
+				<jars>
+					<jar>saaj.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>axis:axis-wsdl4j</artifactSpec>
+				<dependencyLine>libwsdl4j-java</dependencyLine>
+				<jars>
+					<jar>wsdl4j.jar</jar>
+					<jar>qname.jar</jar>
+				</jars>
+			</entry>
+
+			<!-- Apache Commons -->
+			<entry>
+				<artifactSpec>commons-configuration:commons-configuration</artifactSpec>
+				<dependencyLine>libcommons-configuration-java</dependencyLine>
+				<jars>
+					<jar>commons-configuration.jar</jar>
+				</jars>
+			</entry>
+			
+			<!-- JGoodies Looks -->
+			<entry>
+				<artifactSpec>jgoodies:looks</artifactSpec>
+				<dependencyLine>libjgoodies-looks-java</dependencyLine>
+				<jars>
+					<jar>looks.jar</jar>
+				</jars>
+			</entry>
+			
+			<!-- XStream -->
+			<entry>
+				<artifactSpec>com.thoughtworks.xstream:xstream</artifactSpec>
+				<dependencyLine>libxstream-java</dependencyLine>
+				<jars>
+					<jar>xstream.jar</jar>
+				</jars>
+			</entry>
+			
+			<!-- jh from org.openoffice proved through JavaHelp2 -->
+			<entry>
+				<artifactSpec>org.openoffice:jh</artifactSpec>
+				<dependencyLine>javahelp2</dependencyLine>
+				<jars>
+					<jar>jh.jar</jar>
+				</jars>
+			</entry>
+			
+			<entry>
+				<artifactSpec>com.sun.javahelp:jh</artifactSpec>
+				<dependencyLine>javahelp2</dependencyLine>
+				<jars>
+					<jar>jh.jar</jar>
+				</jars>
+			</entry>
+
+		</map>
+	</distro>
+
+</package-maps>
