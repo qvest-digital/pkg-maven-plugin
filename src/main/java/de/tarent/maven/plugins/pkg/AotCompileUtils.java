@@ -40,22 +40,22 @@ import org.apache.maven.plugin.logging.Log;
  * @author Robert Schuster (robert.schuster@tarent.de)
  *
  */
-public class AotCompileUtils
+class AotCompileUtils
 {
   static String GCJ_EXECUTABLE;
   static String GCJ_DBTOOL_EXECUTABLE;
   
-  public static void setGcjExecutable(String e)
+  static void setGcjExecutable(String e)
   {
     GCJ_EXECUTABLE = e;
   }
   
-  public static void setGcjDbToolExecutable(String e)
+  static void setGcjDbToolExecutable(String e)
   {
     GCJ_DBTOOL_EXECUTABLE = e;
   }
   
-  public static void checkToolAvailability()
+  static void checkToolAvailability()
   throws MojoExecutionException
   {
     Utils.exec(new String[] { GCJ_EXECUTABLE, "-dumpversion" },
@@ -79,7 +79,7 @@ public class AotCompileUtils
    * @param overridePath The path should be put into the classmap file instead of the real file location. 
    * @throws MojoExecutionException
    */
-  public static long compileAndMap(Log l, Set artifacts, File aotDstDir, String extension, File aotDstClassmapDir, String overridePath)
+  static long compileAndMap(Log l, Set artifacts, File aotDstDir, String extension, File aotDstClassmapDir, String overridePath)
     throws MojoExecutionException
   {
 	long byteAmount = 0;
@@ -100,7 +100,7 @@ public class AotCompileUtils
 	return byteAmount;
   }
 
-  public static void compile(Log l, File jar, File binary)
+  static void compile(Log l, File jar, File binary)
       throws MojoExecutionException
   {
     Utils.createParentDirs(binary, "aot binary");
@@ -122,7 +122,7 @@ public class AotCompileUtils
   
   }
 
-  public static void generateClassmap(Log l, File classmap, File jar, File binary, String overridePath)
+  static void generateClassmap(Log l, File classmap, File jar, File binary, String overridePath)
       throws MojoExecutionException
   {
     l.info("creating classmap file with " + GCJ_DBTOOL_EXECUTABLE +": "
@@ -149,7 +149,7 @@ public class AotCompileUtils
     
   }
 
-  public static void depositPostinstFile(Log l, File postinstFile)
+  static void depositPostinstFile(Log l, File postinstFile)
       throws MojoExecutionException
   {
     l.info("depositing postinst file for aot-compilation: "

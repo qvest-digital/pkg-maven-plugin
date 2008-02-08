@@ -53,7 +53,6 @@ package de.tarent.maven.plugins.pkg;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -103,15 +102,6 @@ abstract class AbstractPackagingMojo extends AbstractMojo
    */
   protected MavenProjectBuilder mavenProjectBuilder;
 
-  /**
-   * Temporary directory that contains the files to be assembled.
-   * 
-   * @parameter expression="${project.build.directory}"
-   * @required
-   * @readonly
-   */
-  protected File buildDir;
-  
   /**
    * Used to look up Artifacts in the remote repository.
    * @parameter expression="${component.org.apache.maven.artifact.factory.ArtifactFactory}"
@@ -173,68 +163,6 @@ abstract class AbstractPackagingMojo extends AbstractMojo
    * @readonly
    */
   protected ArchiverManager archiverManager;
-  
-  /**
-   * @parameter expression="${project.build.finalName}"
-   * @required
-   * @readonly
-   */
-  protected String finalName;
-
-  /**
-   * @parameter expression="${project.build.directory}"
-   * @required
-   * @readonly
-   */
-  protected File outputDirectory;
-
-  /**
-   * @parameter expression="${project.version}"
-   * @required
-   * @readonly
-   */
-  protected String version;
-
-  /**
-   * JVM binary used to run Java programs from within the Mojo.
-   * 
-   * @parameter expression="${javaExec}" default-value="java"
-   * @required
-   * 
-   */
-  protected String javaExec;
-  
-  /**
-   * Location of the custom package map file. When specifying this one
-   * the internal package map will be overridden completely. 
-   * 
-   * @parameter expression="${defPackageMapURL}"
-   */
-  protected URL defaultPackageMapURL;
-
-  /**
-   * Location of the auxiliary package map file. When this is specified
-   * the information in the document will be added to the default one.
-   * 
-   * @parameter expression="${auxPackageMapURL}"
-   */
-  protected URL auxPackageMapURL;
-
-
-  /**
-   * Set default distribution to package for.
-   * 
-   * @parameter expression="${defaultDistro}"
-   * @required
-   */
-  protected String defaultDistro;
-
-  /**
-   * Overrides "defaultDistro" parameter. For use on the command-line. 
-   * 
-   * @parameter expression="${distro}"
-   */
-  protected String distro;
 
   /**
    * Gathers the project's artifacts and the artifacts of all its (transitive)
@@ -304,7 +232,6 @@ abstract class AbstractPackagingMojo extends AbstractMojo
       }
 
     l.info("copying " + artifacts.size() + " dependency artifacts.");
-    l.info("destination: " + dst.toString());
 
     try
       {
@@ -384,22 +311,4 @@ abstract class AbstractPackagingMojo extends AbstractMojo
                                          + e.toString(), e);
       }
   }
-  
-  /**
-   * Makes the version string compatible to the system's requirements.
-   * TODO: Really check the format and try to fix it and not just remove
-   * "-SNAPSHOT"
-   * 
-   * @param v
-   * @return
-   */
-  protected final String fixVersion(String v)
-  {
-    int i = v.indexOf("-SNAPSHOT");
-    if (i > 0)
-      return v.substring(0, i);
-  
-    return v;
-  }
-  
 }
