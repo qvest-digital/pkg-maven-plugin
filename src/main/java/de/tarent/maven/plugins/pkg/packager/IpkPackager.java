@@ -53,8 +53,7 @@ public class IpkPackager extends Packager
     String packageName = ph.getPackageName();
     String packageVersion = ph.getPackageVersion();
 
-    File basePkgDir = ph.getBasePkgDir();
-    File controlFile = new File(basePkgDir, "CONTROL/control");
+    File controlFile = new File(ph.getBasePkgDir(), "CONTROL/control");
     File srcArtifactFile = ph.getSrcArtifactFile();
 
     // A set which will be filled with the artifacts which need to be bundled with the
@@ -77,12 +76,7 @@ public class IpkPackager extends Packager
 
         ph.copyProjectArtifact();
         
-        ph.copyJNILibraries();
-        
-        byteAmount += Utils.copyAuxFiles(l,
-                                         ph.getAuxFileSrcDir(),
-                                         ph.getBasePkgDir(),
-                                         distroConfig.getAuxFiles());
+        byteAmount += ph.copyFiles();
 
         // Create classpath line, copy bundled jars and generate wrapper
         // start script only if the project is an application.
@@ -106,7 +100,7 @@ public class IpkPackager extends Packager
                             ph.createDependencyLine(),
                             byteAmount);
 
-        createPackage(l, ph, basePkgDir);
+        createPackage(l, ph, ph.getBasePkgDir());
         
       }
     catch (MojoExecutionException badMojo)

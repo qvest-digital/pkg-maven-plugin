@@ -80,16 +80,17 @@ public class IzPackPackager extends Packager
     // into (inside the outputDirectory).
     File tempDescriptorRoot = new File(ph.getTempRoot(), "descriptor");
     ph.setBasePkgDir(tempDescriptorRoot);
+    ph.setDstAuxDir(tempDescriptorRoot);
     
     // The root directory into which the jars from the dependencies
     // are put.
-    ph.setDstBundledArtifactsDir(new File(tempDescriptorRoot, "lib"));
-    File dstBundledArtifactsDir = ph.getDstBundledArtifactsDir();
+    ph.setDstBundledJarDir(new File(tempDescriptorRoot, "lib"));
+    File dstBundledArtifactsDir = ph.getDstBundledJarDir();
     
     // Sets the location of the jar files. As it contains a substituatio variable
-    // dstBundledArtifactsDir has been set already (prevents the use of targetJarPath
+    // dstBundledJarDir has been set already (prevents the use of targetJarPath
     // for IO operations).
-    ph.setTargetJarDir(new File("%{INSTALL_PATH}", "lib"));
+    ph.setTargetBundledJarDir(new File("%{INSTALL_PATH}", "lib"));
     
     // Sets where to copy the JNI libraries
     ph.setDstJNIDir(new File(tempDescriptorRoot, "lib"));
@@ -98,7 +99,7 @@ public class IzPackPackager extends Packager
     ph.setTargetJNIDir(new File("%{INSTALL_PATH}", "lib"));
 
     // Overrides default dst artifact file.
-    ph.setDstArtifactFile(new File(ph.getDstBundledArtifactsDir(), ph.getArtifactId() + ".jar"));
+    ph.setDstArtifactFile(new File(ph.getDstBundledJarDir(), ph.getArtifactId() + ".jar"));
     
     // The destination file for the embedded IzPack installation.
     File izPackEmbeddedJarFile = new File(ph.getTempRoot(), IZPACK_EMBEDDED_JAR);
@@ -124,9 +125,9 @@ public class IzPackPackager extends Packager
     File resultFile = new File(ph.getOutputDirectory(), ph.getPackageName() + "-" + ph.getPackageVersion() + "-installer.jar");
     
     // This is only neccessary when a wrapper script should be created
-    ph.setWrapperScriptFile(new File(tempDescriptorRoot, (distroConfig.getWrapperScriptName() != null ? distroConfig.getWrapperScriptName() : ph.getArtifactId())));
-    File wrapperScriptFile = ph.getWrapperScriptFile();
-    File windowsWrapperScriptFile = ph.getWindowsWrapperScriptFile();
+    ph.setDstWrapperScriptFile(new File(tempDescriptorRoot, (distroConfig.getWrapperScriptName() != null ? distroConfig.getWrapperScriptName() : ph.getArtifactId())));
+    File wrapperScriptFile = ph.getDstWrapperScriptFile();
+    File windowsWrapperScriptFile = ph.getDstWindowsWrapperScriptFile();
     
     Set bundledArtifacts = null;
     StringBuilder bcp = new StringBuilder();
@@ -149,9 +150,7 @@ public class IzPackPackager extends Packager
         
         ph.copyArtifacts(bundledArtifacts);
         
-        ph.copyJNILibraries();
-
-        Utils.copyAuxFiles(l, ph.getAuxFileSrcDir(), tempDescriptorRoot, distroConfig.getAuxFiles());
+        ph.copyFiles();
 
         l.info("parsing installer xml file: " + installerXmlFile);
         IzPackDescriptor desc = new IzPackDescriptor(installerXmlFile, "Unable to parse installer xml file.");

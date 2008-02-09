@@ -56,9 +56,9 @@ public class Utils
   private static final String STARTER_CLASS = "_Starter.class";
   
   /**
-   * File filter that ignores files ending with "~" and CVS and SVN files.
+   * File filter that ignores files ending with "~", ".cvsignore" and CVS and SVN files.
    */
-  public static final FileFilter FILTER = FileFilterUtils.makeSVNAware(FileFilterUtils.makeCVSAware(new NotFileFilter(new SuffixFileFilter("~"))));
+  public static final FileFilter FILTER = FileFilterUtils.makeSVNAware(FileFilterUtils.makeCVSAware(new NotFileFilter(new SuffixFileFilter(new String[] { "~", ".cvsignore" }))));
 
   public static void createParentDirs(File f, String item)
       throws MojoExecutionException
@@ -66,7 +66,7 @@ public class Utils
     File p = f.getParentFile();
     if (! p.exists() && ! p.mkdirs())
       throw new MojoExecutionException("Cannot create parent dirs for the "
-                                       + item + " file.");
+                                       + item + " .");
   }
 
   /**
@@ -272,7 +272,7 @@ public class Utils
 
   /**
    * Copies the <code>AuxFile</code> instances contained within the set.
-   * It takes the <code>auxFileSrcDir</code> and <code>auxFileDstDir</code>
+   * It takes the <code>srcAuxFilesDir</code> and <code>auxFileDstDir</code>
    * arguments into account to specify the parent source and destination
    * directory of the files.
    * 
@@ -283,16 +283,17 @@ public class Utils
    * The return value is the amount of copied bytes.
    * 
    * @param l
-   * @param auxFileSrcDir
-   * @param auxFileDstDir
+   * @param srcAuxFilesDir
+   * @param dstDir
    * @param auxFiles
    * @return
    * @throws MojoExecutionException
    */
-  public static long copyAuxFiles(Log l,
-                                  File auxFileSrcDir,
-                                  File auxFileDstDir,
-                                  List auxFiles)
+  static long copyFiles(Log l,
+                        File srcDir,
+                        File dstDir,
+                        List auxFiles,
+                        String type)
       throws MojoExecutionException
   {
     long size = 0;
@@ -301,17 +302,17 @@ public class Utils
     while (ite.hasNext())
       {
         AuxFile af = (AuxFile) ite.next();
-        File from = new File(auxFileSrcDir, af.from);
-        File to = new File(auxFileDstDir, af.to);
+        File from = new File(srcDir, af.from);
+        File to = new File(dstDir, af.to);
 
-        l.info("copying auxiliary file: " + from.getAbsolutePath());
-        l.info("destination: " + to.getAbsolutePath());
+        l.info("copying " + type + ": " + from.toString());
+        l.info("destination: " + to.toString());
 
         if (! from.exists())
-          throw new MojoExecutionException("Auxiliary file to copy does not exist: "
+          throw new MojoExecutionException("File to copy does not exist: "
                                                + from.toString());
         
-        createParentDirs(to, "aux");
+        createParentDirs(to, type);
 
         try
           {
@@ -339,7 +340,7 @@ public class Utils
           }
         catch (IOException ioe)
           {
-            throw new MojoExecutionException("IOException while copying auxiliary file.",
+            throw new MojoExecutionException("IOException while copying " + type,
                                              ioe);
           }
       }

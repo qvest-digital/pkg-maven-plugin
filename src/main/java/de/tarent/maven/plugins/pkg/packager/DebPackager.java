@@ -107,12 +107,7 @@ public class DebPackager extends Packager
 
         ph.copyProjectArtifact();
         
-        ph.copyJNILibraries();
-        
-        byteAmount += Utils.copyAuxFiles(l,
-                                         ph.getAuxFileSrcDir(),
-                                         ph.getBasePkgDir(),
-                                         distroConfig.getAuxFiles());
+        byteAmount += ph.copyFiles();
 
         // Create classpath line, copy bundled jars and generate wrapper
         // start script only if the project is an application.
