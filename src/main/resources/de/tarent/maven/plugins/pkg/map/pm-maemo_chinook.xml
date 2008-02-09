@@ -5,7 +5,7 @@
 
   <version>1.0</version>
 
-	<!-- Maemo Chinook snapshot -->
+	<!-- Maemo Chinook -->
 	<distro>
 		<id>maemo_chinook</id>
 		<label>Maemo 4.0 (Chinook)</label>
