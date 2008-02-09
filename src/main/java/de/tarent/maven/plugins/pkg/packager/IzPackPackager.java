@@ -78,56 +78,57 @@ public class IzPackPackager extends Packager
   {
     // The root directory into which everything from srcRoot is copied
     // into (inside the outputDirectory).
-    File tempDescriptorRoot = new File(ph.getTempRoot(), "descriptor");
-    ph.setBasePkgDir(tempDescriptorRoot);
-    ph.setDstAuxDir(tempDescriptorRoot);
+    File packagingBaseDir = new File(ph.getTempRoot(), "izpack-packaging");
+    ph.setBasePkgDir(packagingBaseDir);
+    ph.setDstAuxDir(packagingBaseDir);
+    
+    ph.setTargetSysconfDir(new File("${INSTALL_PATH}"));
+    ph.setDstSysconfDir(packagingBaseDir);
+
+    ph.setTargetDatarootDir(new File("${INSTALL_PATH}"));
+    ph.setDstDatarootDir(packagingBaseDir);
+    
+    ph.setTargetDataDir(new File("${INSTALL_PATH}"));
+    ph.setDstDataDir(packagingBaseDir);
     
     // The root directory into which the jars from the dependencies
     // are put.
-    ph.setDstBundledJarDir(new File(tempDescriptorRoot, "lib"));
-    File dstBundledArtifactsDir = ph.getDstBundledJarDir();
-    
-    // Sets the location of the jar files. As it contains a substituatio variable
-    // dstBundledJarDir has been set already (prevents the use of targetJarPath
-    // for IO operations).
+    ph.setDstBundledJarDir(new File(packagingBaseDir, "lib"));
     ph.setTargetBundledJarDir(new File("%{INSTALL_PATH}", "lib"));
     
     // Sets where to copy the JNI libraries
-    ph.setDstJNIDir(new File(tempDescriptorRoot, "lib"));
-    
-    // Sets which path to use for JNI libraries in scripts.
     ph.setTargetJNIDir(new File("%{INSTALL_PATH}", "lib"));
-
+    ph.setDstJNIDir(new File(packagingBaseDir, "lib"));
+    
     // Overrides default dst artifact file.
     ph.setDstArtifactFile(new File(ph.getDstBundledJarDir(), ph.getArtifactId() + ".jar"));
     
-    // The destination file for the embedded IzPack installation.
+    // The root directory into which the starter and the classpath
+    // properties file are put.
+    ph.setDstStarterDir(new File(packagingBaseDir, "_starter"));
+    ph.setTargetStarterDir(new File("%{INSTALL_PATH}", "_starter"));
+    
+    // The XML file for IzPack which describes how to generate the installer. 
+    File installerXmlFile = new File(packagingBaseDir, distroConfig.getIzPackInstallerXml());
+    File modifiedInstallerXmlFile = new File(packagingBaseDir, "modified-" + distroConfig.getIzPackInstallerXml());
+    
+    // The resulting Jar file which contains the runnable installer.
+    File resultFile = new File(ph.getOutputDirectory(), ph.getPackageName() + "-" + ph.getPackageVersion() + "-installer.jar");
+    
+    // targetBinDir does not occur within any script. Therefore there is no need to
+    // fumble with ${INSTALL_PATH}. 
+    ph.setTargetBinDir(new File(""));
+    ph.setDstBinDir(packagingBaseDir);
+    
+    File wrapperScriptFile = ph.getDstWrapperScriptFile();
+    File windowsWrapperScriptFile = ph.getDstWindowsWrapperScriptFile();
+
+     // The destination file for the embedded IzPack installation.
     File izPackEmbeddedJarFile = new File(ph.getTempRoot(), IZPACK_EMBEDDED_JAR);
     
     // The directory in which the embedded IzPack installation is unpacked
     // at runtime.
     File izPackEmbeddedRoot = new File(ph.getTempRoot(), "izpack-embedded");
-    
-    // The root directory containing the IzPack installer XML file and
-    // all accompanying resource files.
-    File srcRoot = ph.getIzPackSrcDir();
-    
-    // The root directory into which the starter and the classpath
-    // properties file are put.
-    ph.setDstStarterDir(new File(tempDescriptorRoot, "_starter"));
-    ph.setTargetStarterDir(new File("%{INSTALL_PATH}", "_starter"));
-    
-    // The XML file for IzPack which describes how to generate the installer. 
-    File installerXmlFile = new File(tempDescriptorRoot, distroConfig.getIzPackInstallerXml());
-    File modifiedInstallerXmlFile = new File(tempDescriptorRoot, "modified-" + distroConfig.getIzPackInstallerXml());
-    
-    // The resulting Jar file which contains the runnable installer.
-    File resultFile = new File(ph.getOutputDirectory(), ph.getPackageName() + "-" + ph.getPackageVersion() + "-installer.jar");
-    
-    // This is only neccessary when a wrapper script should be created
-    ph.setDstWrapperScriptFile(new File(tempDescriptorRoot, (distroConfig.getWrapperScriptName() != null ? distroConfig.getWrapperScriptName() : ph.getArtifactId())));
-    File wrapperScriptFile = ph.getDstWrapperScriptFile();
-    File windowsWrapperScriptFile = ph.getDstWindowsWrapperScriptFile();
     
     Set bundledArtifacts = null;
     StringBuilder bcp = new StringBuilder();
@@ -138,9 +139,9 @@ public class IzPackPackager extends Packager
         prepareDirectories(l,
                            ph.getTempRoot(),
                            izPackEmbeddedRoot,
-                           srcRoot,
-                           tempDescriptorRoot,
-                           dstBundledArtifactsDir);
+                           ph.getIzPackSrcDir(),
+                           packagingBaseDir,
+                           ph.getDstBundledJarDir());
         
         unpackIzPack(l, izPackEmbeddedJarFile, izPackEmbeddedRoot);
         
@@ -175,7 +176,7 @@ public class IzPackPackager extends Packager
         createInstaller(l,
                         ph.getJavaExec(),
                         izPackEmbeddedRoot,
-                        tempDescriptorRoot,
+                        packagingBaseDir,
                         modifiedInstallerXmlFile,
                         resultFile);
         

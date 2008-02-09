@@ -79,6 +79,8 @@ public class Packaging
     
     File dstAuxDir;
     
+    File dstBinDir;
+    
     File dstBundledJarDir;
     
     File dstDataDir;
@@ -431,7 +433,7 @@ public class Packaging
     {
       if (dstWrapperScriptFile == null)
         // Use the provided wrapper script name or the default.
-        dstWrapperScriptFile = new File(getBasePkgDir(), getTargetWrapperScriptFile().toString());
+        dstWrapperScriptFile = new File(getDstBinDir(), getTargetWrapperScriptFile().toString());
 
       return dstWrapperScriptFile;
     }
@@ -778,6 +780,19 @@ public class Packaging
     public void setTempRoot(File tempRoot)
     {
       this.tempRoot = tempRoot;
+    }
+
+    public File getDstBinDir()
+    {
+      if (dstBinDir == null)
+        dstBinDir = new File(getBasePkgDir(), getTargetBinDir().toString());
+      
+      return dstBinDir;
+    }
+
+    public void setDstBinDir(File dstBinDir)
+    {
+      this.dstBinDir = dstBinDir;
     }
   }
 

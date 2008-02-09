@@ -316,7 +316,7 @@ abstract class AbstractPackagingMojo extends AbstractMojo
             File f = a.getFile();
             if (f != null)
               {
-                l.info("from file: " + f.getAbsolutePath());
+                l.debug("from file: " + f);
                 if (a.getType().equals("zip"))
                   {
                     // Assume that this is a ZIP file with native libraries
