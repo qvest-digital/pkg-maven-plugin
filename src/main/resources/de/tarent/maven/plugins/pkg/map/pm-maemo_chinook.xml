@@ -5,11 +5,11 @@
 
   <version>1.0</version>
 
-	<!-- OpenMoko late 2007 snapshot -->
+	<!-- Maemo Chinook snapshot -->
 	<distro>
-		<id>openmoko-2007.11</id>
-		<label>OpenMoko 2007.11</label>
-		<packaging>ipk</packaging>
+		<id>maemo_chinook</id>
+		<label>Maemo 4.0 (Chinook)</label>
+		<packaging>deb</packaging>
 		<defaultJarPath>/usr/share/java</defaultJarPath>
 		<defaultDependencyLine>java2-runtime</defaultDependencyLine>
 
@@ -70,7 +70,7 @@
 					<jar>kxml2.jar</jar>
 				</jars>
 			</entry>
-
+			
 			<entry>
 				<artifactSpec>org.rxtx:rxtx</artifactSpec>
 				<dependencyLine>librxtx-java</dependencyLine>

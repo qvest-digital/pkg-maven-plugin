@@ -221,7 +221,7 @@ public class WrapperScriptGenerator
    */
   private String createScriptValue(String prefix, String value)
   {
-    return (value != null)
+    return (value != null && value.length() > 0)
            ? "\"" + prefix + value + "\""
            : "\"\"";
   }
@@ -239,7 +239,7 @@ public class WrapperScriptGenerator
    */
   private String createScriptValueWindows(String prefix, String value)
   {
-    return (value != null)
+    return (value != null && value.length() > 0)
            ? prefix + value.replace(':', ';').replace('/', '\\') : "";
   }
   

@@ -8,6 +8,13 @@
 		<id>debian_etch</id>
 		<label>Debian GNU/Linux Etch</label>
 		<packaging>deb</packaging>
+		
+		<!--
+			Altough Debian puts most of its JNI libraries into /usr/lib/jni
+			some end up in /usr/lib (e.g. librxtx-java). So we add this path
+			as well.
+		-->
+		<defaultJNIPath>/usr/lib/jni:/usr/lib</defaultJNIPath>
 		<defaultJarPath>/usr/share/java</defaultJarPath>
 		<defaultDependencyLine>java-gcj-compat | java2-runtime</defaultDependencyLine>
 		
@@ -561,6 +568,14 @@
 			<entry>
 				<artifactSpec>isorelax:isorelax</artifactSpec>
 				<bundle/>
+			</entry>
+
+			<entry>
+				<artifactSpec>org.rxtx:rxtx</artifactSpec>
+				<dependencyLine>librxtx-java</dependencyLine>
+				<jars>
+					<jar>RXTXcomm.jar</jar>
+				</jars>
 			</entry>
 			
 		</map>

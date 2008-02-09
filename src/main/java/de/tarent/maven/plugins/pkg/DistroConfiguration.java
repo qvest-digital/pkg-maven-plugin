@@ -24,13 +24,16 @@ import java.util.Set;
  */
 public class DistroConfiguration
 {
-  String parent;
+  /**
+   * The distribution which is chosen to be built. This is not handled by
+   * Maven2 but only by the Packaging class.
+   */
+  String chosenDistro;
   
   /**
-   * Denotes the distribution id this configuration is for. There should
-   * be only one configuration per distribution.
+   * Denotes the distributions this configuration is used for.
    */
-  String distro;
+  Set distros = new HashSet();
 
   /**
    * Denotes wether the packager should invoke ahead of time compilation
@@ -233,11 +236,6 @@ public class DistroConfiguration
     return architecture;
   }
 
-  public String getDistro()
-  {
-    return distro;
-  }
-
   public String getGcjDbToolExec()
   {
     return gcjDbToolExec;
@@ -315,7 +313,7 @@ public class DistroConfiguration
 
   public void setDistro(String distro)
   {
-    this.distro = distro;
+    distros.add(distro);
   }
 
   public void setGcjDbToolExec(String gcjDbToolExec)
@@ -371,7 +369,17 @@ public class DistroConfiguration
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("distro: " + distro + "\n");
+    sb.append("distros:");
+    if (!distros.isEmpty())
+      {
+        Iterator ite = distros.iterator();
+        while (ite.hasNext())
+          sb.append(ite.next());
+        sb.append("\n");
+      }
+
+    sb.append("chosenDistro: " + chosenDistro + "\n");
+    
     sb.append("aotCompile: " + aotCompile + "\n");
     sb.append("architecture: " + architecture + "\n");
     sb.append("bundleAll: " + bundleAll + "\n");
@@ -561,6 +569,16 @@ public class DistroConfiguration
   public void setIzPackInstallerXml(String izPackInstallerXml)
   {
     this.izPackInstallerXml = izPackInstallerXml;
+  }
+
+  public Set getDistros()
+  {
+    return distros;
+  }
+
+  public void setDistros(Set distros)
+  {
+    this.distros = distros;
   }
 
 }

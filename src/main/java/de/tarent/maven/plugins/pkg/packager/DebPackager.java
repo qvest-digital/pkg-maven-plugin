@@ -119,9 +119,9 @@ public class DebPackager extends Packager
         if (distroConfig.getMainClass() != null)
           {
             // TODO: Handle native library artifacts properly.
-            bundledArtifacts = ph.createClasspathLine(bcp, cp, ":");
+            bundledArtifacts = ph.createClasspathLine(bcp, cp);
 
-            ph.generateWrapperScript(bundledArtifacts, bcp.toString(), cp.toString());
+            ph.generateWrapperScript(bundledArtifacts, bcp.toString(), cp.toString(), false);
 
             byteAmount += ph.copyArtifacts(bundledArtifacts);
           }
@@ -267,20 +267,6 @@ public class DebPackager extends Packager
                 "Error creating the .deb file.");
   }
  
- /**
-   * Convert the artifactId into a Debian package name which contains
-   * gcj precompiled binaries.
-   * 
-   * @param artifactId
-   * @return
-   */
-  private String gcjise(String artifactId, String section)
-  {
-    return section.equals("libs") ? "lib" + artifactId + "-gcj"
-                                        : artifactId + "-gcj";
-    
-  }
-
   /** Converts a byte amount to the unit used by the Debian control file
    * (usually KiB). That value can then be used in a ControlFileGenerator
    * instance.

@@ -146,7 +146,10 @@ class Parser
           parseMap(s, distroMapping);
         }
       else if (s.peek("noPackages"))
-        distroMapping.hasNoPackages = true;
+        {
+          distroMapping.hasNoPackages = true;
+          s.nextElement();
+        }
       
     }
     

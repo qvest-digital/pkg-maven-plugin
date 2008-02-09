@@ -27,7 +27,6 @@ package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -91,9 +90,9 @@ public class IpkPackager extends Packager
           {
             // TODO: Handle native library artifacts properly.
             
-            bundledArtifacts = ph.createClasspathLine(bcp, cp, ":");
+            bundledArtifacts = ph.createClasspathLine(bcp, cp);
 
-            ph.generateWrapperScript(bundledArtifacts, bcp.toString(), cp.toString());
+            ph.generateWrapperScript(bundledArtifacts, bcp.toString(), cp.toString(), false);
 
             byteAmount += ph.copyArtifacts(bundledArtifacts);
           }
