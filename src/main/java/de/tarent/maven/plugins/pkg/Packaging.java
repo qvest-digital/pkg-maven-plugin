@@ -477,7 +477,7 @@ public class Packaging
         packageVersion =
           fixVersion(version)
           + "-0" + dc.chosenDistro
-          + (dc.revision == null ? "" : "-" + dc.revision);
+          + (dc.revision.length() == 0 ? "" : "-" + dc.revision);
 
       return packageVersion;
     }

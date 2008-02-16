@@ -327,9 +327,9 @@ public class DistroConfiguration
    * <p>It is possible to use all kinds of strings for that. The ordering rules of those is dependent
    * on the underlying packaging system. Try to use something sane like "r0", "r1" and so on.</p>
    * 
-   * <p>If this value is not set, no revision is appended.</p>
+   * <p>If this value is not set or set to the empty string, no revision is appended.</p>
    *  
-   * <p>Default is <code>null</code>, after merging it is <code>null</code>
+   * <p>Default is <code>null</code>, after merging it is the empty
    * or the parent's value.</p>
    */
   String revision;
@@ -537,7 +537,7 @@ public class DistroConfiguration
                                     "/usr/lib/jni");
     
     mainClass = (String) merge(mainClass, parent.mainClass, null);
-    revision = (String) merge(revision, parent.revision, null);
+    revision = (String) merge(revision, parent.revision, "");
     wrapperScriptName = (String) merge(wrapperScriptName, parent.wrapperScriptName, null);
     maintainer = (String) merge(maintainer, parent.maintainer, null);
     maxJavaMemory = (String) merge(maxJavaMemory, parent.maxJavaMemory, null);
