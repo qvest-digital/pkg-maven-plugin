@@ -127,6 +127,15 @@
 				</jars>
 			</entry>
 
+      <!-- SWT is in Maven in different variants ... -->
+      <entry>
+        <artifactSpec>org.eclipse.swt:swt-gtk-linux</artifactSpec>
+        <dependencyLine>libswt3.1-gtk-java</dependencyLine>
+        <jars>
+          <jar>/usr/lib/java/swt.jar</jar>
+        </jars>
+      </entry>
+
 			<entry>
 				<artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
 				<dependencyLine>libswt3.1-gtk-java</dependencyLine>

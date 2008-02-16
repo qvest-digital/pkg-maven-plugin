@@ -121,9 +121,23 @@ public class IpkPackager extends Packager
    */
   public void checkEnvironment(Log l, DistroConfiguration dc) throws MojoExecutionException
   {
+    boolean error = false;
+    
+    l.info("Maintainer               : " + dc.getMaintainer());
+
+    if(dc.getMaintainer() == null)
+    {
+      l.error("The maintainer field of the distro configuration is not set, however this is mandatory for IPK packaging!");
+      error = true;
+    }
+    
     Utils.exec(new String[] { "which", "ipkg-build" },
                "ipkg-build returned with an error. Check your installation!",
                "ipkg-build is not available on this system. Check your installation!");
+    
+    
+    if (error)
+      throw new MojoExecutionException("Aborting due to earlier errors.");
   }
 
   /**

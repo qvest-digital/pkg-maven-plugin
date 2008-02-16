@@ -116,7 +116,10 @@ public class IzPackPackager extends Packager
     File resultFile = new File(ph.getOutputDirectory(), ph.getPackageName() + "-" + ph.getPackageVersion() + "-installer.jar");
     
     // targetBinDir does not occur within any script. Therefore there is no need to
-    // fumble with ${INSTALL_PATH}. 
+    // fumble with ${INSTALL_PATH}. The targetBinDir property will still be used to create
+    // dstWrapperScriptFile but by setting it to "" it does not have any negative effect.
+    // TODO: By splitting the target/dst variants from the actual filename this could
+    // implemented more elegantly.
     ph.setTargetBinDir(new File(""));
     ph.setDstBinDir(packagingBaseDir);
     
@@ -139,7 +142,7 @@ public class IzPackPackager extends Packager
         prepareDirectories(l,
                            ph.getTempRoot(),
                            izPackEmbeddedRoot,
-                           ph.getIzPackSrcDir(),
+                           ph.getSrcIzPackFilesDir(),
                            packagingBaseDir,
                            ph.getDstBundledJarDir());
         

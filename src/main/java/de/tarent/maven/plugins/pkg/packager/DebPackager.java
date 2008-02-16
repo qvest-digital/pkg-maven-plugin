@@ -94,7 +94,7 @@ public class DebPackager extends Packager
     StringBuilder cp = new StringBuilder();
     
     long byteAmount = srcArtifactFile.length();
-
+    
     try
       {
     	// The following section does the coarse-grained steps

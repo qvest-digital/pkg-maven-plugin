@@ -40,6 +40,8 @@ import de.tarent.maven.plugins.pkg.packager.Packager;
 public class Packaging
     extends AbstractPackagingMojo
 {
+  
+  static final String DEFAULT_SRC_AUXFILESDIR = "src/main/auxfiles";
 
   /**
    * So umarbeiten, dass:
@@ -433,14 +435,22 @@ public class Packaging
     {
       if (dstWrapperScriptFile == null)
         // Use the provided wrapper script name or the default.
-        dstWrapperScriptFile = new File(getDstBinDir(), getTargetWrapperScriptFile().toString());
+        dstWrapperScriptFile = new File(getBasePkgDir(), getTargetWrapperScriptFile().toString());
 
       return dstWrapperScriptFile;
     }
 
-    public File getIzPackSrcDir()
+    /**
+     * Returns the directory containing the izpack helper files. If not specified
+     * otherwise this directory is identical to the source directory of the aux files.
+     * 
+     * @return
+     */
+    public File getSrcIzPackFilesDir()
     {
-      return new File(project.getBasedir(), dc.srcIzPackDir);
+      return (dc.srcIzPackFilesDir.length() == 0 
+          ? getSrcAuxFilesDir() 
+          : new File(project.getBasedir(), dc.srcIzPackFilesDir));
     }
 
     public String getJavaExec()
@@ -464,7 +474,10 @@ public class Packaging
     public String getPackageVersion()
     {
       if (packageVersion == null)
-        packageVersion = fixVersion(version) + "-0" + dc.chosenDistro;
+        packageVersion =
+          fixVersion(version)
+          + "-0" + dc.chosenDistro
+          + (dc.revision == null ? "" : "-" + dc.revision);
 
       return packageVersion;
     }
@@ -489,33 +502,45 @@ public class Packaging
     
     public File getSrcAuxFilesDir()
     {
-      return new File(project.getBasedir(), dc.srcAuxFilesDir);
+      return (dc.srcAuxFilesDir.length() == 0) 
+        ? new File(project.getBasedir(), DEFAULT_SRC_AUXFILESDIR)
+        : new File(project.getBasedir(), dc.srcAuxFilesDir);
     }
     
     public File getSrcDataFilesDir()
     {
-      return new File(project.getBasedir(), dc.srcDataFilesDir);
+      return (dc.srcDataFilesDir.length() == 0) 
+        ? getSrcAuxFilesDir()
+        : new File(project.getBasedir(), dc.srcDataFilesDir);
     }
 
     public File getSrcDatarootFilesDir()
     {
-      return new File(project.getBasedir(), dc.srcDatarootFilesDir);
+      return (dc.srcDatarootFilesDir.length() == 0) 
+        ? getSrcAuxFilesDir()
+        : new File(project.getBasedir(), dc.srcDatarootFilesDir);
     }
     
     public File getSrcJNIFilesDir()
     {
-      return new File(project.getBasedir(), dc.srcJNIFilesDir);
+      return (dc.srcJNIFilesDir.length() == 0) 
+        ? getSrcAuxFilesDir()
+        : new File(project.getBasedir(), dc.srcJNIFilesDir);
     }
     
     public File getSrcSysconfFilesDir()
     {
-      return new File(project.getBasedir(), dc.srcSysconfFilesDir);
+      return (dc.srcSysconfFilesDir.length() == 0) 
+        ? getSrcAuxFilesDir()
+        : new File(project.getBasedir(), dc.srcSysconfFilesDir);
     }
 
     public File getTargetArtifactFile()
     {
       if (targetArtifactFile == null)
-          targetArtifactFile = new File(getTargetBundledJarDir(), artifactId + ".jar");
+          targetArtifactFile = 
+            new File((dc.isBundleAll() || pm.hasNoPackages() ? getTargetBundledJarDir() : new File(pm.getDefaultJarPath())),
+                     artifactId + ".jar");
 
       return targetArtifactFile;
     }
@@ -618,7 +643,7 @@ public class Packaging
       return targetSysconfDir;
     }
 
-    File getTargetWrapperScriptFile()
+    public File getTargetWrapperScriptFile()
     {
       if (targetWrapperScriptFile == null)
         targetWrapperScriptFile =
@@ -827,11 +852,16 @@ public class Packaging
     l.info("bundle all dependencies  : " + ((dc.isBundleAll()) ? "yes" : "no"));
     l.info("ahead of time compilation: " + ((dc.isAotCompile()) ? "yes" : "no"));
     l.info("JNI libraries            : " + ((dc.jniFiles.isEmpty()) ? "<none>" : String.valueOf(dc.jniFiles.size())));
-    l.info("auxiliary file source dir: " + dc.srcAuxFilesDir);
+    l.info("auxiliary file source dir: " + (dc.srcAuxFilesDir.length() == 0 ? (DEFAULT_SRC_AUXFILESDIR + " (default)") : dc.srcAuxFilesDir));
     l.info("auxiliary files          : " + ((dc.auxFiles.isEmpty()) ? "<none>" : String.valueOf(dc.auxFiles.size())));
     l.info("prefix                   : " + (dc.prefix.length() == 1 ? "/ (default)" : dc.prefix));
-    l.info("bindir                   : " + (dc.bindir.length() == 0 ? "<none>" : dc.bindir));
-    l.info("sysconfdir               : " + (dc.sysconfdir.length() == 0 ? "<none>" : dc.sysconfdir));
+    l.info("sysconf files source dir : " + (dc.srcSysconfFilesDir.length() == 0 ? (DEFAULT_SRC_AUXFILESDIR + " (default)") : dc.srcSysconfFilesDir));
+    l.info("sysconfdir               : " + (dc.sysconfdir.length() == 0 ? "(default)" : dc.sysconfdir));
+    l.info("dataroot files source dir: " + (dc.srcDatarootFilesDir.length() == 0 ? (DEFAULT_SRC_AUXFILESDIR + " (default)") : dc.srcDatarootFilesDir));
+    l.info("dataroot                 : " + (dc.datarootdir.length() == 0 ? "(default)" : dc.datarootdir));
+    l.info("data files source dir    : " + (dc.srcDataFilesDir.length() == 0 ? (DEFAULT_SRC_AUXFILESDIR + " (default)") : dc.srcDataFilesDir));
+    l.info("datadir                  : " + (dc.datadir.length() == 0 ? "(default)" : dc.datadir));
+    l.info("bindir                   : " + (dc.bindir.length() == 0 ? "(default)" : dc.bindir));
 
     if (dc.chosenDistro == null)
       throw new MojoExecutionException("No distribution configured!");

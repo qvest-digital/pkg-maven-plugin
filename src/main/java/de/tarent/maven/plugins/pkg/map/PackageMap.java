@@ -168,6 +168,11 @@ public class PackageMap
   {
     return (mapping.debianNaming != null ? mapping.debianNaming.booleanValue() : true);
   }
+  
+  public boolean hasNoPackages()
+  {
+    return mapping.hasNoPackages;
+  }
 
   public void iterateDependencyArtifacts(Log l, Collection deps, Visitor v, boolean bundleNonExisting)
   {

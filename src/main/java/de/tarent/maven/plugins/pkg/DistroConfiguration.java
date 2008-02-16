@@ -251,6 +251,9 @@ public class DistroConfiguration
    * Denotes the directory in which the packager looks for auxiliary files to
    * copy into the package.
    * 
+   * <p>By default the aux files directory is meant to contain all the other
+   * kinds of files like sysconf, dataroot and data files.</p> 
+   * 
    * <p>By using this property one can define a common filename set which has
    * to be copied but works on different files since the <code>srcAuxFilesDir</code>
    * property can be changed on a per distribution basis.</p>
@@ -267,17 +270,6 @@ public class DistroConfiguration
   String srcDatarootFilesDir;
   
   /**
-   * Denotes the directory in which the packager looks for the izpack configuration and
-   * files. 
-   * 
-   * <p>Note: The path must be relative to the project's base dir.</p>
-   * 
-   * <p>Default is <code>null</code>, after merging it is <code>src/main/izpack</code>
-   * or the parent's value.</p>
-   */
-  String srcIzPackDir;
-  
-  /**
    * Denotes the directory in which the packager looks for JNI library files to
    * copy into the package.
    * 
@@ -287,10 +279,12 @@ public class DistroConfiguration
    * 
    * <p>Note: The path must be relative to the project's base dir.</p>
    * 
-   * <p>Default is <code>null</code>, after merging it is <code>src/main/auxfiles</code>
+   * <p>Default is <code>null</code>, after merging it is an empty string
    * or the parent's value.</p>
    */
   String srcJNIFilesDir;
+  
+  String srcIzPackFilesDir;
   
   String srcSysconfFilesDir;
   
@@ -324,6 +318,21 @@ public class DistroConfiguration
    * or the parent's value.</p>
    */
   String wrapperScriptName;
+  
+  /**
+   * Denotes the packages revision. This is a version number which appended after the real package
+   * version and can be used to denote a change to the packaging (e.g. moved a file to the correct
+   * location).
+   * 
+   * <p>It is possible to use all kinds of strings for that. The ordering rules of those is dependent
+   * on the underlying packaging system. Try to use something sane like "r0", "r1" and so on.</p>
+   * 
+   * <p>If this value is not set, no revision is appended.</p>
+   *  
+   * <p>Default is <code>null</code>, after merging it is <code>null</code>
+   * or the parent's value.</p>
+   */
+  String revision;
 
   public DistroConfiguration()
   {
@@ -444,12 +453,7 @@ public class DistroConfiguration
   {
     return srcDatarootFilesDir;
   }
-
-  public String getSrcIzPackDir()
-  {
-    return srcIzPackDir;
-  }
-
+  
   public String getSrcJNIFilesDir()
   {
     return srcJNIFilesDir;
@@ -533,19 +537,21 @@ public class DistroConfiguration
                                     "/usr/lib/jni");
     
     mainClass = (String) merge(mainClass, parent.mainClass, null);
+    revision = (String) merge(revision, parent.revision, null);
     wrapperScriptName = (String) merge(wrapperScriptName, parent.wrapperScriptName, null);
     maintainer = (String) merge(maintainer, parent.maintainer, null);
     maxJavaMemory = (String) merge(maxJavaMemory, parent.maxJavaMemory, null);
     section = (String) merge(section, parent.section, "libs");
     izPackInstallerXml = (String) merge(izPackInstallerXml, parent.izPackInstallerXml, "installer.xml");
-    srcIzPackDir = (String) merge(srcIzPackDir, parent.srcIzPackDir, "src/main/izpack");
     
-    srcAuxFilesDir = (String) merge(srcAuxFilesDir, parent.srcAuxFilesDir, "src/main/auxfiles");
-    srcSysconfFilesDir = (String) merge(srcSysconfFilesDir, parent.srcSysconfFilesDir, "src/main/auxfiles");
-    srcJNIFilesDir = (String) merge(srcJNIFilesDir, parent.srcJNIFilesDir, "src/main/auxfiles");
-    srcDatarootFilesDir = (String) merge(srcDatarootFilesDir, parent.srcDatarootFilesDir, "src/main/auxfiles");
-    srcDataFilesDir = (String) merge(srcDataFilesDir, parent.srcDataFilesDir, "src/main/auxfiles");
+    srcAuxFilesDir = (String) merge(srcAuxFilesDir, parent.srcAuxFilesDir, "");
+    srcSysconfFilesDir = (String) merge(srcSysconfFilesDir, parent.srcSysconfFilesDir, "");
+    srcJNIFilesDir = (String) merge(srcJNIFilesDir, parent.srcJNIFilesDir, "");
+    srcDatarootFilesDir = (String) merge(srcDatarootFilesDir, parent.srcDatarootFilesDir, "");
+    srcDataFilesDir = (String) merge(srcDataFilesDir, parent.srcDataFilesDir, "");
 
+    srcIzPackFilesDir = (String) merge(srcIzPackFilesDir, parent.srcIzPackFilesDir, "");
+    
     auxFiles = (List) merge(auxFiles, parent.auxFiles,
                                 new ArrayList());
 
@@ -710,11 +716,6 @@ public class DistroConfiguration
     this.srcDatarootFilesDir = srcDatarootFilesDir;
   }
 
-  public void setSrcIzPackDir(String izPackSrcDir)
-  {
-    this.srcIzPackDir = izPackSrcDir;
-  }
-
   public void setSrcJNIFilesDir(String srcJNIFilesDir)
   {
     this.srcJNIFilesDir = srcJNIFilesDir;
@@ -774,7 +775,6 @@ public class DistroConfiguration
     sb.append("gcjExec: " + gcjExec + "\n");
     sb.append("jniFiles: " + jniFiles + "\n");
     sb.append("jniLibraryPath: " + jniLibraryPath + "\n");
-    sb.append("srcIzPackDir: " + srcIzPackDir + "\n");
     sb.append("izPackInstallerXml: " + izPackInstallerXml + "\n");
 
     sb.append("mainClass: " + mainClass + "\n");
@@ -842,6 +842,16 @@ public class DistroConfiguration
     sb.append("\n");
 
     return sb.toString();
+  }
+
+  public String getSrcIzPackFilesDir()
+  {
+    return srcIzPackFilesDir;
+  }
+
+  public void setSrcIzPackFilesDir(String srcIzPackFilesDir)
+  {
+    this.srcIzPackFilesDir = srcIzPackFilesDir;
   }
 
 }
