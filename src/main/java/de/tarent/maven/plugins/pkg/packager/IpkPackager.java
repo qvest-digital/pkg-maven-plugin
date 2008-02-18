@@ -52,6 +52,8 @@ public class IpkPackager extends Packager
   {
     String packageName = ph.getPackageName();
     String packageVersion = ph.getPackageVersion();
+    
+    ph.setDstScriptDir(new File(ph.getBasePkgDir(), "CONTROL"));
 
     File controlFile = new File(ph.getBasePkgDir(), "CONTROL/control");
     File srcArtifactFile = ph.getSrcArtifactFile();
@@ -77,6 +79,8 @@ public class IpkPackager extends Packager
         ph.copyProjectArtifact();
         
         byteAmount += ph.copyFiles();
+        
+        ph.copyScripts();
 
         // Create classpath line, copy bundled jars and generate wrapper
         // start script only if the project is an application.

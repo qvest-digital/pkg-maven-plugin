@@ -57,6 +57,9 @@ public class DebPackager extends Packager
 
     File basePkgDir = ph.getBasePkgDir();
     
+    // Provide a proper default value to make script file copying work.
+    ph.setDstScriptDir(new File(basePkgDir, "DEBIAN"));
+    
     // The Debian control file (package name, dependencies etc).
     File controlFile = new File(basePkgDir, "DEBIAN/control");
 
@@ -108,6 +111,8 @@ public class DebPackager extends Packager
         ph.copyProjectArtifact();
         
         byteAmount += ph.copyFiles();
+        
+        ph.copyScripts();
 
         // Create classpath line, copy bundled jars and generate wrapper
         // start script only if the project is an application.

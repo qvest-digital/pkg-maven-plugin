@@ -333,6 +333,12 @@ public class DistroConfiguration
    * or the parent's value.</p>
    */
   String revision;
+  
+  String prermScript;
+  String preinstScript;
+  
+  String postrmScript;
+  String postinstScript;
 
   public DistroConfiguration()
   {
@@ -543,6 +549,11 @@ public class DistroConfiguration
     maxJavaMemory = (String) merge(maxJavaMemory, parent.maxJavaMemory, null);
     section = (String) merge(section, parent.section, "libs");
     izPackInstallerXml = (String) merge(izPackInstallerXml, parent.izPackInstallerXml, "installer.xml");
+    
+    preinstScript = (String) merge(preinstScript, parent.preinstScript, null);
+    prermScript = (String) merge(prermScript, parent.prermScript, null);
+    postinstScript = (String) merge(postinstScript, parent.postinstScript, null);
+    postrmScript = (String) merge(postrmScript, parent.postrmScript, null);
     
     srcAuxFilesDir = (String) merge(srcAuxFilesDir, parent.srcAuxFilesDir, "");
     srcSysconfFilesDir = (String) merge(srcSysconfFilesDir, parent.srcSysconfFilesDir, "");
@@ -852,6 +863,46 @@ public class DistroConfiguration
   public void setSrcIzPackFilesDir(String srcIzPackFilesDir)
   {
     this.srcIzPackFilesDir = srcIzPackFilesDir;
+  }
+
+  public String getPostinstScript()
+  {
+    return postinstScript;
+  }
+
+  public void setPostinstScript(String postinstScript)
+  {
+    this.postinstScript = postinstScript;
+  }
+
+  public String getPostrmScript()
+  {
+    return postrmScript;
+  }
+
+  public void setPostrmScript(String postrmScript)
+  {
+    this.postrmScript = postrmScript;
+  }
+
+  public String getPreinstScript()
+  {
+    return preinstScript;
+  }
+
+  public void setPreinstScript(String preinstScript)
+  {
+    this.preinstScript = preinstScript;
+  }
+
+  public String getPrermScript()
+  {
+    return prermScript;
+  }
+
+  public void setPrermScript(String prermScript)
+  {
+    this.prermScript = prermScript;
   }
 
 }
