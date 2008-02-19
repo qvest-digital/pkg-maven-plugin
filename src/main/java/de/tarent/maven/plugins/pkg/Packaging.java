@@ -47,13 +47,35 @@ public class Packaging
 {
 
   /**
-   * So umarbeiten, dass: - jedes sinnvolle property bekommt setter und getter -
-   * der getter enthält einen vorgegebenen sinnvollen erzeugercode, der zur
-   * ausführung kommt, wenn der wert nicht gesetzt ist. - benutzer von
-   * Packaging.Helper müssen die Werte fest nach ihren eigenen Regeln setzen -
-   * die Aktions-Methoden (copy<...> arbeiten mit so wenig wie möglich
-   * parametern) und beziehen alles aus den übrigen methoden TODO: Explain and
-   * document the design idea of this class.
+   * The <code>Helper</code> class mainly provides task oriented methods
+   * which can be directly used by the packager implementations.
+   * 
+   * <p>The idea is that all packagers basically do the same actions (copy jars,
+   * create classpath and dependency line, ...) but operate on different directories
+   * and/or files names. Therefore the packager implementation must set the various
+   * file names and directories and afterwards call the task-oriented methods.</p>
+   * 
+   * <p>The method's documentation describes their relationship and usage of variables.</p>
+   * 
+   * <p>There is a common relationship between the method with
+   * <code>target</code> and <code>dest</code> in their name.
+   * <code>target</code> means a file location or directory which is available
+   * on the target device (= after installation). Thus such a file must not
+   * be used for file operations at packaging time since it will simply not be
+   * valid. In contrast a method having <code>dest</code> in their name denotes
+   * the file of the corresponding <code>target</code> entry at packaging time.
+   * </p>
+   * 
+   * <p>All <code>getTarget...</code>-method with a corresponding
+   * <code>getDest...</code> method can provide a default value whose generation
+   * is described in the method's documentation. However if a different value
+   * is provided by the packager implementation by calling the corresponding
+   * setter the automatic generation is prevented. By doing so a packager can
+   * customize all file and directory locations.</p>
+   * 
+   * <p>A notable exception to this rule is the {@link #getDstScriptDir()} method
+   * which fails with an exception if no non-null value for the
+   * <code>dstScriptDir</code> property has been set.</p>
    * 
    * @author Robert Schuster (robert.schuster@tarent.de)
    */
@@ -174,6 +196,18 @@ public class Packaging
                                           getDstBundledJarDir());
     }
 
+    /**
+     * Copies all kinds of auxialiary files to their respective destination.
+     * 
+     * <p>The method consults the srcAuxFilesDir, srcSysconfFilesDir,
+     * srcDatarootFilesDir, srcDataFilesDir, srcJNIFilesDir properties as well
+     * as their corresponding destination properties for this.</p>
+     * 
+     * <p>The return value is the amount of bytes copied.</p>
+     * 
+     * @return
+     * @throws MojoExecutionException
+     */
     public long copyFiles() throws MojoExecutionException
     {
       long size = 0;
@@ -211,6 +245,16 @@ public class Packaging
                                 getDstArtifactFile());
     }
 
+    /**
+     * Copies the pre-install, pre-removal, post-install and post-removal
+     * scripts (if applicable) to their proper location which is given
+     * through the <code>dstScriptDir</code> property.
+     * 
+     * <p>To find out the source directory for the scripts the
+     * <code>srcAuxFilesFir</code> property is consulted.</p>
+     * 
+     * @throws MojoExecutionException
+     */
     public void copyScripts() throws MojoExecutionException
     {
       File dir = getDstScriptDir();
@@ -266,11 +310,31 @@ public class Packaging
                                                 getTargetArtifactFile());
     }
 
+    /** Returns a string containing the programs dependencies.
+     * 
+     * @return
+     * @throws MojoExecutionException
+     */
     public String createDependencyLine() throws MojoExecutionException
     {
       return Packaging.this.createDependencyLine();
     }
 
+    /**
+     * Generates a wrapper script for the application. If the
+     * <code>windows</code> flag has been set another script is generated
+     * for that OS.
+     * 
+     * <p>The method consults the properties <code>targetJNIDir</code>,
+     * <code>dstWrapperScriptFile</code> and possibly
+     * <code>dstWrapperScriptFileWindows</code> for its work.</p>
+     * 
+     * @param bundledArtifacts
+     * @param bcp
+     * @param cp
+     * @param windows
+     * @throws MojoExecutionException
+     */
     public void generateWrapperScript(Set bundledArtifacts, String bcp,
                                       String cp, boolean windows)
         throws MojoExecutionException
@@ -440,7 +504,7 @@ public class Packaging
     public File getDstScriptDir()
     {
       if (dstScriptDir == null)
-        throw new UnsupportedOperationException("This ");
+        throw new UnsupportedOperationException("This dstScriptDir property has to be provided explicitly in advance!");
 
       return dstScriptDir;
     }

@@ -126,6 +126,12 @@ public class DistroConfiguration
    */
   Set bundleDependencies;
 
+  /**
+   * Denotes the directory in the target system where the bundled jar files are put.
+   * 
+   * <p>Default value is <code>null</code>, after merging it is the empty string (meaning
+   * the default bundled jar dir is used) or the parent's value.
+   */
   String bundledJarDir;
 
   /**
@@ -134,12 +140,39 @@ public class DistroConfiguration
    */
   String chosenDistro;
 
+  /**
+   * Denotes the directory in the target system where application specific data files
+   * are put.
+   * 
+   * <p>Default is <code>null</code>, after merging it is the empty string
+   * or the parent's value. In case the value is empty the distribution's
+   * default datadir prepended by the prefix is used.</p>
+   */
   String datadir;
 
+  /**
+   * List of files which are installed into the application-specific data files
+   * directory.
+   */
   List dataFiles;
 
+  /**
+   * Denotes the root directory in the target system where application specific data
+   * files are put. This is usually the directory one-level above the datadir.
+   * 
+   * <p>Default is <code>null</code>, after merging it is the empty string
+   * or the parent's value. In case the value is empty the distribution's
+   * default datarootdir prepended by the prefix is used.</p>
+   */
   String datarootdir;
 
+  /**
+   * List of files which are installed into the root directory of application-specific
+   * data files directory.
+   * 
+   * <p>By using this property one can install files into another application's datadir,
+   * e.g. /usr/share/dbus-1
+   */
   List datarootFiles;
 
   /**
@@ -227,8 +260,37 @@ public class DistroConfiguration
    */
   String maxJavaMemory;
   
+  /**
+   * Specifies the distroconfiguration from which this one inherits all non-set values
+   * or from which collections are merged.
+   * 
+   * <p>If unset it is <code>null</code> meaning the default distro configuration is the
+   * sole parent.</p>
+   */
   String parent;
 
+  /**
+   * Specifies the name of a file which is used as a post installation script.
+   * 
+   * <p>The base directory to look for the script is the aux files directory!</p>
+   * 
+   * <p>It is only valid for packaging system which support such scripts.</p>
+   * 
+   * <p>If unset it is <code>null</code> and no script is used.</p>
+   */
+  String postinstScript;
+  
+  /**
+   * Specifies the name of a file which is used as a post removal script.
+   * 
+   * <p>The base directory to look for the script is the aux files directory!</p>
+   * 
+   * <p>It is only valid for packaging system which support such scripts.</p>
+   * 
+   * <p>If unset it is <code>null</code> and no script is used.</p>
+   */
+  String postrmScript;
+  
   /**
    * Denotes a path that is prepended before all application paths.
    * 
@@ -238,6 +300,43 @@ public class DistroConfiguration
    * or the parent's value.</p>
    */
   String prefix;
+  
+  /**
+   * Specifies the name of a file which is used as a pre-installlation script.
+   * 
+   * <p>The base directory to look for the script is the aux files directory!</p>
+   * 
+   * <p>It is only valid for packaging system which support such scripts.</p>
+   * 
+   * <p>If unset it is <code>null</code> and no script is used.</p>
+   */
+  String preinstScript;
+ 
+  /**
+   * Specifies the name of a file which is used as a pre-removal script.
+   * 
+   * <p>The base directory to look for the script is the aux files directory!</p>
+   * 
+   * <p>It is only valid for packaging system which support such scripts.</p>
+   * 
+   * <p>If unset it is <code>null</code> and no script is used.</p>
+   */
+  String prermScript;
+  
+  /**
+   * Denotes the packages revision. This is a version number which appended after the real package
+   * version and can be used to denote a change to the packaging (e.g. moved a file to the correct
+   * location).
+   * 
+   * <p>It is possible to use all kinds of strings for that. The ordering rules of those is dependent
+   * on the underlying packaging system. Try to use something sane like "r0", "r1" and so on.</p>
+   * 
+   * <p>If this value is not set or set to the empty string, no revision is appended.</p>
+   *  
+   * <p>Default is <code>null</code>, after merging it is the empty
+   * or the parent's value.</p>
+   */
+  String revision;
   
   /**
    * Denotes the value of the section property supported by packaging systems.   
@@ -260,15 +359,43 @@ public class DistroConfiguration
    * 
    * <p>Note: The path must be relative to the project's base dir.</p>
    * 
-   * <p>Default is <code>null</code>, after merging it is <code>src/main/auxfiles</code>
+   * <p>Default is <code>null</code>, after merging it is the empty string
+   * (meaning the default location (= <code<src/main/auxfiles</code>) is used
    * or the parent's value.</p>
    */
   String srcAuxFilesDir;
   
+  /**
+   * Denotes the source directory into which the packager looks for application
+   * specific data files. 
+   * 
+   * <p>Default is <code>null</code>, after merging it is the empty string
+   * (meaning the default location (= {@link #srcAuxFilesDir}) is used
+   * or the parent's value.</p>
+   */
   String srcDataFilesDir;
   
+  /**
+   * Denotes the source directory into which the packager looks for data files
+   * which will be copied into the root directory of application specific data
+   * files.  
+   * 
+   * <p>Default is <code>null</code>, after merging it is the empty string
+   * (meaning the default location (= {@link #srcAuxFilesDir}) is used
+   * or the parent's value.</p>
+   */
   String srcDatarootFilesDir;
-  
+
+  /**
+   * Denotes the source directory into which the packager looks for IzPack
+   * specific datafiles.
+   * 
+   * <p>Default is <code>null</code>, after merging it is the empty string
+   * (meaning the default location (= {@link #srcAuxFilesDir}) is used
+   * or the parent's value.</p>
+   */
+  String srcIzPackFilesDir;
+
   /**
    * Denotes the directory in which the packager looks for JNI library files to
    * copy into the package.
@@ -284,8 +411,6 @@ public class DistroConfiguration
    */
   String srcJNIFilesDir;
   
-  String srcIzPackFilesDir;
-  
   String srcSysconfFilesDir;
   
   /**
@@ -297,9 +422,8 @@ public class DistroConfiguration
    * is prepended by the prefix!</p>
    */
   String sysconfdir;
-  
   List sysconfFiles;
-
+  
   /**
    * Denotes a bunch of system properties keys and their values which are added
    * to the starter script and thus provided to the application.  
@@ -308,7 +432,6 @@ public class DistroConfiguration
    * instance or the parent's value.</p>
    */
   Properties systemProperties;
-
   /**
    * Denotes the name of the wrapper script that is used to run the application. This property
    * is optional and will default to the <code>artifactId</code> is the Maven project. For
@@ -318,27 +441,6 @@ public class DistroConfiguration
    * or the parent's value.</p>
    */
   String wrapperScriptName;
-  
-  /**
-   * Denotes the packages revision. This is a version number which appended after the real package
-   * version and can be used to denote a change to the packaging (e.g. moved a file to the correct
-   * location).
-   * 
-   * <p>It is possible to use all kinds of strings for that. The ordering rules of those is dependent
-   * on the underlying packaging system. Try to use something sane like "r0", "r1" and so on.</p>
-   * 
-   * <p>If this value is not set or set to the empty string, no revision is appended.</p>
-   *  
-   * <p>Default is <code>null</code>, after merging it is the empty
-   * or the parent's value.</p>
-   */
-  String revision;
-  
-  String prermScript;
-  String preinstScript;
-  
-  String postrmScript;
-  String postinstScript;
 
   public DistroConfiguration()
   {
@@ -435,11 +537,31 @@ public class DistroConfiguration
     return maxJavaMemory;
   }
 
+  public String getPostinstScript()
+  {
+    return postinstScript;
+  }
+
+  public String getPostrmScript()
+  {
+    return postrmScript;
+  }
+
   public String getPrefix()
   {
     return prefix;
   }
 
+  public String getPreinstScript()
+  {
+    return preinstScript;
+  }
+
+  public String getPrermScript()
+  {
+    return prermScript;
+  }
+  
   public String getSection()
   {
     return section;
@@ -459,7 +581,12 @@ public class DistroConfiguration
   {
     return srcDatarootFilesDir;
   }
-  
+
+  public String getSrcIzPackFilesDir()
+  {
+    return srcIzPackFilesDir;
+  }
+
   public String getSrcJNIFilesDir()
   {
     return srcJNIFilesDir;
@@ -469,7 +596,7 @@ public class DistroConfiguration
   {
     return srcSysconfFilesDir;
   }
-
+  
   public String getSysconfdir()
   {
     return sysconfdir;
@@ -494,7 +621,7 @@ public class DistroConfiguration
   {
     return advancedStarter.booleanValue();
   }
-  
+
   public boolean isAotCompile()
   {
     return aotCompile.booleanValue();
@@ -702,9 +829,29 @@ public class DistroConfiguration
     this.maxJavaMemory = maxJavaMemory;
   }
 
+  public void setPostinstScript(String postinstScript)
+  {
+    this.postinstScript = postinstScript;
+  }
+
+  public void setPostrmScript(String postrmScript)
+  {
+    this.postrmScript = postrmScript;
+  }
+
   public void setPrefix(String prefix)
   {
     this.prefix = prefix;
+  }
+
+  public void setPreinstScript(String preinstScript)
+  {
+    this.preinstScript = preinstScript;
+  }
+
+  public void setPrermScript(String prermScript)
+  {
+    this.prermScript = prermScript;
   }
 
   public void setSection(String section)
@@ -725,6 +872,11 @@ public class DistroConfiguration
   public void setSrcDatarootFilesDir(String srcDatarootFilesDir)
   {
     this.srcDatarootFilesDir = srcDatarootFilesDir;
+  }
+
+  public void setSrcIzPackFilesDir(String srcIzPackFilesDir)
+  {
+    this.srcIzPackFilesDir = srcIzPackFilesDir;
   }
 
   public void setSrcJNIFilesDir(String srcJNIFilesDir)
@@ -853,56 +1005,6 @@ public class DistroConfiguration
     sb.append("\n");
 
     return sb.toString();
-  }
-
-  public String getSrcIzPackFilesDir()
-  {
-    return srcIzPackFilesDir;
-  }
-
-  public void setSrcIzPackFilesDir(String srcIzPackFilesDir)
-  {
-    this.srcIzPackFilesDir = srcIzPackFilesDir;
-  }
-
-  public String getPostinstScript()
-  {
-    return postinstScript;
-  }
-
-  public void setPostinstScript(String postinstScript)
-  {
-    this.postinstScript = postinstScript;
-  }
-
-  public String getPostrmScript()
-  {
-    return postrmScript;
-  }
-
-  public void setPostrmScript(String postrmScript)
-  {
-    this.postrmScript = postrmScript;
-  }
-
-  public String getPreinstScript()
-  {
-    return preinstScript;
-  }
-
-  public void setPreinstScript(String preinstScript)
-  {
-    this.preinstScript = preinstScript;
-  }
-
-  public String getPrermScript()
-  {
-    return prermScript;
-  }
-
-  public void setPrermScript(String prermScript)
-  {
-    this.prermScript = prermScript;
   }
 
 }
