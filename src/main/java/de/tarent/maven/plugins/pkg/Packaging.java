@@ -980,6 +980,8 @@ public class Packaging
     Utils.createFile(dstScriptFile, item + " file");
     // Write a #/bin/sh header
     
+    Utils.makeExecutable(dstScriptFile, item + " file");
+    
     try
     {
       PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(dstScriptFile)));
@@ -999,12 +1001,15 @@ public class Packaging
       writer.println("version=\"" + ph.getPackageVersion() + "\"");
       writer.println("name=\"" + ph.getPackageName() + "\"");
       writer.println("mainClass=\"" + dc.mainClass + "\"");
+      writer.println("scriptType=\"" + item + "\"");
       writer.println();
       writer.println("# What follows is the content script file " + srcScriptFile.getName());
       writer.println();
       
       // Now append the real script
       IOUtils.copy(new FileInputStream(srcScriptFile), writer);
+      
+      writer.close();
     }
     catch (IOException ioe)
     {
