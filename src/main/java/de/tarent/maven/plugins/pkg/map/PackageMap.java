@@ -145,6 +145,11 @@ public class PackageMap
     return (mapping.defaultJNIPath != null ? mapping.defaultJNIPath : "/usr/lib/jni");
   }
   
+  public String getDistroLabel()
+  {
+    return mapping.label;
+  }
+  
   /**
    * Returns the default location for executable (scripts).
    * 

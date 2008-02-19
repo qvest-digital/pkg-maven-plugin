@@ -1002,6 +1002,8 @@ public class Packaging
       writer.println("name=\"" + ph.getPackageName() + "\"");
       writer.println("mainClass=\"" + dc.mainClass + "\"");
       writer.println("scriptType=\"" + item + "\"");
+      writer.println("distro=\"" + dc.chosenDistro + "\"");
+      writer.println("distroLabel=\"" + pm.getDistroLabel() + "\"");
       writer.println();
       writer.println("# What follows is the content script file " + srcScriptFile.getName());
       writer.println();
