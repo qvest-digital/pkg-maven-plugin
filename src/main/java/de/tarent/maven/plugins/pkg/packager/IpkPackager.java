@@ -27,7 +27,6 @@ package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -53,9 +52,10 @@ public class IpkPackager extends Packager
   {
     String packageName = ph.getPackageName();
     String packageVersion = ph.getPackageVersion();
+    
+    ph.setDstScriptDir(new File(ph.getBasePkgDir(), "CONTROL"));
 
-    File basePkgDir = ph.getBasePkgDir();
-    File controlFile = new File(basePkgDir, "CONTROL/control");
+    File controlFile = new File(ph.getBasePkgDir(), "CONTROL/control");
     File srcArtifactFile = ph.getSrcArtifactFile();
 
     // A set which will be filled with the artifacts which need to be bundled with the
@@ -78,12 +78,9 @@ public class IpkPackager extends Packager
 
         ph.copyProjectArtifact();
         
-        ph.copyJNILibraries();
+        byteAmount += ph.copyFiles();
         
-        byteAmount += Utils.copyAuxFiles(l,
-                                         ph.getAuxFileSrcDir(),
-                                         ph.getBasePkgDir(),
-                                         distroConfig.getAuxFiles());
+        ph.copyScripts();
 
         // Create classpath line, copy bundled jars and generate wrapper
         // start script only if the project is an application.
@@ -91,9 +88,9 @@ public class IpkPackager extends Packager
           {
             // TODO: Handle native library artifacts properly.
             
-            bundledArtifacts = ph.createClasspathLine(bcp, cp, ":");
+            bundledArtifacts = ph.createClasspathLine(bcp, cp);
 
-            ph.generateWrapperScript(bundledArtifacts, bcp.toString(), cp.toString());
+            ph.generateWrapperScript(bundledArtifacts, bcp.toString(), cp.toString(), false);
 
             byteAmount += ph.copyArtifacts(bundledArtifacts);
           }
@@ -107,7 +104,7 @@ public class IpkPackager extends Packager
                             ph.createDependencyLine(),
                             byteAmount);
 
-        createPackage(l, ph, basePkgDir);
+        createPackage(l, ph, ph.getBasePkgDir());
         
       }
     catch (MojoExecutionException badMojo)
@@ -128,9 +125,23 @@ public class IpkPackager extends Packager
    */
   public void checkEnvironment(Log l, DistroConfiguration dc) throws MojoExecutionException
   {
+    boolean error = false;
+    
+    l.info("Maintainer               : " + dc.getMaintainer());
+
+    if(dc.getMaintainer() == null)
+    {
+      l.error("The maintainer field of the distro configuration is not set, however this is mandatory for IPK packaging!");
+      error = true;
+    }
+    
     Utils.exec(new String[] { "which", "ipkg-build" },
                "ipkg-build returned with an error. Check your installation!",
                "ipkg-build is not available on this system. Check your installation!");
+    
+    
+    if (error)
+      throw new MojoExecutionException("Aborting due to earlier errors.");
   }
 
   /**

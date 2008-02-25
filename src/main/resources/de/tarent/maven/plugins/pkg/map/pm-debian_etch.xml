@@ -9,6 +9,12 @@
 		<label>Debian GNU/Linux Etch</label>
 		<packaging>deb</packaging>
 		<defaultJarPath>/usr/share/java</defaultJarPath>
+		<!--
+			Altough Debian puts most of its JNI libraries into /usr/lib/jni
+			some end up in /usr/lib (e.g. librxtx-java). So we add this path
+			as well.
+		-->
+		<defaultJNIPath>/usr/lib/jni:/usr/lib</defaultJNIPath>
 		<defaultDependencyLine>java-gcj-compat | java2-runtime</defaultDependencyLine>
 		
 		<map>
@@ -120,6 +126,15 @@
 					<jar>/usr/share/eclipse/plugins/org.eclipse.core.runtime_3.1.2.jar</jar>
 				</jars>
 			</entry>
+
+      <!-- SWT is in Maven in different variants ... -->
+      <entry>
+        <artifactSpec>org.eclipse.swt:swt-gtk-linux</artifactSpec>
+        <dependencyLine>libswt3.1-gtk-java</dependencyLine>
+        <jars>
+          <jar>/usr/lib/java/swt.jar</jar>
+        </jars>
+      </entry>
 
 			<entry>
 				<artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
@@ -561,6 +576,14 @@
 			<entry>
 				<artifactSpec>isorelax:isorelax</artifactSpec>
 				<bundle/>
+			</entry>
+
+			<entry>
+				<artifactSpec>org.rxtx:rxtx</artifactSpec>
+				<dependencyLine>librxtx-java</dependencyLine>
+				<jars>
+					<jar>RXTXcomm.jar</jar>
+				</jars>
 			</entry>
 			
 		</map>

@@ -2,14 +2,19 @@
 
 package de.tarent.maven.plugins.pkg;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
@@ -42,19 +47,37 @@ public class Packaging
 {
 
   /**
-   * So umarbeiten, dass:
+   * The <code>Helper</code> class mainly provides task oriented methods
+   * which can be directly used by the packager implementations.
    * 
-   * - jedes sinnvolle property bekommt setter und getter
-   * - der getter enthält einen vorgegebenen sinnvollen erzeugercode,
-   *   der zur ausführung kommt, wenn der wert nicht gesetzt ist.
-   * - benutzer von Packaging.Helper müssen die Werte fest nach ihren eigenen Regeln setzen
-   * - die Aktions-Methoden (copy<...> arbeiten mit so wenig wie möglich parametern)
-   *  und beziehen alles aus den übrigen methoden
-   *  
-   *  TODO: Explain and document the design idea of this class. 
+   * <p>The idea is that all packagers basically do the same actions (copy jars,
+   * create classpath and dependency line, ...) but operate on different directories
+   * and/or files names. Therefore the packager implementation must set the various
+   * file names and directories and afterwards call the task-oriented methods.</p>
+   * 
+   * <p>The method's documentation describes their relationship and usage of variables.</p>
+   * 
+   * <p>There is a common relationship between the method with
+   * <code>target</code> and <code>dest</code> in their name.
+   * <code>target</code> means a file location or directory which is available
+   * on the target device (= after installation). Thus such a file must not
+   * be used for file operations at packaging time since it will simply not be
+   * valid. In contrast a method having <code>dest</code> in their name denotes
+   * the file of the corresponding <code>target</code> entry at packaging time.
+   * </p>
+   * 
+   * <p>All <code>getTarget...</code>-method with a corresponding
+   * <code>getDest...</code> method can provide a default value whose generation
+   * is described in the method's documentation. However if a different value
+   * is provided by the packager implementation by calling the corresponding
+   * setter the automatic generation is prevented. By doing so a packager can
+   * customize all file and directory locations.</p>
+   * 
+   * <p>A notable exception to this rule is the {@link #getDstScriptDir()} method
+   * which fails with an exception if no non-null value for the
+   * <code>dstScriptDir</code> property has been set.</p>
    * 
    * @author Robert Schuster (robert.schuster@tarent.de)
-   *
    */
   public class Helper
   {
@@ -76,13 +99,34 @@ public class Packaging
      * construction time (equals ${basePkgDir}/${targetArtifactFile}).
      */
     File dstArtifactFile;
-    
-    File dstBundledArtifactsDir;
+
+    File dstAuxDir;
+
+    File dstBinDir;
+
+    File dstBundledJarDir;
+
+    File dstDataDir;
+
+    File dstDatarootDir;
 
     /**
-     * The destination directory for JNI libraries
+     * The destination directory for JNI libraries at package building time
+     * (e.g. starts with "${project.outputdir}/")
      */
     File dstJNIDir;
+
+    File dstRoot;
+
+    File dstScriptDir;
+
+    File dstStarterDir;
+
+    File dstSysconfDir;
+
+    File dstWindowsWrapperScriptFile;
+
+    File dstWrapperScriptFile;
 
     String packageName;
 
@@ -98,118 +142,283 @@ public class Packaging
      * classpath construction). (e.g. /usr/share/java/app-2.0-SNAPSHOT.jar)
      */
     File targetArtifactFile;
-    
+
+    File targetBinDir;
+
     /**
-     * Location of the project's dependency artifacts on the target system (needed
-     * for classpath construction.).
-     * 
-     * <p>If the path contains a variable that is to be replaced by an installer
-     * it must not be used in actual file operations! To prevent this from happening
-     * provide explicit value for all properties which use {@link #getTargetArtifactFile()}</p>
-     * 
+     * Location of the project's dependency artifacts on the target system
+     * (needed for classpath construction.).
+     * <p>
+     * If the path contains a variable that is to be replaced by an installer it
+     * must not be used in actual file operations! To prevent this from
+     * happening provide explicit value for all properties which use
+     * {@link #getTargetArtifactFile()}
+     * </p>
      * (e.g. ${INSTALL_DIR}/libs)
      */
-    File targetJarPath;
+    File targetBundledJarDir;
+
+    File targetDataDir;
+
+    File targetDatarootDir;
+
+    /**
+     * Location of the JNI libraries on the target device (e.g. /usr/lib/jni).
+     */
+    File targetJNIDir;
+
+    File targetRoot;
+
+    File targetStarterDir;
+
+    File targetSysconfDir;
+
+    File targetWrapperScriptFile;
 
     File tempRoot;
-
-    File wrapperScriptFile;
 
     Helper()
     {
     }
 
     /**
-     * Copies the project's artifact file possibly renaming it.
-     * 
-     * <p>For the destination the value of the property
-     * <code<dstArtifactFile</code> is used.</p> 
-     * 
-     * @throws MojoExecutionException
-     */
-    public void copyProjectArtifact() throws MojoExecutionException
-    {
-      Utils.copyProjectArtifact(getLog(), getSrcArtifactFile(), getDstArtifactFile());
-    }
-    
-    /**
-     * Copies the given set of artifacts to the location specified
-     * by {@link #getDstBundledArtifactsDir()}. 
+     * Copies the given set of artifacts to the location specified by
+     * {@link #getDstBundledJarDir()}.
      * 
      * @param artifacts
      * @param dst
      * @return
      * @throws MojoExecutionException
      */
-    public long copyArtifacts(Set artifacts)
-        throws MojoExecutionException
+    public long copyArtifacts(Set artifacts) throws MojoExecutionException
     {
-      return Packaging.this.copyArtifacts(getLog(), artifacts, getDstBundledArtifactsDir());
+      return Packaging.this.copyArtifacts(getLog(), artifacts,
+                                          getDstBundledJarDir());
     }
 
     /**
-     * Copies the project's declared JNI libraries into the location specified by
-     * {@link #getDstJNIDir()}.
+     * Copies all kinds of auxialiary files to their respective destination.
+     * 
+     * <p>The method consults the srcAuxFilesDir, srcSysconfFilesDir,
+     * srcDatarootFilesDir, srcDataFilesDir, srcJNIFilesDir properties as well
+     * as their corresponding destination properties for this.</p>
+     * 
+     * <p>The return value is the amount of bytes copied.</p>
+     * 
+     * @return
+     * @throws MojoExecutionException
+     */
+    public long copyFiles() throws MojoExecutionException
+    {
+      long size = 0;
+      Log l = getLog();
+      size = Utils.copyFiles(l, getSrcAuxFilesDir(), getDstAuxDir(),
+                             dc.auxFiles, "aux file");
+
+      size = Utils.copyFiles(l, getSrcSysconfFilesDir(), getDstSysconfDir(),
+                             dc.sysconfFiles, "sysconf file");
+
+      size = Utils.copyFiles(l, getSrcDatarootFilesDir(), getDstDatarootDir(),
+                             dc.datarootFiles, "dataroot file");
+
+      size = Utils.copyFiles(l, getSrcDataFilesDir(), getDstDataDir(),
+                             dc.dataFiles, "data file");
+
+      size = Utils.copyFiles(l, getSrcJNIFilesDir(), getDstJNIDir(),
+                             dc.jniFiles, "JNI library");
+
+      return size;
+    }
+
+    /**
+     * Copies the project's artifact file possibly renaming it.
+     * <p>
+     * For the destination the value of the property <code<dstArtifactFile</code>
+     * is used.
+     * </p>
      * 
      * @throws MojoExecutionException
      */
-    public void copyJNILibraries() throws MojoExecutionException
+    public void copyProjectArtifact() throws MojoExecutionException
     {
-      Packaging.this.copyJNILibraries(getLog(), dc.jniLibraries, getDstJNIDir());
+      Utils.copyProjectArtifact(getLog(), getSrcArtifactFile(),
+                                getDstArtifactFile());
     }
 
     /**
-     * Creates a classpath line that consists of all the project' artifacts as well as
-     * the project's own artifact.
+     * Copies the pre-install, pre-removal, post-install and post-removal
+     * scripts (if applicable) to their proper location which is given
+     * through the <code>dstScriptDir</code> property.
      * 
-     * <p>The filename of the project's own artifact is taken from the result of
-     * {@link #getTargetArtifactFile()}.</p>
+     * <p>To find out the source directory for the scripts the
+     * <code>srcAuxFilesFir</code> property is consulted.</p>
      * 
-     * <p>The method returns a set of artifact instance which will be bundled
-     * with the package.</p>
+     * @throws MojoExecutionException
+     */
+    public void copyScripts() throws MojoExecutionException
+    {
+      File dir = getDstScriptDir();
+      if (dc.preinstScript != null)
+        writeScript("pre-install",
+                   new File(getSrcAuxFilesDir(), dc.preinstScript),
+                   new File(dir, "preinst"),
+                   this);
+
+      if (dc.prermScript != null)
+        writeScript("pre-remove",
+                    new File(getSrcAuxFilesDir(), dc.prermScript),
+                    new File(dir, "prerm"),
+                    this);
+
+      if (dc.postinstScript != null)
+        writeScript("post-install",
+                    new File(getSrcAuxFilesDir(), dc.postinstScript),
+                    new File(dir, "postinst"),
+                    this);
+
+      if (dc.postrmScript != null)
+        writeScript("post-remove",
+                    new File(getSrcAuxFilesDir(), dc.postrmScript),
+                    new File(dir, "postrm"),
+                    this);
+    }
+
+    /**
+     * Creates a classpath line that consists of all the project' artifacts as
+     * well as the project's own artifact.
+     * <p>
+     * The filename of the project's own artifact is taken from the result of
+     * {@link #getTargetArtifactFile()}.
+     * </p>
+     * <p>
+     * The method returns a set of artifact instance which will be bundled with
+     * the package.
+     * </p>
      * 
      * @param bcp
      * @param cp
      * @throws MojoExecutionException
      */
-    public Set createClasspathLine(StringBuilder bcp, StringBuilder cp, String delimiter)
+    public Set createClasspathLine(StringBuilder bcp, StringBuilder cp)
         throws MojoExecutionException
     {
       return Packaging.this.createClasspathLine(getLog(),
-                                                getTargetJarPath(),
-                                                bcp, cp,
-                                                getTargetArtifactFile(),
-                                                delimiter);
+                                                getTargetBundledJarDir(), bcp,
+                                                ":", cp,
+                                                (dc.isAdvancedStarter() ? "\n"
+                                                                       : ":"),
+                                                getTargetArtifactFile());
     }
 
+    /** Returns a string containing the programs dependencies.
+     * 
+     * @return
+     * @throws MojoExecutionException
+     */
     public String createDependencyLine() throws MojoExecutionException
     {
       return Packaging.this.createDependencyLine();
     }
 
-    public void generateWrapperScript(Set bundledArtifacts,
-                                      String bootclasspath, String classpath)
+    /**
+     * Generates a wrapper script for the application. If the
+     * <code>windows</code> flag has been set another script is generated
+     * for that OS.
+     * 
+     * <p>The method consults the properties <code>targetJNIDir</code>,
+     * <code>dstWrapperScriptFile</code> and possibly
+     * <code>dstWrapperScriptFileWindows</code> for its work.</p>
+     * 
+     * @param bundledArtifacts
+     * @param bcp
+     * @param cp
+     * @param windows
+     * @throws MojoExecutionException
+     */
+    public void generateWrapperScript(Set bundledArtifacts, String bcp,
+                                      String cp, boolean windows)
         throws MojoExecutionException
     {
-      Packaging.this.generateWrapperScript(getLog(), bundledArtifacts,
-                                           bootclasspath, classpath,
-                                           getWrapperScriptFile());
+      Log l = getLog();
+      WrapperScriptGenerator gen = new WrapperScriptGenerator();
+      gen.setMaxJavaMemory(dc.maxJavaMemory);
+
+      if (getTargetJNIDir() != null)
+        gen.setLibraryPath(getTargetJNIDir().toString());
+
+      gen.setProperties(dc.systemProperties);
+
+      // Set to default Classmap file on Debian/Ubuntu systems.
+      // TODO: make this configurable
+      if (dc.isAotCompile())
+        gen.setClassmapFile("/var/lib/gcj-4.1/classmap.db");
+
+      if (dc.isAdvancedStarter())
+        {
+          l.info("setting up advanced starter");
+          Utils.setupStarter(l, dc.getMainClass(), getDstStarterDir(), cp);
+
+          // Sets main class and classpath for the wrapper script.
+          gen.setMainClass("_Starter");
+          gen.setClasspath(getTargetStarterDir().toString());
+        }
+      else
+        {
+          l.info("using traditional starter");
+          gen.setMainClass(dc.getMainClass());
+
+          // All Jars have to reside inside the libraryRoot.
+          gen.setClasspath(cp);
+        }
+
+      Utils.createFile(getDstWrapperScriptFile(), "wrapper script");
+
+      try
+        {
+          gen.generate(getDstWrapperScriptFile());
+        }
+      catch (IOException ioe)
+        {
+          throw new MojoExecutionException(
+                                           "IOException while generating wrapper script",
+                                           ioe);
+        }
+
+      if (windows)
+        {
+          Utils.createFile(getDstWindowsWrapperScriptFile(), "windows batch");
+
+          try
+            {
+              gen.generate(getDstWindowsWrapperScriptFile());
+            }
+          catch (IOException ioe)
+            {
+              throw new MojoExecutionException(
+                                               "IOException while generating windows batch file",
+                                               ioe);
+            }
+        }
+
+      // Make the wrapper script executable.
+      Utils.makeExecutable(getDstWrapperScriptFile(), "wrapper script");
+
     }
-    
+
     public String getAotPackageName()
     {
       if (aotPackageName == null)
         aotPackageName = Utils.gcjise(artifactId, dc.getSection(),
                                       pm.isDebianNaming());
 
-      
       return aotPackageName;
     }
 
     public File getAotPkgDir()
     {
       if (aotPkgDir == null)
-        aotPkgDir = new File(getTempRoot(), aotPackageName + "-" + getPackageVersion());
+        aotPkgDir = new File(getTempRoot(), aotPackageName + "-"
+                                            + getPackageVersion());
 
       return aotPkgDir;
     }
@@ -222,22 +431,10 @@ public class Packaging
     public File getBasePkgDir()
     {
       if (basePkgDir == null)
-        basePkgDir = new File(getTempRoot(), getPackageName() + "-" + getPackageVersion());
-      
+        basePkgDir = new File(getTempRoot(), getPackageName() + "-"
+                                             + getPackageVersion());
+
       return basePkgDir;
-    }
-
-    public File getAuxFileSrcDir()
-    {
-      return new File(project.getBasedir(), dc.getAuxFileSrcDir());
-    }
-
-    public File getDstBundledArtifactsDir()
-    {
-      if (dstBundledArtifactsDir == null)
-        dstBundledArtifactsDir = new File(basePkgDir, getTargetJarPath().toString());
-      
-      return dstBundledArtifactsDir;
     }
 
     public File getDstArtifactFile()
@@ -249,17 +446,105 @@ public class Packaging
       return dstArtifactFile;
     }
 
+    public File getDstAuxDir()
+    {
+      return dstAuxDir;
+    }
+
+    public File getDstBinDir()
+    {
+      if (dstBinDir == null)
+        dstBinDir = new File(getBasePkgDir(), getTargetBinDir().toString());
+
+      return dstBinDir;
+    }
+
+    public File getDstBundledJarDir()
+    {
+      if (dstBundledJarDir == null)
+        dstBundledJarDir = new File(basePkgDir,
+                                    getTargetBundledJarDir().toString());
+
+      return dstBundledJarDir;
+    }
+
+    public File getDstDataDir()
+    {
+      if (dstDataDir == null)
+        dstDataDir = new File(getBasePkgDir(), getTargetDataDir().toString());
+
+      return dstDataDir;
+    }
+
+    public File getDstDatarootDir()
+    {
+      if (dstDatarootDir == null)
+        dstDatarootDir = new File(getBasePkgDir(),
+                                  getTargetDatarootDir().toString());
+
+      return dstDatarootDir;
+    }
+
     public File getDstJNIDir()
     {
       if (dstJNIDir == null)
-        dstJNIDir = new File(getBasePkgDir(), pm.getDefaultJNIPath());
+        dstJNIDir = new File(getBasePkgDir(), getTargetJNIDir().toString());
 
       return dstJNIDir;
     }
 
-    public File getIzPackSrcDir()
+    public File getDstRoot()
     {
-      return new File(project.getBasedir(), dc.izPackSrcDir);
+      if (dstRoot == null)
+        dstRoot = new File(getBasePkgDir(), getTargetRoot().toString());
+
+      return dstRoot;
+    }
+
+    public File getDstScriptDir()
+    {
+      if (dstScriptDir == null)
+        throw new UnsupportedOperationException("This dstScriptDir property has to be provided explicitly in advance!");
+
+      return dstScriptDir;
+    }
+
+    public File getDstStarterDir()
+    {
+      if (dstStarterDir == null)
+        dstStarterDir = new File(getBasePkgDir(),
+                                 getTargetStarterDir().toString());
+
+      return dstStarterDir;
+    }
+
+    public File getDstSysconfDir()
+    {
+      if (dstSysconfDir == null)
+        dstSysconfDir = new File(getBasePkgDir(),
+                                 getTargetSysconfDir().toString());
+
+      return dstSysconfDir;
+    }
+
+    public File getDstWindowsWrapperScriptFile()
+    {
+      if (dstWindowsWrapperScriptFile == null)
+        dstWindowsWrapperScriptFile = new File(
+                                               getDstWrapperScriptFile().getAbsolutePath()
+                                                   + ".bat");
+
+      return dstWindowsWrapperScriptFile;
+    }
+
+    public File getDstWrapperScriptFile()
+    {
+      if (dstWrapperScriptFile == null)
+        // Use the provided wrapper script name or the default.
+        dstWrapperScriptFile = new File(getBasePkgDir(),
+                                        getTargetWrapperScriptFile().toString());
+
+      return dstWrapperScriptFile;
     }
 
     public String getJavaExec()
@@ -275,15 +560,17 @@ public class Packaging
     public String getPackageName()
     {
       if (packageName == null)
-        packageName = Utils.createPackageName(artifactId, dc.getSection(), pm.isDebianNaming());
-      
+        packageName = Utils.createPackageName(artifactId, dc.getSection(),
+                                              pm.isDebianNaming());
+
       return packageName;
     }
 
     public String getPackageVersion()
     {
       if (packageVersion == null)
-        packageVersion = fixVersion(version) + "-0" + dc.getDistro();
+        packageVersion = fixVersion(version) + "-0" + dc.chosenDistro
+                         + (dc.revision.length() == 0 ? "" : "-" + dc.revision);
 
       return packageVersion;
     }
@@ -297,23 +584,195 @@ public class Packaging
     {
       return project.getUrl();
     }
-    
+
     public File getSrcArtifactFile()
     {
       if (srcArtifactFile == null)
-        srcArtifactFile = new File(outputDirectory.getPath(), finalName + ".jar");
+        srcArtifactFile = new File(outputDirectory.getPath(), finalName
+                                                              + ".jar");
 
       return srcArtifactFile;
     }
-    
+
+    public File getSrcAuxFilesDir()
+    {
+      return (dc.srcAuxFilesDir.length() == 0) ? new File(project.getBasedir(),
+                                                          DEFAULT_SRC_AUXFILESDIR)
+                                              : new File(project.getBasedir(),
+                                                         dc.srcAuxFilesDir);
+    }
+
+    public File getSrcDataFilesDir()
+    {
+      return (dc.srcDataFilesDir.length() == 0) ? getSrcAuxFilesDir()
+                                               : new File(project.getBasedir(),
+                                                          dc.srcDataFilesDir);
+    }
+
+    public File getSrcDatarootFilesDir()
+    {
+      return (dc.srcDatarootFilesDir.length() == 0) ? getSrcAuxFilesDir()
+                                                   : new File(
+                                                              project.getBasedir(),
+                                                              dc.srcDatarootFilesDir);
+    }
+
+    /**
+     * Returns the directory containing the izpack helper files. If not
+     * specified otherwise this directory is identical to the source directory
+     * of the aux files.
+     * 
+     * @return
+     */
+    public File getSrcIzPackFilesDir()
+    {
+      return (dc.srcIzPackFilesDir.length() == 0 ? getSrcAuxFilesDir()
+                                                : new File(
+                                                           project.getBasedir(),
+                                                           dc.srcIzPackFilesDir));
+    }
+
+    public File getSrcJNIFilesDir()
+    {
+      return (dc.srcJNIFilesDir.length() == 0) ? getSrcAuxFilesDir()
+                                              : new File(project.getBasedir(),
+                                                         dc.srcJNIFilesDir);
+    }
+
+    public File getSrcSysconfFilesDir()
+    {
+      return (dc.srcSysconfFilesDir.length() == 0) ? getSrcAuxFilesDir()
+                                                  : new File(
+                                                             project.getBasedir(),
+                                                             dc.srcSysconfFilesDir);
+    }
+
     public File getTargetArtifactFile()
     {
       if (targetArtifactFile == null)
-          targetArtifactFile = new File(getTargetJarPath(), artifactId + ".jar");
+        targetArtifactFile = new File(
+                                      (dc.isBundleAll() || pm.hasNoPackages() ? getTargetBundledJarDir()
+                                                                             : new File(
+                                                                                        pm.getDefaultJarPath())),
+                                      artifactId + ".jar");
 
       return targetArtifactFile;
     }
-    
+
+    /**
+     * Returns the location of the user-level binaries on the target device.
+     * <p>
+     * If {@link #setTargetBinDir(File)} has not been called to set this value a
+     * default value is generated as follows:
+     * <ul>
+     * <li>if the distro config defined a non-zero length bindir that one is
+     * used</li>
+     * <li>otherwise the distro's default bindir prepended by the prefix of the
+     * distro configuration is used</li>
+     * </ul>
+     * </p>
+     * <p>
+     * Therefore the <code>targetBinDir</code> property is dependent on the
+     * <code>targetRoot</code> property. Check the details for
+     * {@link #getTargetRoot()}.
+     * </p>
+     * 
+     * @return
+     */
+    public File getTargetBinDir()
+    {
+      if (targetBinDir == null)
+        targetBinDir = (dc.bindir.length() == 0 ? new File(
+                                                           getTargetRoot(),
+                                                           pm.getDefaultBinPath())
+                                               : new File(dc.bindir));
+
+      return targetBinDir;
+    }
+
+    public File getTargetBundledJarDir()
+    {
+      if (targetBundledJarDir == null)
+        targetBundledJarDir = (dc.bundledJarDir.length() == 0 ? new File(
+                                                                         getTargetRoot(),
+                                                                         new File(
+                                                                                  pm.getDefaultJarPath(),
+                                                                                  artifactId).toString())
+                                                             : new File(
+                                                                        dc.bundledJarDir));
+
+      return targetBundledJarDir;
+    }
+
+    public File getTargetDataDir()
+    {
+      if (targetDataDir == null)
+        targetDataDir = (dc.datadir.length() == 0 ? new File(
+                                                             getTargetDatarootDir(),
+                                                             artifactId)
+                                                 : new File(dc.datadir));
+
+      return targetDataDir;
+    }
+
+    public File getTargetDatarootDir()
+    {
+      if (targetDatarootDir == null)
+        targetDatarootDir = (dc.datarootdir.length() == 0 ? new File(
+                                                                     getTargetRoot(),
+                                                                     "usr/share")
+                                                         : new File(
+                                                                    dc.datarootdir));
+
+      return targetDatarootDir;
+    }
+
+    public File getTargetJNIDir()
+    {
+      if (targetJNIDir == null)
+        targetJNIDir = new File(getTargetRoot(), pm.getDefaultJNIPath());
+
+      return targetJNIDir;
+    }
+
+    public File getTargetRoot()
+    {
+      if (targetRoot == null)
+        targetRoot = new File(dc.prefix);
+
+      return targetRoot;
+    }
+
+    public File getTargetStarterDir()
+    {
+      if (targetStarterDir == null)
+        targetStarterDir = new File(getTargetBundledJarDir(), "_starter");
+
+      return targetStarterDir;
+    }
+
+    public File getTargetSysconfDir()
+    {
+      if (targetSysconfDir == null)
+        targetSysconfDir = (dc.sysconfdir.length() == 0 ? new File(
+                                                                   getTargetRoot(),
+                                                                   "etc")
+                                                       : new File(dc.sysconfdir));
+
+      return targetSysconfDir;
+    }
+
+    public File getTargetWrapperScriptFile()
+    {
+      if (targetWrapperScriptFile == null)
+        targetWrapperScriptFile = new File(
+                                           getTargetBinDir(),
+                                           (dc.wrapperScriptName != null ? dc.wrapperScriptName
+                                                                        : artifactId));
+
+      return targetWrapperScriptFile;
+    }
+
     public File getTempRoot()
     {
       if (tempRoot == null)
@@ -322,16 +781,6 @@ public class Packaging
       return tempRoot;
     }
 
-    public File getWrapperScriptFile()
-    {
-      if (wrapperScriptFile == null)
-        // Use the provided wrapper script name or the default.
-        wrapperScriptFile = new File(getBasePkgDir(), pm.getDefaultBinPath() + "/"
-                                                 + (dc.wrapperScriptName != null ? dc.wrapperScriptName : artifactId));
-
-      return wrapperScriptFile;
-    }
-    
     public void prepareAotDirectories() throws MojoExecutionException
     {
       prepareDirectories(getLog(), tempRoot, aotPkgDir, null);
@@ -361,15 +810,66 @@ public class Packaging
     {
       this.dstArtifactFile = dstArtifactFile;
     }
-    
-    public void setDstBundledArtifactsDir(File dstBundledArtifactsDir)
+
+    public void setDstAuxDir(File dstAuxFileDir)
     {
-      this.dstBundledArtifactsDir = dstBundledArtifactsDir;
+      this.dstAuxDir = dstAuxFileDir;
+    }
+
+    public void setDstBinDir(File dstBinDir)
+    {
+      this.dstBinDir = dstBinDir;
+    }
+
+    public void setDstBundledJarDir(File dstBundledArtifactsDir)
+    {
+      this.dstBundledJarDir = dstBundledArtifactsDir;
+    }
+
+    public void setDstDataDir(File dstDataDir)
+    {
+      this.dstDataDir = dstDataDir;
+    }
+
+    public void setDstDatarootDir(File dstDatarootDir)
+    {
+      this.dstDatarootDir = dstDatarootDir;
     }
 
     public void setDstJNIDir(File dstJNIDir)
     {
       this.dstJNIDir = dstJNIDir;
+    }
+
+    public void setDstRoot(File dstRoot)
+    {
+
+      this.dstRoot = dstRoot;
+    }
+
+    public void setDstScriptDir(File dstScriptDir)
+    {
+      this.dstScriptDir = dstScriptDir;
+    }
+
+    public void setDstStarterDir(File dstStarterDir)
+    {
+      this.dstStarterDir = dstStarterDir;
+    }
+
+    public void setDstSysconfDir(File dstSysconfDir)
+    {
+      this.dstSysconfDir = dstSysconfDir;
+    }
+
+    public void setDstWindowsWrapperScriptFile(File windowsWrapperScriptFile)
+    {
+      this.dstWindowsWrapperScriptFile = windowsWrapperScriptFile;
+    }
+
+    public void setDstWrapperScriptFile(File wrapperScriptFile)
+    {
+      this.dstWrapperScriptFile = wrapperScriptFile;
     }
 
     public void setPackageName(String packageName)
@@ -387,29 +887,58 @@ public class Packaging
       this.targetArtifactFile = targetArtifactFile;
     }
 
+    public void setTargetBinDir(File targetBinDir)
+    {
+      this.targetBinDir = targetBinDir;
+    }
+
+    public void setTargetBundledJarDir(File targetJarDir)
+    {
+      this.targetBundledJarDir = targetJarDir;
+    }
+
+    public void setTargetDataDir(File targetDataDir)
+    {
+      this.targetDataDir = targetDataDir;
+    }
+
+    public void setTargetDatarootDir(File targetDatarootDir)
+    {
+      this.targetDatarootDir = targetDatarootDir;
+    }
+
+    public void setTargetJNIDir(File targetJNIDir)
+    {
+      this.targetJNIDir = targetJNIDir;
+    }
+
+    public void setTargetRoot(File targetRoot)
+    {
+      this.targetRoot = targetRoot;
+    }
+
+    public void setTargetStarterDir(File targetStarterDir)
+    {
+      this.targetStarterDir = targetStarterDir;
+    }
+
+    public void setTargetSysconfDir(File targetSysconfDir)
+    {
+      this.targetSysconfDir = targetSysconfDir;
+    }
+
+    public void setTargetWrapperScriptFile(File targetWrapperScriptFile)
+    {
+      this.targetWrapperScriptFile = targetWrapperScriptFile;
+    }
+
     public void setTempRoot(File tempRoot)
     {
       this.tempRoot = tempRoot;
     }
-
-    public void setWrapperScriptFile(File wrapperScriptFile)
-    {
-      this.wrapperScriptFile = wrapperScriptFile;
-    }
-
-    public File getTargetJarPath()
-    {
-      if (targetJarPath == null)
-        targetJarPath = new File(pm.getDefaultJarPath(),  artifactId);
-      
-      return targetJarPath;
-    }
-
-    public void setTargetJarPath(File targetJarPath)
-    {
-      this.targetJarPath = targetJarPath;
-    }
   }
+
+  static final String DEFAULT_SRC_AUXFILESDIR = "src/main/auxfiles";
 
   private DistroConfiguration dc;
 
@@ -433,17 +962,48 @@ public class Packaging
    */
   void checkEnvironment(Log l) throws MojoExecutionException
   {
-    l.info("distribution             : " + dc.distro);
+    l.info("distribution             : " + dc.chosenDistro);
     l.info("package system           : " + pm.getPackaging());
-    l.info("default package map      : " + (defaultPackageMapURL == null ? "built-in" : defaultPackageMapURL.toString()));
-    l.info("auxiliary package map    : " + (auxPackageMapURL == null ? "no" : auxPackageMapURL.toString()));
-    l.info("type of project          : " + ((dc.getMainClass() != null) ? "application" : "library"));
+    l.info("default package map      : "
+           + (defaultPackageMapURL == null ? "built-in"
+                                          : defaultPackageMapURL.toString()));
+    l.info("auxiliary package map    : "
+           + (auxPackageMapURL == null ? "no" : auxPackageMapURL.toString()));
+    l.info("type of project          : "
+           + ((dc.getMainClass() != null) ? "application" : "library"));
     l.info("section                  : " + dc.getSection());
     l.info("bundle all dependencies  : " + ((dc.isBundleAll()) ? "yes" : "no"));
     l.info("ahead of time compilation: " + ((dc.isAotCompile()) ? "yes" : "no"));
-    l.info("JNI libraries            : " + ((dc.getJniLibraries() == null) ? "none" : String.valueOf(dc.getJniLibraries().size())));
+    l.info("JNI libraries            : "
+           + ((dc.jniFiles.isEmpty()) ? "<none>"
+                                     : String.valueOf(dc.jniFiles.size())));
+    l.info("auxiliary file source dir: "
+           + (dc.srcAuxFilesDir.length() == 0 ? (DEFAULT_SRC_AUXFILESDIR + " (default)")
+                                             : dc.srcAuxFilesDir));
+    l.info("auxiliary files          : "
+           + ((dc.auxFiles.isEmpty()) ? "<none>"
+                                     : String.valueOf(dc.auxFiles.size())));
+    l.info("prefix                   : "
+           + (dc.prefix.length() == 1 ? "/ (default)" : dc.prefix));
+    l.info("sysconf files source dir : "
+           + (dc.srcSysconfFilesDir.length() == 0 ? (DEFAULT_SRC_AUXFILESDIR + " (default)")
+                                                 : dc.srcSysconfFilesDir));
+    l.info("sysconfdir               : "
+           + (dc.sysconfdir.length() == 0 ? "(default)" : dc.sysconfdir));
+    l.info("dataroot files source dir: "
+           + (dc.srcDatarootFilesDir.length() == 0 ? (DEFAULT_SRC_AUXFILESDIR + " (default)")
+                                                  : dc.srcDatarootFilesDir));
+    l.info("dataroot                 : "
+           + (dc.datarootdir.length() == 0 ? "(default)" : dc.datarootdir));
+    l.info("data files source dir    : "
+           + (dc.srcDataFilesDir.length() == 0 ? (DEFAULT_SRC_AUXFILESDIR + " (default)")
+                                              : dc.srcDataFilesDir));
+    l.info("datadir                  : "
+           + (dc.datadir.length() == 0 ? "(default)" : dc.datadir));
+    l.info("bindir                   : "
+           + (dc.bindir.length() == 0 ? "(default)" : dc.bindir));
 
-    if (dc.distro == null)
+    if (dc.chosenDistro == null)
       throw new MojoExecutionException("No distribution configured!");
 
     if (dc.isAotCompile())
@@ -477,40 +1037,58 @@ public class Packaging
         AotCompileUtils.checkToolAvailability();
       }
   }
-
-  final void copyJNILibraries(Log l, List jniLibraries, File dstDir)
-      throws MojoExecutionException
+  
+  protected final void writeScript(String item, File srcScriptFile, File dstScriptFile, Helper ph)
+  throws MojoExecutionException
   {
-    if (jniLibraries == null || jniLibraries.isEmpty())
-      return;
-
-    Iterator ite = jniLibraries.iterator();
-    while (ite.hasNext())
-      {
-        String library = (String) ite.next();
-        File srcFile = new File(project.getBasedir(), library);
-        File dstFile = new File(dstDir, srcFile.getName());
-
-        l.info("copying JNI library: " + srcFile.getAbsolutePath());
-        l.info("destination: " + dstFile.getAbsolutePath());
-
-        try
-          {
-            FileUtils.copyFile(srcFile, dstFile);
-          }
-        catch (IOException ioe)
-          {
-            throw new MojoExecutionException(
-                                             "IOException while copying JNI library file.",
-                                             ioe);
-          }
-      }
-
+    Utils.createFile(dstScriptFile, item + " file");
+    // Write a #/bin/sh header
+    
+    Utils.makeExecutable(dstScriptFile, item + " file");
+    
+    try
+    {
+      PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(dstScriptFile)));
+      writer.println("#!/bin/sh");
+      writer.println("# This script is partly autogenerated by the " + getClass().getName() + " class");
+      writer.println("# of the maven-pkg-plugin. The autogenerated part adds some variables of the packaging");
+      writer.println("# to the top of the script which can be used in the lower manual part.");
+      writer.println();
+      writer.println("prefix=\"" + ph.getTargetRoot() + "\"");
+      writer.println("bindir=\"" + ph.getTargetBinDir() + "\"");
+      writer.println("datadir=\"" + ph.getTargetDataDir() + "\"");
+      writer.println("datarootdir=\"" + ph.getTargetDatarootDir() + "\"");
+      writer.println("sysconfdir=\"" + ph.getTargetSysconfDir() + "\"");
+      writer.println("jnidir=\"" + ph.getTargetJNIDir() + "\"");
+      writer.println("bundledjardir=\"" + ph.getTargetBundledJarDir() + "\"");
+      writer.println("wrapperscriptfile=\"" + ph.getTargetWrapperScriptFile() + "\"");
+      writer.println("version=\"" + ph.getPackageVersion() + "\"");
+      writer.println("name=\"" + ph.getPackageName() + "\"");
+      writer.println("mainClass=\"" + dc.mainClass + "\"");
+      writer.println("scriptType=\"" + item + "\"");
+      writer.println();
+      writer.println("distro=\"" + dc.chosenDistro + "\"");
+      writer.println("distroLabel=\"" + pm.getDistroLabel() + "\"");
+      writer.println("packaging=\"" + pm.getPackaging() + "\"");
+      writer.println();
+      writer.println("# What follows is the content script file " + srcScriptFile.getName());
+      writer.println();
+      
+      // Now append the real script
+      IOUtils.copy(new FileInputStream(srcScriptFile), writer);
+      
+      writer.close();
+    }
+    catch (IOException ioe)
+    {
+      throw new MojoExecutionException("IO error while writing the script file " + dstScriptFile);
+    }
   }
 
   /**
-   * Creates the bootclasspath and classpath line from the project's dependencies
-   * and returns the artifacts which will be bundled with the package.
+   * Creates the bootclasspath and classpath line from the project's
+   * dependencies and returns the artifacts which will be bundled with the
+   * package.
    * 
    * @param pm The package map used to resolve the Jar file names.
    * @param bundled A set used to track the bundled jars for later file-size
@@ -523,14 +1101,15 @@ public class Packaging
    */
   protected final Set createClasspathLine(final Log l,
                                           final File targetJarPath,
-                                           final StringBuilder bcp,
-                                           final StringBuilder cp,
-                                           File targetArtifactFile,
-                                           final String delimiter)
+                                          final StringBuilder bcp,
+                                          final String bcpDelimiter,
+                                          final StringBuilder cp,
+                                          final String cpDelimiter,
+                                          File targetArtifactFile)
       throws MojoExecutionException
   {
     final Set bundled = new HashSet();
-    
+
     l.info("resolving dependency artifacts");
 
     Set dependencies = null;
@@ -581,11 +1160,11 @@ public class Packaging
         // TODO: Perhaps one want a certain bundled dependency in boot
         // classpath.
 
-        // Bundled Jars will always live in targetJarPath 
+        // Bundled Jars will always live in targetJarPath
         File file = artifact.getFile();
         if (file != null)
           cp.append(targetJarPath.toString() + "/" + file.getName()
-                    + delimiter);
+                    + cpDelimiter);
         else
           l.warn("Cannot put bundled artifact " + artifact.getArtifactId()
                  + " to Classpath.");
@@ -602,19 +1181,20 @@ public class Packaging
           }
 
         StringBuilder b = (entry.isBootClasspath) ? bcp : cp;
+        String delimiter = (entry.isBootClasspath) ? bcpDelimiter : cpDelimiter;
 
         Iterator ite = entry.jarFileNames.iterator();
         while (ite.hasNext())
           {
             String fileName = (String) ite.next();
-            
+
             // Prepend default Jar path if file is not absolute.
             if (fileName.charAt(0) != '/')
               {
                 b.append(pm.getDefaultJarPath());
                 b.append("/");
               }
-            
+
             b.append(fileName);
             b.append(delimiter);
           }
@@ -629,8 +1209,8 @@ public class Packaging
     cp.append(targetArtifactFile.toString());
 
     if (bcp.length() > 0)
-      bcp.delete(bcp.length() - delimiter.length(), bcp.length());
-    
+      bcp.delete(bcp.length() - bcpDelimiter.length(), bcp.length());
+
     return bundled;
   }
 
@@ -748,8 +1328,8 @@ public class Packaging
 
     // Generate merged distro configuration.
     dc = getMergedConfiguration(d);
-    dc.distro = d;
-    
+    dc.chosenDistro = d;
+
     // Retrieve package map for chosen distro.
     pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL, d,
                         dc.bundleDependencies);
@@ -758,8 +1338,9 @@ public class Packaging
 
     String packaging = pm.getPackaging();
     if (packaging == null)
-      throw new MojoExecutionException("Package maps document set no packaging for distro: "
-                                           + dc.distro);
+      throw new MojoExecutionException(
+                                       "Package maps document set no packaging for distro: "
+                                           + dc.chosenDistro);
 
     // Create packager according to the chosen packaging type.
     Packager packager;
@@ -781,50 +1362,6 @@ public class Packaging
   }
 
   /**
-   * Configures a wrapper script generator with all kinds of values and creates
-   * a wrapper script.
-   * 
-   * @param l
-   * @param wrapperScriptFile
-   * @throws MojoExecutionException
-   */
-  protected void generateWrapperScript(Log l, Set bundled,
-                                       String bootclasspath, String classpath,
-                                       File wrapperScriptFile)
-      throws MojoExecutionException
-  {
-    l.info("creating wrapper script file: "
-           + wrapperScriptFile.getAbsolutePath());
-    Utils.createFile(wrapperScriptFile, "wrapper script");
-
-    WrapperScriptGenerator gen = new WrapperScriptGenerator();
-
-    gen.setBootClasspath(bootclasspath);
-    gen.setClasspath(classpath);
-    gen.setMainClass(dc.mainClass);
-    gen.setMaxJavaMemory(dc.maxJavaMemory);
-    gen.setLibraryPath(pm.getDefaultJNIPath());
-    gen.setProperties(dc.systemProperties);
-
-    // Set to default Classmap file on Debian/Ubuntu systems.
-    gen.setClassmapFile("/var/lib/gcj-4.1/classmap.db");
-
-    try
-      {
-        gen.generate(wrapperScriptFile);
-      }
-    catch (IOException ioe)
-      {
-        throw new MojoExecutionException(
-                                         "IOException while generating wrapper script",
-                                         ioe);
-      }
-
-    // Make the wrapper script executable.
-    Utils.makeExecutable(wrapperScriptFile, "wrapper script");
-  }
-  
-  /**
    * Takes the default configuration and the custom one into account and creates
    * a merged one.
    * 
@@ -843,12 +1380,18 @@ public class Packaging
       {
         DistroConfiguration dc = (DistroConfiguration) ite.next();
 
-        // dc.distro must not be 'null'.
-        if (dc.distro.equals(distro))
+        // Checks whether this distroconfiguration supports
+        // the wanted distro.
+        if (dc.distros.contains(distro))
           {
-            DistroConfiguration parent = (dc.parent != null)
-              ? getMergedConfiguration(dc.parent) : defaults;
-            
+            DistroConfiguration parent = (dc.parent != null ? getMergedConfiguration(dc.parent)
+                                                           : defaults);
+
+            // Stores the chosen distro in the configuration for later use.
+            dc.chosenDistro = distro;
+
+            // Returns a configuration that is merged with
+            // the default configuration-
             return dc.merge(parent);
           }
       }
@@ -888,7 +1431,7 @@ public class Packaging
     if (! basePkgDir.mkdirs())
       throw new MojoExecutionException("Could not create package directory.");
 
-    if (jniDir != null && dc.jniLibraries != null && dc.jniLibraries.size() > 0)
+    if (jniDir != null && dc.jniFiles != null && dc.jniFiles.size() > 0)
       {
         if (! jniDir.mkdirs())
           throw new MojoExecutionException("Could not create JNI directory.");

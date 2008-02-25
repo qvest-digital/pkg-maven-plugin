@@ -57,6 +57,9 @@ public class DebPackager extends Packager
 
     File basePkgDir = ph.getBasePkgDir();
     
+    // Provide a proper default value to make script file copying work.
+    ph.setDstScriptDir(new File(basePkgDir, "DEBIAN"));
+    
     // The Debian control file (package name, dependencies etc).
     File controlFile = new File(basePkgDir, "DEBIAN/control");
 
@@ -94,7 +97,7 @@ public class DebPackager extends Packager
     StringBuilder cp = new StringBuilder();
     
     long byteAmount = srcArtifactFile.length();
-
+    
     try
       {
     	// The following section does the coarse-grained steps
@@ -107,21 +110,18 @@ public class DebPackager extends Packager
 
         ph.copyProjectArtifact();
         
-        ph.copyJNILibraries();
+        byteAmount += ph.copyFiles();
         
-        byteAmount += Utils.copyAuxFiles(l,
-                                         ph.getAuxFileSrcDir(),
-                                         ph.getBasePkgDir(),
-                                         distroConfig.getAuxFiles());
+        ph.copyScripts();
 
         // Create classpath line, copy bundled jars and generate wrapper
         // start script only if the project is an application.
         if (distroConfig.getMainClass() != null)
           {
             // TODO: Handle native library artifacts properly.
-            bundledArtifacts = ph.createClasspathLine(bcp, cp, ":");
+            bundledArtifacts = ph.createClasspathLine(bcp, cp);
 
-            ph.generateWrapperScript(bundledArtifacts, bcp.toString(), cp.toString());
+            ph.generateWrapperScript(bundledArtifacts, bcp.toString(), cp.toString(), false);
 
             byteAmount += ph.copyArtifacts(bundledArtifacts);
           }
@@ -267,20 +267,6 @@ public class DebPackager extends Packager
                 "Error creating the .deb file.");
   }
  
- /**
-   * Convert the artifactId into a Debian package name which contains
-   * gcj precompiled binaries.
-   * 
-   * @param artifactId
-   * @return
-   */
-  private String gcjise(String artifactId, String section)
-  {
-    return section.equals("libs") ? "lib" + artifactId + "-gcj"
-                                        : artifactId + "-gcj";
-    
-  }
-
   /** Converts a byte amount to the unit used by the Debian control file
    * (usually KiB). That value can then be used in a ControlFileGenerator
    * instance.

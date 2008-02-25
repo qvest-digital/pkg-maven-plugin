@@ -10,11 +10,21 @@
 		<inherit>debian_etch</inherit>
 
 		<map>
+      <!-- SWT is in Maven in different variants ... -->
+      <entry>
+        <artifactSpec>org.eclipse.swt:swt-gtk-linux</artifactSpec>
+        <dependencyLine>libswt3.2-gtk-java | libswt3.3-gtk-java</dependencyLine>
+        <jars>
+          <jar>swt.jar</jar>
+        </jars>
+      </entry>
+
+
 			<entry>
 				<artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
 				<dependencyLine>libswt3.2-gtk-java | libswt3.3-gtk-java</dependencyLine>
 				<jars>
-					<jar>swt-gtk.jar</jar>
+					<jar>swt.jar</jar>
 				</jars>
 			</entry>
 

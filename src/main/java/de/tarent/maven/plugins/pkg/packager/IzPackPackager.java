@@ -53,7 +53,6 @@ package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -66,16 +65,11 @@ import org.apache.maven.plugin.logging.Log;
 import de.tarent.maven.plugins.pkg.DistroConfiguration;
 import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.Utils;
-import de.tarent.maven.plugins.pkg.generator.WrapperScriptGenerator;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 public class IzPackPackager extends Packager
 {
   private static final String IZPACK_EMBEDDED_JAR = "izpack-embedded.jar";
-  
-  private static final String STARTER_CLASS = "_Starter.class";
-  
-  private static final String CLASSPATH = "_classpath";
   
   public void execute(Log l,
                       Packaging.Helper ph,
@@ -84,50 +78,60 @@ public class IzPackPackager extends Packager
   {
     // The root directory into which everything from srcRoot is copied
     // into (inside the outputDirectory).
-    File tempDescriptorRoot = new File(ph.getTempRoot(), "descriptor");
-    ph.setBasePkgDir(tempDescriptorRoot);
+    File packagingBaseDir = new File(ph.getTempRoot(), "izpack-packaging");
+    ph.setBasePkgDir(packagingBaseDir);
+    ph.setDstAuxDir(packagingBaseDir);
+    
+    ph.setTargetSysconfDir(new File("${INSTALL_PATH}"));
+    ph.setDstSysconfDir(packagingBaseDir);
+
+    ph.setTargetDatarootDir(new File("${INSTALL_PATH}"));
+    ph.setDstDatarootDir(packagingBaseDir);
+    
+    ph.setTargetDataDir(new File("${INSTALL_PATH}"));
+    ph.setDstDataDir(packagingBaseDir);
     
     // The root directory into which the jars from the dependencies
     // are put.
-    ph.setDstBundledArtifactsDir(new File(tempDescriptorRoot, "lib"));
-    File dstBundledArtifactsDir = ph.getDstBundledArtifactsDir();
+    ph.setDstBundledJarDir(new File(packagingBaseDir, "lib"));
+    ph.setTargetBundledJarDir(new File("%{INSTALL_PATH}", "lib"));
     
-    // Sets the location of the jar files. As it contains a substituatio variable
-    // dstBundledArtifactsDir has been set already (prevents the use of targetJarPath
-    // for IO operations).
-    ph.setTargetJarPath(new File("%{INSTALL_PATH}", "lib"));
-
+    // Sets where to copy the JNI libraries
+    ph.setTargetJNIDir(new File("%{INSTALL_PATH}", "lib"));
+    ph.setDstJNIDir(new File(packagingBaseDir, "lib"));
+    
     // Overrides default dst artifact file.
-    ph.setDstArtifactFile(new File(ph.getDstBundledArtifactsDir(), ph.getArtifactId() + ".jar"));
+    ph.setDstArtifactFile(new File(ph.getDstBundledJarDir(), ph.getArtifactId() + ".jar"));
     
-    // The destination file for the embedded IzPack installation.
+    // The root directory into which the starter and the classpath
+    // properties file are put.
+    ph.setDstStarterDir(new File(packagingBaseDir, "_starter"));
+    ph.setTargetStarterDir(new File("%{INSTALL_PATH}", "_starter"));
+    
+    // The XML file for IzPack which describes how to generate the installer. 
+    File installerXmlFile = new File(packagingBaseDir, distroConfig.getIzPackInstallerXml());
+    File modifiedInstallerXmlFile = new File(packagingBaseDir, "modified-" + distroConfig.getIzPackInstallerXml());
+    
+    // The resulting Jar file which contains the runnable installer.
+    File resultFile = new File(ph.getOutputDirectory(), ph.getPackageName() + "-" + ph.getPackageVersion() + "-installer.jar");
+    
+    // targetBinDir does not occur within any script. Therefore there is no need to
+    // fumble with ${INSTALL_PATH}. The targetBinDir property will still be used to create
+    // dstWrapperScriptFile but by setting it to "" it does not have any negative effect.
+    // TODO: By splitting the target/dst variants from the actual filename this could
+    // implemented more elegantly.
+    ph.setTargetBinDir(new File(""));
+    ph.setDstBinDir(packagingBaseDir);
+    
+    File wrapperScriptFile = ph.getDstWrapperScriptFile();
+    File windowsWrapperScriptFile = ph.getDstWindowsWrapperScriptFile();
+
+     // The destination file for the embedded IzPack installation.
     File izPackEmbeddedJarFile = new File(ph.getTempRoot(), IZPACK_EMBEDDED_JAR);
     
     // The directory in which the embedded IzPack installation is unpacked
     // at runtime.
     File izPackEmbeddedRoot = new File(ph.getTempRoot(), "izpack-embedded");
-    
-    // The root directory containing the IzPack installer XML file and
-    // all accompanying resource files.
-    File srcRoot = ph.getIzPackSrcDir();
-    
-    // The root directory into which the starter and the classpath
-    // properties file are put.
-    File starterRoot = new File(tempDescriptorRoot, "_starter");
-    
-    // The XML file for IzPack which describes how to generate the installer. 
-    File installerXmlFile = new File(tempDescriptorRoot, distroConfig.getIzPackInstallerXml());
-    File modifiedInstallerXmlFile = new File(tempDescriptorRoot, "modified-" + distroConfig.getIzPackInstallerXml());
-    
-    // The resulting Jar file which contains the runnable installer.
-    File resultFile = new File(ph.getOutputDirectory(), ph.getPackageName() + "-" + ph.getPackageVersion() + "-installer.jar");
-    
-    // This is only neccessary when a wrapper script should be created
-    ph.setWrapperScriptFile(new File(tempDescriptorRoot, (distroConfig.getWrapperScriptName() != null ? distroConfig.getWrapperScriptName() : ph.getArtifactId())));
-    File wrapperScriptFile = ph.getWrapperScriptFile();
-    File windowsWrapperScriptFile = new File(wrapperScriptFile.getAbsolutePath() + ".bat");
-    
-    String starterPrefix = "%{INSTALL_PATH}/" + starterRoot.getName();
     
     Set bundledArtifacts = null;
     StringBuilder bcp = new StringBuilder();
@@ -138,21 +142,19 @@ public class IzPackPackager extends Packager
         prepareDirectories(l,
                            ph.getTempRoot(),
                            izPackEmbeddedRoot,
-                           srcRoot,
-                           tempDescriptorRoot,
-                           dstBundledArtifactsDir);
+                           ph.getSrcIzPackFilesDir(),
+                           packagingBaseDir,
+                           ph.getDstBundledJarDir());
         
         unpackIzPack(l, izPackEmbeddedJarFile, izPackEmbeddedRoot);
         
-        bundledArtifacts = ph.createClasspathLine(bcp, cp, (distroConfig.isAdvancedStarter() ? "\n" : ":"));
+        bundledArtifacts = ph.createClasspathLine(bcp, cp);
         
         ph.copyProjectArtifact();
         
         ph.copyArtifacts(bundledArtifacts);
         
-        ph.copyJNILibraries();
-
-        Utils.copyAuxFiles(l, ph.getAuxFileSrcDir(), tempDescriptorRoot, distroConfig.getAuxFiles());
+        ph.copyFiles();
 
         l.info("parsing installer xml file: " + installerXmlFile);
         IzPackDescriptor desc = new IzPackDescriptor(installerXmlFile, "Unable to parse installer xml file.");
@@ -161,23 +163,11 @@ public class IzPackPackager extends Packager
         desc.fillInfo(l, ph.getPackageName(), ph.getPackageVersion(), ph.getProjectUrl());
         
         desc.removeAotPack();
-        
-        WrapperScriptGenerator gen = createWrapperScriptGenerator(ph.getTargetJarPath(), distroConfig);
+
+        ph.generateWrapperScript(bundledArtifacts, bcp.toString(), cp.toString(), true);
         
         if (distroConfig.isAdvancedStarter())
-          {
-        	l.info("setting up advanced starter");
-        	setupStarter(l, distroConfig.getMainClass(), starterRoot, cp.toString());
-        	
-        	assignStarterClasspath(gen, distroConfig, desc, starterPrefix);
-          }
-        else
-          {
-        	l.info("using traditional starter");
-        	assignTraditionalClasspath(gen, distroConfig, cp.toString());
-          }
-        
-        generateWrapperScripts(gen, wrapperScriptFile, windowsWrapperScriptFile);
+          desc.addStarter("_starter", "_classpath");
 
         l.info("adding wrapper script information.");
         desc.addUnixWrapperScript(wrapperScriptFile.getName(), ph.getProjectDescription());
@@ -189,7 +179,7 @@ public class IzPackPackager extends Packager
         createInstaller(l,
                         ph.getJavaExec(),
                         izPackEmbeddedRoot,
-                        tempDescriptorRoot,
+                        packagingBaseDir,
                         modifiedInstallerXmlFile,
                         resultFile);
         
@@ -344,151 +334,7 @@ public class IzPackPackager extends Packager
     "IOException while trying to run IzPack.");
   
   }
-  
-  /**
-   * Creates a {@link WrapperScriptGenerator} instance and initializes
-   * with basic values.
-   * 
-   * @param targetJarPath
-   * @return
-   */
-  private WrapperScriptGenerator createWrapperScriptGenerator(File targetJarPath, DistroConfiguration dc)
-  {
-    WrapperScriptGenerator gen = new WrapperScriptGenerator();
-	    
-	// Puts the project specific system properties into the wrapper script.
-    gen.setProperties(dc.getSystemProperties());
-
-	// Sets a library path that assumes that the JNI libraries
-    // lie in the libraryRoot. %{INSTALL_PATH} is replaced with
-    // the actual installation location by IzPack.
-    gen.setLibraryPath(targetJarPath.toString());
-
-	return gen;
-  }
-  
-  /**
-   * Copies the starter classfile to the starter root, prepares the
-   * classpath properties file and stores it at that root, too.
-   * 
-   * @param starterRoot
-   * @param dependencies
-   * @param libraryPrefix
-   * @throws MojoExecutionException
-   */
-  private void setupStarter(Log l, String mainClass, File starterRoot, String classpath)
-  throws MojoExecutionException
-  {
-	File destStarterClassFile = new File(starterRoot, STARTER_CLASS);
-
-	Utils.createFile(destStarterClassFile, "starter class");
-    Utils.storeInputStream(IzPackPackager.class.getResourceAsStream("/" + STARTER_CLASS),
-    		               destStarterClassFile, "Unable to store starter class file in destination.");
-    
-    File destClasspathFile = new File(starterRoot, CLASSPATH); 
-    Utils.createFile(destClasspathFile, "starter classpath");
-
-    PrintWriter writer = null;
-    try
-      {
-        writer = new PrintWriter(destClasspathFile);
-        
-        writer.println("# This file controls the application's classpath and is autogenerated.");
-        writer.println("# Slashes (/) in the filenames are replaced with the platform-specific");
-        writer.println("# separator char at runtime.");
-        writer.println("# The next line is the fully-classified name of the main class:");
-        writer.println(mainClass);
-        writer.println("# The following lines are the classpath entries:");
-  
-        writer.println(classpath);
-        
-        l.info("created library entries");
-      }
-    catch (IOException e)
-      {
-    	throw new MojoExecutionException("storing the classpath entries failed", e);
-      }
-    finally
-      {
-    	if (writer != null)
-    		writer.close();
-      }
-  }
-  
-  private void assignStarterClasspath(WrapperScriptGenerator gen,
-                                      DistroConfiguration dc,
-                                      IzPackDescriptor desc,
-                                      String starterPrefix)
-  throws MojoExecutionException
-  {
-  	// Sets main class and classpath for the wrapper script.
-  	gen.setMainClass("_Starter");
-  	gen.setClasspath(starterPrefix);
-    
-    gen.setMaxJavaMemory(dc.getMaxJavaMemory());
-
-  	desc.addStarter("_starter", CLASSPATH);
-  }
-  
-  /**
-   * Assigns a classpath and the main class in the way Java programs are
-   * started traditionally.
-   * 
-   * <p>That means the applications mainclass and classpath is provided as
-   * an argument to the command-line that starts the virtual machine.</p> 
-   * 
-   * @param gen
-   * @param libraryPrefix
-   * @param libraryRoot
-   * @throws MojoExecutionException
-   */
-  private void assignTraditionalClasspath(WrapperScriptGenerator gen,
-                                          DistroConfiguration dc,
-                                          String classpath)
-  throws MojoExecutionException
-  {
-    gen.setMainClass(dc.getMainClass());
-    gen.setMaxJavaMemory(dc.getMaxJavaMemory());
-
-    // All Jars have to reside inside the libraryRoot.
-	gen.setClasspath(classpath);
-  }
-  
-  /**
-   * Generates the wrapperscripts according to the way the {@link WrapperScriptGenerator}
-   * was configured.
-   * 
-   * @param gen
-   * @param wrapperScriptFile
-   * @param windowsWrapperScriptFile
-   * @throws MojoExecutionException
-   */
-  private void generateWrapperScripts(WrapperScriptGenerator gen, File wrapperScriptFile, File windowsWrapperScriptFile)
-    throws MojoExecutionException
-  {
-    
-    Utils.createFile(wrapperScriptFile, "wrapper script");
-    
-    try
-    {
-      gen.generate(wrapperScriptFile);
-    }
-    catch (IOException ioe)
-    {
-      throw new MojoExecutionException("IOException while generating wrapper script.");
-    }
-
-    Utils.createFile(windowsWrapperScriptFile, "Windows wrapper script");
-    
-    try
-    {
-      gen.generateBatchFile(windowsWrapperScriptFile);
-    }
-    catch (IOException ioe)
-    {
-      throw new MojoExecutionException("IOException while generating Windows wrapper script.");
-    }
-    
-  }
+ 
+ 
    
 }

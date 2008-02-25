@@ -145,6 +145,11 @@ public class PackageMap
     return (mapping.defaultJNIPath != null ? mapping.defaultJNIPath : "/usr/lib/jni");
   }
   
+  public String getDistroLabel()
+  {
+    return mapping.label;
+  }
+  
   /**
    * Returns the default location for executable (scripts).
    * 
@@ -167,6 +172,11 @@ public class PackageMap
   public boolean isDebianNaming()
   {
     return (mapping.debianNaming != null ? mapping.debianNaming.booleanValue() : true);
+  }
+  
+  public boolean hasNoPackages()
+  {
+    return mapping.hasNoPackages;
   }
 
   public void iterateDependencyArtifacts(Log l, Collection deps, Visitor v, boolean bundleNonExisting)

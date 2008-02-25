@@ -2,6 +2,7 @@
 	<version>1.0</version>
 
 	<include>pm-openmoko.xml</include>
+	<include>pm-maemo_chinook.xml</include>
 
 	<include>pm-debian_etch.xml</include>
 	<include>pm-debian_lenny.xml</include>

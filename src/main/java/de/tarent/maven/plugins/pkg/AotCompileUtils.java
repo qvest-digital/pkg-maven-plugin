@@ -128,7 +128,7 @@ public class AotCompileUtils
     l.info("creating classmap file with " + GCJ_DBTOOL_EXECUTABLE +": "
            + classmap.getAbsolutePath());
     
-    Utils.createParentDirs(classmap, "classmap");
+    Utils.createParentDirs(classmap, "classmap file");
 
     Utils.exec(new String[] {GCJ_DBTOOL_EXECUTABLE,
                              "-n", classmap.getAbsolutePath() },
