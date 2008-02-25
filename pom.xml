@@ -79,6 +79,7 @@
               <type>sources</type>
             </fileTypes>
             <processorType>i386</processorType>
+	    <gForgeProject>mvn-pkg-plugin</gForgeProject>
           </configuration>
       </plugin>
 	  </plugins>
