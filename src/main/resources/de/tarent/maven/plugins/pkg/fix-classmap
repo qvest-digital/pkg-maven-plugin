@@ -1,8 +1,0 @@
-#!/bin/sh
-# A wrapper script for the FixClassmap Java program.
-
-MAIN_CLASS=de.tarent.maven.helper.fixclassmap.FixClassmap
-
-CP=fix-classmap-1.0.jar
-
-java -cp ${CP} ${MAIN_CLASS} ${@}

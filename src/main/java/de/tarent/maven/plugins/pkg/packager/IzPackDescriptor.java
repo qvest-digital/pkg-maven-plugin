@@ -23,7 +23,7 @@
  * Elmar Geese, CEO tarent GmbH.
  */
 
-package de.tarent.maven.plugins.pkg;
+package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
 import java.io.IOException;
