@@ -78,7 +78,7 @@
               <type>javadoc</type>
               <type>sources</type>
             </fileTypes>
-            <processorType>i386</processorType>
+			<processorType>any</processorType>
 	    <gForgeProject>mvn-pkg-plugin</gForgeProject>
           </configuration>
       </plugin>
