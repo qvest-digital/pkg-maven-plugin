@@ -23,32 +23,6 @@
  * Elmar Geese, CEO tarent GmbH.
  */
 
-/* $Id: IzPackPackaging.java,v 1.22 2007/08/07 11:29:59 robert Exp $
- *
- * maven-pkg-plugin, Packaging plugin for Maven2 
- * Copyright (C) 2007 tarent GmbH
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * tarent GmbH., hereby disclaims all copyright
- * interest in the program 'maven-pkg-plugin'
- * written by Robert Schuster, Fabian Koester. 
- * signature of Elmar Geese, 1 June 2002
- * Elmar Geese, CEO tarent GmbH
- */
-
 package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
@@ -114,6 +88,10 @@ public class IzPackPackager extends Packager
     
     // The resulting Jar file which contains the runnable installer.
     File resultFile = new File(ph.getOutputDirectory(), ph.getPackageName() + "-" + ph.getPackageVersion() + "-installer.jar");
+
+    File resultFileWindows = new File(ph.getOutputDirectory(), ph.getPackageName() + "-" + ph.getPackageVersion() + "-installer.exe");
+
+    File resultFileOSX = new File(ph.getOutputDirectory(), ph.getPackageName() + "-" + ph.getPackageVersion() + "-installer.app");
     
     // targetBinDir does not occur within any script. Therefore there is no need to
     // fumble with ${INSTALL_PATH}. The targetBinDir property will still be used to create
@@ -183,6 +161,11 @@ public class IzPackPackager extends Packager
                         modifiedInstallerXmlFile,
                         resultFile);
         
+				if (distroConfig.isCreateWindowsExecutable())
+					createWindowsExecutable(l, resultFile, resultFileWindows);
+
+				if (distroConfig.isCreateOSXApp())
+					createOSXExecutable(l, resultFile, resultFileOSX);
       }
     catch (MojoExecutionException badMojo)
       {
@@ -202,7 +185,8 @@ public class IzPackPackager extends Packager
    */
   public void checkEnvironment(Log l, DistroConfiguration dc) throws MojoExecutionException
   {
-    // Nothing to check for.
+    // TODO: On GNU/Linux, Unix check for python, 7za if and configure for calling the python script
+		// On Windows configure to run the exe file
   }
 
   /**
@@ -334,7 +318,41 @@ public class IzPackPackager extends Packager
     "IOException while trying to run IzPack.");
   
   }
+
+	private void createWindowsExecutable(Log l,
+                                       File installerFile,
+                                       File windowsInstallerFile)
+	throws MojoExecutionException
+	{
+		l.info("calling izpack2exe.py to create Windows installer binary");
+
+		Utils.exec(new String[] {
+       "python", "utils/izpack2exe/izpack2exe.py",
+       "--file=" + installerFile.getAbsolutePath(),
+       "--output=" + windowsInstallerFile.getAbsolutePath(),
+			 "--with-p7z=7za"
+		}, izPackHomeDir,
+    "Unable to run izpack2exe script",
+    "IOException while trying to run iz2pack2exe script.");
+
+	}
  
+	private void createOSXExecutable(Log l,
+                                   File installerFile,
+                                   File osxInstallerFile)
+	throws MojoExecutionException
+	{
+		l.info("calling izpack2app.py to create OS X installer binary");
+
+		Utils.exec(new String[] {
+       "python", "utils/izpack2app/izpack2app.py",
+       installerFile.getAbsolutePath(),
+       windowsInstallerFile.getAbsolutePath(),
+		}, izPackHomeDir,
+    "Unable to run izpack2app script",
+    "IOException while trying to run iz2pack2app script.");
+
+	}
  
    
 }
