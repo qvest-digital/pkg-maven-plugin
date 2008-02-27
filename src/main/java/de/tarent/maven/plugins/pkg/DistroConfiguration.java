@@ -58,6 +58,10 @@ public class DistroConfiguration
     return (child != null) ? child : (parent != null ? parent : def);
   }
   
+  Boolean createWindowsExecutable;
+  
+  Boolean createOSXApp;
+  
   /**
    * Denotes whether the packager should use a special starter class to run
    * the application which allows working around platform limitations as
@@ -653,6 +657,9 @@ public class DistroConfiguration
     bundleAll = (Boolean) merge(bundleAll, parent.bundleAll, Boolean.FALSE);
     advancedStarter = (Boolean) merge(advancedStarter, parent.advancedStarter, Boolean.FALSE);
 
+    createOSXApp = (Boolean) merge(createOSXApp, parent.createOSXApp, Boolean.TRUE);
+    createWindowsExecutable = (Boolean) merge(createWindowsExecutable, parent.createWindowsExecutable, Boolean.TRUE);
+
     prefix = (String) merge(prefix, parent.prefix, "/");
     bindir = (String) merge(bindir, parent.bindir, "");
     sysconfdir = (String) merge(sysconfdir, parent.sysconfdir, "");
@@ -1005,6 +1012,26 @@ public class DistroConfiguration
     sb.append("\n");
 
     return sb.toString();
+  }
+
+  public boolean isCreateOSXApp()
+  {
+    return createOSXApp.booleanValue();
+  }
+
+  public void setCreateOSXApp(boolean createOSXApp)
+  {
+    this.createOSXApp = Boolean.valueOf(createOSXApp);
+  }
+
+  public boolean isCreateWindowsExecutable()
+  {
+    return createWindowsExecutable.booleanValue();
+  }
+
+  public void setCreateWindowsExecutable(boolean createWindowsExecutable)
+  {
+    this.createWindowsExecutable = Boolean.valueOf(createWindowsExecutable);
   }
 
 }

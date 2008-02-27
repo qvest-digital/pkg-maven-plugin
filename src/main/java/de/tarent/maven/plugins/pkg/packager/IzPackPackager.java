@@ -162,10 +162,10 @@ public class IzPackPackager extends Packager
                         resultFile);
         
 				if (distroConfig.isCreateWindowsExecutable())
-					createWindowsExecutable(l, resultFile, resultFileWindows);
+					createWindowsExecutable(l, izPackEmbeddedRoot, resultFile, resultFileWindows);
 
 				if (distroConfig.isCreateOSXApp())
-					createOSXExecutable(l, resultFile, resultFileOSX);
+					createOSXExecutable(l, izPackEmbeddedRoot, resultFile, resultFileOSX);
       }
     catch (MojoExecutionException badMojo)
       {
@@ -320,8 +320,9 @@ public class IzPackPackager extends Packager
   }
 
 	private void createWindowsExecutable(Log l,
-                                       File installerFile,
-                                       File windowsInstallerFile)
+                                         File izPackHomeDir,
+                                         File installerFile,
+                                         File windowsInstallerFile)
 	throws MojoExecutionException
 	{
 		l.info("calling izpack2exe.py to create Windows installer binary");
@@ -338,8 +339,9 @@ public class IzPackPackager extends Packager
 	}
  
 	private void createOSXExecutable(Log l,
-                                   File installerFile,
-                                   File osxInstallerFile)
+                                     File izPackHomeDir,
+                                     File installerFile,
+                                     File osxInstallerFile)
 	throws MojoExecutionException
 	{
 		l.info("calling izpack2app.py to create OS X installer binary");
@@ -347,7 +349,7 @@ public class IzPackPackager extends Packager
 		Utils.exec(new String[] {
        "python", "utils/izpack2app/izpack2app.py",
        installerFile.getAbsolutePath(),
-       windowsInstallerFile.getAbsolutePath(),
+       osxInstallerFile.getAbsolutePath(),
 		}, izPackHomeDir,
     "Unable to run izpack2app script",
     "IOException while trying to run iz2pack2app script.");

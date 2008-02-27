@@ -20,7 +20,7 @@
 			-->
 			<entry>
 				<artifactSpec>awt</artifactSpec>
-				<dependencyLine>classpath-gtk</dependencyLine>
+				<dependencyLine>classpath-awt</dependencyLine>
 				<jars/>
 			</entry>
 
