@@ -231,7 +231,9 @@ public class WrapperScriptGenerator
    * is not set an empty string is returned.
    * 
    * <p>To create correct Windows path names ":"s and "/"s are replaced
-   * by ";" and "\"</p>
+   * by "\";\"" and "\". The result is also enclosed by double-quotes.
+   * This done to make sure windows path names containing
+   * spaces are properly quoted.</p>
    * 
    * @param prefix
    * @param value
@@ -240,7 +242,7 @@ public class WrapperScriptGenerator
   private String createScriptValueWindows(String prefix, String value)
   {
     return (value != null && value.length() > 0)
-           ? prefix + value.replace(':', ';').replace('/', '\\') : "";
+           ? prefix + "\"" + value.replaceAll(":", "\";\"").replace('/', '\\') + "\"": "";
   }
   
   /** Generates a command line string of system properties.
