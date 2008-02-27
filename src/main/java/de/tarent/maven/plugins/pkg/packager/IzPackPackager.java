@@ -328,11 +328,12 @@ public class IzPackPackager extends Packager
 		l.info("calling izpack2exe.py to create Windows installer binary");
 
 		Utils.exec(new String[] {
-       "python", "utils/izpack2exe/izpack2exe.py",
-       "--file=" + installerFile.getAbsolutePath(),
-       "--output=" + windowsInstallerFile.getAbsolutePath(),
-			 "--with-p7z=7za"
-		}, izPackHomeDir,
+		                         "python", "izpack2exe.py",
+		                         "--file=" + installerFile.getAbsolutePath(),
+		                         "--output=" + windowsInstallerFile.getAbsolutePath(),
+		                         "--with-7z=7zr",
+                                 "--no-upx"
+		}, new File(izPackHomeDir, "utils/izpack2exe"),
     "Unable to run izpack2exe script",
     "IOException while trying to run iz2pack2exe script.");
 
@@ -347,10 +348,10 @@ public class IzPackPackager extends Packager
 		l.info("calling izpack2app.py to create OS X installer binary");
 
 		Utils.exec(new String[] {
-       "python", "utils/izpack2app/izpack2app.py",
+       "python", "izpack2app.py",
        installerFile.getAbsolutePath(),
        osxInstallerFile.getAbsolutePath(),
-		}, izPackHomeDir,
+		}, new File(izPackHomeDir, "utils/izpack2app"),
     "Unable to run izpack2app script",
     "IOException while trying to run iz2pack2app script.");
 
