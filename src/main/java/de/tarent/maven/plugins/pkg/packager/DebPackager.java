@@ -203,7 +203,9 @@ public class DebPackager extends Packager
    * 
    * @throws MojoExecutionException
    */
-  public void checkEnvironment(Log l, DistroConfiguration dc) throws MojoExecutionException
+  public void checkEnvironment(Log l,
+                               Packaging.Helper ph,
+                               DistroConfiguration dc) throws MojoExecutionException
   {
     // No specifics to show or test.
   }

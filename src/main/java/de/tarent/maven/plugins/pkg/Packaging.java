@@ -551,6 +551,11 @@ public class Packaging
     {
       return javaExec;
     }
+    
+    public String get7ZipExec()
+    {
+      return _7zipExec;
+    }
 
     public File getOutputDirectory()
     {
@@ -1356,7 +1361,7 @@ public class Packaging
 
     checkEnvironment(getLog());
 
-    packager.checkEnvironment(getLog(), dc);
+    packager.checkEnvironment(getLog(), ph, dc);
 
     packager.execute(getLog(), ph, dc, pm);
   }

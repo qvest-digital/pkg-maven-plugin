@@ -162,7 +162,11 @@ public class IzPackPackager extends Packager
                         resultFile);
         
 				if (distroConfig.isCreateWindowsExecutable())
-					createWindowsExecutable(l, izPackEmbeddedRoot, resultFile, resultFileWindows);
+					createWindowsExecutable(l,
+                                            ph.get7ZipExec(),
+                                            izPackEmbeddedRoot,
+                                            resultFile,
+                                            resultFileWindows);
 
 				if (distroConfig.isCreateOSXApp())
 					createOSXExecutable(l, izPackEmbeddedRoot, resultFile, resultFileOSX);
@@ -183,10 +187,20 @@ public class IzPackPackager extends Packager
    * 
    * @throws MojoExecutionException
    */
-  public void checkEnvironment(Log l, DistroConfiguration dc) throws MojoExecutionException
+  public void checkEnvironment(Log l,
+                               Packaging.Helper ph,
+                               DistroConfiguration dc) throws MojoExecutionException
   {
-    // TODO: On GNU/Linux, Unix check for python, 7za if and configure for calling the python script
-		// On Windows configure to run the exe file
+    l.info("java executable          : " + ph.getJavaExec());
+    l.info("7zip executable          : " + ph.get7ZipExec());
+
+    Utils.exec(new String[] { "which", ph.getJavaExec() },
+               "n/a",
+               "java executable is not available on this system. Check your installation!");
+    
+    Utils.exec(new String[] { "which", ph.get7ZipExec() },
+               "n/a",
+               "7zip executable is not available on this system. Check your installation!");
   }
 
   /**
@@ -320,6 +334,7 @@ public class IzPackPackager extends Packager
   }
 
 	private void createWindowsExecutable(Log l,
+                                         String p7zipExec,
                                          File izPackHomeDir,
                                          File installerFile,
                                          File windowsInstallerFile)
@@ -331,7 +346,7 @@ public class IzPackPackager extends Packager
 		                         "python", "izpack2exe.py",
 		                         "--file=" + installerFile.getAbsolutePath(),
 		                         "--output=" + windowsInstallerFile.getAbsolutePath(),
-		                         "--with-7z=7zr",
+		                         "--with-7z=" + p7zipExec,
                                  "--no-upx"
 		}, new File(izPackHomeDir, "utils/izpack2exe"),
     "Unable to run izpack2exe script",

@@ -15,6 +15,8 @@ public abstract class Packager
                                DistroConfiguration distroConfig,
                                PackageMap packageMap) throws MojoExecutionException;
   
-  public abstract void checkEnvironment(Log l, DistroConfiguration dc) throws MojoExecutionException;
+  public abstract void checkEnvironment(Log l,
+                                        Packaging.Helper ph,
+                                        DistroConfiguration dc) throws MojoExecutionException;
                       
 }

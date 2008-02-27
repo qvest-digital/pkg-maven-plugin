@@ -203,6 +203,15 @@ abstract class AbstractPackagingMojo extends AbstractMojo
    * 
    */
   protected String javaExec;
+
+  /**
+   * 7Zip binary used to run Java programs from within the Mojo.
+   * 
+   * @parameter expression="${7zipExec}" default-value="7zr"
+   * @required
+   * 
+   */
+  protected String _7zipExec;
   
   /**
    * Location of the custom package map file. When specifying this one
