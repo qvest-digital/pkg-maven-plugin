@@ -7,6 +7,8 @@
 	<include>pm-debian_etch.xml</include>
 	<include>pm-debian_lenny.xml</include>
 	
+	<include>pm-ubuntu_gutsy.xml</include>
+	
 	<!-- Default Entry for IzPack packaging -->
 	<distro>
 		<id>izpack</id>
