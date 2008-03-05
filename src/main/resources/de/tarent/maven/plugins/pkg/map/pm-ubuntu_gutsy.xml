@@ -1,33 +1,34 @@
 <!--
-	Package maps document for Ubuntu Gutsy.
+Package maps document for Ubuntu 7.10 (Gutsy Gibbon).
 -->
 <package-maps>
-  <version>1.0</version>
-
+	<version>1.0</version>
+	
 	<distro>
 		<id>ubuntu_gutsy</id>
-		<label>Ubuntu Gutsy</label>
+		<label>Ubuntu 7.10 (Gutsy Gibbon)</label>
 		<inherit>debian_etch</inherit>
-
+		
 		<map>
-      <!-- SWT is in Maven in different variants ... -->
-      <entry>
-        <artifactSpec>org.eclipse.swt:swt-gtk-linux</artifactSpec>
-        <dependencyLine>libswt3.2-gtk-java | libswt3.3-gtk-java</dependencyLine>
-        <jars>
-          <jar>/usr/lib/java/swt.jar</jar>
-        </jars>
-      </entry>
-
-
+			<!-- SWT is in Maven in different variants ... -->
 			<entry>
-				<artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
-				<dependencyLine>libswt3.2-gtk-java | libswt3.3-gtk-java</dependencyLine>
+				<artifactSpec>org.eclipse.swt:swt-gtk-linux</artifactSpec>
+				<dependencyLine>libswt3.2-gtk-java |
+					libswt3.3-gtk-java</dependencyLine>
 				<jars>
 					<jar>/usr/lib/java/swt.jar</jar>
 				</jars>
 			</entry>
-
+			
+			<entry>
+				<artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
+				<dependencyLine>libswt3.2-gtk-java |
+					libswt3.3-gtk-java</dependencyLine>
+				<jars>
+					<jar>/usr/lib/java/swt.jar</jar>
+				</jars>
+			</entry>
+			
 			<entry>
 				<artifactSpec>asm:asm</artifactSpec>
 				<dependencyLine>libasm3-java</dependencyLine>
@@ -35,7 +36,7 @@
 					<jar>asm3.jar</jar>
 				</jars>
 			</entry>
-
+			
 			<entry>
 				<artifactSpec>asm:asm-util</artifactSpec>
 				<dependencyLine>libasm3-java</dependencyLine>
@@ -43,7 +44,7 @@
 					<jar>asm3-util.jar</jar>
 				</jars>
 			</entry>
-
+			
 			<entry>
 				<artifactSpec>asm:asm-commons</artifactSpec>
 				<dependencyLine>libasm3-java</dependencyLine>
@@ -51,7 +52,7 @@
 					<jar>asm3-commons.jar</jar>
 				</jars>
 			</entry>
-
+			
 			<entry>
 				<artifactSpec>asm:asm-tree</artifactSpec>
 				<dependencyLine>libasm3-java</dependencyLine>
@@ -59,7 +60,7 @@
 					<jar>asm3-tree.jar</jar>
 				</jars>
 			</entry>
-
+			
 			<entry>
 				<artifactSpec>axis:axis</artifactSpec>
 				<dependencyLine>libaxis-java</dependencyLine>
@@ -67,7 +68,7 @@
 					<jar>axis.jar</jar>
 				</jars>
 			</entry>
-
+			
 			<entry>
 				<artifactSpec>axis:axis-jaxrpc</artifactSpec>
 				<dependencyLine>libaxis-java</dependencyLine>
@@ -75,7 +76,7 @@
 					<jar>jaxrpc.jar</jar>
 				</jars>
 			</entry>
-
+			
 			<entry>
 				<artifactSpec>axis:axis-saaj</artifactSpec>
 				<dependencyLine>libaxis-java</dependencyLine>
@@ -83,7 +84,7 @@
 					<jar>saaj.jar</jar>
 				</jars>
 			</entry>
-
+			
 			<entry>
 				<artifactSpec>axis:axis-wsdl4j</artifactSpec>
 				<dependencyLine>libwsdl4j-java</dependencyLine>
@@ -92,10 +93,11 @@
 					<jar>qname.jar</jar>
 				</jars>
 			</entry>
-
+			
 			<!-- Apache Commons -->
 			<entry>
-				<artifactSpec>commons-configuration:commons-configuration</artifactSpec>
+				<artifactSpec>
+					commons-configuration:commons-configuration</artifactSpec>
 				<dependencyLine>libcommons-configuration-java</dependencyLine>
 				<jars>
 					<jar>commons-configuration.jar</jar>
@@ -110,7 +112,6 @@
 					<jar>looks.jar</jar>
 				</jars>
 			</entry>
-			
 			
 			<!-- jh from org.openoffice proved through JavaHelp2 -->
 			<entry>
@@ -128,8 +129,8 @@
 					<jar>jh.jar</jar>
 				</jars>
 			</entry>
-
+			
 		</map>
 	</distro>
-
+	
 </package-maps>
