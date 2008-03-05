@@ -1,0 +1,24 @@
+<!--
+	Package maps document for Ubuntu 8.04 LTS (Hardy Heron)
+-->
+<package-maps>
+	<version>1.0</version>
+	
+	<distro>
+		<id>ubuntu_hardy</id>
+		<label>Ubuntu 8.04 LTS (Hardy Heron)</label>
+		<inherit>ubuntu_gutsy</inherit>
+		
+		<map>
+			<!-- XStream -->
+			<entry>
+				<artifactSpec>com.thoughtworks.xstream:xstream</artifactSpec>
+				<dependencyLine>libxstream-java</dependencyLine>
+				<jars>
+					<jar>xstream.jar</jar>
+				</jars>
+			</entry>
+		</map>
+		
+	</distro>
+</package-maps>
