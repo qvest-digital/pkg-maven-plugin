@@ -8,6 +8,7 @@
 	<include>pm-debian_lenny.xml</include>
 	
 	<include>pm-ubuntu_gutsy.xml</include>
+	<include>pm-ubuntu_hardy.xml</include>
 	
 	<!-- Default Entry for IzPack packaging -->
 	<distro>
