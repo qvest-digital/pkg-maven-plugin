@@ -13,8 +13,7 @@ Package maps document for Ubuntu 7.10 (Gutsy Gibbon).
 			<!-- SWT is in Maven in different variants ... -->
 			<entry>
 				<artifactSpec>org.eclipse.swt:swt-gtk-linux</artifactSpec>
-				<dependencyLine>libswt3.2-gtk-java |
-					libswt3.3-gtk-java</dependencyLine>
+				<dependencyLine>libswt3.2-gtk-java</dependencyLine>
 				<jars>
 					<jar>/usr/lib/java/swt.jar</jar>
 				</jars>
