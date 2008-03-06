@@ -21,8 +21,7 @@ Package maps document for Ubuntu 7.10 (Gutsy Gibbon).
 			
 			<entry>
 				<artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
-				<dependencyLine>libswt3.2-gtk-java |
-					libswt3.3-gtk-java</dependencyLine>
+				<dependencyLine>libswt3.2-gtk-java</dependencyLine>
 				<jars>
 					<jar>/usr/lib/java/swt.jar</jar>
 				</jars>
