@@ -1,7 +1,7 @@
 /*
  * Maven Packaging Plugin,
- * Maven plugin to package a Project (deb and izpack)
- * Copyright (C) 2000-2007 tarent GmbH
+ * Maven plugin to package a Project (deb, ipk, izpack)
+ * Copyright (C) 2000-2008 tarent GmbH
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License,version 2
@@ -19,7 +19,7 @@
  *
  * tarent GmbH., hereby disclaims all copyright
  * interest in the program 'Maven Packaging Plugin'
- * Signature of Elmar Geese, 14 June 2007
+ * Signature of Elmar Geese, 11 March 2008
  * Elmar Geese, CEO tarent GmbH.
  */
 
