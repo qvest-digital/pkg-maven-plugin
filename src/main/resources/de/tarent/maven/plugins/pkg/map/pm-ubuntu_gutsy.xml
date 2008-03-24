@@ -128,6 +128,38 @@ Package maps document for Ubuntu 7.10 (Gutsy Gibbon).
 				</jars>
 			</entry>
 			
+			<!-- Eclipse RCP stuff -->
+			<entry>
+				<artifactSpec>org.eclipse:osgi</artifactSpec>
+				<dependencyLine>eclipse-rcp</dependencyLine>
+				<jars>
+					<jar>/usr/lib/eclipse/plugins/org.eclipse.osgi_3.2.2.R32x_v20070118.jar</jar>
+				</jars>
+			</entry>
+			
+			<entry>
+				<artifactSpec>org.eclipse.osgi:osgi</artifactSpec>
+				<dependencyLine>eclipse-rcp</dependencyLine>
+				<jars>
+					<jar>/usr/lib/eclipse/plugins/org.eclipse.osgi_3.2.2.R32x_v20070118.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>org.eclipse.core:runtime</artifactSpec>
+				<dependencyLine>eclipse-rcp</dependencyLine>
+				<jars>
+					<jar>/usr/lib/eclipse/plugins/org.eclipse.core.runtime_3.2.0.v20060603.jar</jar>
+				</jars>
+			</entry>
+			
+			<entry>
+				<artifactSpec>org.eclipse.core:commands</artifactSpec>
+				<dependencyLine>eclipse-rcp</dependencyLine>
+				<jars>
+					<jar>/usr/lib/eclipse/plugins/org.eclipse.core.commands_3.2.0.I20060605-1400.jar</jar>
+				</jars>
+			</entry>
 		</map>
 	</distro>
 	
