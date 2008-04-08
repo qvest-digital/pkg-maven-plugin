@@ -1,0 +1,88 @@
+<!--
+	Joint package maps document for OpenMoko-based distributions.
+-->
+<package-maps>
+
+  <version>1.0</version>
+
+	<!-- Maemo Bora -->
+	<distro>
+		<id>maemo_bora</id>
+		<label>Maemo 3.2 (Bora)</label>
+		<packaging>deb</packaging>
+		<defaultJarPath>/usr/share/java</defaultJarPath>
+		<defaultDependencyLine>java2-runtime</defaultDependencyLine>
+
+		<map>
+      <!-- SWT is in Maven in different variants ... -->
+			<entry>
+	   		<artifactSpec>org.eclipse.swt:swt-gtk-linux</artifactSpec>
+				<dependencyLine>libswt-gtk-3.4-java</dependencyLine>
+				<jars>
+					<jar>swt.jar</jar>
+					<jar>swt-gtk.jar</jar>
+					<jar>swt-pi.jar</jar>
+					<jar>swt-cairo.jar</jar>
+				</jars>
+			</entry>
+
+      <!-- ... and this should be the official one. -->
+			<entry>
+				<artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
+				<dependencyLine>libswt-gtk-3.4-java</dependencyLine>
+				<jars>
+					<jar>swt.jar</jar>
+					<jar>swt-gtk.jar</jar>
+					<jar>swt-pi.jar</jar>
+					<jar>swt-cairo.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>org.freedesktop.dbus:dbus-java</artifactSpec>
+				<dependencyLine>libdbus-java</dependencyLine>
+			</entry>
+
+			<entry>
+				<artifactSpec>cx.ath.matthew:libmatthew-java</artifactSpec>
+				<dependencyLine>libdbus-java</dependencyLine>
+				<jars>
+					<jar>io.jar</jar>
+					<jar>cgi.jar</jar>
+					<jar>hexdump.jar</jar>
+					<jar>unix.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>xmlpull:xmlpull</artifactSpec>
+				<dependencyLine>libxmlpull-java</dependencyLine>
+				<!-- Needed for cacao-cldc in bootclasspath. -->
+				<boot/>
+				<jars>
+					<jar>xmlpull.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>kxml2:kxml2</artifactSpec>
+				<dependencyLine>libkxml2-java</dependencyLine>
+				<!-- Needed for cacao-cldc in bootclasspath. -->
+				<boot/>
+				<jars>
+					<jar>kxml2.jar</jar>
+				</jars>
+			</entry>
+			
+			<entry>
+				<artifactSpec>org.rxtx:rxtx</artifactSpec>
+				<dependencyLine>librxtx-java</dependencyLine>
+				<jars>
+					<jar>RXTXcomm.jar</jar>
+				</jars>
+			</entry>
+
+		</map>
+	</distro>
+
+</package-maps>
