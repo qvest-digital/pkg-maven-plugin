@@ -245,9 +245,9 @@
 	</dependencies>
 	
 	<scm>
-		<connection>scm:svn:svn://svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</connection>
-		<developerConnection>scm:svn:svn+ssh://maven@svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</developerConnection>
-		<url>https://evolvis.org/plugins/scmsvn/viewcvs.php/?root=mvn-pkg-plugin</url>
+		<connection>scm:svn:svn://svn.evolvis.org/svnroot/mvn-pkg-plugin/branches/maven-pkg-plugin-2.0.x</connection>
+		<developerConnection>scm:svn:svn+ssh://maven@svn.evolvis.org/svnroot/mvn-pkg-plugin/branches/maven-pkg-plugin-2.0.x</developerConnection>
+		<url>http://evolvis.org/plugins/scmsvn/viewcvs.php/branches/maven-pkg-plugin-2.0.x/?root=mvn-pkg-plugin</url>
 	</scm>
 	
 	<ciManagement>
