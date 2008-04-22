@@ -19,7 +19,6 @@
         </jars>
       </entry>
 
-
 			<entry>
 				<artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
 				<dependencyLine>libswt3.2-gtk-java | libswt3.3-gtk-java</dependencyLine>
@@ -99,6 +98,14 @@
 				<dependencyLine>libcommons-configuration-java</dependencyLine>
 				<jars>
 					<jar>commons-configuration.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>commons-cli:commons-cli</artifactSpec>
+				<dependencyLine>libcommons-configuration-java</dependencyLine>
+				<jars>
+					<jar>commons-cli.jar</jar>
 				</jars>
 			</entry>
 			
