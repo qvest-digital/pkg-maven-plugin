@@ -26,6 +26,110 @@ Package maps document for Ubuntu 7.10 (Gutsy Gibbon).
 					<jar>/usr/lib/java/swt.jar</jar>
 				</jars>
 			</entry>
+
+      <entry>
+        <artifactSpec>org.eclipse:osgi</artifactSpec>
+        <dependencyLine>eclipse-rcp</dependencyLine>
+        <jars>
+          <jar>/usr/lib/eclipse/plugins/org.eclipse.osgi_3.2.2.R32x_v20070118.jar</jar>
+        </jars>
+      </entry>
+
+      <entry>
+        <artifactSpec>org.eclipse.core:commands</artifactSpec>
+        <dependencyLine>eclipse-rcp</dependencyLine>
+        <jars>
+          <jar>/usr/lib/eclipse/plugins/org.eclipse.core.commands_3.2.0.I20060605-1400.jar</jar>
+        </jars>
+      </entry>
+
+      <entry>
+        <artifactSpec>org.eclipse.core:expressions</artifactSpec>
+        <dependencyLine>eclipse-rcp</dependencyLine>
+        <jars>
+          <jar>/usr/lib/eclipse/plugins/org.eclipse.core.expressions_3.2.2.r322_v20070109a.jar</jar>
+        </jars>
+      </entry>
+
+      <entry>
+        <artifactSpec>org.eclipse.core:resources</artifactSpec>
+        <dependencyLine>eclipse-platform</dependencyLine>
+        <jars>
+          <jar>/usr/lib/eclipse/plugins/org.eclipse.core.resources_3.2.2.R32x_v20061218.jar</jar>
+        </jars>
+      </entry>
+
+      <entry>
+        <artifactSpec>org.eclipse.core:contenttype</artifactSpec>
+        <dependencyLine>eclipse-platform</dependencyLine>
+        <jars>
+          <jar>/usr/lib/eclipse/plugins/org.eclipse.core.contenttype_3.2.0.v20060603.jar</jar>
+        </jars>
+      </entry>
+
+      <entry>
+        <artifactSpec>org.eclipse.core:jobs</artifactSpec>
+        <dependencyLine>eclipse-platform</dependencyLine>
+        <jars>
+          <jar>/usr/lib/eclipse/plugins/org.eclipse.core.jobs_3.2.0.v20060603.jar</jar>
+        </jars>
+      </entry>
+
+      <entry>
+        <artifactSpec>org.eclipse.core:runtime</artifactSpec>
+        <dependencyLine>eclipse-rcp</dependencyLine>
+        <jars>
+          <jar>/usr/lib/eclipse/plugins/org.eclipse.core.runtime_3.2.0.v20060603.jar</jar>
+        </jars>
+      </entry>
+
+      <entry>
+        <artifactSpec>org.eclipse.core:filesystem</artifactSpec>
+        <dependencyLine>eclipse-platform</dependencyLine>
+        <jars>
+          <jar>/usr/lib/eclipse/plugins/org.eclipse.core.filesystem_1.0.0.v20060603.jar</jar>
+        </jars>
+      </entry>
+
+      <entry>
+        <artifactSpec>org.eclipse.equinox:common</artifactSpec>
+        <dependencyLine>eclipse-platform</dependencyLine>
+        <jars>
+          <jar>/usr/lib/eclipse/plugins/org.eclipse.equinox.common_3.2.0.v20060603.jar</jar>
+        </jars>
+      </entry>
+
+      <entry>
+        <artifactSpec>org.eclipse.equinox:preferences</artifactSpec>
+        <dependencyLine>eclipse-platform</dependencyLine>
+        <jars>
+          <jar>/usr/lib/eclipse/plugins/org.eclipse.equinox.preferences_3.2.1.R32x_v20060717.jar</jar>
+        </jars>
+      </entry>
+
+      <entry>
+        <artifactSpec>org.eclipse.equinox:registry</artifactSpec>
+        <dependencyLine>eclipse-platform</dependencyLine>
+        <jars>
+          <jar>/usr/lib/eclipse/plugins/org.eclipse.equinox.registry_3.2.1.R32x_v20060814.jar</jar>
+        </jars>
+      </entry>
+
+      <entry>
+        <artifactSpec>org.eclipse:text</artifactSpec>
+        <dependencyLine>eclipse-platform</dependencyLine>
+        <jars>
+          <jar>/usr/lib/eclipse/plugins/org.eclipse.text_3.2.0.v20060605-1400.jar</jar>
+        </jars>
+      </entry>
+
+     <entry>
+        <artifactSpec>org.eclipse.jdt:core</artifactSpec>
+        <dependencyLine>eclipse-jdt</dependencyLine>
+        <jars>
+          <jar>/usr/lib/eclipse/plugins/org.eclipse.jdt.core_3.2.3.v_686_R32x.jar</jar>
+        </jars>
+      </entry>
 			
 			<entry>
 				<artifactSpec>asm:asm</artifactSpec>
