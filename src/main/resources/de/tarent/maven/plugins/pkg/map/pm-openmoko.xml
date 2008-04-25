@@ -7,7 +7,7 @@
 
 	<!-- OpenMoko late 2007 snapshot -->
 	<distro>
-		<id>openmoko-2007.11</id>
+		<id>openmoko_2007.11</id>
 		<label>OpenMoko 2007.11</label>
 		<packaging>ipk</packaging>
 		<defaultJarPath>/usr/share/java</defaultJarPath>
