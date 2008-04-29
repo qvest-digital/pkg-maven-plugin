@@ -110,7 +110,7 @@ import org.codehaus.plexus.util.FileUtils;
  * Base Mojo for all packaging mojos. It provides convenient access to a mean to
  * resolve the project's complete dependencies.
  */
-abstract class AbstractPackagingMojo extends AbstractMojo
+public abstract class AbstractPackagingMojo extends AbstractMojo
 {
 
   /**

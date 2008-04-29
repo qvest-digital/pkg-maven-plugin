@@ -175,6 +175,10 @@ public class PackageMap
     return mapping.label;
   }
   
+  public String getRepositoryName() {
+	  return mapping.repoName;
+  }
+  
   /**
    * Returns the default location for executable (scripts).
    * 

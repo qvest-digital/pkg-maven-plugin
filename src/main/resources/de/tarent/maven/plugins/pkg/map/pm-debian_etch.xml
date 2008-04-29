@@ -8,6 +8,7 @@
 		<id>debian_etch</id>
 		<label>Debian GNU/Linux Etch</label>
 		<packaging>deb</packaging>
+		<repoName>etch</repoName>
 		<defaultJarPath>/usr/share/java</defaultJarPath>
 		<!--
 			Altough Debian puts most of its JNI libraries into /usr/lib/jni

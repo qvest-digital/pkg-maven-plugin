@@ -138,6 +138,13 @@ class Parser
           s.nextElement();
         }
       
+      // repoName parameter is optional
+      if (s.peek("repoName"))
+        {
+          distroMapping.repoName = s.nextElement();
+          s.nextElement();
+        }
+      
       // Default bin (scripts) path is optional
       if (s.peek("defaultBinPath"))
         {

@@ -595,6 +595,14 @@ public class DistroConfiguration
   {
     return section;
   }
+  
+  public String getRevision() {
+	  return revision;
+  }
+  
+  public String getChosenDistro() {
+	  return chosenDistro;
+  }
 
   public String getSrcAuxFilesDir()
   {

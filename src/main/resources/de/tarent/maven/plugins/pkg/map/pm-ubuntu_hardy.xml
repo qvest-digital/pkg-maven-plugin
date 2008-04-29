@@ -9,6 +9,8 @@
 		<label>Ubuntu 8.04 LTS (Hardy Heron)</label>
 		<inherit>ubuntu_gutsy</inherit>
 		
+		<repoName>hardy</repoName>
+		
 		<map>
 			<!-- XStream -->
 			<entry>

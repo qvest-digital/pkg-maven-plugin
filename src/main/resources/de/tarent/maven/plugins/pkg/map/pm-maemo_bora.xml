@@ -10,6 +10,7 @@
 		<id>maemo_bora</id>
 		<label>Maemo 3.2 (Bora)</label>
 		<packaging>deb</packaging>
+		<repoName>bora</repoName>
 		<defaultJarPath>/usr/share/java</defaultJarPath>
 		<defaultDependencyLine>java2-runtime</defaultDependencyLine>
 

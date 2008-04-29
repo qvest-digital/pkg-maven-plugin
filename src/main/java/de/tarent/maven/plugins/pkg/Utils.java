@@ -130,7 +130,7 @@ public class Utils
    * @param ioExceptionMsg
    * @throws MojoExecutionException
    */
-  public static void exec(String[] args, File workingDir, String failureMsg,
+  public static InputStream exec(String[] args, File workingDir, String failureMsg,
                           String ioExceptionMsg) throws MojoExecutionException
   {
     /*
@@ -139,9 +139,11 @@ public class Utils
      * "); } System.err.println();
      */
 
+	  Process p = null;
+	  
     try
       {
-        Process p = Runtime.getRuntime().exec(args, null, workingDir);
+        p = Runtime.getRuntime().exec(args, null, workingDir);
 
         if (p.waitFor() != 0)
           {
@@ -157,6 +159,7 @@ public class Utils
       {
         // Cannot happen.
       }
+    return p.getInputStream();
   }
 
   /**

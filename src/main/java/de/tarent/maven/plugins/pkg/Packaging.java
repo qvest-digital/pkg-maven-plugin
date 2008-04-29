@@ -1371,6 +1371,10 @@ public class Packaging
       throw new MojoExecutionException(
                                        "Package maps document set no packaging for distro: "
                                            + dc.chosenDistro);
+    
+    // Store configuration in plugin-context for later use by signer- and deploy-goal
+    getPluginContext().put("dc", dc);
+    getPluginContext().put("pm", pm);
 
     // Create packager according to the chosen packaging type.
     Packager packager;

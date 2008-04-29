@@ -9,6 +9,8 @@ Package maps document for Ubuntu 7.10 (Gutsy Gibbon).
 		<label>Ubuntu 7.10 (Gutsy Gibbon)</label>
 		<inherit>debian_etch</inherit>
 		
+		<repoName>gutsy</repoName>
+		
 		<map>
 			<!-- SWT is in Maven in different variants ... -->
 			<entry>

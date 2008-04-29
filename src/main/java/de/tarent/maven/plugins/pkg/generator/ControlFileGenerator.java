@@ -209,13 +209,13 @@ public class ControlFileGenerator
     w.close();
   }
   
-  private void writeEntry(PrintWriter w, String name, String value)
+  protected void writeEntry(PrintWriter w, String name, String value)
   {
     if (value != null)
       w.println(name + ": " +  value);
   }
 
-  private void writeEntry(PrintWriter w, String name, long value)
+  protected void writeEntry(PrintWriter w, String name, long value)
   {
     if (value != 0)
       w.println(name + ": " +  value);

@@ -33,7 +33,7 @@ import java.util.HashMap;
 /**
  * A <code>Mapping</code> is the datatype that describes a target
  * distribution (id, label, packaging system, some path names)
- * and the important mapping betwen Maven2 artifacts and the
+ * and the important mapping between Maven2 artifacts and the
  * distribution's packages.
  * 
  * @author Robert Schuster (robert.schuster@tarent.de)
@@ -44,6 +44,8 @@ class Mapping
   String distro;
   
   String label;
+  
+  String repoName;
   
   String parent;
   
@@ -96,6 +98,7 @@ class Mapping
 
     // These values may be null. If the merging has been done from the root to the child
     // they will be non-null for the parent however.
+    repoName = (child.repoName != null) ? child.repoName : parent.repoName;
     debianNaming = (child.debianNaming != null) ? child.debianNaming : parent.debianNaming; 
     defaultJarPath = (child.defaultJarPath != null) ? child.defaultJarPath : parent.defaultJarPath; 
     defaultBinPath = (child.defaultBinPath != null) ? child.defaultBinPath : parent.defaultBinPath; 

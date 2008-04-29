@@ -10,6 +10,7 @@
 		<id>maemo_chinook</id>
 		<label>Maemo 4.0 (Chinook)</label>
 		<packaging>deb</packaging>
+		<repoName>chinook</repoName>
 		<defaultJarPath>/usr/share/java</defaultJarPath>
 		<defaultDependencyLine>java2-runtime</defaultDependencyLine>
 
