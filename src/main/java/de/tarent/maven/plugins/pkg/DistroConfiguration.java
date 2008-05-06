@@ -749,7 +749,7 @@ public class DistroConfiguration
                                      parent.bundleDependencies,
                                      new HashSet());
 
-    manualDependencies = (List) merge(jniFiles, parent.jniFiles,
+    manualDependencies = (List) merge(manualDependencies, parent.manualDependencies,
                                          new ArrayList());
 
     systemProperties = (Properties) merge(systemProperties,
