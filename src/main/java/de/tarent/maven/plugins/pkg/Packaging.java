@@ -191,6 +191,11 @@ public class Packaging
      * Location of the JNI libraries on the target device (e.g. /usr/lib/jni).
      */
     File targetJNIDir;
+    
+    /**
+     * Location of the path which contains JNI libraries on the target device. (e.g. /usr/lib/jni:/usr/lib).
+     */
+    File targetLibraryPath;
 
     File targetRoot;
 
@@ -368,8 +373,8 @@ public class Packaging
       WrapperScriptGenerator gen = new WrapperScriptGenerator();
       gen.setMaxJavaMemory(dc.maxJavaMemory);
 
-      if (getTargetJNIDir() != null)
-        gen.setLibraryPath(getTargetJNIDir().toString());
+      if (getTargetLibraryPath() != null)
+        gen.setLibraryPath(getTargetLibraryPath().toString());
 
       gen.setProperties(dc.systemProperties);
 
@@ -757,12 +762,28 @@ public class Packaging
       return targetDatarootDir;
     }
 
+    /**
+     * Returns the directory to which the JNI-files should be copied.
+     * Consists of the target-root-directory and the _first_ directory specified
+     * in the defaultJNIPath-configuration-parameter.
+     * Example: If the defaultJNIPath is "/usr/lib/jni:/usr/lib" the target-jni-directory
+     * is "/usr/lib/jni".
+     * 
+     * @return
+     */
     public File getTargetJNIDir()
     {
       if (targetJNIDir == null)
-        targetJNIDir = new File(getTargetRoot(), pm.getDefaultJNIPath());
+    	  targetJNIDir = new File(getTargetRoot(), pm.getDefaultJNIPath().split(":")[0]);
 
       return targetJNIDir;
+    }
+    
+    public File getTargetLibraryPath() {
+    	if(targetLibraryPath == null)
+    		targetLibraryPath = new File(getTargetRoot(), pm.getDefaultJNIPath());
+
+    	return targetLibraryPath;
     }
 
     public File getTargetRoot()
