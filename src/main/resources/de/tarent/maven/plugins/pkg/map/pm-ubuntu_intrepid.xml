@@ -1,0 +1,14 @@
+<!--
+	Package maps document for Ubuntu 8.04 LTS (Hardy Heron)
+-->
+<package-maps>
+	<version>1.0</version>
+	
+	<distro>
+		<id>ubuntu_intrepid</id>
+		<label>Ubuntu 8.10 (Intrepid Ibex)</label>
+		<inherit>ubuntu_hardy</inherit>
+		
+		<repoName>intrepid</repoName>	
+	</distro>
+</package-maps>
