@@ -436,4 +436,15 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
     return v;
   }
   
+  /**
+   * Replaces all underscores (_) contained in the given String to tildes (~)
+   * 
+   * @param string The string which might contain underscores
+   * @return The given string without underscores
+   */
+  protected final String replaceUnderscore(String string) {
+	  
+	  return string.replaceAll("_", "~");	
+  }
+  
 }

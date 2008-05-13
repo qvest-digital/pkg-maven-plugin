@@ -340,7 +340,7 @@ public class DebianSigner extends AbstractPackagingMojo {
 
 	public String getPackageVersion() {
 		if (packageVersion == null)
-			packageVersion = fixVersion(version) + "-0" + getDistroConfiguration().getChosenDistro()
+			packageVersion = fixVersion(version) + "-0" + replaceUnderscore(getDistroConfiguration().getChosenDistro())
 			+ (getDistroConfiguration().getRevision().length() == 0 ? "" : "-" + getDistroConfiguration().getRevision());
 
 		return packageVersion;
