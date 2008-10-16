@@ -62,7 +62,7 @@ class Parser
       
       if (auxMapDocument != null)
         {
-          s = new State(packageMapDocument);
+          s = new State(auxMapDocument);
           
           s.nextMatch("package-maps");
           parsePackageMaps(s);
