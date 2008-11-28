@@ -15,7 +15,7 @@
         <artifactSpec>org.eclipse.swt:swt-gtk-linux</artifactSpec>
         <dependencyLine>libswt3.2-gtk-java | libswt3.3-gtk-java</dependencyLine>
         <jars>
-          <jar>swt.jar</jar>
+          <jar>/usr/lib/java/swt.jar</jar>
         </jars>
       </entry>
 
@@ -23,7 +23,7 @@
 				<artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
 				<dependencyLine>libswt3.2-gtk-java | libswt3.3-gtk-java</dependencyLine>
 				<jars>
-					<jar>swt.jar</jar>
+					<jar>/usr/lib/java/swt.jar</jar>
 				</jars>
 			</entry>
 
