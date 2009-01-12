@@ -1267,7 +1267,14 @@ public class Packaging
     };
 
     pm.iterateDependencyArtifacts(l, dependencies, v, true);
-
+    
+    // Add the custom jar files to the classpath
+    for (Iterator ite = dc.jarFiles.iterator(); ite.hasNext();)
+    {
+    	cp.append(targetJarPath.toString()
+    			  + "/" + new File(((AuxFile )ite.next()).from).getName());
+    }
+    
     // Add the project's own artifact at last. This way we can
     // save the deletion of the colon added in the loop.
     cp.append(targetArtifactFile.toString());
