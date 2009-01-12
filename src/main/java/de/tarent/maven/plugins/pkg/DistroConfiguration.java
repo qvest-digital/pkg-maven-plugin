@@ -645,6 +645,11 @@ public class DistroConfiguration
     return srcIzPackFilesDir;
   }
 
+  public String getSrcJarFilesDir()
+  {
+    return srcJarFilesDir;
+  }
+
   public String getSrcJNIFilesDir()
   {
     return srcJNIFilesDir;
@@ -745,6 +750,7 @@ public class DistroConfiguration
     
     srcAuxFilesDir = (String) merge(srcAuxFilesDir, parent.srcAuxFilesDir, "");
     srcSysconfFilesDir = (String) merge(srcSysconfFilesDir, parent.srcSysconfFilesDir, "");
+    srcJarFilesDir = (String) merge(srcJarFilesDir, parent.srcJarFilesDir, "");
     srcJNIFilesDir = (String) merge(srcJNIFilesDir, parent.srcJNIFilesDir, "");
     srcDatarootFilesDir = (String) merge(srcDatarootFilesDir, parent.srcDatarootFilesDir, "");
     srcDataFilesDir = (String) merge(srcDataFilesDir, parent.srcDataFilesDir, "");
@@ -946,6 +952,11 @@ public class DistroConfiguration
   public void setSrcIzPackFilesDir(String srcIzPackFilesDir)
   {
     this.srcIzPackFilesDir = srcIzPackFilesDir;
+  }
+
+  public void setSrcJarFilesDir(String srcJarFilesDir)
+  {
+    this.srcJarFilesDir = srcJarFilesDir;
   }
 
   public void setSrcJNIFilesDir(String srcJNIFilesDir)
