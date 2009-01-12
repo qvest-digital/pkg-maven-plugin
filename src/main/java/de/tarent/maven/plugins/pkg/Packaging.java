@@ -257,6 +257,9 @@ public class Packaging
       size = Utils.copyFiles(l, getSrcJNIFilesDir(), getDstJNIDir(),
                              dc.jniFiles, "JNI library");
 
+      size = Utils.copyFiles(l, getSrcJarFilesDir(), getDstBundledJarDir(),
+              dc.jarFiles, "jar file");
+
       return size;
     }
 
@@ -667,6 +670,13 @@ public class Packaging
                                                            dc.srcIzPackFilesDir));
     }
 
+    public File getSrcJarFilesDir()
+    {
+      return (dc.srcJarFilesDir.length() == 0) ? getSrcAuxFilesDir()
+                                              : new File(project.getBasedir(),
+                                                         dc.srcJarFilesDir);
+    }
+
     public File getSrcJNIFilesDir()
     {
       return (dc.srcJNIFilesDir.length() == 0) ? getSrcAuxFilesDir()
@@ -1025,6 +1035,9 @@ public class Packaging
     l.info("section                  : " + dc.getSection());
     l.info("bundle all dependencies  : " + ((dc.isBundleAll()) ? "yes" : "no"));
     l.info("ahead of time compilation: " + ((dc.isAotCompile()) ? "yes" : "no"));
+    l.info("custom jar libraries     : "
+            + ((dc.jarFiles.isEmpty()) ? "<none>"
+                                      : String.valueOf(dc.jarFiles.size())));
     l.info("JNI libraries            : "
            + ((dc.jniFiles.isEmpty()) ? "<none>"
                                      : String.valueOf(dc.jniFiles.size())));
