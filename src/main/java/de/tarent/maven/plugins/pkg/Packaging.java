@@ -754,7 +754,7 @@ public class Packaging
       if (targetDataDir == null)
         targetDataDir = (dc.datadir.length() == 0 ? new File(
                                                              getTargetDatarootDir(),
-                                                             artifactId)
+                                                             project.getName())
                                                  : new File(dc.datadir));
 
       return targetDataDir;
@@ -1271,12 +1271,15 @@ public class Packaging
     // Add the custom jar files to the classpath
     for (Iterator ite = dc.jarFiles.iterator(); ite.hasNext();)
     {
+    	AuxFile auxFile = ((AuxFile) ite.next());
+    	
     	cp.append(targetJarPath.toString()
-    			  + "/" + new File(((AuxFile )ite.next()).from).getName());
+    			  + "/" + new File(auxFile.from).getName());
+    	cp.append(":");
     }
     
     // Add the project's own artifact at last. This way we can
-    // save the deletion of the colon added in the loop.
+    // save the deletion of the colon added in the loops above.
     cp.append(targetArtifactFile.toString());
 
     if (bcp.length() > 0)
