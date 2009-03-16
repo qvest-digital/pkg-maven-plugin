@@ -623,9 +623,9 @@ public class Packaging
     public File getSrcArtifactFile()
     {
       if (srcArtifactFile == null)
-        srcArtifactFile = new File(outputDirectory.getPath(), finalName
-                                                              + ".jar");
-
+        srcArtifactFile = new File(outputDirectory.getPath(), 
+        		finalName + "." + project.getPackaging());
+      
       return srcArtifactFile;
     }
 
@@ -689,7 +689,7 @@ public class Packaging
                                       (dc.isBundleAll() || pm.hasNoPackages() ? getTargetBundledJarDir()
                                                                              : new File(
                                                                                         pm.getDefaultJarPath())),
-                                      artifactId + ".jar");
+                                      artifactId + "." + project.getPackaging());
 
       return targetArtifactFile;
     }
