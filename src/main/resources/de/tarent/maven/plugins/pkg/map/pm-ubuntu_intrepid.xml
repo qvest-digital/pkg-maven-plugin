@@ -6,6 +6,38 @@
 	
 	<distro>
 		<id>ubuntu_intrepid</id>
+		<label>Ubuntu 8.10 LTS (Intrepid Ibex)</label>
+		<inherit>ubuntu_hardy</inherit>
+		
+		<map>
+			<!-- Ibex has SWT 3.4 -->
+            <entry>
+                <artifactSpec>org.eclipse.swt:swt-gtk-linux</artifactSpec>
+                <dependencyLine>libswt-gtk-3.4-java</dependencyLine>
+                <jars>
+                    <jar>swt-gtk-3.4.jar</jar>
+                </jars>
+            </entry>
+
+            <entry>
+                <artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
+                <dependencyLine>libswt-gtk-3.4-java</dependencyLine>
+                <jars>
+                    <jar>/swt-gtk-3.4.jar</jar>
+                </jars>
+            </entry>
+		</map>
+		
+	</distro>
+</package-maps>
+<!--
+	Package maps document for Ubuntu 8.04 LTS (Hardy Heron)
+-->
+<package-maps>
+	<version>1.0</version>
+	
+	<distro>
+		<id>ubuntu_intrepid</id>
 		<label>Ubuntu 8.10 (Intrepid Ibex)</label>
 		<inherit>ubuntu_hardy</inherit>
 		

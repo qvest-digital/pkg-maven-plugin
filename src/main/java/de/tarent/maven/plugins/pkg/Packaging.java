@@ -257,6 +257,9 @@ public class Packaging
       size = Utils.copyFiles(l, getSrcJNIFilesDir(), getDstJNIDir(),
                              dc.jniFiles, "JNI library");
 
+      size = Utils.copyFiles(l, getSrcJarFilesDir(), getDstBundledJarDir(),
+              dc.jarFiles, "jar file");
+
       return size;
     }
 
@@ -667,6 +670,13 @@ public class Packaging
                                                            dc.srcIzPackFilesDir));
     }
 
+    public File getSrcJarFilesDir()
+    {
+      return (dc.srcJarFilesDir.length() == 0) ? getSrcAuxFilesDir()
+                                              : new File(project.getBasedir(),
+                                                         dc.srcJarFilesDir);
+    }
+
     public File getSrcJNIFilesDir()
     {
       return (dc.srcJNIFilesDir.length() == 0) ? getSrcAuxFilesDir()
@@ -744,7 +754,7 @@ public class Packaging
       if (targetDataDir == null)
         targetDataDir = (dc.datadir.length() == 0 ? new File(
                                                              getTargetDatarootDir(),
-                                                             artifactId)
+                                                             project.getName())
                                                  : new File(dc.datadir));
 
       return targetDataDir;
@@ -1025,6 +1035,9 @@ public class Packaging
     l.info("section                  : " + dc.getSection());
     l.info("bundle all dependencies  : " + ((dc.isBundleAll()) ? "yes" : "no"));
     l.info("ahead of time compilation: " + ((dc.isAotCompile()) ? "yes" : "no"));
+    l.info("custom jar libraries     : "
+            + ((dc.jarFiles.isEmpty()) ? "<none>"
+                                      : String.valueOf(dc.jarFiles.size())));
     l.info("JNI libraries            : "
            + ((dc.jniFiles.isEmpty()) ? "<none>"
                                      : String.valueOf(dc.jniFiles.size())));
@@ -1254,9 +1267,19 @@ public class Packaging
     };
 
     pm.iterateDependencyArtifacts(l, dependencies, v, true);
-
+    
+    // Add the custom jar files to the classpath
+    for (Iterator ite = dc.jarFiles.iterator(); ite.hasNext();)
+    {
+    	AuxFile auxFile = ((AuxFile) ite.next());
+    	
+    	cp.append(targetJarPath.toString()
+    			  + "/" + new File(auxFile.from).getName());
+    	cp.append(":");
+    }
+    
     // Add the project's own artifact at last. This way we can
-    // save the deletion of the colon added in the loop.
+    // save the deletion of the colon added in the loops above.
     cp.append(targetArtifactFile.toString());
 
     if (bcp.length() > 0)

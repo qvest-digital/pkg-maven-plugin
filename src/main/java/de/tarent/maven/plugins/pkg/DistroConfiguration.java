@@ -236,6 +236,15 @@ public class DistroConfiguration
   String izPackInstallerXml;
 
   /**
+   * Denotes a list of custom jar files. These are copied to their respective destination
+   * suitable for the chosen target system. 
+   * 
+   * <p>Default is <code>null</code>, after merging it is an empty list
+   * or the parent's value.</p>
+   */
+  List jarFiles;
+
+  /**
    * Denotes a list of native libraries. These are copied to their respective destination
    * suitable for the chosen target system. 
    * 
@@ -426,6 +435,21 @@ public class DistroConfiguration
   String srcIzPackFilesDir;
 
   /**
+   * Denotes the directory in which the packager looks for Jar library files to
+   * copy into the package.
+   * 
+   * <p>By using this property one can define a common filename set which has
+   * to be copied but works on different files since the <code>srcJarFilesDir</code>
+   * property can be changed on a per distribution basis.</p>
+   * 
+   * <p>Note: The path must be relative to the project's base dir.</p>
+   * 
+   * <p>Default is <code>null</code>, after merging it is an empty string
+   * or the parent's value.</p>
+   */
+  String srcJarFilesDir;
+
+  /**
    * Denotes the directory in which the packager looks for JNI library files to
    * copy into the package.
    * 
@@ -536,6 +560,11 @@ public class DistroConfiguration
     return izPackInstallerXml;
   }
 
+  public List getJarFiles()
+  {
+    return jarFiles;
+  }
+
   public List getJniFiles()
   {
     return jniFiles;
@@ -622,6 +651,11 @@ public class DistroConfiguration
   public String getSrcIzPackFilesDir()
   {
     return srcIzPackFilesDir;
+  }
+
+  public String getSrcJarFilesDir()
+  {
+    return srcJarFilesDir;
   }
 
   public String getSrcJNIFilesDir()
@@ -724,6 +758,7 @@ public class DistroConfiguration
     
     srcAuxFilesDir = (String) merge(srcAuxFilesDir, parent.srcAuxFilesDir, "");
     srcSysconfFilesDir = (String) merge(srcSysconfFilesDir, parent.srcSysconfFilesDir, "");
+    srcJarFilesDir = (String) merge(srcJarFilesDir, parent.srcJarFilesDir, "");
     srcJNIFilesDir = (String) merge(srcJNIFilesDir, parent.srcJNIFilesDir, "");
     srcDatarootFilesDir = (String) merge(srcDatarootFilesDir, parent.srcDatarootFilesDir, "");
     srcDataFilesDir = (String) merge(srcDataFilesDir, parent.srcDataFilesDir, "");
@@ -735,6 +770,9 @@ public class DistroConfiguration
 
     sysconfFiles = (List) merge(sysconfFiles, parent.sysconfFiles,
                             new ArrayList());
+
+    jarFiles = (List) merge(jarFiles, parent.jarFiles,
+            new ArrayList());
 
     jniFiles = (List) merge(jniFiles, parent.jniFiles,
                                    new ArrayList());
@@ -839,6 +877,11 @@ public class DistroConfiguration
     this.izPackInstallerXml = izPackInstallerXml;
   }
 
+  public void setJarFiles(List jarLibraries)
+  {
+    this.jarFiles = jarLibraries;
+  }
+
   public void setJniFiles(List jniLibraries)
   {
     this.jniFiles = jniLibraries;
@@ -919,6 +962,11 @@ public class DistroConfiguration
     this.srcIzPackFilesDir = srcIzPackFilesDir;
   }
 
+  public void setSrcJarFilesDir(String srcJarFilesDir)
+  {
+    this.srcJarFilesDir = srcJarFilesDir;
+  }
+
   public void setSrcJNIFilesDir(String srcJNIFilesDir)
   {
     this.srcJNIFilesDir = srcJNIFilesDir;
@@ -976,6 +1024,7 @@ public class DistroConfiguration
 
     sb.append("gcjDbToolExec: " + gcjDbToolExec + "\n");
     sb.append("gcjExec: " + gcjExec + "\n");
+    sb.append("jarFiles: " + jarFiles + "\n");
     sb.append("jniFiles: " + jniFiles + "\n");
     sb.append("jniLibraryPath: " + jniLibraryPath + "\n");
     sb.append("izPackInstallerXml: " + izPackInstallerXml + "\n");
