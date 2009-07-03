@@ -11,6 +11,7 @@
 	<include>pm-ubuntu_gutsy.xml</include>
 	<include>pm-ubuntu_hardy.xml</include>
 	<include>pm-ubuntu_intrepid.xml</include>
+	<include>pm-ubuntu_jaunty.xml</include>
 	
 	<!-- Default Entry for IzPack packaging -->
 	<distro>
