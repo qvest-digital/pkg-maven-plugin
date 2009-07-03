@@ -6,7 +6,7 @@
 	
 	<distro>
 		<id>ubuntu_intrepid</id>
-		<label>Ubuntu 8.10 LTS (Intrepid Ibex)</label>
+		<label>Ubuntu 8.10 (Intrepid Ibex)</label>
 		<inherit>ubuntu_hardy</inherit>
 		
 		<map>
