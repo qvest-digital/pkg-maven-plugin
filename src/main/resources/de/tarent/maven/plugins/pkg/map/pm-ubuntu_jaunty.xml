@@ -5,7 +5,7 @@
 	<version>1.0</version>
 	
 	<distro>
-		<id>ubuntu_intrepid</id>
+		<id>ubuntu_jaunty</id>
 		<label>Ubuntu 9.04 (Jaunty Jackalope)</label>
 		<inherit>ubuntu_intrepid</inherit>		
 	</distro>
