@@ -465,6 +465,14 @@
 				</jars>
 			</entry>
 			
+			<entry>
+				<artifactSpec>commons-cli:commons-cli</artifactSpec>
+				<dependencyLine>libcommons-cli-java</dependencyLine>
+				<jars>
+					<jar>commons-cli.jar</jar>
+				</jars>
+			</entry>
+			
 			<!-- Dom4j -->
 			<entry>
 				<artifactSpec>dom4j:dom4j</artifactSpec>
