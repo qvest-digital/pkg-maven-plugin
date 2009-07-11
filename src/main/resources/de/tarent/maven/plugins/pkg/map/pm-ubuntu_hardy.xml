@@ -18,6 +18,15 @@
 					<jar>xstream.jar</jar>
 				</jars>
 			</entry>
+			
+			<!-- JGoodies Forms -->
+			<entry>
+				<artifactSpec>com.jgoodies:forms</artifactSpec>
+				<dependencyLine>libjgoodies-forms-java</dependencyLine>
+				<jars>
+					<jar>forms.jar</jar>
+				</jars>
+			</entry>
 		</map>
 		
 	</distro>
