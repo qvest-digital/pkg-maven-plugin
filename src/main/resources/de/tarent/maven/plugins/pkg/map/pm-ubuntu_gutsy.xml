@@ -215,6 +215,14 @@ Package maps document for Ubuntu 7.10 (Gutsy Gibbon).
 				</jars>
 			</entry>
 			
+			<entry>
+				<artifactSpec>com.jgoodies:looks</artifactSpec>
+				<dependencyLine>libjgoodies-looks-java</dependencyLine>
+				<jars>
+					<jar>looks.jar</jar>
+				</jars>
+			</entry>
+			
 			<!-- jh from org.openoffice proved through JavaHelp2 -->
 			<entry>
 				<artifactSpec>org.openoffice:jh</artifactSpec>
