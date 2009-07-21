@@ -1,12 +1,12 @@
 <!--
-	Package maps document for Ubuntu 8.04 LTS (Hardy Heron)
+	Package maps document for Ubuntu 8.10 (Intrepid Ibex)
 -->
 <package-maps>
 	<version>1.0</version>
 	
 	<distro>
 		<id>ubuntu_intrepid</id>
-		<label>Ubuntu 8.10 LTS (Intrepid Ibex)</label>
+		<label>Ubuntu 8.10 (Intrepid Ibex)</label>
 		<inherit>ubuntu_hardy</inherit>
 		
 		<map>
@@ -28,36 +28,5 @@
             </entry>
 		</map>
 		
-	</distro>
-</package-maps>
-<!--
-	Package maps document for Ubuntu 8.04 LTS (Hardy Heron)
--->
-<package-maps>
-	<version>1.0</version>
-	
-	<distro>
-		<id>ubuntu_intrepid</id>
-		<label>Ubuntu 8.10 (Intrepid Ibex)</label>
-		<inherit>ubuntu_hardy</inherit>
-		
-		<repoName>intrepid</repoName>	
-		
-		<!-- SWT is in Maven in different variants ... -->
-		<entry>
-			<artifactSpec>org.eclipse.swt:swt-gtk-linux</artifactSpec>
-			<dependencyLine>libswt3.4-gtk-java</dependencyLine>
-			<jars>
-				<jar>/usr/share/java/swt-gtk-3.4.jar</jar>
-			</jars>
-		</entry>
-			
-		<entry>
-			<artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
-			<dependencyLine>libswt3.4-gtk-java</dependencyLine>
-			<jars>
-				<jar>/usr/share/java/swt-gtk-3.4.jar</jar>
-			</jars>
-		</entry>
 	</distro>
 </package-maps>
