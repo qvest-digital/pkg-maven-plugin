@@ -352,6 +352,26 @@ public class Packaging
     {
       return Packaging.this.createDependencyLine();
     }
+    
+    /** Returns a string containing the programs recommends.
+     * 
+     * @return
+     * @throws MojoExecutionException
+     */
+    public String createRecommendsLine() throws MojoExecutionException
+    {
+      return Packaging.this.createRecommendsLine();
+    }
+    
+    /** Returns a string containing the programs suggests.
+     * 
+     * @return
+     * @throws MojoExecutionException
+     */
+    public String createSuggestsLine() throws MojoExecutionException
+    {
+      return Packaging.this.createSuggestsLine();
+    }
 
     /**
      * Generates a wrapper script for the application. If the
@@ -1394,6 +1414,47 @@ public class Packaging
     pm.iterateDependencyArtifacts(l, runtimeDeps, v, true);
 
     return Utils.joinDependencyLines(line.toString(), manualDeps.toString());
+  }
+  
+  /**
+   * Creates the "Recommends"-line for the package control file
+   * 
+   * @return recommends line
+   * @throws MojoExecutionException
+   */
+  protected final String createRecommendsLine() throws MojoExecutionException
+  {
+	  return createPackageLine(dc.recommends);
+  }
+  
+  /**
+   * Creates the "Suggests"-line for the package control file
+   * 
+   * @return suggests line
+   * @throws MojoExecutionException
+   */
+  protected final String createSuggestsLine() throws MojoExecutionException
+  {
+	  return createPackageLine(dc.suggests);
+  }
+  
+  protected final String createPackageLine(List packageDescriptors)
+  {
+	  StringBuffer packageLine = new StringBuffer();
+	  Iterator ite = packageDescriptors.iterator();
+	  while (ite.hasNext())
+	  {
+		  String packageDescriptor = (String) ite.next();
+
+		  packageLine.append(packageDescriptor);
+		  packageLine.append(", ");
+	  }
+
+	  // Remove last ", "
+	  if (packageLine.length() >= 2)
+		  packageLine.delete(packageLine.length() - 2, packageLine.length());
+	  
+	  return packageLine.toString();
   }
 
   public void execute() throws MojoExecutionException, MojoFailureException

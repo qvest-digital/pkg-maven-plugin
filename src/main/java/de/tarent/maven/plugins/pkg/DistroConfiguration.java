@@ -291,6 +291,31 @@ public class DistroConfiguration
   List manualDependencies;
   
   /**
+   * Denotes a list of strings which should be added to the "Recommends"-field of the package.
+   * 
+   * From the Debian Policy Manual (http://www.debian.org/doc/debian-policy/ch-relationships.html):
+   * 
+   * "This declares a strong, but not absolute, dependency. 
+   * The Recommends field should list packages that would be found together with this one in all but unusual installations."
+   * 
+   * <p>Default is <code>null</code>
+   */
+  List recommends;
+  
+  /**
+   * Denotes a list of strings which should be added to the "Suggests"-field of the package.
+   * 
+   * From the Debian Policy Manual (http://www.debian.org/doc/debian-policy/ch-relationships.html):
+   * 
+   * "This is used to declare that one package may be more useful with one or more others.
+   * Using this field tells the packaging system and the user that the listed packages are related
+   * to this one and can perhaps enhance its usefulness, but that installing this one without them is perfectly reasonable."
+   * 
+   * <p>Default is <code>null</code>
+   */
+  List suggests;
+  
+  /**
    * Denotes the value of the "-Xmx" argument. 
    * 
    * <p>Default is <code>null</code>, after merging it is <code>null</code>
@@ -589,6 +614,16 @@ public class DistroConfiguration
   {
     return manualDependencies;
   }
+  
+  public List getRecommends()
+  {  
+	return recommends;
+  }
+  
+  public List getSuggests()
+  {  
+	return recommends;
+  }
 
   public String getMaxJavaMemory()
   {
@@ -789,6 +824,12 @@ public class DistroConfiguration
 
     manualDependencies = (List) merge(manualDependencies, parent.manualDependencies,
                                          new ArrayList());
+    
+    recommends = (List) merge(recommends, parent.recommends,
+            new ArrayList());
+    
+    suggests = (List) merge(suggests, parent.suggests,
+            new ArrayList());
 
     systemProperties = (Properties) merge(systemProperties,
                                              parent.systemProperties,
@@ -905,6 +946,16 @@ public class DistroConfiguration
   public void setManualDependencies(List manualDependencies)
   {
     this.manualDependencies = manualDependencies;
+  }
+  
+  public void setRecommends(List recommends)
+  {
+	this.recommends = recommends;
+  }
+  
+  public void setSuggests(List suggests)
+  {
+    this.suggests = suggests;
   }
 
   public void setMaxJavaMemory(String maxJavaMemory)

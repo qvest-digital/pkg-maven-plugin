@@ -158,6 +158,8 @@ public class DebPackager extends Packager
         		            packageName,
         		            packageVersion,
         		            ph.createDependencyLine(),
+        		            ph.createRecommendsLine(),
+        		            ph.createSuggestsLine(),
         		            byteAmount);
 
         createPackage(l, ph, basePkgDir);
@@ -204,6 +206,8 @@ public class DebPackager extends Packager
             		            gcjPackageName,
             		            packageVersion,
             		            "java-gcj-compat",
+            		            null,
+            		            null,
             		            byteAmount);
             
             AotCompileUtils.depositPostinstFile(l, aotPostinstFile);
@@ -252,6 +256,8 @@ public class DebPackager extends Packager
                                    String packageName,
                                    String packageVersion,
                                    String dependencyLine,
+                                   String recommendsLine,
+                                   String suggestsLine,
                                    long byteAmount)
       throws MojoExecutionException
   {
@@ -260,6 +266,8 @@ public class DebPackager extends Packager
 	cgen.setVersion(packageVersion);
 	cgen.setSection(dc.getSection());
 	cgen.setDependencies(dependencyLine);
+	cgen.setRecommends(recommendsLine);
+	cgen.setSuggests(suggestsLine);
 	cgen.setMaintainer(dc.getMaintainer());
 	cgen.setShortDescription(ph.getProjectDescription());
 	cgen.setDescription(ph.getProjectDescription());

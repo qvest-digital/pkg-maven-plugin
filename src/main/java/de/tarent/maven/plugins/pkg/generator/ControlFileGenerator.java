@@ -46,6 +46,10 @@ public class ControlFileGenerator
   
   private String dependencies;
   
+  private String recommends;
+  
+  private String suggests;
+  
   private long installedSize;
   
   private String maintainer;
@@ -95,6 +99,26 @@ public class ControlFileGenerator
   public void setDependencies(String dependencies)
   {
     this.dependencies = dependencies;
+  }
+  
+  public String getRecommends()
+  {
+    return recommends;
+  }
+
+  public void setRecommends(String recommends)
+  {
+    this.recommends = recommends;
+  }
+  
+  public String getSuggests()
+  {
+    return suggests;
+  }
+
+  public void setSuggests(String suggests)
+  {
+    this.suggests = suggests;
   }
 
   public String getDescription()
@@ -194,6 +218,8 @@ public class ControlFileGenerator
     writeEntry(w, "Version", version);
     writeEntry(w, "Section", section);
     writeEntry(w, "Depends", dependencies);
+    writeEntry(w, "Recommends", recommends);
+    writeEntry(w, "Suggests", suggests);
     writeEntry(w, "Priority", "optional");
     writeEntry(w, "Architecture", architecture);
     writeEntry(w, "OE", oe);
