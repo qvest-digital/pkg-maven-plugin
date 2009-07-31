@@ -40,7 +40,7 @@ import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 /**
  * 
- * Uploads packages generated in the package-phase to a APT-repository.
+ * Uploads packages generated in the package-phase to an APT-repository.
  * 
  * @author Fabian K&ouml;ster (f.koester@tarent.de) tarent GmbH Bonn
  * 
