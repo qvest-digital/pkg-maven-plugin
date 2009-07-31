@@ -1,0 +1,13 @@
+<!--
+	Package maps document for Ubuntu 9.04 (Jaunty Jackalope)
+-->
+<package-maps>
+	<version>1.0</version>
+	
+	<distro>
+		<id>ubuntu_jaunty</id>
+		<label>Ubuntu 9.04 (Jaunty Jackalope)</label>
+		<inherit>ubuntu_intrepid</inherit>
+		<repoName>jaunt<</repoName>		
+	</distro>
+</package-maps>
