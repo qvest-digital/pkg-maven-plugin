@@ -8,6 +8,6 @@
 		<id>ubuntu_jaunty</id>
 		<label>Ubuntu 9.04 (Jaunty Jackalope)</label>
 		<inherit>ubuntu_intrepid</inherit>
-		<repoName>jaunt<</repoName>		
+		<repoName>jaunty</repoName>		
 	</distro>
 </package-maps>
