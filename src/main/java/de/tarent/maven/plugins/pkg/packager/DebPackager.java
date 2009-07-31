@@ -160,6 +160,9 @@ public class DebPackager extends Packager
         		            ph.createDependencyLine(),
         		            ph.createRecommendsLine(),
         		            ph.createSuggestsLine(),
+        		            ph.createProvidesLine(),
+        		            ph.createConflictsLine(),
+        		            ph.createReplacesLine(),
         		            byteAmount);
 
         createPackage(l, ph, basePkgDir);
@@ -206,6 +209,9 @@ public class DebPackager extends Packager
             		            gcjPackageName,
             		            packageVersion,
             		            "java-gcj-compat",
+            		            null,
+            		            null,
+            		            null,
             		            null,
             		            null,
             		            byteAmount);
@@ -258,6 +264,9 @@ public class DebPackager extends Packager
                                    String dependencyLine,
                                    String recommendsLine,
                                    String suggestsLine,
+                                   String providesLine,
+                                   String conflictsLine,
+                                   String replacesLine,
                                    long byteAmount)
       throws MojoExecutionException
   {
@@ -268,6 +277,9 @@ public class DebPackager extends Packager
 	cgen.setDependencies(dependencyLine);
 	cgen.setRecommends(recommendsLine);
 	cgen.setSuggests(suggestsLine);
+	cgen.setProvides(providesLine);
+	cgen.setConflicts(conflictsLine);
+	cgen.setReplaces(replacesLine);
 	cgen.setMaintainer(dc.getMaintainer());
 	cgen.setShortDescription(ph.getProjectDescription());
 	cgen.setDescription(ph.getProjectDescription());

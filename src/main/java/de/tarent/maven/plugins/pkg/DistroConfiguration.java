@@ -309,11 +309,48 @@ public class DistroConfiguration
    * 
    * "This is used to declare that one package may be more useful with one or more others.
    * Using this field tells the packaging system and the user that the listed packages are related
-   * to this one and can perhaps enhance its usefulness, but that installing this one without them is perfectly reasonable."
+   *  to this one and can perhaps enhance its usefulness, but that installing this one without them is perfectly reasonable."
    * 
    * <p>Default is <code>null</code>
    */
   List suggests;
+  
+  /**
+   * Denotes a list of strings which should be added to the "Provides"-field of the package.
+   * 
+   * From the Debian Policy Manual (http://www.debian.org/doc/debian-policy/ch-relationships.html):
+   * 
+   * "A virtual package is one which appears in the Provides control file field of another package.
+   * The effect is as if the package(s) which provide a particular virtual package name
+   *  had been listed by name everywhere the virtual package name appears."
+   * 
+   * <p>Default is <code>null</code>
+   */
+  List provides;
+  
+  /**
+   * Denotes a list of strings which should be added to the "Conflicts"-field of the package.
+   * 
+   * From the Debian Policy Manual (http://www.debian.org/doc/debian-policy/ch-relationships.html):
+   * 
+   * "When one binary package declares a conflict with another using a Conflicts field, dpkg will
+   *  refuse to allow them to be installed on the system at the same time."
+   * 
+   * <p>Default is <code>null</code>
+   */
+  List conflicts;
+  
+  /**
+   * Denotes a list of strings which should be added to the "Replaces"-field of the package.
+   * 
+   * From the Debian Policy Manual (http://www.debian.org/doc/debian-policy/ch-relationships.html):
+   * 
+   * "Packages can declare in their control file that they should overwrite files in certain other
+   *  packages, or completely replace other packages"
+   * 
+   * <p>Default is <code>null</code>
+   */
+  List replaces;
   
   /**
    * Denotes the value of the "-Xmx" argument. 
@@ -624,6 +661,21 @@ public class DistroConfiguration
   {  
 	return recommends;
   }
+  
+  public List getProvides()
+  {  
+	return provides;
+  }
+  
+  public List getConflicts()
+  {  
+	return conflicts;
+  }
+  
+  public List getReplaces()
+  {  
+	return replaces;
+  }
 
   public String getMaxJavaMemory()
   {
@@ -830,6 +882,15 @@ public class DistroConfiguration
     
     suggests = (List) merge(suggests, parent.suggests,
             new ArrayList());
+    
+    provides = (List) merge(provides, parent.provides,
+            new ArrayList());
+    
+    conflicts = (List) merge(conflicts, parent.conflicts,
+            new ArrayList());
+    
+    replaces = (List) merge(replaces, parent.replaces,
+            new ArrayList());
 
     systemProperties = (Properties) merge(systemProperties,
                                              parent.systemProperties,
@@ -956,6 +1017,21 @@ public class DistroConfiguration
   public void setSuggests(List suggests)
   {
     this.suggests = suggests;
+  }
+  
+  public void setProvides(List provides)
+  {
+    this.provides = provides;
+  }
+  
+  public void setConflicts(List conflicts)
+  {
+    this.conflicts = conflicts;
+  }
+  
+  public void setReplaces(List replaces)
+  {
+    this.replaces = replaces;
   }
 
   public void setMaxJavaMemory(String maxJavaMemory)

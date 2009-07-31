@@ -372,6 +372,36 @@ public class Packaging
     {
       return Packaging.this.createSuggestsLine();
     }
+    
+    /** Returns a string containing the virtual packages this package provides.
+     * 
+     * @return
+     * @throws MojoExecutionException
+     */
+    public String createProvidesLine() throws MojoExecutionException
+    {
+      return Packaging.this.createProvidesLine();
+    }
+    
+    /** Returns a string containing the packages this package conflicts with. 
+     * 
+     * @return
+     * @throws MojoExecutionException
+     */
+    public String createConflictsLine() throws MojoExecutionException
+    {
+      return Packaging.this.createConflictsLine();
+    }
+    
+    /** Returns a string containing the packages this package replaces.
+     * 
+     * @return
+     * @throws MojoExecutionException
+     */
+    public String createReplacesLine() throws MojoExecutionException
+    {
+      return Packaging.this.createReplacesLine();
+    }
 
     /**
      * Generates a wrapper script for the application. If the
@@ -1438,8 +1468,44 @@ public class Packaging
 	  return createPackageLine(dc.suggests);
   }
   
+  /**
+   * Creates the "Provides"-line for the package control file
+   * 
+   * @return provides line
+   * @throws MojoExecutionException
+   */
+  protected final String createProvidesLine() throws MojoExecutionException
+  {
+	  return createPackageLine(dc.provides);
+  }
+  
+  /**
+   * Creates the "Conflicts"-line for the package control file
+   * 
+   * @return conflicts line
+   * @throws MojoExecutionException
+   */
+  protected final String createConflictsLine() throws MojoExecutionException
+  {
+	  return createPackageLine(dc.conflicts);
+  }
+  
+  /**
+   * Creates the "Replaces"-line for the package control file
+   * 
+   * @return suggests line
+   * @throws MojoExecutionException
+   */
+  protected final String createReplacesLine() throws MojoExecutionException
+  {
+	  return createPackageLine(dc.replaces);
+  }
+  
   protected final String createPackageLine(List packageDescriptors)
   {
+	  if(packageDescriptors == null || packageDescriptors.isEmpty())
+		  return null;
+	  
 	  StringBuffer packageLine = new StringBuffer();
 	  Iterator ite = packageDescriptors.iterator();
 	  while (ite.hasNext())

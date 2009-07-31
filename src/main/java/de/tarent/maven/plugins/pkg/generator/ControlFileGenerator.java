@@ -50,6 +50,12 @@ public class ControlFileGenerator
   
   private String suggests;
   
+  private String provides;
+  
+  private String conflicts;
+  
+  private String replaces;
+  
   private long installedSize;
   
   private String maintainer;
@@ -119,6 +125,36 @@ public class ControlFileGenerator
   public void setSuggests(String suggests)
   {
     this.suggests = suggests;
+  }
+  
+  public String getProvides()
+  {
+    return provides;
+  }
+
+  public void setProvides(String provides)
+  {
+    this.provides = provides;
+  }
+  
+  public String getConflicts()
+  {
+    return conflicts;
+  }
+
+  public void setConflicts(String conflicts)
+  {
+    this.conflicts = conflicts;
+  }
+  
+  public String getReplaces()
+  {
+    return replaces;
+  }
+
+  public void setReplaces(String replaces)
+  {
+    this.replaces = replaces;
   }
 
   public String getDescription()
@@ -220,6 +256,9 @@ public class ControlFileGenerator
     writeEntry(w, "Depends", dependencies);
     writeEntry(w, "Recommends", recommends);
     writeEntry(w, "Suggests", suggests);
+    writeEntry(w, "Provides", provides);
+    writeEntry(w, "Conflicts", conflicts);
+    writeEntry(w, "Replaces", replaces);
     writeEntry(w, "Priority", "optional");
     writeEntry(w, "Architecture", architecture);
     writeEntry(w, "OE", oe);
