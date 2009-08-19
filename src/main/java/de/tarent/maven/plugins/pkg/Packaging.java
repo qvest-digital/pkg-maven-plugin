@@ -1195,7 +1195,7 @@ public class Packaging
     }
     catch (IOException ioe)
     {
-      throw new MojoExecutionException("IO error while writing the script file " + dstScriptFile);
+      throw new MojoExecutionException("IO error while writing the script file " + dstScriptFile, ioe);
     }
   }
 
