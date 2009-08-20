@@ -276,7 +276,7 @@ public class IzPackPackager extends Packager
     }
     catch (IOException ioe)
     {
-      throw new MojoExecutionException("IOException while copying IzPack descriptor data.");
+      throw new MojoExecutionException("IOException while copying IzPack descriptor data.", ioe);
     }
     
     l.info("creating directory for dependencies: " + libraryRoot.getAbsolutePath());
@@ -328,7 +328,7 @@ public class IzPackPackager extends Packager
     }
     catch (IOException ioe)
     {
-      throw new MojoExecutionException("IOException while unpacking embedded IzPack installation.");
+      throw new MojoExecutionException("IOException while unpacking embedded IzPack installation.", ioe);
     }
     
     l.info("unpacked " + count + " entries");

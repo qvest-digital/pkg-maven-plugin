@@ -377,7 +377,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
     catch (IOException ioe)
       {
         throw new MojoExecutionException(
-                                         "IOException while copying dependency artifacts.");
+                                         "IOException while copying dependency artifacts.",ioe);
       }
 
     return byteAmount;

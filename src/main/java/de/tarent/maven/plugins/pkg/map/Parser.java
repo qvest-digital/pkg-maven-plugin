@@ -84,7 +84,7 @@ class Parser
       }
       catch (MalformedURLException mfue)
       {
-        throw new Exception("URL in <include> tag is invalid '" + includeUrl + "'");
+        throw new Exception("URL in <include> tag is invalid '" + includeUrl + "'", mfue);
       }
     }
     
@@ -302,11 +302,11 @@ class Parser
         }
         catch (XmlPullParserException xmlppe)
         {
-          throw new Exception("XML document malformed");
+          throw new Exception("XML document malformed", xmlppe);
         }
         catch (IOException ioe)
         {
-          throw new Exception("I/O error when accessing XML document: " + url);
+          throw new Exception("I/O error when accessing XML document: " + url, ioe);
         }
 
       }

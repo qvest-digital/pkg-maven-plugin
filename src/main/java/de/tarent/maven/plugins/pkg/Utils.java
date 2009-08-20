@@ -158,6 +158,7 @@ public class Utils
     catch (InterruptedException ie)
       {
         // Cannot happen.
+    	throw new MojoExecutionException("InterruptedException", ie);
       }
     return p.getInputStream();
   }
@@ -189,7 +190,7 @@ public class Utils
       }
     catch (IOException ioe)
       {
-        throw new MojoExecutionException(ioExceptionMsg);
+        throw new MojoExecutionException(ioExceptionMsg, ioe);
       }
   }
 
