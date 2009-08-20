@@ -79,9 +79,12 @@ package de.tarent.maven.plugins.pkg;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -421,8 +424,6 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
   
   /**
    * Makes the version string compatible to the system's requirements.
-   * TODO: Really check the format and try to fix it and not just remove
-   * "-SNAPSHOT"
    * 
    * @param v
    * @return
@@ -431,9 +432,19 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
   {
     int i = v.indexOf("-SNAPSHOT");
     if (i > 0)
-      return v.substring(0, i);
+      return v.substring(0, i) + "~SNAPSHOT~" + createSnapshotTimestamp();
   
     return v;
+  }
+  
+  /**
+   * Returns a String representing the current time (UTC) in format yyyyMMddHHmmss
+   * 
+   * @return
+   */
+  private final String createSnapshotTimestamp() {
+	  
+	return new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime());  
   }
   
   /**
