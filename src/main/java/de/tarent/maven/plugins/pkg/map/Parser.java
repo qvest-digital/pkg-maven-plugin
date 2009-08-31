@@ -213,6 +213,7 @@ class Parser
 		} catch (InvalidVersionSpecificationException e) {
 			throw new IllegalStateException("package map contains invalid version spec.", e);
 		}
+		s.nextElement();
       }
       
       if (s.peek("ignore"))

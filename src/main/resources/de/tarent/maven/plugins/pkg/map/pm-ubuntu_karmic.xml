@@ -395,7 +395,7 @@
 		</entry>
 
 		<entry>
-			<artifactSpec>junit:junit:4</artifactSpec>
+			<artifactSpec>junit:junit</artifactSpec>
 			<versionSpec>[4.0,)</versionSpec>
 			<dependencyLine>libjunit4-java</dependencyLine>
 			<jars>
@@ -414,10 +414,6 @@
 		<entry>
 			<!-- No equivalent in distro but classes provided by velocity. -->
 			<artifactSpec>velocity:velocity-dep</artifactSpec>
-			<dependencyLine>velocity</dependencyLine>
-			<jars>
-				<jar>velocity.jar</jar>
-			</jars>
 			<ignore/>
 		</entry>
 
@@ -614,7 +610,7 @@
 			</entry>
 
 			<entry>
-				<artifactSpec>commons-collections:commons-collections:3</artifactSpec>
+				<artifactSpec>commons-collections:commons-collections</artifactSpec>
 				<versionSpec>[3.0,)</versionSpec>
 				<dependencyLine>libcommons-collections3-java</dependencyLine>
 				<jars>
