@@ -11,7 +11,7 @@
 	
 	<name>Maven Packaging Plugin</name>
 	
-	<description>Maven plugin to package a Project (deb, ipk, izpack)</description>
+	<description>Plugin to package a Maven project for different GNU/Linux distributions and IzPack.</description>
 	
 	<licenses>
 		<license>
