@@ -30,6 +30,9 @@ package de.tarent.maven.plugins.pkg.map;
 
 import java.util.HashSet;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.maven.artifact.versioning.VersionRange;
+
 /**
  * An <code>Entry<code> instance denotes a single mapping between a Maven2 artifact
  * and a package in the target distribution.
@@ -60,17 +63,47 @@ public class Entry
   public HashSet jarFileNames;
   
   public boolean isBootClasspath;
+  
+  public VersionRange versionRange;
 
   private Entry()
   {
     // For internal instances only.
   }
 
-  Entry(String artifactId, String packageName, HashSet jarFileNames, boolean isBootClasspath)
+  Entry(String artifactId, VersionRange versionRange, String packageName, HashSet jarFileNames, boolean isBootClasspath)
   {
     this.artifactId = artifactId;
+    this.versionRange = versionRange;
     this.packageName = packageName;
     this.jarFileNames = jarFileNames;
     this.isBootClasspath = isBootClasspath;
+  }
+  
+  public boolean equals(Object o)
+  {
+	  if (o instanceof Entry)
+	  {
+		Entry that = (Entry) o;
+		return this.artifactId.equals(that.artifactId)
+			&& this.packageName.equals(that.packageName)
+			&& this.jarFileNames.equals(that.jarFileNames)
+			&& this.isBootClasspath == that.isBootClasspath
+			&& this.versionRange.equals(that.versionRange);
+	  }
+	  
+	  return false;
+  }
+  
+  public int hashCode()
+  {
+	  HashCodeBuilder hb = new HashCodeBuilder();
+	  hb.append(artifactId)
+	  	.append(packageName)
+	  	.append(jarFileNames)
+	  	.append(isBootClasspath)
+	  	.append(versionRange);
+	  
+	  return hb.toHashCode();
   }
 }

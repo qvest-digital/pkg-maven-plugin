@@ -28,7 +28,12 @@
  */
 package de.tarent.maven.plugins.pkg.map;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.VersionRange;
 
 /**
  * A <code>Mapping</code> is the datatype that describes a target
@@ -63,7 +68,7 @@ class Mapping
   
   boolean hasNoPackages;
   
-  HashMap/*<String, Entry>*/ entries = new HashMap();
+  HashMap<String, List<Entry>> entryMap = new HashMap<String, List<Entry>>();
   
   /**
    * Creates an empty mapping with the given distro name set.
@@ -105,18 +110,43 @@ class Mapping
     defaultJNIPath = (child.defaultJNIPath != null) ? child.defaultJNIPath : parent.defaultJNIPath; 
     defaultDependencyLine = (child.defaultDependencyLine != null) ? child.defaultDependencyLine : parent.defaultDependencyLine;
     
-    entries = (HashMap) parent.entries.clone();
-    entries.putAll(child.entries);
+    entryMap = (HashMap<String, List<Entry>>) parent.entryMap.clone();
+    entryMap.putAll(child.entryMap);
   }
   
-  Entry getEntry(String groupId, String artifactId)
+  Entry getEntry(String groupId, String artifactId, ArtifactVersion artifactVersion)
   {
-    return (Entry) entries.get(groupId + ":" + artifactId);
+    List<Entry> entryList = entryMap.get(groupId + ":" + artifactId);
+    if (entryList == null)
+    	return null;
+    
+    Entry unrangedCandidate = null;
+    
+    for (Entry e : entryList)
+    {
+    	if (e.versionRange != null)
+    	{
+    		if (e.versionRange.containsVersion(artifactVersion))
+    			return e;
+    	}
+    	else
+    	{
+    		unrangedCandidate = e;
+    	}
+    }
+    
+    return unrangedCandidate;
   }
   
   void putEntry (String artifactSpec, Entry e)
   {
-    entries.put(artifactSpec, e);
+	  List<Entry> list = entryMap.get(artifactSpec);
+	  if (list == null)
+	  {
+		  entryMap.put(artifactSpec, list = new ArrayList<Entry>());
+	  }
+	  
+	  list.add(e);
   }
 
 }

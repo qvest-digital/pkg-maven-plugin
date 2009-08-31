@@ -13,8 +13,18 @@
 	<distro>
 		<id>ubuntu_karmic</id>
 		<label>Ubuntu 9.10 (Karmic Koala)</label>
+		<packaging>deb</packaging>
 		<repoName>karmic</repoName>		
-	</distro>
+		<defaultJarPath>/usr/share/java</defaultJarPath>
+		<!--
+			Altough Ubuntu (like Debian) puts most of its JNI libraries into /usr/lib/jni
+			some end up in /usr/lib (e.g. librxtx-java). So we add this path
+			as well.
+		-->
+		<defaultJNIPath>/usr/lib/jni:/usr/lib</defaultJNIPath>
+
+		<!-- GCJ does not play a role for Ubuntu releases. -->
+		<defaultDependencyLine>java2-runtime</defaultDependencyLine>
 
 	<map>
 		<!-- Maven knows multiple SWT variants-->
@@ -274,6 +284,484 @@
 			</jars>
 		</entry>
 
+		<!-- Miglayout -->
+		<entry>
+			<artifactSpec>com.miglayout:miglayout</artifactSpec>
+			<dependencyLine>libmiglayout-java</dependencyLine>
+			<jars>
+				<jar>miglayout.jar</jar>
+			</jars>
+		</entry>
+
+		<!-- Servlet API -->
+		<entry>
+			<artifactSpec>javax.servlet:servlet-api:2.3</artifactSpec>
+			<dependencyLine>libservlet2.3-java</dependencyLine>
+			<jars>
+				<jar>servlet-2.3.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>javax.servlet:servlet-api:2.4</artifactSpec>
+			<dependencyLine>libservlet2.4-java</dependencyLine>
+			<jars>
+				<jar>servlet-api-2.4.jar</jar>
+				<jar>jsp-api-2.0.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>javax.servlet:servlet-api:2.5</artifactSpec>
+			<dependencyLine>libservlet2.5-java</dependencyLine>
+			<jars>
+				<jar>servlet-api-2.5.jar</jar>
+				<jar>jsp-api-2.1.jar</jar>
+				<jar>el-api-2.1</jar>
+			</jars>
+		</entry>
+		
+		<!-- This replaces proprietary Java Activation Framework with GNU JAF. -->
+		<entry>
+			<artifactSpec>com.sun.activation:activation</artifactSpec>
+			<dependencyLine>libgnujaf-java</dependencyLine>
+			<jars>
+				<jar>activation.jar</jar>
+			</jars>
+		</entry>
+		
+		<entry>
+			<artifactSpec>javax.activation:activation</artifactSpec>
+			<dependencyLine>libgnujaf-java</dependencyLine>
+			<jars>
+				<jar>activation.jar</jar>
+			</jars>
+		</entry>
+		
+		<entry>
+			<artifactSpec>org.gnu:activation</artifactSpec>
+			<dependencyLine>libgnujaf-java</dependencyLine>
+			<jars>
+				<jar>activation.jar</jar>
+			</jars>
+		</entry>
+
+		<!-- Replaces proprietary JavaMail implementation with GNU Mail. -->
+		<entry>
+			<artifactSpec>com.sun.javamail:mail</artifactSpec>
+			<dependencyLine>libgnumail-java</dependencyLine>
+			<jars>
+				<jar>gnumail.jar</jar>
+				<jar>gnumail-providers.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>org.gnu:gnumail</artifactSpec>
+			<dependencyLine>libgnumail-java</dependencyLine>
+			<jars>
+				<jar>gnumail.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>org.gnu:gnumail-providers</artifactSpec>
+			<dependencyLine>libgnumail-java</dependencyLine>
+			<jars>
+				<jar>gnumail-providers.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>org.bouncycastle.jce:bouncycastle-jdk14-provider</artifactSpec>
+			<dependencyLine>libbcprov-java</dependencyLine>
+			<jars>
+				<jar>bcprov.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>log4j:log4j</artifactSpec>
+			<dependencyLine>liblog4j1.2-java</dependencyLine>
+			<jars>
+				<jar>log4j-1.2.jar</jar>
+			</jars>
+		</entry>
+
+		<!-- Everything can be automatically derived from the artifactSpec -->
+		<entry>
+			<artifactSpec>junit:junit</artifactSpec>
+			<versionSpec>[,4.0)</versionSpec>
+		</entry>
+
+		<entry>
+			<artifactSpec>junit:junit:4</artifactSpec>
+			<versionSpec>[4.0,)</versionSpec>
+			<dependencyLine>libjunit4-java</dependencyLine>
+			<jars>
+				<jar>junit4.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>velocity:velocity</artifactSpec>
+			<dependencyLine>velocity</dependencyLine>
+			<jars>
+				<jar>velocity.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<!-- No equivalent in distro but classes provided by velocity. -->
+			<artifactSpec>velocity:velocity-dep</artifactSpec>
+			<dependencyLine>velocity</dependencyLine>
+			<jars>
+				<jar>velocity.jar</jar>
+			</jars>
+			<ignore/>
+		</entry>
+
+		<!-- OpenOffice.org stuff -->
+			<entry>
+				<artifactSpec>org.openoffice:classes</artifactSpec>
+				<dependencyLine>openoffice.org-java-common</dependencyLine>
+				<jars>
+					<jar>/usr/share/java/openoffice/classes.jar</jar>
+				</jars>
+			</entry>
+			<entry>
+				<artifactSpec>org.openoffice:common</artifactSpec>
+				<dependencyLine>openoffice.org-java-common</dependencyLine>
+				<jars>
+					<jar>/usr/share/java/openoffice/commonwizards.jar</jar>
+				</jars>
+			</entry>
+			<entry>
+				<artifactSpec>org.openoffice:unoil</artifactSpec>
+				<dependencyLine>openoffice.org-java-common</dependencyLine>
+				<jars>
+					<jar>/usr/share/java/openoffice/unoil.jar</jar>
+				</jars>
+			</entry>
+			<entry>
+				<artifactSpec>org.openoffice:ridl</artifactSpec>
+				<dependencyLine>openoffice.org-java-common</dependencyLine>
+				<jars>
+					<jar>/usr/share/java/openoffice/ridl.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<!-- OO.o docbook not available in distro -->
+				<artifactSpec>org.openoffice:docbook</artifactSpec>
+				<bundle/>
+			</entry>
+
+			<entry>
+				<!-- OO.o sandbox not available in distro -->
+				<artifactSpec>org.openoffice:sandbox</artifactSpec>
+				<bundle/>
+			</entry>
+
+			<entry>
+				<!-- OO.o htmlsoff not available in distro -->
+				<artifactSpec>org.openoffice:htmlsoff</artifactSpec>
+				<bundle/>
+			</entry>
+
+			<entry>
+				<!-- OO.o java_uno_accessbridge not available in distro -->
+				<artifactSpec>org.openoffice:java_uno_accessbridge</artifactSpec>
+				<bundle/>
+			</entry>
+
+			<entry>
+				<!-- OO.o java_uno_accessbridge not available in distro -->
+				<artifactSpec>org.openoffice:XFlatXml</artifactSpec>
+				<bundle/>
+			</entry>
+
+			<entry>
+				<artifactSpec>org.openoffice:officebean</artifactSpec>
+				<dependencyLine>openoffice.org-officebean</dependencyLine>
+				<jars>
+					<jar>/usr/share/java/openoffice/officebean.jar</jar>
+				</jars>
+			</entry>
+			
+			<entry>
+				<artifactSpec>org.openoffice:juh</artifactSpec>
+				<dependencyLine>ure</dependencyLine>
+				<jars>
+					<jar>/usr/share/java/openoffice/juh.jar</jar>
+				</jars>
+			</entry>
+			<entry>
+				<artifactSpec>org.openoffice:jut</artifactSpec>
+				<dependencyLine>openoffice.org-java-common</dependencyLine>
+				<jars>
+					<jar>/usr/share/java/openoffice/jut.jar</jar>
+				</jars>
+			</entry>
+			<entry>
+				<artifactSpec>org.openoffice:jurt</artifactSpec>
+				<dependencyLine>ure</dependencyLine>
+				<jars>
+					<jar>/usr/share/java/openoffice/jurt.jar</jar>
+				</jars>
+			</entry>
+			<entry>
+				<artifactSpec>org.openoffice:java_uno</artifactSpec>
+				<dependencyLine>ure</dependencyLine>
+				<jars>
+					<jar>/usr/share/java/openoffice/java_uno.jar</jar>
+				</jars>
+			</entry>
+			<entry>
+				<artifactSpec>org.openoffice:report</artifactSpec>
+				<dependencyLine>openoffice.org-java-common</dependencyLine>
+				<jars>
+					<jar>/usr/share/java/openoffice/report.jar</jar>
+				</jars>
+			</entry>
+			<entry>
+				<artifactSpec>org.openoffice:xmerge</artifactSpec>
+				<dependencyLine>openoffice.org-java-common</dependencyLine>
+				<jars>
+					<jar>/usr/share/java/openoffice/xmerge.jar</jar>
+				</jars>
+			</entry>
+			<entry>
+				<artifactSpec>org.openoffice:XMergeBridge</artifactSpec>
+				<dependencyLine>openoffice.org-java-common</dependencyLine>
+				<jars>
+					<jar>/usr/share/java/openoffice/XMergeBridge.jar</jar>
+				</jars>
+			</entry>
+			<entry>
+				<artifactSpec>org.openoffice:XSLTFilter</artifactSpec>
+				<dependencyLine>openoffice.org-java-common</dependencyLine>
+				<jars>
+					<jar>/usr/share/java/openoffice/XSLTFilter.jar</jar>
+				</jars>
+			</entry>
+			<entry>
+				<artifactSpec>org.openoffice:XSLTValidate</artifactSpec>
+				<dependencyLine>openoffice.org-java-common</dependencyLine>
+				<jars>
+					<jar>/usr/share/java/openoffice/XSLTValidate.jar</jar>
+				</jars>
+			</entry>
+			
+			<!-- OpenOffice' XT provided through separate package -->
+			<entry>
+				<artifactSpec>org.openoffice:xt</artifactSpec>
+				<dependencyLine>libxt-java</dependencyLine>
+				<jars>
+					<jar>xt.jar</jar>
+				</jars>
+			</entry>
+
+			<!-- BeanShell -->
+			<entry>
+				<artifactSpec>org.beanshell:bsh</artifactSpec>
+				<dependencyLine>bsh</dependencyLine>
+				<jars>
+					<jar>bsh.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>ant:ant</artifactSpec>
+				<dependencyLine>ant</dependencyLine>
+				<jars>
+					<jar>ant.jar</jar>
+				</jars>
+			</entry>
+
+			<!-- Apache Commons -->
+			
+			<entry>
+				<artifactSpec>commons-beanutils:commons-beanutils</artifactSpec>
+				<dependencyLine>libcommons-beanutils-java</dependencyLine>
+				<jars>
+					<jar>commons-beanutils.jar</jar>
+				</jars>
+			</entry>
+			<entry>
+				<artifactSpec>commons-beanutils:commons-beanutils-core</artifactSpec>
+				<dependencyLine>libcommons-beanutils-java</dependencyLine>
+				<jars>
+					<jar>commons-beanutils.jar</jar>
+				</jars>
+			</entry>
+			
+			<entry>
+				<artifactSpec>commons-beanutils:commons-beanutils-bean-collections</artifactSpec>
+				<dependencyLine>libcommons-beanutils-java</dependencyLine>
+				<jars>
+					<jar>commons-beanutils.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>commons-collections:commons-collections</artifactSpec>
+				<versionSpec>[,3.0)</versionSpec>
+				<dependencyLine>libcommons-collections-java</dependencyLine>
+				<jars>
+					<jar>commons-collections3.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>commons-collections:commons-collections:3</artifactSpec>
+				<versionSpec>[3.0,)</versionSpec>
+				<dependencyLine>libcommons-collections3-java</dependencyLine>
+				<jars>
+					<jar>commons-collections3.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>commons-discovery:commons-discovery</artifactSpec>
+				<dependencyLine>libcommons-discovery-java</dependencyLine>
+				<jars>
+					<jar>commons-discovery.jar</jar>
+				</jars>
+			</entry>
+			
+			<entry>
+				<artifactSpec>org.apache:commons-discovery</artifactSpec>
+				<dependencyLine>libcommons-discovery-java</dependencyLine>
+				<jars>
+					<jar>commons-discovery.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>commons-digester:commons-digester</artifactSpec>
+				<dependencyLine>libcommons-digester-java</dependencyLine>
+				<jars>
+					<jar>commons-digester.jar</jar>
+				</jars>
+			</entry>
+			
+			<entry>
+				<artifactSpec>commons-dbcp:commons-dbcp</artifactSpec>
+				<dependencyLine>libcommons-dbcp-java</dependencyLine>
+				<jars>
+					<jar>commons-dbcp.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>commons-fileupload:commons-fileupload</artifactSpec>
+				<dependencyLine>libcommons-fileupload-java</dependencyLine>
+				<jars>
+					<jar>commons-fileupload.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>commons-io:commons-io</artifactSpec>
+				<dependencyLine>libcommons-io-java</dependencyLine>
+				<jars>
+					<jar>commons-io.jar</jar>
+				</jars>
+			</entry>
+			
+			<entry>
+				<artifactSpec>commons-configuration:commons-configuration</artifactSpec>
+				<bundle/>
+			</entry>
+			
+			<entry>
+				<artifactSpec>commons-lang:commons-lang</artifactSpec>
+				<dependencyLine>libcommons-lang-java</dependencyLine>
+				<jars>
+					<jar>commons-lang.jar</jar>
+				</jars>
+			</entry>
+
+			<entry>
+				<artifactSpec>commons-logging:commons-logging</artifactSpec>
+				<dependencyLine>libcommons-logging-java</dependencyLine>
+				<jars>
+					<jar>commons-logging.jar</jar>
+				</jars>
+			</entry>
+			
+			<entry>
+				<artifactSpec>commons-pool:commons-pool</artifactSpec>
+				<dependencyLine>libcommons-pool-java</dependencyLine>
+				<jars>
+					<jar>commons-pool.jar</jar>
+				</jars>
+			</entry>
+			
+			<entry>
+				<artifactSpec>commons-cli:commons-cli</artifactSpec>
+				<dependencyLine>libcommons-cli-java</dependencyLine>
+				<jars>
+					<jar>commons-cli.jar</jar>
+				</jars>
+			</entry>
+			
+			<!-- Dom4j -->
+			<entry>
+				<artifactSpec>dom4j:dom4j</artifactSpec>
+				<dependencyLine>libdom4j-java</dependencyLine>
+				<jars>
+					<jar>dom4j.jar</jar>
+				</jars>
+			</entry>
+
+			<!-- inetlib -->
+			<entry>
+				<artifactSpec>org.gnu:inetlib</artifactSpec>
+				<dependencyLine>libgnuinet-java</dependencyLine>
+				<jars>
+					<jar>inetlib.jar</jar>
+				</jars>
+			</entry>
+
+			<!-- Jaxen -->
+			<entry>
+				<artifactSpec>jaxen:jaxen</artifactSpec>
+				<dependencyLine>libjaxen-java</dependencyLine>
+				<jars>
+					<jar>jaxen.jar</jar>
+				</jars>
+			</entry>
+
+			<!-- JCalendar -->
+			<entry>
+				<artifactSpec>com.toedter:jcalendar</artifactSpec>
+				<dependencyLine>libjcalendar-java</dependencyLine>
+				<jars>
+					<jar>jcalendar.jar</jar>
+				</jars>
+			</entry>
+
+			<!-- JDom -->
+			<entry>
+				<artifactSpec>jdom:jdom</artifactSpec>
+				<dependencyLine>libjdom-java</dependencyLine>
+				<jars>
+					<jar>jdom.jar</jar>
+				</jars>
+			</entry>
+			
+			<!-- RelaxNG Datatype -->
+			<entry>
+				<artifactSpec>relaxngDatatype:relaxngDatatype</artifactSpec>
+				<dependencyLine>librelaxng-datatype-java</dependencyLine>
+				<jars>
+					<jar>relaxngDatatype.jar</jar>
+				</jars>
+			</entry>
+
 	</map>
+	</distro>
 
 </package-maps>

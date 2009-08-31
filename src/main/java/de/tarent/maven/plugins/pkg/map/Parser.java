@@ -34,6 +34,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
+import org.apache.maven.artifact.versioning.VersionRange;
 import org.codehaus.plexus.util.xml.pull.MXParser;
 import org.codehaus.plexus.util.xml.pull.XmlPullParser;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -128,7 +130,7 @@ class Parser
       else if(s.peek("packaging"))
         distroMapping.packaging = s.nextElement();
       else
-        throw new Exception("malformed document: unexpected token " + s.token);
+        throw new Exception("malformed document: unexpected token '" + s.token + "'. Expected either <inherit> or <packaging>.");
       
       s.nextElement();
       // debian naming parameter is optional
@@ -198,11 +200,21 @@ class Parser
     {
       String artifactSpec;
       String dependencyLine;
+      VersionRange versionRange = null;
       
       s.nextMatch("artifactSpec");
       dependencyLine = getArtifactId(artifactSpec = s.nextElement());
       
       s.nextElement();
+      if (s.peek("versionSpec"))
+      {
+    	  try {
+			versionRange = VersionRange.createFromVersionSpec(s.nextElement());
+		} catch (InvalidVersionSpecificationException e) {
+			throw new IllegalStateException("package map contains invalid version spec.", e);
+		}
+      }
+      
       if (s.peek("ignore"))
         {
           distroMapping.putEntry(artifactSpec, Entry.IGNORE_ENTRY);
@@ -234,7 +246,8 @@ class Parser
           parseJars(s, jarFileNames);
         }
       
-      distroMapping.putEntry(artifactSpec, new Entry(artifactSpec, dependencyLine, jarFileNames, isBootClaspath));
+      distroMapping.putEntry(artifactSpec,
+    		  new Entry(artifactSpec, versionRange, dependencyLine, jarFileNames, isBootClaspath));
     }
     
     /**

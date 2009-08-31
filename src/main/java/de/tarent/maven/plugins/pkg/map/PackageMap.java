@@ -32,6 +32,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.OverConstrainedVersionException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
@@ -42,11 +44,8 @@ import de.tarent.maven.plugins.pkg.Utils;
  * dependency and a package in a distribution.
  * 
  * <p>The mapping mechanism is weaker than what Maven provides: A dependency
- * in Maven consists of an artifactId, a groupId and a version number. In its
- * current form the groupId and version number is not regarded.
- * 
- * <p>The group id is left out because there is a small propability that
- * artifact ids conflict.</p>
+ * in Maven consists of a groupId, an artifactId and a version number. In its
+ * current form the version number is not regarded.</p>
  * 
  * <p>The version number is left out because distributions usually only package
  * one specific version of a package.</p>
@@ -122,7 +121,7 @@ public class PackageMap
    * Returns the packaging variant used by the distribution. Supported variants
    * are "ipk", "deb" and "izpack".
    * 
-   * <p><a href="http://mvn-pkg-plugin.evolvis.org">Implement} rpm and make some people happy!</a></p> 
+   * <p><a href="http://mvn-pkg-plugin.evolvis.org">Implement rpm and make some people happy!</a></p> 
    * 
    * @return
    */
@@ -223,7 +222,12 @@ public class PackageMap
            continue;
          }
        
-       Entry e = (Entry) mapping.getEntry(a.getGroupId(), aid);
+       Entry e;
+		try {
+			e = (Entry) mapping.getEntry(a.getGroupId(), aid, a.getSelectedVersion());
+		} catch (OverConstrainedVersionException e1) {
+			throw new IllegalStateException("Unable to retrieve selected artifact version.", e1);
+		}
        // If a distro is explicitly declared to have no packages everything
        // will be bundled (without warning).
        if (mapping.hasNoPackages)
@@ -248,26 +252,6 @@ public class PackageMap
        
      }
      
-  }
-  
-  public Entry getEntry(String groupId, String artifactId, String section)
-  {
-    Entry e = (Entry) mapping.getEntry(groupId, artifactId);
-    
-    // If an entry does not exist create one based on the artifact id.
-    // This is needed if the project is a library and is going to be packaged.
-    if (e == null)
-      {
-        HashSet hs = new HashSet();
-        hs.add(getDefaultJarPath() + "/" + artifactId + ".jar");
-        
-        e = new Entry(artifactId,
-                      Utils.createPackageName(artifactId, section, isDebianNaming()),
-                      hs,
-                      false);
-      }
-    
-    return e;
   }
 
 }
