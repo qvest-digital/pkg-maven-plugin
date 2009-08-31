@@ -375,7 +375,7 @@ public class Utils
    * @param libraryPrefix
    * @throws MojoExecutionException
    */
-  public static void setupStarter(Log l, String mainClass, File dstStarterRoot, String classpath)
+  public static void setupStarter(Log l, String mainClass, File dstStarterRoot, Path classpath)
   throws MojoExecutionException
   {
     File destStarterClassFile = new File(dstStarterRoot, STARTER_CLASS);
@@ -398,8 +398,11 @@ public class Utils
         writer.println("# The next line is the fully-classified name of the main class:");
         writer.println(mainClass);
         writer.println("# The following lines are the classpath entries:");
-  
-        writer.println(classpath);
+
+        for (String e : classpath)
+        {
+        	writer.println(e);
+        }
         
         l.info("created library entries");
       }

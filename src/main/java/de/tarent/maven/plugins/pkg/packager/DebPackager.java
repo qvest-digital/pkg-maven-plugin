@@ -60,6 +60,7 @@ import org.apache.maven.plugin.logging.Log;
 import de.tarent.maven.plugins.pkg.AotCompileUtils;
 import de.tarent.maven.plugins.pkg.DistroConfiguration;
 import de.tarent.maven.plugins.pkg.Packaging;
+import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
@@ -118,8 +119,8 @@ public class DebPackager extends Packager
     // A set which will be filled with the artifacts which need to be bundled with the
     // application.
     Set bundledArtifacts = null;
-    StringBuilder bcp = new StringBuilder();
-    StringBuilder cp = new StringBuilder();
+    Path bcp = new Path();
+    Path cp = new Path();
     
     long byteAmount = srcArtifactFile.length();
     
@@ -146,7 +147,7 @@ public class DebPackager extends Packager
             // TODO: Handle native library artifacts properly.
             bundledArtifacts = ph.createClasspathLine(bcp, cp);
 
-            ph.generateWrapperScript(bundledArtifacts, bcp.toString(), cp.toString(), false);
+            ph.generateWrapperScript(bundledArtifacts, bcp, cp, false);
 
             byteAmount += ph.copyArtifacts(bundledArtifacts);
           }

@@ -32,15 +32,17 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Properties;
 
+import de.tarent.maven.plugins.pkg.Path;
+
 public class WrapperScriptGenerator
 {
-  String bootClasspath;
+  Path bootClasspath;
   
-  String classpath;
+  Path classpath;
   
   String mainClass;
   
-  String libraryPath;
+  Path libraryPath;
   
   String classmapFile;
 
@@ -65,32 +67,32 @@ public class WrapperScriptGenerator
     return this.maxJavaMemory;
   }
   
-  public String getLibraryPath()
+  public Path getLibraryPath()
   {
     return libraryPath;
   }
 
-  public void setLibraryPath(String libraryPath)
+  public void setLibraryPath(Path libraryPath)
   {
     this.libraryPath = libraryPath;
   }
 
-  public String getBootClasspath()
+  public Path getBootClasspath()
   {
     return bootClasspath;
   }
 
-  public void setBootClasspath(String bootClasspath)
+  public void setBootClasspath(Path bootClasspath)
   {
     this.bootClasspath = bootClasspath;
   }
 
-  public String getClasspath()
+  public Path getClasspath()
   {
     return classpath;
   }
 
-  public void setClasspath(String classpath)
+  public void setClasspath(Path classpath)
   {
     this.classpath = classpath;
   }
@@ -122,17 +124,17 @@ public class WrapperScriptGenerator
    // no effect on the final invocation line if the corresponding fields where not
    // set in this instance.
 
-   w.println("BOOTCLASSPATH_ARG=" + createScriptValue("-Xbootclasspath/a:", bootClasspath));
+   w.println("BOOTCLASSPATH_ARG=" + createScriptValue("-Xbootclasspath/a:", bootClasspath.toUnixPath()));
    w.println();
    
-   w.println("CLASSPATH_ARG=" + createScriptValue("-cp ", classpath));
+   w.println("CLASSPATH_ARG=" + createScriptValue("-cp ", classpath.toUnixPath()));
    w.println();
    
    w.println("MAIN_CLASS=" + mainClass);
    w.println();
 
    w.println("# Path of the shared libraries (e.g. for SWT");
-   w.println("LIBRARY_PATH_ARG=" + createScriptValue("-Djava.library.path=", libraryPath));
+   w.println("LIBRARY_PATH_ARG=" + createScriptValue("-Djava.library.path=", libraryPath.toUnixPath()));
    w.println();
 
    w.println("# Path to BC-ABI compiled classes. Has no effect on runtimes other than GCJ.");
@@ -173,17 +175,17 @@ public class WrapperScriptGenerator
    w.println("rem for this script can be found in class: " + getClass().getName());
    w.println();
 
-   w.println("set BOOTCLASSPATH_ARG=" + createScriptValueWindows("-Xbootclasspath/a:", bootClasspath));
+   w.println("set BOOTCLASSPATH_ARG=" + createScriptValueWindows("-Xbootclasspath/a:", bootClasspath.toWindowPath()));
    w.println();
 
-   w.println("set CLASSPATH_ARG=" + createScriptValueWindows("-cp ", classpath));
+   w.println("set CLASSPATH_ARG=" + createScriptValueWindows("-cp ", classpath.toWindowPath()));
    w.println();
    
    w.println("set MAIN_CLASS=" + mainClass);
    w.println();
 
    w.println("rem Path of the shared libraries (e.g. for SWT");
-   w.println("set LIBRARY_PATH_ARG=" + createScriptValueWindows("-Djava.library.path=", libraryPath));
+   w.println("set LIBRARY_PATH_ARG=" + createScriptValueWindows("-Djava.library.path=", libraryPath.toWindowPath()));
    w.println();
 
    w.println("rem Additional system properties which are special for this application:");
@@ -215,11 +217,13 @@ public class WrapperScriptGenerator
    * 
    * This is used to conveniently create correctly quoted script variable values.
    * 
+   * <p>Package private to allow access from test case.</p>
+   * 
    * @param prefix
    * @param value
    * @return
    */
-  private String createScriptValue(String prefix, String value)
+  String createScriptValue(String prefix, String value)
   {
     return (value != null && value.length() > 0)
            ? "\"" + prefix + value + "\""
@@ -234,15 +238,17 @@ public class WrapperScriptGenerator
    * by "\";\"" and "\". The result is also enclosed by double-quotes.
    * This done to make sure windows path names containing
    * spaces are properly quoted.</p>
+   *
+   * <p>Package private to allow access from test case.</p>
    * 
    * @param prefix
    * @param value
    * @return
    */
-  private String createScriptValueWindows(String prefix, String value)
+  String createScriptValueWindows(String prefix, String value)
   {
     return (value != null && value.length() > 0)
-           ? prefix + "\"" + value.replaceAll(":", "\";\"").replace('/', '\\') + "\"": "";
+           ? prefix + "\"" + value + "\"": "";
   }
   
   /** Generates a command line string of system properties.

@@ -332,14 +332,11 @@ public class Packaging
      * @param cp
      * @throws MojoExecutionException
      */
-    public Set createClasspathLine(StringBuilder bcp, StringBuilder cp)
+    public Set createClasspathLine(Path bcp, Path cp)
         throws MojoExecutionException
     {
       return Packaging.this.createClasspathLine(getLog(),
-                                                getTargetBundledJarDir(), bcp,
-                                                ":", cp,
-                                                (dc.isAdvancedStarter() ? "\n"
-                                                                       : ":"),
+                                                getTargetBundledJarDir(), bcp, cp,
                                                 getTargetArtifactFile());
     }
 
@@ -418,8 +415,8 @@ public class Packaging
      * @param windows
      * @throws MojoExecutionException
      */
-    public void generateWrapperScript(Set bundledArtifacts, String bcp,
-                                      String cp, boolean windows)
+    public void generateWrapperScript(Set bundledArtifacts, Path bcp,
+                                      Path classpath, boolean windows)
         throws MojoExecutionException
     {
       Log l = getLog();
@@ -427,7 +424,7 @@ public class Packaging
       gen.setMaxJavaMemory(dc.maxJavaMemory);
 
       if (getTargetLibraryPath() != null)
-        gen.setLibraryPath(getTargetLibraryPath().toString());
+        gen.setLibraryPath(new Path(getTargetLibraryPath()));
 
       gen.setProperties(dc.systemProperties);
 
@@ -439,11 +436,11 @@ public class Packaging
       if (dc.isAdvancedStarter())
         {
           l.info("setting up advanced starter");
-          Utils.setupStarter(l, dc.getMainClass(), getDstStarterDir(), cp);
+          Utils.setupStarter(l, dc.getMainClass(), getDstStarterDir(), classpath);
 
           // Sets main class and classpath for the wrapper script.
           gen.setMainClass("_Starter");
-          gen.setClasspath(getTargetStarterDir().toString());
+          gen.setClasspath(new Path(getTargetStarterDir()));
         }
       else
         {
@@ -451,7 +448,7 @@ public class Packaging
           gen.setMainClass(dc.getMainClass());
 
           // All Jars have to reside inside the libraryRoot.
-          gen.setClasspath(cp);
+          gen.setClasspath(classpath);
         }
 
       Utils.createFile(getDstWrapperScriptFile(), "wrapper script");
@@ -1215,10 +1212,8 @@ public class Packaging
    */
   protected final Set createClasspathLine(final Log l,
                                           final File targetJarPath,
-                                          final StringBuilder bcp,
-                                          final String bcpDelimiter,
-                                          final StringBuilder cp,
-                                          final String cpDelimiter,
+                                          final Path bcp,
+                                          final Path cp,
                                           File targetArtifactFile)
       throws MojoExecutionException
   {
@@ -1277,8 +1272,7 @@ public class Packaging
         // Bundled Jars will always live in targetJarPath
         File file = artifact.getFile();
         if (file != null)
-          cp.append(targetJarPath.toString() + "/" + file.getName()
-                    + cpDelimiter);
+          cp.append(targetJarPath.toString() + "/" + file.getName());
         else
           l.warn("Cannot put bundled artifact " + artifact.getArtifactId()
                  + " to Classpath.");
@@ -1294,8 +1288,7 @@ public class Packaging
             return;
           }
 
-        StringBuilder b = (entry.isBootClasspath) ? bcp : cp;
-        String delimiter = (entry.isBootClasspath) ? bcpDelimiter : cpDelimiter;
+        Path b = (entry.isBootClasspath) ? bcp : cp;
 
         Iterator ite = entry.jarFileNames.iterator();
         while (ite.hasNext())
@@ -1310,7 +1303,6 @@ public class Packaging
               }
 
             b.append(fileName);
-            b.append(delimiter);
           }
       }
 
@@ -1319,21 +1311,17 @@ public class Packaging
     pm.iterateDependencyArtifacts(l, dependencies, v, true);
     
     // Add the custom jar files to the classpath
-    for (Iterator ite = dc.jarFiles.iterator(); ite.hasNext();)
+    for (Iterator<AuxFile> ite = dc.jarFiles.iterator(); ite.hasNext();)
     {
-    	AuxFile auxFile = ((AuxFile) ite.next());
+    	AuxFile auxFile = ite.next();
     	
     	cp.append(targetJarPath.toString()
     			  + "/" + new File(auxFile.from).getName());
-    	cp.append(":");
     }
     
     // Add the project's own artifact at last. This way we can
     // save the deletion of the colon added in the loops above.
     cp.append(targetArtifactFile.toString());
-
-    if (bcp.length() > 0)
-      bcp.delete(bcp.length() - bcpDelimiter.length(), bcp.length());
 
     return bundled;
   }

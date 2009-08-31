@@ -63,6 +63,7 @@ import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.DistroConfiguration;
 import de.tarent.maven.plugins.pkg.Packaging;
+import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
@@ -137,8 +138,8 @@ public class IzPackPackager extends Packager
     File izPackEmbeddedRoot = new File(ph.getTempRoot(), "izpack-embedded");
     
     Set bundledArtifacts = null;
-    StringBuilder bcp = new StringBuilder();
-    StringBuilder cp = new StringBuilder();
+    Path bcp = new Path();
+    Path cp = new Path();
     
     try
       {
@@ -167,7 +168,7 @@ public class IzPackPackager extends Packager
         
         desc.removeAotPack();
 
-        ph.generateWrapperScript(bundledArtifacts, bcp.toString(), cp.toString(), true);
+        ph.generateWrapperScript(bundledArtifacts, bcp, cp, true);
         
         if (distroConfig.isAdvancedStarter())
           desc.addStarter("_starter", "_classpath");
