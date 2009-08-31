@@ -1,0 +1,279 @@
+<!--
+	Package maps document for Ubuntu 9.10 (Karmic Koala)
+
+	This package map does not inherit from an earlier release. Instead stuff
+	has been manually transferred here and checked whether any of the file
+	locations/names changed.
+
+	The biggest change in Ubuntu 9.10 is the inclusion of Eclipse 3.4 .
+-->
+<package-maps>
+	<version>1.0</version>
+	
+	<distro>
+		<id>ubuntu_karmic</id>
+		<label>Ubuntu 9.10 (Karmic Koala)</label>
+		<repoName>karmic</repoName>		
+	</distro>
+
+	<map>
+		<!-- Maven knows multiple SWT variants-->
+		<entry>
+			<artifactSpec>org.eclipse.swt:swt-gtk-linux</artifactSpec>
+			<dependencyLine>libswt3.4-gtk-java</dependencyLine>
+			<jars>
+				<jar>/usr/lib/java/swt.jar</jar>
+			</jars>
+		</entry>
+		
+		<entry>
+			<artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
+			<dependencyLine>libswt3.4-gtk-java</dependencyLine>
+			<jars>
+				<jar>/usr/lib/java/swt.jar</jar>
+			</jars>
+		</entry>
+
+		<!-- Eclipse RCP/OSGi stuff -->
+		<entry>
+			<artifactSpec>org.eclipse:osgi</artifactSpec>
+			<dependencyLine>eclipse-rcp</dependencyLine>
+			<jars>
+			  <jar>/usr/lib/eclipse/plugins/org.eclipse.osgi_3.4.2.R34x_v20080826-1230.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>org.eclipse.osgi:osgi</artifactSpec>
+			<dependencyLine>eclipse-rcp</dependencyLine>
+			<jars>
+				<jar>/usr/lib/eclipse/plugins/org.eclipse.osgi_3.4.2.R34x_v20080826-1230.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+		<artifactSpec>org.eclipse.core:commands</artifactSpec>
+		<dependencyLine>eclipse-rcp</dependencyLine>
+		<jars>
+		  <jar>/usr/lib/eclipse/plugins/org.eclipse.core.commands_3.4.0.I20080509-2000.jar</jar>
+		</jars>
+		</entry>
+
+		<entry>
+		<artifactSpec>org.eclipse.core:expressions</artifactSpec>
+		<dependencyLine>eclipse-rcp</dependencyLine>
+		<jars>
+		  <jar>/usr/lib/eclipse/plugins/org.eclipse.core.expressions_3.4.0.v20080603-2000.jar</jar>
+		</jars>
+		</entry>
+
+		<entry>
+		<artifactSpec>org.eclipse.core:resources</artifactSpec>
+		<dependencyLine>eclipse-platform</dependencyLine>
+		<jars>
+		  <jar>/usr/lib/eclipse/plugins/org.eclipse.core.resources_3.4.1.R34x_v20080902.jar</jar>
+		</jars>
+		</entry>
+
+		<entry>
+		<artifactSpec>org.eclipse.core:contenttype</artifactSpec>
+		<dependencyLine>eclipse-platform</dependencyLine>
+		<jars>
+		  <jar>/usr/lib/eclipse/plugins/org.eclipse.core.contenttype_3.3.0.v20080604-1400.jar</jar>
+		</jars>
+		</entry>
+
+		<entry>
+		<artifactSpec>org.eclipse.core:jobs</artifactSpec>
+		<dependencyLine>eclipse-rcp</dependencyLine>
+		<jars>
+		  <jar>/usr/lib/eclipse/plugins/org.eclipse.osgi_3.4.2.R34x_v20080826-1230.jar</jar>
+		</jars>
+		</entry>
+
+		<entry>
+		<artifactSpec>org.eclipse.core:runtime</artifactSpec>
+		<dependencyLine>eclipse-rcp</dependencyLine>
+		<jars>
+		  <jar>/usr/lib/eclipse/plugins/org.eclipse.core.runtime_3.4.0.v20080512.jar</jar>
+		</jars>
+		</entry>
+
+		<entry>
+		<artifactSpec>org.eclipse.core:filesystem</artifactSpec>
+		<dependencyLine>eclipse-platform</dependencyLine>
+		<jars>
+		  <jar>/usr/lib/eclipse/plugins/org.eclipse.osgi_3.4.2.R34x_v20080826-1230.jar</jar>
+		</jars>
+		</entry>
+
+		<entry>
+		<artifactSpec>org.eclipse.equinox:common</artifactSpec>
+		<dependencyLine>eclipse-rcp</dependencyLine>
+		<jars>
+		  <jar>/usr/lib/eclipse/plugins/org.eclipse.equinox.common_3.4.0.v20080421-2006.jar</jar>
+		</jars>
+		</entry>
+
+		<entry>
+		<artifactSpec>org.eclipse.equinox:preferences</artifactSpec>
+		<dependencyLine>eclipse-rcp</dependencyLine>
+		<jars>
+		  <jar>/usr/lib/eclipse/plugins/org.eclipse.equinox.preferences_3.2.201.R34x_v20080709.jar</jar>
+		</jars>
+		</entry>
+
+		<entry>
+		<artifactSpec>org.eclipse.equinox:registry</artifactSpec>
+		<dependencyLine>eclipse-rcp</dependencyLine>
+		<jars>
+		  <jar>/usr/lib/eclipse/plugins/org.eclipse.equinox.registry_3.4.0.v20080516-0950.jar</jar>
+		</jars>
+		</entry>
+
+		<entry>
+		<artifactSpec>org.eclipse:text</artifactSpec>
+		<dependencyLine>eclipse-platform</dependencyLine>
+		<jars>
+		  <jar>/usr/lib/eclipse/plugins/org.eclipse.text_3.4.0.v20080605-1800.jar</jar>
+		</jars>
+		</entry>
+
+		<entry>
+		<artifactSpec>org.eclipse.jdt:core</artifactSpec>
+		<dependencyLine>eclipse-jdt</dependencyLine>
+		<jars>
+		  <jar>/usr/lib/eclipse/plugins/org.eclipse.jdt.core_3.4.2.v_883_R34x.jar</jar>
+		</jars>
+		</entry>
+			
+		<entry>
+			<artifactSpec>asm:asm</artifactSpec>
+			<dependencyLine>libasm3-java</dependencyLine>
+			<jars>
+				<jar>asm3.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>asm:asm-util</artifactSpec>
+			<dependencyLine>libasm3-java</dependencyLine>
+			<jars>
+				<jar>asm3-util.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>asm:asm-commons</artifactSpec>
+			<dependencyLine>libasm3-java</dependencyLine>
+			<jars>
+				<jar>asm3-commons.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>asm:asm-tree</artifactSpec>
+			<dependencyLine>libasm3-java</dependencyLine>
+			<jars>
+				<jar>asm3-tree.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>axis:axis</artifactSpec>
+			<dependencyLine>libaxis-java</dependencyLine>
+			<jars>
+				<jar>axis.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>axis:axis-jaxrpc</artifactSpec>
+			<dependencyLine>libaxis-java</dependencyLine>
+			<jars>
+				<jar>jaxrpc.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>axis:axis-saaj</artifactSpec>
+			<dependencyLine>libaxis-java</dependencyLine>
+			<jars>
+				<jar>saaj.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>axis:axis-wsdl4j</artifactSpec>
+			<dependencyLine>libwsdl4j-java</dependencyLine>
+			<jars>
+				<jar>wsdl4j.jar</jar>
+				<jar>qname.jar</jar>
+			</jars>
+		</entry>
+
+		<!-- Apache Commons -->
+		<entry>
+			<artifactSpec>
+				commons-configuration:commons-configuration</artifactSpec>
+			<dependencyLine>libcommons-configuration-java</dependencyLine>
+			<jars>
+				<jar>commons-configuration.jar</jar>
+			</jars>
+		</entry>
+
+		<!-- JGoodies Looks -->
+		<entry>
+			<artifactSpec>jgoodies:looks</artifactSpec>
+			<dependencyLine>libjgoodies-looks-java</dependencyLine>
+			<jars>
+				<jar>looks.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>com.jgoodies:looks</artifactSpec>
+			<dependencyLine>libjgoodies-looks-java</dependencyLine>
+			<jars>
+				<jar>looks.jar</jar>
+			</jars>
+		</entry>
+
+		<!-- JGoodies Forms -->
+		<entry>
+			<artifactSpec>com.jgoodies:forms</artifactSpec>
+			<dependencyLine>libjgoodies-forms-java</dependencyLine>
+			<jars>
+				<jar>forms.jar</jar>
+			</jars>
+		</entry>
+
+		<!-- jh from org.openoffice provided through JavaHelp2 -->
+		<entry>
+			<artifactSpec>org.openoffice:jh</artifactSpec>
+			<dependencyLine>javahelp2</dependencyLine>
+			<jars>
+				<jar>jh.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>com.sun.javahelp:jh</artifactSpec>
+			<dependencyLine>javahelp2</dependencyLine>
+			<jars>
+				<jar>jh.jar</jar>
+			</jars>
+		</entry>
+
+		<!-- XStream -->
+		<entry>
+			<artifactSpec>com.thoughtworks.xstream:xstream</artifactSpec>
+			<dependencyLine>libxstream-java</dependencyLine>
+			<jars>
+				<jar>xstream.jar</jar>
+			</jars>
+		</entry>
+
+	</map>
+
+</package-maps>
