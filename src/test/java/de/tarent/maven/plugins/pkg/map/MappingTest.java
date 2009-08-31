@@ -33,16 +33,19 @@ public class MappingTest extends TestCase {
 		Entry e = null;
 		String expected = null;
 
+		// Should give us libcommons-collections
 		v = new DefaultArtifactVersion("2.0");
 		e = m.getEntry("commons-collections", "commons-collections", v);
 		expected = "libcommons-collections-java";
 		assertEquals(expected, e.packageName);
 		
+		// Should give us libcommons-collections
 		v = new DefaultArtifactVersion("2.9-beta18");
 		e = m.getEntry("commons-collections", "commons-collections", v);
 		expected = "libcommons-collections-java";
 		assertEquals(expected, e.packageName);
 		
+		// Should give us libcommons-collections3
 		v = new DefaultArtifactVersion("3.0");
 		e = m.getEntry("commons-collections", "commons-collections", v);
 		expected = "libcommons-collections3-java";
