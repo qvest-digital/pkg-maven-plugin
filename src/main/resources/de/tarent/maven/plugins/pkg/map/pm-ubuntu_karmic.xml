@@ -391,13 +391,13 @@
 		<!-- Everything can be automatically derived from the artifactSpec -->
 		<entry>
 			<artifactSpec>junit:junit</artifactSpec>
-			<versionSpec>[,4.0)</versionSpec>
+			<versionSpec>[3,4)</versionSpec>
 		</entry>
 
 		<entry>
 			<artifactSpec>junit:junit</artifactSpec>
-			<versionSpec>[4.0,)</versionSpec>
-			<dependencyLine>libjunit4-java</dependencyLine>
+			<versionSpec>[4,5)</versionSpec>
+			<dependencyLine>junit4</dependencyLine>
 			<jars>
 				<jar>junit4.jar</jar>
 			</jars>

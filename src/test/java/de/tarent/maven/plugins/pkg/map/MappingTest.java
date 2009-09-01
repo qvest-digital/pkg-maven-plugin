@@ -2,6 +2,7 @@ package de.tarent.maven.plugins.pkg.map;
 
 
 import java.lang.reflect.Field;
+import java.net.URL;
 
 import junit.framework.TestCase;
 
@@ -10,15 +11,14 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.junit.After;
 import org.junit.Before;
 
-import de.tarent.maven.plugins.pkg.map.PackageMap;
-
 public class MappingTest extends TestCase {
 	
 	private PackageMap pm;
 
 	@Before
 	public void setUp() throws Exception {
-		pm = new PackageMap(null, null, "ubuntu_karmic", null);
+		URL url = MappingTest.class.getResource("pm-MappingTest.xml");
+		pm = new PackageMap(url, null, "mappingtest", null);
 	}
 
 	@After
@@ -50,6 +50,36 @@ public class MappingTest extends TestCase {
 		e = m.getEntry("commons-collections", "commons-collections", v);
 		expected = "libcommons-collections3-java";
 		assertEquals(expected, e.packageName);
+		
+		// Should us nothing
+		v = new DefaultArtifactVersion("2.0");
+		e = m.getEntry("junit", "junit", v);
+		expected = null;
+		assertEquals(null, e);
+		
+		// Should give us junit (3.x)
+		v = new DefaultArtifactVersion("3");
+		e = m.getEntry("junit", "junit", v);
+		expected = "junit";
+		assertEquals(expected, e.packageName);
+		
+		// Should give us junit4
+		v = new DefaultArtifactVersion("4.0");
+		e = m.getEntry("junit", "junit", v);
+		expected = "junit4";
+		assertEquals(expected, e.packageName);
+
+		// Should give us (fictional) junit5
+		v = new DefaultArtifactVersion("5.0");
+		e = m.getEntry("junit", "junit", v);
+		expected = "junit5";
+		assertEquals(expected, e.packageName);
+
+		// Should us nothing
+		v = new DefaultArtifactVersion("6.0");
+		e = m.getEntry("junit", "junit", v);
+		expected = null;
+		assertEquals(null, e);
 	}
 	
 	Object getFieldValue(Object o, String fieldName)

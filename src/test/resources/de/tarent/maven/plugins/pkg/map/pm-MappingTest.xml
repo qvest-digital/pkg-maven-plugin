@@ -1,0 +1,65 @@
+<!--
+	Test package map for use in JUnit test 'MappingTest'.
+-->
+<package-maps>
+	<version>1.0</version>
+	
+	<distro>
+		<id>mappingtest</id>
+		<label>Test distro</label>
+		<packaging>deb</packaging>
+		<defaultJarPath>/usr/share/java</defaultJarPath>
+		<defaultJNIPath>/usr/lib/jni:/usr/lib</defaultJNIPath>
+		<defaultDependencyLine>java2-runtime</defaultDependencyLine>
+
+	<map>
+			<!-- commons-collections <3 -->
+			<entry>
+				<artifactSpec>commons-collections:commons-collections</artifactSpec>
+				<versionSpec>[,3.0)</versionSpec>
+				<dependencyLine>libcommons-collections-java</dependencyLine>
+				<jars>
+					<jar>commons-collections3.jar</jar>
+				</jars>
+			</entry>
+
+			<!-- commons-collections 3 -->
+			<entry>
+				<artifactSpec>commons-collections:commons-collections</artifactSpec>
+				<versionSpec>[3.0,)</versionSpec>
+				<dependencyLine>libcommons-collections3-java</dependencyLine>
+				<jars>
+					<jar>commons-collections3.jar</jar>
+				</jars>
+			</entry>
+
+		<!-- junit 3.x -->
+		<entry>
+			<artifactSpec>junit:junit</artifactSpec>
+			<versionSpec>[3,4)</versionSpec>
+		</entry>
+
+		<!-- junit 4.x -->
+		<entry>
+			<artifactSpec>junit:junit</artifactSpec>
+			<versionSpec>[4,5)</versionSpec>
+			<dependencyLine>junit4</dependencyLine>
+			<jars>
+				<jar>junit4.jar</jar>
+			</jars>
+		</entry>
+		
+		<!-- junit 5.x (fictional) -->
+		<entry>
+			<artifactSpec>junit:junit</artifactSpec>
+			<versionSpec>[5,6)</versionSpec>
+			<dependencyLine>junit5</dependencyLine>
+			<jars>
+				<jar>junit5.jar</jar>
+			</jars>
+		</entry>
+
+	</map>
+	</distro>
+
+</package-maps>
