@@ -36,9 +36,9 @@ import de.tarent.maven.plugins.pkg.Path;
 
 public class WrapperScriptGenerator
 {
-  Path bootClasspath;
+  Path bootClasspath = new Path();
   
-  Path classpath;
+  Path classpath = bootClasspath;
   
   String mainClass;
   

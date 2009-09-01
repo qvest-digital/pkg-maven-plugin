@@ -91,5 +91,9 @@ public class AuxFile
     this.rename = rename;
   }
 
+  public String toString()
+  {
+	return from;   
+  }
   
 }

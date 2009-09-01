@@ -1223,33 +1223,51 @@ public class DistroConfiguration {
 			sb.append("\n");
 		}
 
+		sb.append("\n");
 		sb.append("chosenDistro: " + chosenDistro + "\n");
-
+		sb.append("parent: " + parent + "\n");
+		
+		sb.append("\n");
+		sb.append("basic packaging options:\n");
+		sb.append("maintainer: " + maintainer + "\n");
+		sb.append("section: " + section + "\n");
 		sb.append("architecture: " + architecture + "\n");
+		sb.append("recommends: " + recommends + "\n");
+		sb.append("suggests: " + suggests + "\n");
+		sb.append("provides: " + provides + "\n");
+		sb.append("conflicts: " + conflicts + "\n");
+		sb.append("replaces: " + replaces + "\n");
 		sb.append("prefix: " + prefix + "\n");
 		sb.append("bindir: " + bindir + "\n");
 		sb.append("sysconfdir: " + sysconfdir + "\n");
 		sb.append("datarootdir: " + datarootdir + "\n");
 		sb.append("datadir: " + datarootdir + "\n");
 		sb.append("bundledJarDir: " + bundledJarDir + "\n");
+		sb.append("jniLibraryPath: " + jniLibraryPath + "\n");
+		sb.append("izPackInstallerXml: " + izPackInstallerXml + "\n");
+		
+		sb.append("\n");
+		sb.append("packaging scripts:\n");
+		sb.append("preinstScript: " + preinstScript + "\n");
+		sb.append("prermScript: " + prermScript + "\n");
+		sb.append("postinstScript: " + postinstScript + "\n");
+		sb.append("postrmScript: " + postrmScript + "\n");
+		
+		sb.append("\n");
+		sb.append("packaging flags:\n");
 		sb.append("aotCompile: " + aotCompile + "\n");
 		sb.append("bundleAll: " + bundleAll + "\n");
 		sb.append("advancedStarter: " + advancedStarter + "\n");
+		// TODO rschuster: To my knowledge this is not implemented yet.
+//		sb.append("createWindowsExecutable: " + createWindowsExecutable + "\n");
+//		sb.append("createOSXApp: " + createOSXApp + "\n");
 
-		sb.append("gcjDbToolExec: " + gcjDbToolExec + "\n");
-		sb.append("gcjExec: " + gcjExec + "\n");
-		sb.append("jarFiles: " + jarFiles + "\n");
-		sb.append("jniFiles: " + jniFiles + "\n");
-		sb.append("jniLibraryPath: " + jniLibraryPath + "\n");
-		sb.append("izPackInstallerXml: " + izPackInstallerXml + "\n");
-
-		sb.append("mainClass: " + mainClass + "\n");
-		sb.append("maintainer: " + maintainer + "\n");
-
-		sb.append("maxJavaMemory: " + maxJavaMemory + "\n");
-		sb.append("section: " + section + "\n");
-
-		sb.append("manualDependencies:");
+		sb.append("\n");
+		sb.append("dependencies and packaged files:\n");
+		appendAuxFileList(sb, "jarFiles", jarFiles);
+		appendAuxFileList(sb, "jniFiles", jniFiles);
+		
+		sb.append("manualDependencies:\n");
 		if (manualDependencies != null) {
 			Iterator ite = manualDependencies.iterator();
 			while (ite.hasNext())
@@ -1257,49 +1275,66 @@ public class DistroConfiguration {
 			sb.append("\n");
 		}
 
-		sb.append("bundleDependencies:");
+		sb.append("bundleDependencies:\n");
 		if (bundleDependencies != null) {
 			Iterator ite = bundleDependencies.iterator();
 			while (ite.hasNext())
 				sb.append(ite.next());
 			sb.append("\n");
 		}
-
-		sb.append("auxFiles:");
-		if (auxFiles != null) {
-			Iterator ite = auxFiles.iterator();
-			while (ite.hasNext()) {
-				AuxFile af = (AuxFile) ite.next();
-				sb.append(af.from + " -> " + af.to);
-				sb.append("\n");
-			}
-		}
-
-		sb.append("datarootFiles:");
-		if (datarootFiles != null) {
-			Iterator ite = datarootFiles.iterator();
-			while (ite.hasNext()) {
-				AuxFile af = (AuxFile) ite.next();
-				sb.append(af.from + " -> " + af.to);
-				sb.append("\n");
-			}
-		}
-
-		sb.append("dataFiles:");
-		if (dataFiles != null) {
-			Iterator ite = dataFiles.iterator();
-			while (ite.hasNext()) {
-				AuxFile af = (AuxFile) ite.next();
-				sb.append(af.from + " -> " + af.to);
-				sb.append("\n");
-			}
-		}
-
+		
+		appendAuxFileList(sb, "auxFiles", auxFiles);
+		appendAuxFileList(sb, "datarootFiles", datarootFiles);
+		appendAuxFileList(sb, "dataFiles", dataFiles);
+		appendAuxFileList(sb, "sysconfFiles", sysconfFiles);
+		
+		sb.append("\n");
+		sb.append("start script options:\n");
+		sb.append("wrapperScriptName: " + wrapperScriptName + "\n");
+		sb.append("mainClass: " + mainClass + "\n");
+		sb.append("maxJavaMemory: " + maxJavaMemory + "\n");
+		sb.append("customCodeUnix: " + customCodeUnix + "\n");
+		sb.append("customCodeWindows: " + customCodeWindows + "\n");
 		sb.append("systemProperties:\n");
-		sb.append(systemProperties);
+		if (systemProperties != null) {
+			Iterator ite = systemProperties.entrySet().iterator();
+			while (ite.hasNext())
+				sb.append("\t" + ite.next() + "\n");
+			sb.append("\n");
+		}
 		sb.append("\n");
 
+		sb.append("\n");
+		sb.append("auxfile locations:\n");
+		sb.append("srcAuxFilesDir: " + srcAuxFilesDir + "\n");
+		sb.append("srcSysconfFilesDir: " + srcSysconfFilesDir + "\n");
+		sb.append("srcDataFilesDir: " + srcDataFilesDir + "\n");
+		sb.append("srcDatarootFilesDir: " + srcDatarootFilesDir + "\n");
+		sb.append("srcIzPackFilesDir: " + srcIzPackFilesDir + "\n");
+		sb.append("srcJarFilesDir: " + srcJarFilesDir + "\n");
+		sb.append("srcJNIFilesDir: " + srcJNIFilesDir + "\n");
+		
+		sb.append("\n");
+		sb.append("tool locations:\n");
+		sb.append("gcjDbToolExec: " + gcjDbToolExec + "\n");
+		sb.append("gcjExec: " + gcjExec + "\n");
+
 		return sb.toString();
+	}
+	
+	private void appendAuxFileList(StringBuilder sb, String name, List list)
+	{
+		sb.append(name + ":\n");
+		if (list != null) {
+			Iterator ite = list.iterator();
+			while (ite.hasNext()) {
+				AuxFile af = (AuxFile) ite.next();
+				sb.append("\t");
+				sb.append(af.from + " -> " + af.to);
+				sb.append("\n");
+			}
+		}
+
 	}
 
 	public boolean isCreateOSXApp() {
