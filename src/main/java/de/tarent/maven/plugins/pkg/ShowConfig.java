@@ -34,7 +34,7 @@ import org.apache.maven.plugin.MojoFailureException;
 /**
  * Creates a package file for the project and the given distribution.
  * 
- * @execute phase="package"
+ * @execute phase="validate"
  * @goal config
  */
 public class ShowConfig extends Packaging

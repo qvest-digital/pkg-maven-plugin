@@ -1215,49 +1215,38 @@ public class DistroConfiguration {
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("distros:");
-		if (!distros.isEmpty()) {
-			Iterator ite = distros.iterator();
-			while (ite.hasNext())
-				sb.append(ite.next());
-			sb.append("\n");
-		}
+		appendStringCollection(sb, "distros", distros);
 
 		sb.append("\n");
-		sb.append("chosenDistro: " + chosenDistro + "\n");
-		sb.append("parent: " + parent + "\n");
+		appendStringDefault(sb, "chosenDistro", chosenDistro);
+		appendStringDefault(sb, "parent", parent);
 		
 		sb.append("\n");
 		sb.append("basic packaging options:\n");
-		sb.append("maintainer: " + maintainer + "\n");
-		sb.append("section: " + section + "\n");
-		sb.append("architecture: " + architecture + "\n");
-		sb.append("recommends: " + recommends + "\n");
-		sb.append("suggests: " + suggests + "\n");
-		sb.append("provides: " + provides + "\n");
-		sb.append("conflicts: " + conflicts + "\n");
-		sb.append("replaces: " + replaces + "\n");
-		sb.append("prefix: " + prefix + "\n");
-		sb.append("bindir: " + bindir + "\n");
-		sb.append("sysconfdir: " + sysconfdir + "\n");
-		sb.append("datarootdir: " + datarootdir + "\n");
-		sb.append("datadir: " + datarootdir + "\n");
-		sb.append("bundledJarDir: " + bundledJarDir + "\n");
-		sb.append("jniLibraryPath: " + jniLibraryPath + "\n");
-		sb.append("izPackInstallerXml: " + izPackInstallerXml + "\n");
+		appendStringDefault(sb, "maintainer", maintainer);
+		appendStringDefault(sb, "section", section);
+		appendStringDefault(sb, "architecture", architecture);
+		appendStringDefault(sb, "prefix", prefix);
+		appendStringDefault(sb, "bindir", bindir);
+		appendStringDefault(sb, "sysconfdir", sysconfdir);
+		appendStringDefault(sb, "datarootdir", datarootdir);
+		appendStringDefault(sb, "datadir", datadir);
+		appendStringNotSet(sb, "bundledJarDir", bundledJarDir);
+		appendStringNotSet(sb, "jniLibraryPath", jniLibraryPath);
+		appendStringDefault(sb, "izPackInstallerXml", izPackInstallerXml);
 		
 		sb.append("\n");
 		sb.append("packaging scripts:\n");
-		sb.append("preinstScript: " + preinstScript + "\n");
-		sb.append("prermScript: " + prermScript + "\n");
-		sb.append("postinstScript: " + postinstScript + "\n");
-		sb.append("postrmScript: " + postrmScript + "\n");
+		appendStringNotSet(sb, "preinstScript", preinstScript);
+		appendStringNotSet(sb, "prermScript", prermScript);
+		appendStringNotSet(sb, "postinstScript", postinstScript);
+		appendStringNotSet(sb, "postrmScript", postrmScript);
 		
 		sb.append("\n");
 		sb.append("packaging flags:\n");
-		sb.append("aotCompile: " + aotCompile + "\n");
-		sb.append("bundleAll: " + bundleAll + "\n");
-		sb.append("advancedStarter: " + advancedStarter + "\n");
+		appendBoolean(sb, "aotCompile", aotCompile);
+		appendBoolean(sb, "bundleAll", bundleAll);
+		appendBoolean(sb, "advancedStarter", advancedStarter);
 		// TODO rschuster: To my knowledge this is not implemented yet.
 //		sb.append("createWindowsExecutable: " + createWindowsExecutable + "\n");
 //		sb.append("createOSXApp: " + createOSXApp + "\n");
@@ -1267,21 +1256,13 @@ public class DistroConfiguration {
 		appendAuxFileList(sb, "jarFiles", jarFiles);
 		appendAuxFileList(sb, "jniFiles", jniFiles);
 		
-		sb.append("manualDependencies:\n");
-		if (manualDependencies != null) {
-			Iterator ite = manualDependencies.iterator();
-			while (ite.hasNext())
-				sb.append(ite.next());
-			sb.append("\n");
-		}
-
-		sb.append("bundleDependencies:\n");
-		if (bundleDependencies != null) {
-			Iterator ite = bundleDependencies.iterator();
-			while (ite.hasNext())
-				sb.append(ite.next());
-			sb.append("\n");
-		}
+		appendStringCollection(sb, "manualDependencies", manualDependencies);
+		appendStringCollection(sb, "bundleDependencies", bundleDependencies);
+		appendStringCollection(sb, "recommends", recommends);
+		appendStringCollection(sb, "suggests", suggests);
+		appendStringCollection(sb, "provides", provides);
+		appendStringCollection(sb, "conflicts", conflicts);
+		appendStringCollection(sb, "replaces", replaces);
 		
 		appendAuxFileList(sb, "auxFiles", auxFiles);
 		appendAuxFileList(sb, "datarootFiles", datarootFiles);
@@ -1290,50 +1271,94 @@ public class DistroConfiguration {
 		
 		sb.append("\n");
 		sb.append("start script options:\n");
-		sb.append("wrapperScriptName: " + wrapperScriptName + "\n");
-		sb.append("mainClass: " + mainClass + "\n");
-		sb.append("maxJavaMemory: " + maxJavaMemory + "\n");
-		sb.append("customCodeUnix: " + customCodeUnix + "\n");
-		sb.append("customCodeWindows: " + customCodeWindows + "\n");
+		appendStringNotSet(sb, "wrapperScriptName", wrapperScriptName);
+		appendStringNotSet(sb, "mainClass", mainClass);
+		appendStringNotSet(sb, "maxJavaMemory", maxJavaMemory);
+		appendStringNotSet(sb, "customCodeUnix", customCodeUnix);
+		appendStringNotSet(sb, "customCodeWindows", customCodeWindows);
 		sb.append("systemProperties:\n");
 		if (systemProperties != null) {
 			Iterator ite = systemProperties.entrySet().iterator();
 			while (ite.hasNext())
+			{
 				sb.append("\t" + ite.next() + "\n");
-			sb.append("\n");
-		}
-		sb.append("\n");
+			}
+		} else
+			sb.append("\t(not set)\n");
 
 		sb.append("\n");
 		sb.append("auxfile locations:\n");
-		sb.append("srcAuxFilesDir: " + srcAuxFilesDir + "\n");
-		sb.append("srcSysconfFilesDir: " + srcSysconfFilesDir + "\n");
-		sb.append("srcDataFilesDir: " + srcDataFilesDir + "\n");
-		sb.append("srcDatarootFilesDir: " + srcDatarootFilesDir + "\n");
-		sb.append("srcIzPackFilesDir: " + srcIzPackFilesDir + "\n");
-		sb.append("srcJarFilesDir: " + srcJarFilesDir + "\n");
-		sb.append("srcJNIFilesDir: " + srcJNIFilesDir + "\n");
+		appendStringDefault(sb, "srcAuxFilesDir", srcAuxFilesDir);
+		appendStringDefault(sb, "srcSysconfFilesDir", srcSysconfFilesDir);
+		appendStringDefault(sb, "srcDataFilesDir", srcDataFilesDir);
+		appendStringDefault(sb, "srcDatarootFilesDir", srcDatarootFilesDir);
+		appendStringDefault(sb, "srcIzPackFilesDir", srcIzPackFilesDir);
+		appendStringDefault(sb, "srcJarFilesDir", srcJarFilesDir);
+		appendStringDefault(sb, "srcJNIFilesDir", srcJNIFilesDir);
 		
 		sb.append("\n");
 		sb.append("tool locations:\n");
-		sb.append("gcjDbToolExec: " + gcjDbToolExec + "\n");
-		sb.append("gcjExec: " + gcjExec + "\n");
+		appendStringDefault(sb, "gcjDbToolExec", gcjDbToolExec);
+		appendStringDefault(sb, "gcjExec", gcjExec);
 
 		return sb.toString();
+	}
+	
+	private void appendBoolean(StringBuilder sb, String label, Boolean b)
+	{
+		sb.append(label);
+		sb.append(": ");
+		sb.append((b == null || b.equals(Boolean.FALSE) ? "no" : "yes"));
+		sb.append("\n");
+	}
+	
+	private void appendStringNotSet(StringBuilder sb, String label, String string)
+	{
+		sb.append(label);
+		sb.append(": ");
+		sb.append((string == null ? "(not set)" : string));
+		sb.append("\n");
+	}
+	
+	private void appendStringDefault(StringBuilder sb, String label, String string)
+	{
+		sb.append(label);
+		sb.append(": ");
+		sb.append((string == null ? "(default)" : string));
+		sb.append("\n");
+	}
+	
+	private void appendStringCollection(StringBuilder sb, String label, Collection collection)
+	{
+		sb.append(label + ":\n");
+		if (collection != null && !collection.isEmpty()) {
+			Iterator ite = collection.iterator();
+			while (ite.hasNext())
+			{
+				sb.append("\t");
+				sb.append(ite.next());
+				sb.append("\n");
+			}
+		} else
+			sb.append("\t(not set)\n");
 	}
 	
 	private void appendAuxFileList(StringBuilder sb, String name, List list)
 	{
 		sb.append(name + ":\n");
-		if (list != null) {
+		if (list != null && !list.isEmpty()) {
 			Iterator ite = list.iterator();
 			while (ite.hasNext()) {
 				AuxFile af = (AuxFile) ite.next();
 				sb.append("\t");
-				sb.append(af.from + " -> " + af.to);
+				sb.append(af.from);
+				sb.append("\n");
+				sb.append("\t  ");
+				sb.append("-> " + (af.to == null ? "(default dir)" : af.to));
 				sb.append("\n");
 			}
-		}
+		} else
+			sb.append("\t(not set)\n");
 
 	}
 
