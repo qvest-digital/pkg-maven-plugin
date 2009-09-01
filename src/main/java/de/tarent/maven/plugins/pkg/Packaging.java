@@ -422,6 +422,8 @@ public class Packaging
       Log l = getLog();
       WrapperScriptGenerator gen = new WrapperScriptGenerator();
       gen.setMaxJavaMemory(dc.maxJavaMemory);
+      
+      gen.setCustomCodeUnix(dc.customCodeUnix);
 
       if (getTargetLibraryPath() != null)
         gen.setLibraryPath(new Path(getTargetLibraryPath()));
@@ -467,6 +469,8 @@ public class Packaging
       if (windows)
         {
           Utils.createFile(getDstWindowsWrapperScriptFile(), "windows batch");
+
+          gen.setCustomCodeWindows(dc.customCodeWindows);
 
           try
             {

@@ -48,7 +48,9 @@ public class WrapperScriptGenerator
 
   String maxJavaMemory;
   
-  String custom;
+  String customCodeUnix;
+
+  String customCodeWindows;
   
   Properties properties = new Properties();
   
@@ -152,9 +154,9 @@ public class WrapperScriptGenerator
    w.println("fi");
    w.println();
    
-   if (custom != null)
+   if (customCodeUnix != null)
      {
-       w.println(custom);
+       w.println(customCodeUnix);
        w.println();
      }
 
@@ -195,6 +197,12 @@ public class WrapperScriptGenerator
    w.println("rem Path to BC-ABI compiled classes. Has no effect on runtimes other than GCJ.");
    w.println("set DB_PATH_ARG=" + createScriptValueWindows("-Dgnu.gcj.precompiled.db.path=", classmapFile));
    w.println();
+
+   if (customCodeWindows != null)
+   {
+     w.println(customCodeWindows);
+     w.println();
+   }
 
    w.println("start javaw " + getMemParameter() + " %BOOTCLASSPATH_ARG% %CLASSPATH_ARG% %LIBRARY_PATH_ARG% %DB_PATH_ARG% %SYSTEM_PROPERTIES% %MAIN_CLASS% %1 %2 %3 %4 %5 %6 %7 %8 %9");
    
@@ -287,14 +295,22 @@ public class WrapperScriptGenerator
     this.classmapFile = classmapFile;
   }
 
-  public String getCustom()
+  public String getCustomCodeUnix()
   {
-    return custom;
+    return customCodeUnix;
   }
 
-  public void setCustom(String custom)
+  public void setCustomCodeUnix(String custom)
   {
-    this.custom = custom;
+    this.customCodeUnix = custom;
   }
+
+public String getCustomCodeWindows() {
+	return customCodeWindows;
+}
+
+public void setCustomCodeWindows(String customCodeWindows) {
+	this.customCodeWindows = customCodeWindows;
+}
 
 }
