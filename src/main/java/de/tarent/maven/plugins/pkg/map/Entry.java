@@ -31,6 +31,7 @@ package de.tarent.maven.plugins.pkg.map;
 import java.util.HashSet;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.maven.artifact.versioning.VersionRange;
 
 /**
@@ -45,37 +46,50 @@ import org.apache.maven.artifact.versioning.VersionRange;
  */
 public class Entry
 {
-  /**
-   * Special instance that denotes an entry that should be ignored for packaging.
-   */
-  static final Entry IGNORE_ENTRY = new Entry();
-
-  /**
-   * Special instance that denotes an entry that should be bundled with the
-   * project.
-   */
-  static final Entry BUNDLE_ENTRY = new Entry();
-
-  public String artifactId;
+  public String artifactSpec;
   
-  public String packageName;
+  public String dependencyLine;
   
-  public HashSet jarFileNames;
+  public HashSet<String> jarFileNames;
   
   public boolean isBootClasspath;
   
   public VersionRange versionRange;
+  
+  public boolean bundleEntry;
+  
+  public boolean ignoreEntry;
 
   private Entry()
   {
     // For internal instances only.
   }
-
-  Entry(String artifactId, VersionRange versionRange, String packageName, HashSet jarFileNames, boolean isBootClasspath)
+  
+  static Entry createBundleEntry(String artifactSpec, VersionRange versionRange)
   {
-    this.artifactId = artifactId;
+	  Entry e = new Entry();
+	  e.artifactSpec = artifactSpec;
+	  e.versionRange = versionRange;
+	  e.bundleEntry = true;
+	  
+	  return e; 
+  }
+  
+  static Entry createIgnoreEntry(String artifactSpec, VersionRange versionRange)
+  {
+	  Entry e = new Entry();
+	  e.artifactSpec = artifactSpec;
+	  e.versionRange = versionRange;
+	  e.ignoreEntry = true;
+	  
+	  return e; 
+  }
+
+  Entry(String artifactSpec, VersionRange versionRange, String packageName, HashSet<String> jarFileNames, boolean isBootClasspath)
+  {
+    this.artifactSpec = artifactSpec;
     this.versionRange = versionRange;
-    this.packageName = packageName;
+    this.dependencyLine = packageName;
     this.jarFileNames = jarFileNames;
     this.isBootClasspath = isBootClasspath;
   }
@@ -85,11 +99,8 @@ public class Entry
 	  if (o instanceof Entry)
 	  {
 		Entry that = (Entry) o;
-		return this.artifactId.equals(that.artifactId)
-			&& this.packageName.equals(that.packageName)
-			&& this.jarFileNames.equals(that.jarFileNames)
-			&& this.isBootClasspath == that.isBootClasspath
-			&& this.versionRange.equals(that.versionRange);
+		return (this.artifactSpec == null && that.artifactSpec == null || this.artifactSpec.equals(that.artifactSpec))
+			&& (this.versionRange == null && that.versionRange == null || this.versionRange.equals(that.versionRange));
 	  }
 	  
 	  return false;
@@ -98,12 +109,23 @@ public class Entry
   public int hashCode()
   {
 	  HashCodeBuilder hb = new HashCodeBuilder();
-	  hb.append(artifactId)
-	  	.append(packageName)
-	  	.append(jarFileNames)
-	  	.append(isBootClasspath)
+	  hb.append(artifactSpec)
 	  	.append(versionRange);
 	  
 	  return hb.toHashCode();
+  }
+  
+  public String toString()
+  {
+	  ToStringBuilder tsb = new ToStringBuilder(this);
+	  tsb.append("artifactSpec", artifactSpec)
+	  	.append("versionRange", versionRange)
+	  	.append("dependencyLine", dependencyLine)
+	  	.append("isBootClasspath", isBootClasspath)
+	  	.append("ignoreEntry", ignoreEntry)
+	  	.append("bundleEntry", bundleEntry)
+	  	.append("hashCode", hashCode());
+	  
+	  return tsb.toString();
   }
 }

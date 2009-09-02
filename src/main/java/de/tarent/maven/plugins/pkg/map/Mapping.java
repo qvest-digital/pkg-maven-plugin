@@ -28,12 +28,11 @@
  */
 package de.tarent.maven.plugins.pkg.map;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Map;
 
 import org.apache.maven.artifact.versioning.ArtifactVersion;
-import org.apache.maven.artifact.versioning.VersionRange;
 
 /**
  * A <code>Mapping</code> is the datatype that describes a target
@@ -68,7 +67,7 @@ class Mapping
   
   boolean hasNoPackages;
   
-  HashMap<String, List<Entry>> entryMap = new HashMap<String, List<Entry>>();
+  HashMap<String, HashSet<Entry>> entryMap = new HashMap<String, HashSet<Entry>>();
   
   /**
    * Creates an empty mapping with the given distro name set.
@@ -77,7 +76,7 @@ class Mapping
    */
   Mapping(String distro)
   {
-    label = this.distro = distro;
+    this.distro = distro;
   }
   
   /**
@@ -96,6 +95,7 @@ class Mapping
   Mapping (Mapping child, Mapping parent)
   {
     distro = child.distro;
+    this.parent = parent.distro;
     packaging = parent.packaging;
     
     // Whether packages exist or not is always inherit from the parent.
@@ -103,6 +103,8 @@ class Mapping
 
     // These values may be null. If the merging has been done from the root to the child
     // they will be non-null for the parent however.
+    label = (child.label != null) ? child.label : parent.label; 
+    packaging = (child.packaging != null) ? child.packaging : parent.packaging; 
     repoName = (child.repoName != null) ? child.repoName : parent.repoName;
     debianNaming = (child.debianNaming != null) ? child.debianNaming : parent.debianNaming; 
     defaultJarPath = (child.defaultJarPath != null) ? child.defaultJarPath : parent.defaultJarPath; 
@@ -110,13 +112,47 @@ class Mapping
     defaultJNIPath = (child.defaultJNIPath != null) ? child.defaultJNIPath : parent.defaultJNIPath; 
     defaultDependencyLine = (child.defaultDependencyLine != null) ? child.defaultDependencyLine : parent.defaultDependencyLine;
     
-    entryMap = (HashMap<String, List<Entry>>) parent.entryMap.clone();
-    entryMap.putAll(child.entryMap);
+    // Make a deep copy of the entry map contents. Otherwise parent and 'this' would
+    // share the HashSet<Entry> instance causing damaging effects to the parent when stuff
+    // is changed in the child.
+    for (Map.Entry<String, HashSet<Entry>> e : parent.entryMap.entrySet())
+    {
+    	HashSet<Entry> set = new HashSet<Entry>();
+    	set.addAll(e.getValue());
+    	entryMap.put(e.getKey(), set);
+    }
+    
+    for (Map.Entry<String, HashSet<Entry>> e : child.entryMap.entrySet())
+    {
+    	HashSet<Entry> set = entryMap.get(e.getKey());
+    	if (set == null)
+    	{
+    		set = new HashSet<Entry>();
+    		entryMap.put(e.getKey(), set);
+    	}
+    	
+    	// This part is tricky. We want to achieve that Entry instances from
+    	// 'tset' (the child's Entry instances) replace those that are equivalent to
+    	// those in 'set' (the ones inherited from parent). We assume that the child's
+    	// instances are newer.
+    	// Entry is coded in a way that only the artifactSpec and versionRange properties
+    	// are needed to decide whether two instances are equal (same goes for hashCode()).
+    	//
+    	// As such we do a remove operation first, which will delete the equivalent instances.
+    	// Afterwards we add the whole set from child.
+    	//
+    	// The addAll() implementation alone would not *replace* the existing instances.
+    	HashSet<Entry> tset = e.getValue();
+    	set.removeAll(tset);
+		set.addAll(tset);
+		
+    }
+        
   }
   
   Entry getEntry(String groupId, String artifactId, ArtifactVersion artifactVersion)
   {
-    List<Entry> entryList = entryMap.get(groupId + ":" + artifactId);
+	HashSet<Entry> entryList = entryMap.get(groupId + ":" + artifactId);
     if (entryList == null)
     	return null;
     
@@ -138,12 +174,12 @@ class Mapping
     return unrangedCandidate;
   }
   
-  void putEntry (String artifactSpec, Entry e)
+  void putEntry (Entry e)
   {
-	  List<Entry> list = entryMap.get(artifactSpec);
+	  HashSet<Entry> list = entryMap.get(e.artifactSpec);
 	  if (list == null)
 	  {
-		  entryMap.put(artifactSpec, list = new ArrayList<Entry>());
+		  entryMap.put(e.artifactSpec, list = new HashSet<Entry>());
 	  }
 	  
 	  list.add(e);

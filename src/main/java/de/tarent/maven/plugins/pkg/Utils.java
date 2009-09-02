@@ -296,13 +296,13 @@ public class Utils
   static long copyFiles(Log l,
                         File srcDir,
                         File dstDir,
-                        List auxFiles,
+                        List<? extends AuxFile> auxFiles,
                         String type)
       throws MojoExecutionException
   {
     long size = 0;
     
-    Iterator ite = auxFiles.iterator();
+    Iterator<? extends AuxFile> ite = auxFiles.iterator();
     while (ite.hasNext())
       {
         AuxFile af = (AuxFile) ite.next();

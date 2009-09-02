@@ -51,7 +51,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
  */
 class Parser
   {
-    HashMap/*<String, Mapping>*/ mappings = new HashMap();
+    HashMap<String, Mapping> mappings = new HashMap<String, Mapping>();
     
     Parser(URL packageMapDocument, URL auxMapDocument)
       throws Exception
@@ -218,13 +218,13 @@ class Parser
       
       if (s.peek("ignore"))
         {
-          distroMapping.putEntry(artifactSpec, Entry.IGNORE_ENTRY);
+          distroMapping.putEntry(Entry.createIgnoreEntry(artifactSpec, versionRange));
           s.nextElement();
           return;
         }
       else if (s.peek("bundle"))
         {
-          distroMapping.putEntry(artifactSpec, Entry.BUNDLE_ENTRY);
+          distroMapping.putEntry(Entry.createBundleEntry(artifactSpec, versionRange));
           s.nextElement();
           return;
         }
@@ -241,13 +241,13 @@ class Parser
           s.nextElement();
         }
       
-      HashSet jarFileNames = new HashSet();
+      HashSet<String> jarFileNames = new HashSet<String>();
       if (s.peek("jars"))
         {
           parseJars(s, jarFileNames);
         }
       
-      distroMapping.putEntry(artifactSpec,
+      distroMapping.putEntry(
     		  new Entry(artifactSpec, versionRange, dependencyLine, jarFileNames, isBootClaspath));
     }
     
@@ -262,7 +262,7 @@ class Parser
       return artifactSpec.substring(artifactSpec.indexOf(':') + 1);
     }
 
-    private void parseJars(Parser.State s, HashSet jarFileNames) throws Exception
+    private void parseJars(Parser.State s, HashSet<String> jarFileNames) throws Exception
     {
       s.nextElement();
       while (s.peek("jar"))

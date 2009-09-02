@@ -1221,7 +1221,7 @@ public class Packaging
                                           File targetArtifactFile)
       throws MojoExecutionException
   {
-    final Set bundled = new HashSet();
+    final Set<Artifact> bundled = new HashSet<Artifact>();
 
     l.info("resolving dependency artifacts");
 
@@ -1294,10 +1294,10 @@ public class Packaging
 
         Path b = (entry.isBootClasspath) ? bcp : cp;
 
-        Iterator ite = entry.jarFileNames.iterator();
+        Iterator<String> ite = entry.jarFileNames.iterator();
         while (ite.hasNext())
           {
-            String fileName = (String) ite.next();
+            String fileName = ite.next();
 
             // Prepend default Jar path if file is not absolute.
             if (fileName.charAt(0) != '/')
@@ -1315,7 +1315,7 @@ public class Packaging
     pm.iterateDependencyArtifacts(l, dependencies, v, true);
     
     // Add the custom jar files to the classpath
-    for (Iterator<AuxFile> ite = dc.jarFiles.iterator(); ite.hasNext();)
+    for (Iterator<JarFile> ite = dc.jarFiles.iterator(); ite.hasNext();)
     {
     	AuxFile auxFile = ite.next();
     	
@@ -1419,17 +1419,17 @@ public class Packaging
       {
         // Certain Maven Packages have only one package in the target system.
         // If that one was already added we should not add it any more.
-        if (processedDeps.contains(entry.packageName))
+        if (processedDeps.contains(entry.dependencyLine))
           return;
 
-        if (entry.packageName.length() == 0)
-          l.warn("Invalid package name for artifact: " + entry.artifactId);
+        if (entry.dependencyLine.length() == 0)
+          l.warn("Invalid package name for artifact: " + entry.artifactSpec);
 
         line.append(", ");
-        line.append(entry.packageName);
+        line.append(entry.dependencyLine);
 
         // Mark as included dependency.
-        processedDeps.add(entry.packageName);
+        processedDeps.add(entry.dependencyLine);
       }
     };
 

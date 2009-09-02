@@ -128,7 +128,7 @@ public class DistroConfiguration {
 	 * parent's value.
 	 * </p>
 	 */
-	List auxFiles;
+	List<AuxFile> auxFiles;
 
 	/**
 	 * Denotes a path that is used for user-level executables (usually
@@ -200,7 +200,7 @@ public class DistroConfiguration {
 	 * List of files which are installed into the application-specific data
 	 * files directory.
 	 */
-	List dataFiles;
+	List<DataFile> dataFiles;
 
 	/**
 	 * Denotes the root directory in the target system where application
@@ -223,7 +223,7 @@ public class DistroConfiguration {
 	 * By using this property one can install files into another application's
 	 * datadir, e.g. /usr/share/dbus-1
 	 */
-	List datarootFiles;
+	List<DatarootFile> datarootFiles;
 
 	/**
 	 * Denotes the distributions this configuration is used for.
@@ -272,7 +272,7 @@ public class DistroConfiguration {
 	 * parent's value.
 	 * </p>
 	 */
-	List jarFiles;
+	List<JarFile> jarFiles;
 
 	/**
 	 * Denotes a list of native libraries. These are copied to their respective
@@ -283,7 +283,7 @@ public class DistroConfiguration {
 	 * parent's value.
 	 * </p>
 	 */
-	List jniFiles;
+	List<JniFile> jniFiles;
 
 	/**
 	 * Denotes the <code>java.library.path</code> value of the application. In
@@ -672,7 +672,7 @@ public class DistroConfiguration {
 	 * </p>
 	 */
 	String sysconfdir;
-	List sysconfFiles;
+	List<SysconfFile> sysconfFiles;
 
 	/**
 	 * Denotes a bunch of system properties keys and their values which are
@@ -996,19 +996,19 @@ public class DistroConfiguration {
 		customCodeWindows = (String) merge(customCodeWindows,
 				parent.customCodeWindows, null);
 
-		auxFiles = (List) merge(auxFiles, parent.auxFiles, new ArrayList());
+		auxFiles = (List) merge(auxFiles, parent.auxFiles, new ArrayList<AuxFile>());
 
 		sysconfFiles = (List) merge(sysconfFiles, parent.sysconfFiles,
 				new ArrayList());
 
-		jarFiles = (List) merge(jarFiles, parent.jarFiles, new ArrayList());
+		jarFiles = (List) merge(jarFiles, parent.jarFiles, new ArrayList<JarFile>());
 
-		jniFiles = (List) merge(jniFiles, parent.jniFiles, new ArrayList());
+		jniFiles = (List) merge(jniFiles, parent.jniFiles, new ArrayList<JniFile>());
 
 		datarootFiles = (List) merge(datarootFiles, parent.datarootFiles,
-				new ArrayList());
+				new ArrayList<DatarootFile>());
 
-		dataFiles = (List) merge(dataFiles, parent.dataFiles, new ArrayList());
+		dataFiles = (List) merge(dataFiles, parent.dataFiles, new ArrayList<DataFile>());
 
 		bundleDependencies = (Set) merge(bundleDependencies,
 				parent.bundleDependencies, new HashSet());
