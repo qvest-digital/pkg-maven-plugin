@@ -114,7 +114,7 @@ public class Entry
 	  // On JDK5 the hashcode for two VersionRange instances
 	  // that have the same restriction (e.g. "[3.0,4.0)" is different.
 	  // That would break the merge operation in the Mapping class. 
-	  	.append(versionRange.toString());
+	  	.append((versionRange == null ? null : versionRange.toString()));
 	  
 	  return hb.toHashCode();
   }
