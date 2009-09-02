@@ -269,5 +269,13 @@
 	<ciManagement>
 		<system>continuum</system>
 		<url>http://cis.evolvis.org:8080/continuum/</url>
+		<notifiers>
+			<notifier>
+				<type>mail</type>
+				<configuration>
+					<address>r.schuster@tarent.de</address>
+				</configuration>
+			</notifier>
+		</notifiers>
 	</ciManagement>
 </project>
