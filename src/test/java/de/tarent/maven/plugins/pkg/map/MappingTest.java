@@ -148,6 +148,7 @@ public class MappingTest extends TestCase {
 	 * This is all done without version ranges.
 	 * </p>
 	 */
+	/*
 	public void testInheritanceNoVersionRange() {
 		Mapping parent = new Mapping("parent");
 		parent.parent = null;
@@ -206,6 +207,7 @@ public class MappingTest extends TestCase {
 		assertEquals("child-new jarFileNames", jarFileNames, e.jarFileNames);
 
 	}
+	*/
 	
 	/**
 	 * Tests whether:

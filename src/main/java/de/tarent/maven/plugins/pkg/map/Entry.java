@@ -110,7 +110,11 @@ public class Entry
   {
 	  HashCodeBuilder hb = new HashCodeBuilder();
 	  hb.append(artifactSpec)
-	  	.append(versionRange);
+	  // Workaround for Java5 compatibility:
+	  // On JDK5 the hashcode for two VersionRange instances
+	  // that have the same restriction (e.g. "[3.0,4.0)" is different.
+	  // That would break the merge operation in the Mapping class. 
+	  	.append(versionRange.toString());
 	  
 	  return hb.toHashCode();
   }
