@@ -232,10 +232,6 @@ public class PackageMap
        // will be bundled (without warning).
        if (mapping.hasNoPackages)
          v.bundle(a);
-       else if (e.bundleEntry)
-         // If a package is explicitly said to be bundled this will be done
-         // without warning.
-         v.bundle(a);
        else if (e == null)
          {
            // If a package as not been declared a warning reminds to fix the
@@ -245,6 +241,10 @@ public class PackageMap
            if (bundleNonExisting)
              v.bundle(a);
          }
+       else if (e.bundleEntry)
+           // If a package is explicitly said to be bundled this will be done
+           // without warning.
+           v.bundle(a);
        else if (e.ignoreEntry)
          // If a package is explicitly said to be bundled this will be done
          // without warning.
