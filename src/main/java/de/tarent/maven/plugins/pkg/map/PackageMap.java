@@ -242,13 +242,22 @@ public class PackageMap
              v.bundle(a);
          }
        else if (e.bundleEntry)
+       {
            // If a package is explicitly said to be bundled this will be done
            // without warning.
            v.bundle(a);
+       }
        else if (e.ignoreEntry)
-         // If a package is explicitly said to be bundled this will be done
+       {
+         // If a package is explicitly said to be ignored this will be done
          // without warning.
+       }
+       else
+       {
+    	 // Otherwise we have a plain dead easy Entry which needs to be processed
+    	 // somehow.
          v.visit(a, e);
+       }
        
      }
      

@@ -1297,16 +1297,19 @@ public class Packaging
         Iterator<String> ite = entry.jarFileNames.iterator();
         while (ite.hasNext())
           {
+        	StringBuilder sb = new StringBuilder(); 
             String fileName = ite.next();
 
             // Prepend default Jar path if file is not absolute.
             if (fileName.charAt(0) != '/')
               {
-                b.append(pm.getDefaultJarPath());
-                b.append("/");
+                sb.append(pm.getDefaultJarPath());
+                sb.append("/");
               }
 
-            b.append(fileName);
+            sb.append(fileName);
+            
+            b.append(sb.toString());
           }
       }
 
