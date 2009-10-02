@@ -231,6 +231,15 @@
 				<jar>commons-configuration.jar</jar>
 			</jars>
 		</entry>
+		
+		<entry>
+			<artifactSpec>
+				commons-codec:commons-codec</artifactSpec>
+			<dependencyLine>libcommons-codec-java</dependencyLine>
+			<jars>
+				<jar>commons-codec.jar</jar>
+			</jars>
+		</entry>
 
 		<!-- JGoodies Looks -->
 		<entry>
@@ -700,6 +709,15 @@
 				<dependencyLine>libcommons-cli-java</dependencyLine>
 				<jars>
 					<jar>commons-cli.jar</jar>
+				</jars>
+			</entry>
+			
+			<entry>
+				<artifactSpec>org.rxtx:rxtx</artifactSpec>
+				<versionSpec>[2,3)</versionSpec>
+				<dependencyLine>librxtx-java</dependencyLine>
+				<jars>
+					<jar>RXTXcomm.jar</jar>
 				</jars>
 			</entry>
 			
