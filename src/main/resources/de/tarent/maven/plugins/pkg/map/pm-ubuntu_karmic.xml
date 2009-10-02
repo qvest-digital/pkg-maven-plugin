@@ -30,17 +30,17 @@
 		<!-- Maven knows multiple SWT variants-->
 		<entry>
 			<artifactSpec>org.eclipse.swt:swt-gtk-linux</artifactSpec>
-			<dependencyLine>libswt3.4-gtk-java</dependencyLine>
+			<dependencyLine>libswt-gtk-3.4-java</dependencyLine>
 			<jars>
-				<jar>/usr/lib/java/swt.jar</jar>
+				<jar>/usr/lib/java/swt-gtk-3.4.2.jar</jar>
 			</jars>
 		</entry>
 		
 		<entry>
 			<artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
-			<dependencyLine>libswt3.4-gtk-java</dependencyLine>
+			<dependencyLine>libswt-gtk-3.4-java</dependencyLine>
 			<jars>
-				<jar>/usr/lib/java/swt.jar</jar>
+				<jar>/usr/lib/java/swt-gtk-3.4.2.jar</jar>
 			</jars>
 		</entry>
 
