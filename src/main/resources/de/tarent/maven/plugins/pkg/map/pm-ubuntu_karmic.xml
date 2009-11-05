@@ -224,8 +224,7 @@
 
 		<!-- Apache Commons -->
 		<entry>
-			<artifactSpec>
-				commons-configuration:commons-configuration</artifactSpec>
+			<artifactSpec>commons-configuration:commons-configuration</artifactSpec>
 			<dependencyLine>libcommons-configuration-java</dependencyLine>
 			<jars>
 				<jar>commons-configuration.jar</jar>
@@ -233,8 +232,7 @@
 		</entry>
 		
 		<entry>
-			<artifactSpec>
-				commons-codec:commons-codec</artifactSpec>
+			<artifactSpec>commons-codec:commons-codec</artifactSpec>
 			<dependencyLine>libcommons-codec-java</dependencyLine>
 			<jars>
 				<jar>commons-codec.jar</jar>
