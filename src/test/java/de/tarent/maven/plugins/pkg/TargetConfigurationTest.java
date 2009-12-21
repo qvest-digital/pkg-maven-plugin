@@ -1,0 +1,45 @@
+package de.tarent.maven.plugins.pkg;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import junit.framework.TestCase;
+
+public class TargetConfigurationTest extends TestCase {
+
+	/**
+	 * Tests whether the JNI file sets are really merged.
+	 */
+	public void testJNIFileMerge()
+	{
+		JniFile f;
+		List<JniFile> expected = new ArrayList<JniFile>();
+		
+		TargetConfiguration tc1 = new TargetConfiguration();
+		List<JniFile> l1 = new ArrayList<JniFile>();
+		
+		f = new JniFile();
+		f.from = "bla";
+		f.to = "blu/";
+		expected.add(f);
+		
+		l1.add(f);
+		
+		tc1.setJniFiles(l1);
+		
+		TargetConfiguration tc2 = new TargetConfiguration();
+		List<JniFile> l2 = new ArrayList<JniFile>();
+		
+		f = new JniFile();
+		f.from = "foo";
+		f.to = "bar/";
+		expected.add(f);
+		
+		l2.add(f);
+		tc2.setJniFiles(l2);
+		
+		TargetConfiguration merged = tc2.merge(tc1);
+		assertEquals(expected, merged.jniFiles);
+	}
+	
+}
