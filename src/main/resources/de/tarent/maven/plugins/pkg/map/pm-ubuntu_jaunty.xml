@@ -8,6 +8,33 @@
 		<id>ubuntu_jaunty</id>
 		<label>Ubuntu 9.04 (Jaunty Jackalope)</label>
 		<inherit>ubuntu_intrepid</inherit>
-		<repoName>jaunty</repoName>		
+		<repoName>jaunty</repoName>
+		
+		        <map>
+            <entry>
+                <artifactSpec>org.freedesktop.dbus:dbus-java</artifactSpec>
+                <dependencyLine>libdbus-java</dependencyLine>
+                <jars>
+                    <jar>dbus.jar</jar>
+                </jars>
+            </entry>
+
+            <entry>
+                <artifactSpec>cx.ath.matthew:unixsocket</artifactSpec>
+                <dependencyLine>libunixsocket-java</dependencyLine>
+                <jars>
+                    <jar>unix.jar</jar>
+                </jars>
+            </entry>
+
+            <entry>
+                <artifactSpec>cx.ath.matthew:libmatthew-debug</artifactSpec>
+                <dependencyLine>libmatthew-debug-java</dependencyLine>
+                <jars>
+                    <jar>debug-disable.jar</jar>
+                </jars>
+            </entry>
+        </map>
+				
 	</distro>
 </package-maps>
