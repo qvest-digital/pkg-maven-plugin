@@ -26,7 +26,7 @@
 package de.tarent.maven.plugins.pkg;
 
 /**
- * Data type for the elements of the 'auxFiles' property of the {@link DistroConfiguration}
+ * Data type for the elements of the 'auxFiles' property of the {@link TargetConfiguration}
  * class.
  * 
  * <p>An instance of this class denotes a file or directory that has to be copied

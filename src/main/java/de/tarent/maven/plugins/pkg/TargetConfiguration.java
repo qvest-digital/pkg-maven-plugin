@@ -34,8 +34,11 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- * A <code>DistroConfiguration</code> provides the properties to configure the
- * packaging for a particular target system.
+ * A <code>TargetConfiguration</code> provides the properties to configure the
+ * packaging for a particular target.
+ * 
+ * <p>A target is a much more fine granular entity than a distribution. E.g. it may
+ * denote a certain piece of hardware.<p> 
  * 
  * <p>
  * Except for the boolean properties every field can be accessed directly. The
@@ -46,7 +49,7 @@ import java.util.Set;
  * @author Robert Schuster (robert.schuster@tarent.de)
  * 
  */
-public class DistroConfiguration {
+public class TargetConfiguration {
 	/**
 	 * Merges the <code>Collection</code>-based instances as follows:
 	 * <ul>
@@ -80,7 +83,12 @@ public class DistroConfiguration {
 	private static Object merge(Object child, Object parent, Object def) {
 		return (child != null) ? child : (parent != null ? parent : def);
 	}
-
+	
+	/**
+	 * Denotes the target this configuration is for.
+	 */
+	String target;
+	
 	Boolean createWindowsExecutable;
 
 	Boolean createOSXApp;
@@ -722,7 +730,7 @@ public class DistroConfiguration {
 	 */
 	String customCodeWindows;
 
-	public DistroConfiguration() {
+	public TargetConfiguration() {
 		// For instantiation.
 	}
 
@@ -792,6 +800,10 @@ public class DistroConfiguration {
 
 	public String getMaintainer() {
 		return maintainer;
+	}
+	
+	public String getTarget() {
+		return target;
 	}
 
 	public List getManualDependencies() {
@@ -922,13 +934,15 @@ public class DistroConfiguration {
 	 * @param parent
 	 * @return
 	 */
-	DistroConfiguration merge(DistroConfiguration parent) {
+	TargetConfiguration merge(TargetConfiguration parent) {
+		// the target property is not merged. It is inherited.
+		target = parent.target;
+		
 		/*
 		 * Note: The fields chosenDistro, distros and parent are not merged
 		 * because they are the header or descriptor of the configuration not
 		 * its data.
 		 */
-
 		aotCompile = (Boolean) merge(aotCompile, parent.aotCompile,
 				Boolean.FALSE);
 		bundleAll = (Boolean) merge(bundleAll, parent.bundleAll, Boolean.FALSE);
@@ -1215,11 +1229,12 @@ public class DistroConfiguration {
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		appendStringCollection(sb, "distros", distros);
-
-		sb.append("\n");
-		appendStringDefault(sb, "chosenDistro", chosenDistro);
+		appendStringDefault(sb, "target", target);
 		appendStringDefault(sb, "parent", parent);
+		appendStringDefault(sb, "chosenDistro", chosenDistro);
+		
+		sb.append("\n");
+		appendStringCollection(sb, "distros", distros);
 		
 		sb.append("\n");
 		sb.append("basic packaging options:\n");

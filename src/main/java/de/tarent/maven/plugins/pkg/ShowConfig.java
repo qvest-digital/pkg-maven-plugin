@@ -41,15 +41,15 @@ public class ShowConfig extends Packaging
 {
   public void execute() throws MojoExecutionException, MojoFailureException
   {
-    if (distroConfigurations == null)
-      distroConfigurations = new ArrayList();
+    if (targetConfigurations == null)
+      targetConfigurations = new ArrayList();
     
     getLog().info("default configuration: ");
     
     getLog().info(defaults.toString());
     getLog().info("specific configurations: ");
     
-    Iterator ite = distroConfigurations.iterator();
+    Iterator ite = targetConfigurations.iterator();
     while (ite.hasNext())
       getLog().info(ite.next().toString());
     

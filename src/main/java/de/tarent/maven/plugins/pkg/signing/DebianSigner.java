@@ -41,7 +41,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.AbstractPackagingMojo;
-import de.tarent.maven.plugins.pkg.DistroConfiguration;
+import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.generator.ChangelogFileGenerator;
 import de.tarent.maven.plugins.pkg.generator.SourceControlFileGenerator;
@@ -79,7 +79,7 @@ public class DebianSigner extends AbstractPackagingMojo {
 	protected final String rfc2822DateCmd = "date";
 
 	protected PackageMap packageMap;
-	protected DistroConfiguration distroConfiguration;
+	protected TargetConfiguration distroConfiguration;
 
 	protected File tempRoot;
 	protected File basePkgDir;
@@ -331,9 +331,9 @@ public class DebianSigner extends AbstractPackagingMojo {
 		return packageMap;
 	}
 
-	public DistroConfiguration getDistroConfiguration() {
+	public TargetConfiguration getDistroConfiguration() {
 		if(distroConfiguration == null)
-			distroConfiguration = ((DistroConfiguration)getPluginContext().get("dc"));
+			distroConfiguration = ((TargetConfiguration)getPluginContext().get("dc"));
 
 		return distroConfiguration;
 	}

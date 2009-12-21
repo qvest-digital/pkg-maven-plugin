@@ -274,6 +274,21 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
   protected String distro;
 
   /**
+   * Set default target configuration to package for.
+   * 
+   * @parameter expression="${defaultTarget}"
+   * @required
+   */
+  protected String defaultTarget;
+
+  /**
+   * Overrides "defaultTarget" parameter. For use on the command-line. 
+   * 
+   * @parameter expression="${target}"
+   */
+  protected String target;
+
+  /**
    * Gathers the project's artifacts and the artifacts of all its (transitive)
    * dependencies filtered by the given filter instance.
    * @param filter

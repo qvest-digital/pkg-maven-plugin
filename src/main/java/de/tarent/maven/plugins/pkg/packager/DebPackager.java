@@ -58,7 +58,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.AotCompileUtils;
-import de.tarent.maven.plugins.pkg.DistroConfiguration;
+import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.Utils;
@@ -75,7 +75,7 @@ public class DebPackager extends Packager
 
   public void execute(Log l,
                       Packaging.Helper ph,
-                      DistroConfiguration distroConfig,
+                      TargetConfiguration distroConfig,
                       PackageMap packageMap) throws MojoExecutionException
   {
     String packageName = ph.getPackageName();
@@ -241,7 +241,7 @@ public class DebPackager extends Packager
    */
   public void checkEnvironment(Log l,
                                Packaging.Helper ph,
-                               DistroConfiguration dc) throws MojoExecutionException
+                               TargetConfiguration dc) throws MojoExecutionException
   {
     // No specifics to show or test.
   }
@@ -258,7 +258,7 @@ public class DebPackager extends Packager
    */
   private void generateControlFile(Log l,
                                    Packaging.Helper ph,
-                                   DistroConfiguration dc,
+                                   TargetConfiguration dc,
                                    File controlFile,
                                    String packageName,
                                    String packageVersion,

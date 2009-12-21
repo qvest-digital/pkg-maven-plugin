@@ -1052,18 +1052,18 @@ public class Packaging
 
   static final String DEFAULT_SRC_AUXFILESDIR = "src/main/auxfiles";
 
-  private DistroConfiguration dc;
+  private TargetConfiguration dc;
 
   /**
    * @parameter
    * @required
    */
-  protected DistroConfiguration defaults;
+  protected TargetConfiguration defaults;
 
   /**
    * @parameter
    */
-  protected List distroConfigurations;
+  protected List<TargetConfiguration> targetConfigurations;
 
   private PackageMap pm;
 
@@ -1520,10 +1520,11 @@ public class Packaging
 
   public void execute() throws MojoExecutionException, MojoFailureException
   {
+	String t = (target != null) ? target : defaultTarget;
     String d = (distro != null) ? distro : defaultDistro;
 
     // Generate merged distro configuration.
-    dc = getMergedConfiguration(d);
+    dc = getMergedConfiguration(t, d);
     dc.chosenDistro = d;
 
     // Retrieve package map for chosen distro.
@@ -1568,23 +1569,27 @@ public class Packaging
    * @param distro
    * @return
    */
-  private DistroConfiguration getMergedConfiguration(String distro)
+  private TargetConfiguration getMergedConfiguration(String target, String distro)
       throws MojoExecutionException
   {
     // If no special config exist use the plain default.
-    if (distroConfigurations == null || distroConfigurations.size() == 0)
-      return new DistroConfiguration().merge(defaults);
+    if (targetConfigurations == null || targetConfigurations.size() == 0)
+      return new TargetConfiguration().merge(defaults);
 
-    Iterator ite = distroConfigurations.iterator();
+    Iterator<TargetConfiguration> ite = targetConfigurations.iterator();
     while (ite.hasNext())
       {
-        DistroConfiguration dc = (DistroConfiguration) ite.next();
+        TargetConfiguration dc = ite.next();
+        
+        // The target configuration should be for the requested target.
+        if (!dc.target.equals(target))
+        	continue;
 
-        // Checks whether this distroconfiguration supports
+        // Checks whether this targetconfiguration supports
         // the wanted distro.
         if (dc.distros.contains(distro))
           {
-            DistroConfiguration parent = (dc.parent != null ? getMergedConfiguration(dc.parent)
+            TargetConfiguration parent = (dc.parent != null ? getMergedConfiguration(dc.parent, distro)
                                                            : defaults);
 
             // Stores the chosen distro in the configuration for later use.
@@ -1597,7 +1602,7 @@ public class Packaging
       }
 
     // No special config for chosen distro available.
-    return new DistroConfiguration().merge(defaults);
+    return new TargetConfiguration().merge(defaults);
   }
 
   /**

@@ -61,7 +61,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
-import de.tarent.maven.plugins.pkg.DistroConfiguration;
+import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.Utils;
@@ -73,7 +73,7 @@ public class IzPackPackager extends Packager
   
   public void execute(Log l,
                       Packaging.Helper ph,
-                      DistroConfiguration distroConfig,
+                      TargetConfiguration distroConfig,
                       PackageMap packageMap) throws MojoExecutionException
   {
     // The root directory into which everything from srcRoot is copied
@@ -215,7 +215,7 @@ public class IzPackPackager extends Packager
    */
   public void checkEnvironment(Log l,
                                Packaging.Helper ph,
-                               DistroConfiguration dc) throws MojoExecutionException
+                               TargetConfiguration dc) throws MojoExecutionException
   {
     l.info("java executable          : " + ph.getJavaExec());
     l.info("7zip executable          : " + ph.get7ZipExec());
