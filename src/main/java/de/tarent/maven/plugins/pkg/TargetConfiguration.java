@@ -936,6 +936,7 @@ public class TargetConfiguration {
 	 */
 	TargetConfiguration merge(TargetConfiguration parent) {
 		// Note: The target property is not merged at all.
+		target = (String) merge(target, parent.target, "default");
 		
 		/*
 		 * Note: The fields chosenDistro, distros and parent are not merged

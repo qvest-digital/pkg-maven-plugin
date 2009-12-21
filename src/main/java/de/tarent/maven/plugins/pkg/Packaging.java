@@ -1577,10 +1577,6 @@ public class Packaging
   private TargetConfiguration getMergedConfiguration(String target, String distro)
       throws MojoExecutionException
   {
-    // If no special config exist use the plain default.
-    if (targetConfigurations == null || targetConfigurations.size() == 0)
-      return new TargetConfiguration().merge(defaults);
-
     Iterator<TargetConfiguration> ite = targetConfigurations.iterator();
     while (ite.hasNext())
       {
