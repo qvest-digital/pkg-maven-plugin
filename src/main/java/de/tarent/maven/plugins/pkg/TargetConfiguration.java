@@ -187,6 +187,12 @@ public class TargetConfiguration {
 	String bundledJarDir;
 
 	/**
+	 * The target which is chosen to be built. This is not handled by
+	 * Maven2 but only by the Packaging class.
+	 */
+	String chosenTarget;
+
+	/**
 	 * The distribution which is chosen to be built. This is not handled by
 	 * Maven2 but only by the Packaging class.
 	 */
@@ -863,6 +869,10 @@ public class TargetConfiguration {
 	}
 
 	public String getChosenDistro() {
+		return chosenDistro;
+	}
+	
+	public String getChosenTarget() {
 		return chosenDistro;
 	}
 

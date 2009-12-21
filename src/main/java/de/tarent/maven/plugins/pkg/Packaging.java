@@ -658,7 +658,7 @@ public class Packaging
     public String getPackageVersion()
     {
       if (packageVersion == null)
-        packageVersion = fixVersion(version) + "-0" + sanitizePackageVersion(dc.target)
+        packageVersion = fixVersion(version) + "-0" + sanitizePackageVersion(dc.chosenTarget)
                          + (dc.revision.length() == 0 ? "" : "-" + dc.revision);
 
       return packageVersion;
@@ -1523,14 +1523,10 @@ public class Packaging
 	String t = (target != null) ? target : defaultTarget;
     String d = (distro != null) ? distro : defaultDistro;
     
-    // Sets the name of the default configuration to "default" if not
-    // otherwise specified by the user.
-    if (defaults.target == null)
-    	defaults.target = "default";
-
     // Generate merged distro configuration.
     dc = getMergedConfiguration(t, d);
     dc.chosenDistro = d;
+    dc.chosenTarget = t;
 
     // Retrieve package map for chosen distro.
     pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL, d,
