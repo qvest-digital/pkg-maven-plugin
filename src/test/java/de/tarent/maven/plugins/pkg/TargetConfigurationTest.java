@@ -44,6 +44,9 @@ public class TargetConfigurationTest extends TestCase {
 		assertEquals(expected, merged.jniFiles);
 	}
 	
+	/**
+	 * Tests whether the distros property is really and properly merged.
+	 */
 	public void testDistrosMerge()
 	{
 		String d;
