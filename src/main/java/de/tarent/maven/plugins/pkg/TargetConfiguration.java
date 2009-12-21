@@ -952,6 +952,7 @@ public class TargetConfiguration {
 		 * its data.
 		 */
 		target = (String) merge(target, parent.target, "default");
+		distros = (Set) merge(distros, parent.distros, new HashSet<String>());
 
 		aotCompile = (Boolean) merge(aotCompile, parent.aotCompile,
 				Boolean.FALSE);

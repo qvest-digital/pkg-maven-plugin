@@ -1581,20 +1581,19 @@ public class Packaging
         // The target configuration should be for the requested target.
         if (!dc.target.equals(target))
         	continue;
+        
+        TargetConfiguration merged = getMergedConfiguration(dc.parent, distro);
 
         // Checks whether this targetconfiguration supports
         // the wanted distro.
         if (dc.distros.contains(distro))
           {
-            TargetConfiguration parent = (dc.parent != null ? getMergedConfiguration(dc.parent, distro)
-                                                           : defaults);
-
             // Stores the chosen distro in the configuration for later use.
             dc.chosenDistro = distro;
 
             // Returns a configuration that is merged with
             // the default configuration-
-            return dc.merge(parent);
+            return dc.merge(merged);
           }
       }
 

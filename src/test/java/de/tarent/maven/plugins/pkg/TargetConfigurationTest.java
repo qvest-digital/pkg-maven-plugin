@@ -1,7 +1,9 @@
 package de.tarent.maven.plugins.pkg;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -40,6 +42,33 @@ public class TargetConfigurationTest extends TestCase {
 		
 		TargetConfiguration merged = tc2.merge(tc1);
 		assertEquals(expected, merged.jniFiles);
+	}
+	
+	public void testDistrosMerge()
+	{
+		String d;
+		Set<String> expected = new HashSet<String>();
+		
+		TargetConfiguration tc1 = new TargetConfiguration();
+		Set<String> l1 = new HashSet<String>();
+		
+		d = "ubuntu_jaunty";
+		expected.add(d);
+		l1.add(d);
+		
+		tc1.setDistros(l1);
+		
+		TargetConfiguration tc2 = new TargetConfiguration();
+		Set<String> l2 = new HashSet<String>();
+		
+		d = "debian_lenny";
+		expected.add(d);
+		l2.add(d);
+		
+		tc2.setDistros(l2);
+		
+		TargetConfiguration merged = tc2.merge(tc1);
+		assertEquals(expected, merged.distros);
 	}
 	
 }
