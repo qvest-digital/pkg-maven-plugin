@@ -935,14 +935,14 @@ public class TargetConfiguration {
 	 * @return
 	 */
 	TargetConfiguration merge(TargetConfiguration parent) {
-		// Note: The target property is not merged at all.
-		target = (String) merge(target, parent.target, "default");
 		
 		/*
 		 * Note: The fields chosenDistro, distros and parent are not merged
 		 * because they are the header or descriptor of the configuration not
 		 * its data.
 		 */
+		target = (String) merge(target, parent.target, "default");
+
 		aotCompile = (Boolean) merge(aotCompile, parent.aotCompile,
 				Boolean.FALSE);
 		bundleAll = (Boolean) merge(bundleAll, parent.bundleAll, Boolean.FALSE);
