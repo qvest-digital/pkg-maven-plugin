@@ -1586,7 +1586,7 @@ public class Packaging
 
         // Checks whether this targetconfiguration supports
         // the wanted distro.
-        if (dc.distros.contains(distro))
+        if (dc.distros.contains(distro) || merged.distros.contains(distro))
           {
             // Stores the chosen distro in the configuration for later use.
             dc.chosenDistro = distro;
