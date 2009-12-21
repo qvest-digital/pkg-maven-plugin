@@ -935,8 +935,7 @@ public class TargetConfiguration {
 	 * @return
 	 */
 	TargetConfiguration merge(TargetConfiguration parent) {
-		// the target property is not merged. It is inherited.
-		target = parent.target;
+		// Note: The target property is not merged at all.
 		
 		/*
 		 * Note: The fields chosenDistro, distros and parent are not merged
