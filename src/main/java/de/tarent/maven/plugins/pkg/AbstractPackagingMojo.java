@@ -448,14 +448,17 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
   }
   
   /**
-   * Replaces all underscores (_) contained in the given String to tildes (~)
+   * Makes a valid and useful package version string from one that cannot
+   * be used or is unsuitable.
+   *  
+   * <p>At the moment the method removes underscores only.</p>
    * 
    * @param string The string which might contain underscores
    * @return The given string without underscores
    */
-  protected final String replaceUnderscore(String string) {
+  protected final String sanitizePackageVersion(String string) {
 	  
-	  return string.replaceAll("_", "~");	
+	  return string.replaceAll("_", "");	
   }
   
 }

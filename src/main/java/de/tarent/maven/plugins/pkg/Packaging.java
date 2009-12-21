@@ -658,7 +658,7 @@ public class Packaging
     public String getPackageVersion()
     {
       if (packageVersion == null)
-        packageVersion = fixVersion(version) + "-0" + replaceUnderscore(dc.chosenDistro)
+        packageVersion = fixVersion(version) + "-0" + sanitizePackageVersion(dc.chosenDistro)
                          + (dc.revision.length() == 0 ? "" : "-" + dc.revision);
 
       return packageVersion;
