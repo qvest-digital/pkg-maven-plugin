@@ -3,6 +3,7 @@ package de.tarent.maven.plugins.pkg;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -73,5 +74,31 @@ public class TargetConfigurationTest extends TestCase {
 		TargetConfiguration merged = tc2.merge(tc1);
 		assertEquals(expected, merged.distros);
 	}
-	
+
+	/**
+	 * Tests whether the distros property is really and properly merged.
+	 */
+	public void testSystemPropertiesMerge()
+	{
+		Properties expected = new Properties();
+		
+		TargetConfiguration tc1 = new TargetConfiguration();
+		Properties l1 = new Properties();
+		
+		expected.setProperty("bla", "blavalue");
+		l1.setProperty("bla", "blavalue");
+		tc1.setSystemProperties(l1);
+		
+		TargetConfiguration tc2 = new TargetConfiguration();
+		Properties l2 = new Properties();
+		
+		expected.setProperty("foo", "foovalue");
+		l2.setProperty("foo", "foovalue");
+		
+		tc2.setSystemProperties(l2);
+		
+		TargetConfiguration merged = tc2.merge(tc1);
+		assertEquals(expected, merged.systemProperties);
+	}
+
 }

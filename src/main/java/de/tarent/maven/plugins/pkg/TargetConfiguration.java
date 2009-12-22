@@ -70,6 +70,17 @@ public class TargetConfiguration {
 
 		return c;
 	}
+	
+	
+	private static Properties merge(Properties child, Properties parent,
+			Properties def) {
+		Properties c = (parent != null ? parent : def);
+
+		if (child != null)
+			c.putAll(child);
+
+		return c;
+	}
 
 	/**
 	 * If child != null, take child (overriden parent), else if parent != null,
@@ -1052,7 +1063,7 @@ public class TargetConfiguration {
 
 		replaces = (List) merge(replaces, parent.replaces, new ArrayList());
 
-		systemProperties = (Properties) merge(systemProperties,
+		systemProperties = merge(systemProperties,
 				parent.systemProperties, new Properties());
 
 		return this;
