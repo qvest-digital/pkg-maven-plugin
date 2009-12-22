@@ -993,7 +993,11 @@ public class TargetConfiguration {
 				"/usr/lib/jni");
 
 		mainClass = (String) merge(mainClass, parent.mainClass, null);
-		revision = (String) merge(revision, parent.revision, "");
+		
+		// Note: For .debs there *MUST* always be a revision otherwise the last
+		// component after a dash (-) needs a number. By enforcing that there is a
+		// revision we prevent that problem to occur.
+		revision = (String) merge(revision, parent.revision, "r0");
 		wrapperScriptName = (String) merge(wrapperScriptName,
 				parent.wrapperScriptName, null);
 		maintainer = (String) merge(maintainer, parent.maintainer, null);
