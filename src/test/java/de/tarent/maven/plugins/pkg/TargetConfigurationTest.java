@@ -101,4 +101,34 @@ public class TargetConfigurationTest extends TestCase {
 		assertEquals(expected, merged.systemProperties);
 	}
 
+	/**
+	 * Tests whether the manual dependencies property is really
+	 * and properly merged.
+	 */
+	public void testManualDependenciesMerge()
+	{
+		String d;
+		List<String> expected = new ArrayList<String>();
+		
+		TargetConfiguration tc1 = new TargetConfiguration();
+		List<String> l1 = new ArrayList<String>();
+		
+		d = "foo";
+		expected.add(d);
+		l1.add(d);
+		
+		tc1.setManualDependencies(l1);
+		
+		TargetConfiguration tc2 = new TargetConfiguration();
+		List<String> l2 = new ArrayList<String>();
+		
+		d = "bar";
+		expected.add(d);
+		l2.add(d);
+		
+		tc2.setManualDependencies(l2);
+		
+		TargetConfiguration merged = tc2.merge(tc1);
+		assertEquals(expected, merged.manualDependencies);
+	}
 }
