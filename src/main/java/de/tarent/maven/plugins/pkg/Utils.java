@@ -274,6 +274,16 @@ public class Utils
                                                                      + suffix;
   }
 
+  static long copyFiles(Log l,
+          				File srcDir,
+          				File dstDir,
+          				List<? extends AuxFile> auxFiles,
+          				String type)
+          throws MojoExecutionException
+  {
+	  return copyFiles(l, srcDir, dstDir, auxFiles, type, false);
+  }
+
   /**
    * Copies the <code>AuxFile</code> instances contained within the set.
    * It takes the <code>srcAuxFilesDir</code> and <code>auxFileDstDir</code>
@@ -290,6 +300,7 @@ public class Utils
    * @param srcAuxFilesDir
    * @param dstDir
    * @param auxFiles
+   * @param makeExecutable
    * @return
    * @throws MojoExecutionException
    */
@@ -297,7 +308,8 @@ public class Utils
                         File srcDir,
                         File dstDir,
                         List<? extends AuxFile> auxFiles,
-                        String type)
+                        String type,
+                        boolean makeExecutable)
       throws MojoExecutionException
   {
     long size = 0;
@@ -330,7 +342,7 @@ public class Utils
                 FileUtils.copyFile(from, to);
                 size += from.length();
                 
-                if (af.isExecutable())
+                if (af.isExecutable() || makeExecutable)
                   makeExecutable(to, to.getName());
               }
             else
@@ -338,7 +350,7 @@ public class Utils
                 FileUtils.copyFileToDirectory(from, to);
                 size += from.length();
 
-                if (af.isExecutable())
+                if (af.isExecutable() || makeExecutable)
                   makeExecutable(to, to.getName());
               }
           }

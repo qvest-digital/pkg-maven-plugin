@@ -245,6 +245,9 @@ public class Packaging
       size = Utils.copyFiles(l, getSrcAuxFilesDir(), getDstAuxDir(),
                              dc.auxFiles, "aux file");
 
+      size = Utils.copyFiles(l, getSrcBinFilesDir(), getDstBinDir(),
+              dc.binFiles, "bin file", true);
+      
       size = Utils.copyFiles(l, getSrcSysconfFilesDir(), getDstSysconfDir(),
                              dc.sysconfFiles, "sysconf file");
 
@@ -741,6 +744,14 @@ public class Packaging
                                                   : new File(
                                                              project.getBasedir(),
                                                              dc.srcSysconfFilesDir);
+    }
+    
+    public File getSrcBinFilesDir()
+    {
+      return (dc.srcBinFilesDir.length() == 0) ? getSrcAuxFilesDir()
+                                                  : new File(
+                                                             project.getBasedir(),
+                                                             dc.srcBinFilesDir);
     }
 
     public File getTargetArtifactFile()

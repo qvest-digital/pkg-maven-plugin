@@ -161,6 +161,11 @@ public class TargetConfiguration {
 	 * </p>
 	 */
 	String bindir;
+	
+	/**
+	 * List of files which are installed into the directory for executable.
+	 */
+	List<DataFile> binFiles;
 
 	/**
 	 * Denotes whether the packager should bundle every dependency regardless of
@@ -605,6 +610,18 @@ public class TargetConfiguration {
 
 	/**
 	 * Denotes the source directory into which the packager looks for
+	 * executable files.
+	 * 
+	 * <p>
+	 * Default is <code>null</code>, after merging it is the empty string
+	 * (meaning the default location (= {@link #srcAuxFilesDir}) is used or the
+	 * parent's value.
+	 * </p>
+	 */
+	String srcBinFilesDir;
+
+	/**
+	 * Denotes the source directory into which the packager looks for
 	 * application specific data files.
 	 * 
 	 * <p>
@@ -774,6 +791,10 @@ public class TargetConfiguration {
 	public List getDataFiles() {
 		return dataFiles;
 	}
+	
+	public List getBinFiles() {
+		return binFiles;
+	}
 
 	public String getDatarootdir() {
 		return datarootdir;
@@ -889,6 +910,10 @@ public class TargetConfiguration {
 
 	public String getSrcAuxFilesDir() {
 		return srcAuxFilesDir;
+	}
+
+	public String getSrcBinFilesDir() {
+		return srcBinFilesDir;
 	}
 
 	public String getSrcDataFilesDir() {
@@ -1026,6 +1051,8 @@ public class TargetConfiguration {
 				parent.srcDatarootFilesDir, "");
 		srcDataFilesDir = (String) merge(srcDataFilesDir,
 				parent.srcDataFilesDir, "");
+		srcBinFilesDir = (String) merge(srcBinFilesDir,
+				parent.srcBinFilesDir, "");
 
 		srcIzPackFilesDir = (String) merge(srcIzPackFilesDir,
 				parent.srcIzPackFilesDir, "");
@@ -1049,6 +1076,8 @@ public class TargetConfiguration {
 				new ArrayList<DatarootFile>());
 
 		dataFiles = (List) merge(dataFiles, parent.dataFiles, new ArrayList<DataFile>());
+		
+		binFiles = (List) merge(binFiles, parent.binFiles, new ArrayList<BinFile>());
 
 		bundleDependencies = (Set) merge(bundleDependencies,
 				parent.bundleDependencies, new HashSet());
@@ -1107,6 +1136,10 @@ public class TargetConfiguration {
 
 	public void setDataFiles(List dataFiles) {
 		this.dataFiles = dataFiles;
+	}
+	
+	public void setBinFiles(List binFiles) {
+		this.binFiles = binFiles;
 	}
 
 	public void setDatarootdir(String datarootdir) {
@@ -1213,6 +1246,10 @@ public class TargetConfiguration {
 		this.srcAuxFilesDir = auxFileSrcDir;
 	}
 
+	public void setSrcBinFilesDir(String srcBinFilesDir) {
+		this.srcBinFilesDir = srcBinFilesDir;
+	}
+
 	public void setSrcDataFilesDir(String srcDataFilesDir) {
 		this.srcDataFilesDir = srcDataFilesDir;
 	}
@@ -1306,6 +1343,7 @@ public class TargetConfiguration {
 		appendStringCollection(sb, "replaces", replaces);
 		
 		appendAuxFileList(sb, "auxFiles", auxFiles);
+		appendAuxFileList(sb, "binFiles", binFiles);
 		appendAuxFileList(sb, "datarootFiles", datarootFiles);
 		appendAuxFileList(sb, "dataFiles", dataFiles);
 		appendAuxFileList(sb, "sysconfFiles", sysconfFiles);
@@ -1331,6 +1369,7 @@ public class TargetConfiguration {
 		sb.append("auxfile locations:\n");
 		appendStringDefault(sb, "srcAuxFilesDir", srcAuxFilesDir);
 		appendStringDefault(sb, "srcSysconfFilesDir", srcSysconfFilesDir);
+		appendStringDefault(sb, "srcBinFilesDir", srcBinFilesDir);
 		appendStringDefault(sb, "srcDataFilesDir", srcDataFilesDir);
 		appendStringDefault(sb, "srcDatarootFilesDir", srcDatarootFilesDir);
 		appendStringDefault(sb, "srcIzPackFilesDir", srcIzPackFilesDir);
