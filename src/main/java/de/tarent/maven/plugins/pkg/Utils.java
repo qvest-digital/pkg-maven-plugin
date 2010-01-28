@@ -92,6 +92,25 @@ public class Utils
       }
   }
 
+ 
+  /**
+   * This wraps doing a "chmod +x" on a file + logging.
+   * 
+   * @param l
+   * @param f
+   * @param item
+   * @throws MojoExecutionException
+   */
+  public static void makeExecutable(Log l, String f)
+      throws MojoExecutionException
+  {
+	l.info("make executable " + f);
+    exec(new String[] { "chmod", "+x", f },
+         "Changing the " + f + " file attributes failed.",
+         "Unable to make " + f + " file executable.");
+
+  }
+  
   /**
    * This wraps doing a "chmod +x" on a file.
    * 
@@ -100,11 +119,11 @@ public class Utils
    * @throws MojoExecutionException
    */
   public static void makeExecutable(File f, String item)
-      throws MojoExecutionException
+  throws MojoExecutionException
   {
-    exec(new String[] { "chmod", "+x", f.getAbsolutePath() },
-         "Changing the " + item + " file attributes failed.",
-         "Unable to make " + item + " file executable.");
+	exec(new String[] { "chmod", "+x", f.getAbsolutePath() },
+     "Changing the " + item + " file attributes failed.",
+     "Unable to make " + item + " file executable.");
 
   }
 
@@ -342,16 +361,16 @@ public class Utils
                 FileUtils.copyFile(from, to);
                 size += from.length();
                 
-                if (af.isExecutable() || makeExecutable)
-                  makeExecutable(to, to.getName());
+                if (makeExecutable)
+                   makeExecutable(l, to.getAbsolutePath());
               }
             else
               {
                 FileUtils.copyFileToDirectory(from, to);
                 size += from.length();
 
-                if (af.isExecutable() || makeExecutable)
-                  makeExecutable(to, to.getName());
+                if (makeExecutable)
+                   makeExecutable(l, to.getAbsolutePath()+ File.separator + from.getName());
               }
           }
         catch (IOException ioe)
