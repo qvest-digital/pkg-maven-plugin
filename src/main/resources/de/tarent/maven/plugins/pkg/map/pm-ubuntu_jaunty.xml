@@ -11,6 +11,25 @@
 		<repoName>jaunty</repoName>
 		
 		        <map>
+			<!-- JDom - has separate Jars for 0.9 and >=1.x -->
+            <entry>
+                <artifactSpec>org.jdom:jdom</artifactSpec>
+                <versionSpec>[,1)</versionSpec>
+                <dependencyLine>libjdom0-java</dependencyLine>
+                <jars>
+                    <jar>jdom0.jar</jar>
+                </jars>
+            </entry>
+
+            <entry>
+                <artifactSpec>org.jdom:jdom</artifactSpec>
+                <versionSpec>[1,2)</versionSpec>
+                <dependencyLine>libjdom1-java</dependencyLine>
+                <jars>
+                    <jar>jdom1.jar</jar>
+                </jars>
+            </entry>
+
             <entry>
                 <artifactSpec>org.freedesktop.dbus:dbus-java</artifactSpec>
                 <dependencyLine>libdbus-java</dependencyLine>

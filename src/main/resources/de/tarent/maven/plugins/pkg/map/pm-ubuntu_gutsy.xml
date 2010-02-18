@@ -210,11 +210,17 @@ Package maps document for Ubuntu 7.10 (Gutsy Gibbon).
 			
 			<!-- Apache Commons -->
 			<entry>
-				<artifactSpec>
-					commons-configuration:commons-configuration</artifactSpec>
+				<artifactSpec>commons-configuration:commons-configuration</artifactSpec>
 				<dependencyLine>libcommons-configuration-java</dependencyLine>
 				<jars>
 					<jar>commons-configuration.jar</jar>
+				</jars>
+			</entry>
+			<entry>
+				<artifactSpec>commons-codec:commons-codec</artifactSpec>
+				<dependencyLine>libcommons-codec-java</dependencyLine>
+				<jars>
+					<jar>commons-codec.jar</jar>
 				</jars>
 			</entry>
 			

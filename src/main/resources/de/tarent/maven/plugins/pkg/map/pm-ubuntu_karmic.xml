@@ -757,10 +757,19 @@
 
 			<!-- JDom -->
 			<entry>
-				<artifactSpec>jdom:jdom</artifactSpec>
-				<dependencyLine>libjdom-java</dependencyLine>
+				<artifactSpec>org.jdom:jdom</artifactSpec>
+				<versionSpec>[,1)</versionSpec>
+				<dependencyLine>libjdom0-java</dependencyLine>
 				<jars>
-					<jar>jdom.jar</jar>
+					<jar>jdom0.jar</jar>
+				</jars>
+			</entry>
+			<entry>
+				<artifactSpec>org.jdom:jdom</artifactSpec>
+				<versionSpec>[1,2)</versionSpec>
+				<dependencyLine>libjdom1-java</dependencyLine>
+				<jars>
+					<jar>jdom1.jar</jar>
 				</jars>
 			</entry>
 			
