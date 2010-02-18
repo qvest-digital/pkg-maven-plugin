@@ -185,7 +185,7 @@
 			<id>evolvis-site-repository</id>
 			<name>evolvis.org site repository</name>
 			<url>
-				scpexe://maven@svn.evolvis.org:/site/mvn-pkg-plugin/htdocs/site</url>
+				scpexe://svn.evolvis.org:/site/mvn-pkg-plugin/htdocs/site</url>
 		</site>
 	</distributionManagement>
 	
@@ -261,8 +261,8 @@
 	</dependencies>
 	
 	<scm>
-		<connection>scm:svn:svn+ssh://maven@svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</connection>
-		<developerConnection>scm:svn:svn+ssh://maven@svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</developerConnection>
+		<connection>scm:svn:svn+ssh://svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</connection>
+		<developerConnection>scm:svn:svn+ssh://svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</developerConnection>
 		<url>https://evolvis.org/plugins/scmsvn/viewcvs.php/?root=mvn-pkg-plugin</url>
 	</scm>
 	
