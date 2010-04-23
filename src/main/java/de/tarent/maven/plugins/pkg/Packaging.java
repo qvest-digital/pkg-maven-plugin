@@ -1535,7 +1535,7 @@ public class Packaging
     String d = (distro != null) ? distro : defaultDistro;
     
     // Generate merged distro configuration.
-    dc = getMergedConfiguration(t, d);
+    dc = getMergedConfiguration(t, d, true);
     dc.chosenDistro = d;
     dc.chosenTarget = t;
 
@@ -1578,10 +1578,12 @@ public class Packaging
    * Takes the default configuration and the custom one into account and creates
    * a merged one.
    * 
-   * @param distro
+   * @param target Chosen target configuration
+   * @param distro Chosen distro
+   * @param mustMatch Whether a result must be found or whether it is OK to rely on defaults.
    * @return
    */
-  private TargetConfiguration getMergedConfiguration(String target, String distro)
+  private TargetConfiguration getMergedConfiguration(String target, String distro, boolean mustMatch)
       throws MojoExecutionException
   {
     Iterator<TargetConfiguration> ite = targetConfigurations.iterator();
@@ -1593,7 +1595,7 @@ public class Packaging
         if (!dc.target.equals(target))
         	continue;
         
-        TargetConfiguration merged = getMergedConfiguration(dc.parent, distro);
+        TargetConfiguration merged = getMergedConfiguration(dc.parent, distro, false);
 
         // Checks whether this targetconfiguration supports
         // the wanted distro.
@@ -1607,9 +1609,19 @@ public class Packaging
             return dc.merge(merged);
           }
       }
-
-    // No special config for chosen distro available.
-    return new TargetConfiguration().merge(defaults);
+    
+    // For the target the user requested a result must be found (first case) but when the
+    // plugin looks up parent configuration it will finally reach the default configuration
+    // and for this it is necessary to derive from it without a match.
+    if (mustMatch)
+    {
+    	throw new MojoExecutionException("Requested target " + target + " does not exist. Check spelling or configuration.");
+    }
+    else
+    {
+    	return new TargetConfiguration().merge(defaults);
+    }
+    
   }
 
   /**
