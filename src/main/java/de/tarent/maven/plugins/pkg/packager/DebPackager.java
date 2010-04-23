@@ -310,6 +310,17 @@ public class DebPackager extends Packager
 
   }
   
+  /**
+   * Iterates over the sysconf files and creates the Debian 'conffiles' file for them.
+   * 
+   * <p>If no sysconf files exists nothing is done however.</p>
+   * 
+   * @param l
+   * @param conffilesFile
+   * @param ph
+   * @param tc
+   * @throws MojoExecutionException
+   */
   private void generateConffilesFile(Log l, File conffilesFile, Packaging.Helper ph, TargetConfiguration tc)
   	throws MojoExecutionException
   	{
