@@ -337,6 +337,10 @@ public class DebPackager extends Packager
 		  sb.append(targetFile.getAbsolutePath());
 		  sb.append("\n");
 	  }
+
+	  	if (!conffilesFile.getParentFile().mkdirs())
+			throw new MojoExecutionException(
+					"Could not create directory for conffiles file.");
 	  
 		try {
 			conffilesFile.createNewFile();
