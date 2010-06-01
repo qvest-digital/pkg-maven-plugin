@@ -27,6 +27,15 @@
 		<defaultDependencyLine>java2-runtime</defaultDependencyLine>
 
 	<map>
+		<entry>
+			<artifactSpec>net.java.dev.jna:jna:jar</artifactSpec>
+			<versionSpec>[3,4)</versionSpec>
+			<dependencyLine>libjna-java</dependencyLine>
+		        <jars>
+		            <jar>jna.jar</jar>
+		        </jars>
+		</entry>
+
 		<!-- Maven knows multiple SWT variants-->
 		<entry>
 			<artifactSpec>org.eclipse.swt:swt-gtk-linux</artifactSpec>

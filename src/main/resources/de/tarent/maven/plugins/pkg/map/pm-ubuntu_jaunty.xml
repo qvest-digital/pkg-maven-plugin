@@ -11,6 +11,16 @@
 		<repoName>jaunty</repoName>
 		
 		        <map>
+
+	<entry>
+		<artifactSpec>net.java.dev.jna:jna:jar</artifactSpec>
+		<versionSpec>[3,4)</versionSpec>
+		<dependencyLine>libjna-java</dependencyLine>
+                <jars>
+                    <jar>jna.jar</jar>
+                </jars>
+	</entry>
+
 			<!-- JDom - has separate Jars for 0.9 and >=1.x -->
             <entry>
                 <artifactSpec>org.jdom:jdom</artifactSpec>
