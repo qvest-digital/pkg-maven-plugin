@@ -28,7 +28,7 @@
 
 	<map>
 		<entry>
-			<artifactSpec>net.java.dev.jna:jna:jar</artifactSpec>
+			<artifactSpec>net.java.dev.jna:jna</artifactSpec>
 			<versionSpec>[3,4)</versionSpec>
 			<dependencyLine>libjna-java</dependencyLine>
 		        <jars>
