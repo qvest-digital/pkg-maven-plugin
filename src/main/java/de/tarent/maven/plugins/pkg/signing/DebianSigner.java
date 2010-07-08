@@ -97,6 +97,8 @@ public class DebianSigner extends AbstractPackagingMojo {
 
 		if(getDistroConfiguration().getMaintainer() == null)
 			throw new MojoFailureException("Maintainer has to be defined.");
+		
+		packageVersion =  System.getProperty("packageVersion");
 
 		generateFileList(getLog(), buildDir);
 		

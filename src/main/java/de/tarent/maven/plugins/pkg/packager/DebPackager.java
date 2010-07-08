@@ -174,6 +174,8 @@ public class DebPackager extends Packager
         		            ph.createReplacesLine(),
         		            byteAmount);
         
+        System.setProperty("packageVersion", ph.getPackageVersion()); 
+        
         createPackage(l, ph, basePkgDir);
         
         if (distroConfig.isAotCompile())
