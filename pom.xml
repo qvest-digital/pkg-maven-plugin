@@ -2,12 +2,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>de.tarent.maven.plugins</groupId>
-	
 	<artifactId>maven-pkg-plugin</artifactId>
+	<version>2.2.0-SNAPSHOT</version>
 	
 	<packaging>maven-plugin</packaging>
-	
-	<version>2.2.0-SNAPSHOT</version>
 	
 	<name>Maven Packaging Plugin</name>
 	
@@ -28,10 +26,12 @@
 	</licenses>
 	
 	<url>http://mvn-pkg-plugin.evolvis.org/</url>
+	
 	<issueManagement>
-		<system>Bugzilla</system>
-		<url>https://bugzilla.tarent.de/</url>
+		<system>Evolvis-Bug-Tracker</system>
+		<url>https://evolvis.org/tracker/?atid=169&amp;group_id=30</url>
 	</issueManagement>
+	
 	<inceptionYear>2006</inceptionYear>
 	
 	<developers>
@@ -39,7 +39,7 @@
 			<id>fkoest</id>
 			<name>Fabian Koester</name>
 			<email>f.koester@tarent.de</email>
-			<organization>tarent GmbH</organization>
+			<organization>tarent solutions GmbH</organization>
 			<organizationUrl>http://www.tarent.de/</organizationUrl>
 			<roles>
 				<role>Developer</role>
@@ -51,7 +51,19 @@
 			<id>rschus</id>
 			<name>Robert Schuster</name>
 			<email>robert.schuster@tarent.de</email>
-			<organization>tarent GmbH</organization>
+			<organization>tarent solutions GmbH</organization>
+			<organizationUrl>http://www.tarent.de/</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		
+		<developer>
+			<id>trink</id>
+			<name>Tino Rink</name>
+			<email>t.rink@tarent.de</email>
+			<organization>tarent solutions GmbH</organization>
 			<organizationUrl>http://www.tarent.de/</organizationUrl>
 			<roles>
 				<role>Developer</role>
@@ -75,8 +87,7 @@
 				<groupId>de.tarent.maven.plugins</groupId>
 				<artifactId>mvn-gforge-plugin</artifactId>
 				<configuration>
-					<gForgeAPIPort_address>
-						http://evolvis.org/soap/index.php</gForgeAPIPort_address>
+					<gForgeAPIPort_address>http://evolvis.org/soap/index.php</gForgeAPIPort_address>
 					<fileTypes>
 						<type>javadoc</type>
 						<type>sources</type>
@@ -172,20 +183,17 @@
 		<repository>
 			<id>evolvis-release-repository</id>
 			<name>evolvis.org release repository</name>
-			<url>
-				scpexe://maven-repo.evolvis.org:/var/www/maven_repo/releases</url>
+			<url>scpexe://maven-repo.evolvis.org:/var/www/maven_repo/releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>evolvis-snapshot-repository</id>
 			<name>evolvis.org snapshot repository</name>
-			<url>
-				scpexe://maven-repo.evolvis.org:/var/www/maven_repo/snapshots</url>
+			<url>scpexe://maven-repo.evolvis.org:/var/www/maven_repo/snapshots</url>
 		</snapshotRepository>
 		<site>
 			<id>evolvis-site-repository</id>
 			<name>evolvis.org site repository</name>
-			<url>
-				scpexe://maven@svn.evolvis.org:/site/mvn-pkg-plugin/htdocs/site</url>
+			<url>scpexe://maven@svn.evolvis.org:/site/mvn-pkg-plugin/htdocs/site</url>
 		</site>
 	</distributionManagement>
 	
@@ -261,21 +269,23 @@
 	</dependencies>
 	
 	<scm>
-		<connection>scm:svn:svn+ssh://maven@svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</connection>
-		<developerConnection>scm:svn:svn+ssh://maven@svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</developerConnection>
-		<url>https://evolvis.org/plugins/scmsvn/viewcvs.php/?root=mvn-pkg-plugin</url>
+		<connection>scm:svn:svn+ssh://maven@evolvis.org/scmrepos/svn/mvn-pkg-plugin/branches/maven-pkg-plugin-2.x</connection>
+		<developerConnection>scm:svn:svn+ssh://maven@evolvis.org/scmrepos/svn/mvn-pkg-plugin/branches/maven-pkg-plugin-2.x</developerConnection>
+		<url>https://evolvis.org/scm/viewvc.php/?root=mvn-pkg-plugin</url>
 	</scm>
 	
 	<ciManagement>
 		<system>continuum</system>
-		<url>http://cis.evolvis.org:8080/continuum/</url>
+		<url>https://hudson.evolvis.org/job/mvn-pkg-plugin%20v2.x/</url>
 		<notifiers>
 			<notifier>
 				<type>mail</type>
 				<configuration>
 					<address>r.schuster@tarent.de</address>
+					<address>t.rink@tarent.de</address>
 				</configuration>
 			</notifier>
 		</notifiers>
 	</ciManagement>
+	
 </project>
