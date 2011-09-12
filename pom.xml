@@ -276,7 +276,7 @@
 	
 	<ciManagement>
 		<system>continuum</system>
-		<url>https://hudson.evolvis.org/job/mvn-pkg-plugin%20v2.x/</url>
+		<url>https://hudson.evolvis.org/job/mvn-pkg-plugin-v2.x/</url>
 		<notifiers>
 			<notifier>
 				<type>mail</type>
