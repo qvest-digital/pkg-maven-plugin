@@ -269,8 +269,8 @@
 	</dependencies>
 	
 	<scm>
-		<connection>scm:svn:svn+ssh://maven@evolvis.org/scmrepos/svn/mvn-pkg-plugin/branches/maven-pkg-plugin-2.x</connection>
-		<developerConnection>scm:svn:svn+ssh://maven@evolvis.org/scmrepos/svn/mvn-pkg-plugin/branches/maven-pkg-plugin-2.x</developerConnection>
+		<connection>scm:svn:svn+ssh://maven@scm.evolvis.org/scmrepos/svn/mvn-pkg-plugin/branches/maven-pkg-plugin-2.x</connection>
+		<developerConnection>scm:svn:svn+ssh://maven@scm.evolvis.org/scmrepos/svn/mvn-pkg-plugin/branches/maven-pkg-plugin-2.x</developerConnection>
 		<url>https://evolvis.org/scm/viewvc.php/?root=mvn-pkg-plugin</url>
 	</scm>
 	
