@@ -190,11 +190,11 @@
 			<name>evolvis.org snapshot repository</name>
 			<url>scpexe://maven-repo.evolvis.org:/var/www/maven_repo/snapshots</url>
 		</snapshotRepository>
-		<site>
-			<id>evolvis-site-repository</id>
-			<name>evolvis.org site repository</name>
-			<url>scpexe://maven@svn.evolvis.org:/site/mvn-pkg-plugin/htdocs/site</url>
-		</site>
+<!-- 		<site> -->
+<!-- 			<id>evolvis-site-repository</id> -->
+<!-- 			<name>evolvis.org site repository</name> -->
+<!-- 			<url>scpexe://maven@svn.evolvis.org:/site/mvn-pkg-plugin/htdocs/site</url> -->
+<!-- 		</site> -->
 	</distributionManagement>
 	
 	<prerequisites>
