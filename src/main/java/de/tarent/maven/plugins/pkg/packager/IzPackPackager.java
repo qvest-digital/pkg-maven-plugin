@@ -154,7 +154,8 @@ public class IzPackPackager extends Packager
         
         bundledArtifacts = ph.createClasspathLine(bcp, cp);
         
-        ph.copyProjectArtifact();
+        if (distroConfig.getIncludeProjectArtifact())
+        	ph.copyProjectArtifact();
         
         ph.copyArtifacts(bundledArtifacts);
         

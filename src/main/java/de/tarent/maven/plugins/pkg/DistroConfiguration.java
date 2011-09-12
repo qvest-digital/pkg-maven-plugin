@@ -722,6 +722,12 @@ public class DistroConfiguration {
 	 */
 	String customCodeWindows;
 
+	/**
+	 * Defines whether the generated project artifact (pom, jar, war, ..) is included or not.
+	 * <p>This property is <em>optional</em> and default is <code>true</code>.<p>
+	 */
+	Boolean includeProjectArtifact;
+
 	public DistroConfiguration() {
 		// For instantiation.
 	}
@@ -897,6 +903,10 @@ public class DistroConfiguration {
 	public String getWrapperScriptName() {
 		return wrapperScriptName;
 	}
+	
+	public Boolean getIncludeProjectArtifact() {
+		return includeProjectArtifact;
+	}
 
 	public boolean isAdvancedStarter() {
 		return advancedStarter.booleanValue();
@@ -1027,6 +1037,8 @@ public class DistroConfiguration {
 
 		replaces = (List) merge(replaces, parent.replaces, new ArrayList());
 
+		includeProjectArtifact = (Boolean) merge(includeProjectArtifact, parent.includeProjectArtifact, Boolean.TRUE);
+		
 		systemProperties = (Properties) merge(systemProperties,
 				parent.systemProperties, new Properties());
 
@@ -1247,6 +1259,7 @@ public class DistroConfiguration {
 		appendBoolean(sb, "aotCompile", aotCompile);
 		appendBoolean(sb, "bundleAll", bundleAll);
 		appendBoolean(sb, "advancedStarter", advancedStarter);
+		appendBoolean(sb, "includeProjectArtifact", includeProjectArtifact);
 		// TODO rschuster: To my knowledge this is not implemented yet.
 //		sb.append("createWindowsExecutable: " + createWindowsExecutable + "\n");
 //		sb.append("createOSXApp: " + createOSXApp + "\n");
@@ -1394,4 +1407,7 @@ public class DistroConfiguration {
 		this.customCodeWindows = customCodeWindows;
 	}
 
+	public void setIncludeProjectArtifact(Boolean includeProjectArtifact) {
+		this.includeProjectArtifact = includeProjectArtifact;
+	}
 }

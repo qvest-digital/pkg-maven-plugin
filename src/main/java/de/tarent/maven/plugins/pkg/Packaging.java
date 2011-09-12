@@ -242,22 +242,23 @@ public class Packaging
     {
       long size = 0;
       Log l = getLog();
-      size = Utils.copyFiles(l, getSrcAuxFilesDir(), getDstAuxDir(),
+      
+      size += Utils.copyFiles(l, getSrcAuxFilesDir(), getDstAuxDir(),
                              dc.auxFiles, "aux file");
 
-      size = Utils.copyFiles(l, getSrcSysconfFilesDir(), getDstSysconfDir(),
+      size += Utils.copyFiles(l, getSrcSysconfFilesDir(), getDstSysconfDir(),
                              dc.sysconfFiles, "sysconf file");
 
-      size = Utils.copyFiles(l, getSrcDatarootFilesDir(), getDstDatarootDir(),
+      size += Utils.copyFiles(l, getSrcDatarootFilesDir(), getDstDatarootDir(),
                              dc.datarootFiles, "dataroot file");
 
-      size = Utils.copyFiles(l, getSrcDataFilesDir(), getDstDataDir(),
+      size += Utils.copyFiles(l, getSrcDataFilesDir(), getDstDataDir(),
                              dc.dataFiles, "data file");
 
-      size = Utils.copyFiles(l, getSrcJNIFilesDir(), getDstJNIDir(),
+      size += Utils.copyFiles(l, getSrcJNIFilesDir(), getDstJNIDir(),
                              dc.jniFiles, "JNI library");
 
-      size = Utils.copyFiles(l, getSrcJarFilesDir(), getDstBundledJarDir(),
+      size += Utils.copyFiles(l, getSrcJarFilesDir(), getDstBundledJarDir(),
               dc.jarFiles, "jar file");
 
       return size;
@@ -272,9 +273,9 @@ public class Packaging
      * 
      * @throws MojoExecutionException
      */
-    public void copyProjectArtifact() throws MojoExecutionException
+    public long copyProjectArtifact() throws MojoExecutionException
     {
-      Utils.copyProjectArtifact(getLog(), getSrcArtifactFile(),
+      return Utils.copyProjectArtifact(getLog(), getSrcArtifactFile(),
                                 getDstArtifactFile());
     }
 
@@ -1129,9 +1130,9 @@ public class Packaging
 
     if (dc.getMainClass() == null)
       {
-        if (! "libs".equals(dc.getSection()))
-          throw new MojoExecutionException(
-                                           "section has to be 'libs' if no main class is given.");
+//        if (! "libs".equals(dc.getSection()))
+//          throw new MojoExecutionException(
+//                                           "section has to be 'libs' if no main class is given.");
 
         if (dc.isBundleAll())
           throw new MojoExecutionException(
