@@ -83,19 +83,19 @@
 					<encoding>utf-8</encoding>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>de.tarent.maven.plugins</groupId>
-				<artifactId>mvn-gforge-plugin</artifactId>
-				<configuration>
-					<gForgeAPIPort_address>http://evolvis.org/soap/index.php</gForgeAPIPort_address>
-					<fileTypes>
-						<type>javadoc</type>
-						<type>sources</type>
-					</fileTypes>
-					<processorType>any</processorType>
-					<gForgeProject>mvn-pkg-plugin</gForgeProject>
-				</configuration>
-			</plugin>
+<!-- 			<plugin> -->
+<!-- 				<groupId>de.tarent.maven.plugins</groupId> -->
+<!-- 				<artifactId>mvn-gforge-plugin</artifactId> -->
+<!-- 				<configuration> -->
+<!-- 					<gForgeAPIPort_address>http://evolvis.org/soap/index.php</gForgeAPIPort_address> -->
+<!-- 					<fileTypes> -->
+<!-- 						<type>javadoc</type> -->
+<!-- 						<type>sources</type> -->
+<!-- 					</fileTypes> -->
+<!-- 					<processorType>any</processorType> -->
+<!-- 					<gForgeProject>mvn-pkg-plugin</gForgeProject> -->
+<!-- 				</configuration> -->
+<!-- 			</plugin> -->
 		</plugins>
 	</build>
 	
