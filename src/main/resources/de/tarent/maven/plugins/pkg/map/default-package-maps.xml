@@ -7,12 +7,14 @@
 
 	<include>pm-debian_etch.xml</include>
 	<include>pm-debian_lenny.xml</include>
+	<include>pm-debian_squeeze.xml</include>
 	
 	<include>pm-ubuntu_gutsy.xml</include>
 	<include>pm-ubuntu_hardy.xml</include>
 	<include>pm-ubuntu_intrepid.xml</include>
 	<include>pm-ubuntu_jaunty.xml</include>
 	<include>pm-ubuntu_karmic.xml</include>
+	<include>pm-ubuntu_lucid.xml</include>
 	
 	<!-- Default Entry for IzPack packaging -->
 	<distro>

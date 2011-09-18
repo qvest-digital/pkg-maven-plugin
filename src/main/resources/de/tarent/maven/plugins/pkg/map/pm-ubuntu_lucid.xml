@@ -1,0 +1,22 @@
+<!-- Package maps document for Ubuntu 11.04 (Natty Narwhal) -->
+<package-maps>
+	<version>1.0</version>
+
+	<distro>
+
+		<id>ubuntu_lucid</id>
+		<label>Ubuntu 11.04 (Natty Narwhal)</label>
+		<packaging>deb</packaging>
+		<repoName>lucid</repoName>
+		<defaultJarPath>/usr/share/java</defaultJarPath>
+		
+		<!-- Altough Ubuntu (like Debian) puts most of its JNI libraries into /usr/lib/jni 
+			some end up in /usr/lib (e.g. librxtx-java). So we add this path as well. -->
+		<defaultJNIPath>/usr/lib/jni:/usr/lib</defaultJNIPath>
+
+		<!-- GCJ does not play a role for Ubuntu releases. -->
+		<defaultDependencyLine>java6-runtime</defaultDependencyLine>
+
+	</distro>
+
+</package-maps>

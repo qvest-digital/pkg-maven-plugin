@@ -1,0 +1,22 @@
+<!-- Package maps document for Debian 6.0 (Squeeze) -->
+<package-maps>
+	<version>1.0</version>
+
+	<distro>
+
+		<id>debian_squeeze</id>
+		<label>Debian 6.0 (Squeeze)</label>
+		<packaging>deb</packaging>
+		<repoName>squeeze</repoName>
+		<defaultJarPath>/usr/share/java</defaultJarPath>
+		
+		<!-- Altough Ubuntu (like Debian) puts most of its JNI libraries into /usr/lib/jni 
+			some end up in /usr/lib (e.g. librxtx-java). So we add this path as well. -->
+		<defaultJNIPath>/usr/lib/jni:/usr/lib</defaultJNIPath>
+
+		<!-- GCJ does not play a role for Ubuntu releases. -->
+		<defaultDependencyLine>java6-runtime</defaultDependencyLine>
+
+	</distro>
+
+</package-maps>
