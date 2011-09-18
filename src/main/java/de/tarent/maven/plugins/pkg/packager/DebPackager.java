@@ -52,8 +52,11 @@ package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
@@ -61,6 +64,7 @@ import de.tarent.maven.plugins.pkg.AotCompileUtils;
 import de.tarent.maven.plugins.pkg.DistroConfiguration;
 import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.Path;
+import de.tarent.maven.plugins.pkg.SysconfFile;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
@@ -89,6 +93,9 @@ public class DebPackager extends Packager
     // The Debian control file (package name, dependencies etc).
     File controlFile = new File(basePkgDir, "DEBIAN/control");
 
+    // The file listing the config files.
+    File conffilesFile = new File(basePkgDir, "DEBIAN/conffiles");
+    
     File srcArtifactFile = ph.getSrcArtifactFile();
 
     String gcjPackageName = ph.getAotPackageName();
@@ -166,6 +173,8 @@ public class DebPackager extends Packager
         		            ph.createConflictsLine(),
         		            ph.createReplacesLine(),
         		            byteAmount);
+
+        generateConffilesFile(l, conffilesFile, ph, distroConfig);
 
         createPackage(l, ph, basePkgDir);
         
@@ -287,7 +296,8 @@ public class DebPackager extends Packager
 	cgen.setDescription(ph.getProjectDescription());
 	cgen.setArchitecture(dc.getArchitecture());
 	cgen.setInstalledSize(getInstalledSize(byteAmount));
-	    
+    cgen.setHomepage(ph.getProjectUrl());
+    
     l.info("creating control file: " + controlFile.getAbsolutePath());
     Utils.createFile(controlFile, "control");
     
@@ -301,6 +311,61 @@ public class DebPackager extends Packager
                                          ioe);
       }
 
+  }
+  
+  private void generateConffilesFile(Log l, File conffilesFile, Packaging.Helper ph, DistroConfiguration dc)
+  	throws MojoExecutionException
+  	{
+	  List<SysconfFile> sysconffiles = (List<SysconfFile>) dc.getSysconfFiles();
+	  if (sysconffiles.isEmpty())
+	  {
+		  l.info("No sysconf files defined - not creating file.");
+		  return;
+	  }
+	  
+	  StringBuilder sb = new StringBuilder(sysconffiles.size() * 10);
+	  for (SysconfFile scf : sysconffiles)
+	  {
+		  File targetFile; 
+		  if (scf.isRename())
+		  {
+			  targetFile = new File(ph.getTargetSysconfDir(), scf.getTo());
+			  sb.append(targetFile.getAbsolutePath()).append("\n");
+		  }
+		  else
+		  {
+			  final File srcFile = new File(ph.getSrcSysconfFilesDir(), scf.getFrom());
+			  final File targetPath = new File(ph.getTargetSysconfDir(), scf.getTo());
+			  
+			  if (srcFile.isFile()) {
+				  targetFile = new File(targetPath, srcFile.getName());
+				  sb.append(targetFile.getAbsolutePath()).append("\n");
+			  }
+			  else {
+	                final Iterator<?> files = FileUtils.iterateFiles(srcFile, Utils.FILTER, Utils.FILTER);
+	                final int srcFileStrLength = srcFile.getPath().length();
+	                while (files.hasNext()) {
+	                	final File nextFile = (File) files.next();
+	  				  	targetFile = new File(targetPath, nextFile.getAbsolutePath().substring(srcFileStrLength));
+	  				  	sb.append(targetFile.getAbsolutePath()).append("\n");
+	                }
+			  }
+		  }
+	  }
+	  
+		try {
+			conffilesFile.createNewFile();
+		} catch (IOException ioe) {
+			throw new MojoExecutionException(
+					"IOException while creating conffiles file.", ioe);
+		}
+
+		try {
+			FileUtils.writeStringToFile(conffilesFile, sb.toString());
+		} catch (IOException ioe) {
+			throw new MojoExecutionException(
+					"IOException while writing to conffiles file.", ioe);
+		}
   }
 
   private void createPackage(Log l, Packaging.Helper ph, File base) throws MojoExecutionException
