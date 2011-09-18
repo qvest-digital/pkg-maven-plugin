@@ -28,7 +28,6 @@ package de.tarent.maven.plugins.pkg;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,8 +39,10 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
@@ -58,7 +59,7 @@ public class Utils
   /**
    * File filter that ignores files ending with "~", ".cvsignore" and CVS and SVN files.
    */
-  public static final FileFilter FILTER = FileFilterUtils.makeSVNAware(FileFilterUtils.makeCVSAware(new NotFileFilter(new SuffixFileFilter(new String[] { "~", ".cvsignore" }))));
+  public static final IOFileFilter FILTER = FileFilterUtils.makeSVNAware(FileFilterUtils.makeCVSAware(new NotFileFilter(new SuffixFileFilter(new String[] { "~", ".cvsignore" }))));
 
   public static void createParentDirs(File f, String item)
       throws MojoExecutionException
@@ -325,6 +326,11 @@ public class Utils
               {
                 to = new File(to, from.getName());
                 FileUtils.copyDirectory(from, to, FILTER);
+                final Iterator<?> files = FileUtils.iterateFiles(from, FILTER, FILTER);
+                while (files.hasNext()) {
+                	final File nextFile = (File) files.next();
+                    size += nextFile.length();
+                }
               }
             else if (af.isRename())
               {
