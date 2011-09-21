@@ -167,14 +167,11 @@
 			<url>http://maven-repo.evolvis.org/releases</url>
 		</repository>
 
-		<repository>
+		<snapshotRepository>
 			<id>evolvis-snapshot-repository</id>
 			<name>evolvis.org snapshot repository</name>
 			<url>http://maven-repo.evolvis.org/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
+		</snapshotRepository>
     </distributionManagement>
 
 	<prerequisites>
