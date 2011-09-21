@@ -13,6 +13,7 @@
 	<include>pm-ubuntu_intrepid.xml</include>
 	<include>pm-ubuntu_jaunty.xml</include>
 	<include>pm-ubuntu_karmic.xml</include>
+	<include>pm-ubuntu_lucid.xml</include>
 	
 	<!-- Default Entry for IzPack packaging -->
 	<distro>
