@@ -304,24 +304,25 @@ public class Utils
   {
     long size = 0;
     
-    Iterator<? extends AuxFile> ite = auxFiles.iterator();
-    while (ite.hasNext())
-      {
-        AuxFile af = (AuxFile) ite.next();
-        File from = new File(srcDir, af.from);
-        File to = new File(dstDir, af.to);
+    final Iterator<? extends AuxFile> ite = auxFiles.iterator();
+    
+    while (ite.hasNext()) {
+    
+    	try {
+    		
+	        AuxFile af = (AuxFile) ite.next();
+	        File from = new File(srcDir, af.from);
+	        File to = new File(dstDir, af.to).getCanonicalFile();
+	
+	        l.info("copying " + type + ": " + from.toString());
+	        l.info("destination: " + to.toString());
+	
+	        if (! from.exists())
+	          throw new MojoExecutionException("File to copy does not exist: "
+	                                               + from.toString());
+	        
+	        createParentDirs(to, type);
 
-        l.info("copying " + type + ": " + from.toString());
-        l.info("destination: " + to.toString());
-
-        if (! from.exists())
-          throw new MojoExecutionException("File to copy does not exist: "
-                                               + from.toString());
-        
-        createParentDirs(to, type);
-
-        try
-          {
             if (from.isDirectory())
               {
                 to = new File(to, from.getName());
