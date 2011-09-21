@@ -167,27 +167,24 @@
 		</pluginRepository>
 	</pluginRepositories>
 	
-	<!-- this section is required for deployment -->
-	<distributionManagement>
+    <!-- Repositories -->
+	<repositories>
+		<!-- Without this repository parent POMs cannot be resolved. -->
 		<repository>
 			<id>evolvis-release-repository</id>
 			<name>evolvis.org release repository</name>
-			<url>
-				scpexe://maven-repo.evolvis.org:/var/www/maven_repo/releases</url>
+			<url>http://maven-repo.evolvis.org/releases</url>
 		</repository>
-		<snapshotRepository>
+
+		<repository>
 			<id>evolvis-snapshot-repository</id>
 			<name>evolvis.org snapshot repository</name>
-			<url>
-				scpexe://maven-repo.evolvis.org:/var/www/maven_repo/snapshots</url>
-		</snapshotRepository>
-		<site>
-			<id>evolvis-site-repository</id>
-			<name>evolvis.org site repository</name>
-			<url>
-				scpexe://svn.evolvis.org:/site/mvn-pkg-plugin/htdocs/site</url>
-		</site>
-	</distributionManagement>
+			<url>http://maven-repo.evolvis.org/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	
 	<prerequisites>
 		<maven>2.0</maven>
@@ -260,22 +257,10 @@
 		
 	</dependencies>
 	
+	<!-- Source Code Management -->
 	<scm>
-		<connection>scm:svn:svn+ssh://svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</connection>
-		<developerConnection>scm:svn:svn+ssh://svn.evolvis.org/svnroot/mvn-pkg-plugin/trunk</developerConnection>
+		<developerConnection>scm:svn:svn+ssh://maven@scm.evolvis.org/svnroot/mvn-pkg-plugin/trunk</developerConnection>
 		<url>https://evolvis.org/plugins/scmsvn/viewcvs.php/?root=mvn-pkg-plugin</url>
 	</scm>
-	
-	<ciManagement>
-		<system>continuum</system>
-		<url>http://cis.evolvis.org:8080/continuum/</url>
-		<notifiers>
-			<notifier>
-				<type>mail</type>
-				<configuration>
-					<address>r.schuster@tarent.de</address>
-				</configuration>
-			</notifier>
-		</notifiers>
-	</ciManagement>
+
 </project>
