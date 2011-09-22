@@ -174,8 +174,6 @@ public class DebPackager extends Packager
         		            ph.createReplacesLine(),
         		            byteAmount);
         
-        System.setProperty("packageVersion", ph.getPackageVersion()); 
-        
         createPackage(l, ph, basePkgDir);
         
         if (distroConfig.isAotCompile())
@@ -248,6 +246,7 @@ public class DebPackager extends Packager
   /** Validates arguments and test tools.
    * 
    * @throws MojoExecutionException
+   * @override
    */
   public void checkEnvironment(Log l,
                                Packaging.Helper ph,

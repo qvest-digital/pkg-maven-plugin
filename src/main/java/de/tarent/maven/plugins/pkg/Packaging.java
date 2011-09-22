@@ -1554,6 +1554,7 @@ public class Packaging
     // Store configuration in plugin-context for later use by signer- and deploy-goal
     getPluginContext().put("dc", dc);
     getPluginContext().put("pm", pm);
+    getPluginContext().put("packageVersion", ph.getPackageVersion());
 
     // Create packager according to the chosen packaging type.
     Packager packager;
