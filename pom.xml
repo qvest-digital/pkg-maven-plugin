@@ -1,39 +1,19 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>de.tarent.maven.plugins</groupId>
-	
+
 	<artifactId>maven-pkg-plugin</artifactId>
-	
+
 	<packaging>maven-plugin</packaging>
-	
+
 	<version>3.1.0-SNAPSHOT</version>
-	
+
 	<name>Maven Packaging Plugin</name>
-	
+
 	<description>Plugin to package a Maven project for different GNU/Linux distributions and IzPack.</description>
-	
-	<properties>
-		<maven.version>2.2.1</maven.version>
-		<commons-io.version>2.0.1</commons-io.version>
-		<commons-lang.version>2.6</commons-lang.version>
-		<plexus-archiver.version>2.0.1</plexus-archiver.version>
-	</properties>
-	
-	<licenses>
-		<license>
-			<name>GPLv2</name>
-			<url>http://www.gnu.org/copyleft/gpl.html</url>
-			<distribution>repo</distribution>
-		</license>
-		<license>
-			<name>GPLv2 + linking exception</name>
-			<url>http://www.gnu.org/software/classpath/license.html</url>
-			<distribution>repo</distribution>
-			<comments>License of the _Starter class only</comments>
-		</license>
-	</licenses>
-	
+
 	<url>http://mvn-pkg-plugin.evolvis.org/</url>
 	<issueManagement>
 		<system>Bugzilla</system>
@@ -41,32 +21,23 @@
 	</issueManagement>
 	<inceptionYear>2006</inceptionYear>
 	
-	<developers>
-		<developer>
-			<id>fkoest</id>
-			<name>Fabian Koester</name>
-			<email>f.koester@tarent.de</email>
-			<organization>tarent GmbH</organization>
-			<organizationUrl>http://www.tarent.de/</organizationUrl>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
-		
-		<developer>
-			<id>rschus</id>
-			<name>Robert Schuster</name>
-			<email>robert.schuster@tarent.de</email>
-			<organization>tarent GmbH</organization>
-			<organizationUrl>http://www.tarent.de/</organizationUrl>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
-	</developers>
+	<prerequisites>
+		<maven>2.2</maven>
+	</prerequisites>
 	
+	<properties>
+		<maven.version>2.2.1</maven.version>
+		<commons-io.version>2.0.1</commons-io.version>
+		<commons-lang.version>2.6</commons-lang.version>
+		<plexus-archiver.version>2.0.1</plexus-archiver.version>
+	</properties>
+
+	<!-- Source Code Management -->
+	<scm>
+		<developerConnection>scm:svn:svn+ssh://maven@scm.evolvis.org/svnroot/mvn-pkg-plugin/trunk</developerConnection>
+		<url>https://evolvis.org/plugins/scmsvn/viewcvs.php/?root=mvn-pkg-plugin</url>
+	</scm>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -78,6 +49,8 @@
 					<encoding>utf-8</encoding>
 				</configuration>
 			</plugin>
+			
+			<!-- 
 			<plugin>
 				<groupId>de.tarent.maven.plugins</groupId>
 				<artifactId>mvn-gforge-plugin</artifactId>
@@ -92,9 +65,11 @@
 					<gForgeProject>mvn-pkg-plugin</gForgeProject>
 				</configuration>
 			</plugin>
+			 -->
+			
 		</plugins>
 	</build>
-	
+
 	<reporting>
 		<plugins>
 			<plugin>
@@ -123,7 +98,7 @@
 			</plugin>
 		</plugins>
 	</reporting>
-	
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>evolvis-release-repository</id>
@@ -148,8 +123,8 @@
 			</releases>
 		</pluginRepository>
 	</pluginRepositories>
-	
-    <!-- Repositories -->
+
+	<!-- Repositories -->
 	<repositories>
 		<repository>
 			<id>evolvis-release-repository</id>
@@ -167,7 +142,7 @@
 		</repository>
 	</repositories>
 
-    <distributionManagement>
+	<distributionManagement>
 		<repository>
 			<id>evolvis-release-repository</id>
 			<name>evolvis.org release repository</name>
@@ -179,12 +154,8 @@
 			<name>evolvis.org snapshot repository</name>
 			<url>http://maven-repo.evolvis.org/snapshots</url>
 		</snapshotRepository>
-    </distributionManagement>
+	</distributionManagement>
 
-	<prerequisites>
-		<maven>2.0</maven>
-	</prerequisites>
-	
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -199,14 +170,14 @@
 			<version>${maven.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-project</artifactId>
 			<version>${maven.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -220,19 +191,52 @@
 			<version>${commons-lang.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-archiver</artifactId>
 			<version>${plexus-archiver.version}</version>
 		</dependency>
-		
-	</dependencies>
-	
-	<!-- Source Code Management -->
-	<scm>
-		<developerConnection>scm:svn:svn+ssh://maven@scm.evolvis.org/svnroot/mvn-pkg-plugin/trunk</developerConnection>
-		<url>https://evolvis.org/plugins/scmsvn/viewcvs.php/?root=mvn-pkg-plugin</url>
-	</scm>
 
+	</dependencies>
+
+	<licenses>
+		<license>
+			<name>GPLv2</name>
+			<url>http://www.gnu.org/copyleft/gpl.html</url>
+			<distribution>repo</distribution>
+		</license>
+		<license>
+			<name>GPLv2 + linking exception</name>
+			<url>http://www.gnu.org/software/classpath/license.html</url>
+			<distribution>repo</distribution>
+			<comments>License of the _Starter class only</comments>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>fkoest</id>
+			<name>Fabian Koester</name>
+			<email>f.koester@tarent.de</email>
+			<organization>tarent GmbH</organization>
+			<organizationUrl>http://www.tarent.de/</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+
+		<developer>
+			<id>rschus</id>
+			<name>Robert Schuster</name>
+			<email>robert.schuster@tarent.de</email>
+			<organization>tarent GmbH</organization>
+			<organizationUrl>http://www.tarent.de/</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
 </project>
