@@ -142,7 +142,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
   
   /**
    * Used to look up Artifacts in the remote repository.
-   * @parameter expression="${component.org.apache.maven.artifact.factory.ArtifactFactory}"
+   * @component role="org.apache.maven.artifact.factory.ArtifactFactory"
    * @required
    * @readonly
    */
@@ -150,7 +150,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
 
   /**
    * Used to look up Artifacts in the remote repository.
-   * @parameter expression="${component.org.apache.maven.artifact.resolver.ArtifactResolver}"
+   * @component role="org.apache.maven.artifact.resolver.ArtifactResolver"
    * @required
    * @readonly
    */
@@ -158,7 +158,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
 
   /**
    * Used to look up Artifacts in the remote repository.
-   * @parameter expression="${component.org.apache.maven.artifact.metadata.ArtifactMetadataSource}"
+   * @component role="org.apache.maven.artifact.metadata.ArtifactMetadataSource"
    * @required
    * @readonly
    */
@@ -196,7 +196,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
 
   /**
    * Look up Archiver/UnArchiver implementations.
-   * @parameter expression="${component.org.codehaus.plexus.archiver.manager.ArchiverManager}"
+   * @component role="org.codehaus.plexus.archiver.manager.ArchiverManager"
    * @required
    * @readonly
    */
