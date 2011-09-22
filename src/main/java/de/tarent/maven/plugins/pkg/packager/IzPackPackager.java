@@ -222,14 +222,10 @@ public class IzPackPackager extends Packager
     l.info("create OS X app          : " + (dc.isCreateOSXApp() ? "yes" : "no"));
     l.info("create Windows setup file: " + (dc.isCreateWindowsExecutable() ? "yes" : "no"));
 
-    Utils.exec(new String[] { "which", ph.getJavaExec() },
-               "java executable is not available on this system. Check your installation!",
-               "java executable is not available on this system. Check your installation!");
+    Utils.checkProgramAvailability(ph.getJavaExec());
     
     if (dc.isCreateWindowsExecutable())
-      Utils.exec(new String[] { "which", ph.get7ZipExec() },
-                 "7zip executable is not available on this system. Check your installation!",
-                 "7zip executable is not available on this system. Check your installation!");
+      Utils.checkProgramAvailability(ph.get7ZipExec());
   }
 
   /**

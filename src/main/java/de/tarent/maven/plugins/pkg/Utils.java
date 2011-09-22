@@ -128,6 +128,21 @@ public class Utils
   }
 
   /**
+   * Checks whether a certain program is available.
+   * 
+   * <p>It fails with a {@link MojoExecutionException} if the program is not available.
+   * 
+   * @param programName
+   * @throws MojoExecutionException
+   */
+	public static void checkProgramAvailability(String programName)
+			throws MojoExecutionException {
+		exec(new String[] { "which", programName }, null, programName
+				+ " is not available on your system. Check your installation!", "Error executing "
+				+ programName + ". Aborting!");
+	}
+
+  /**
    * A method which makes executing programs easier.
    * 
    * @param args

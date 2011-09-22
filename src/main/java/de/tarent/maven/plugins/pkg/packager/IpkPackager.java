@@ -163,10 +163,7 @@ public class IpkPackager extends Packager
       error = true;
     }
     
-    Utils.exec(new String[] { "which", "ipkg-build" },
-               "ipkg-build returned with an error. Check your installation!",
-               "ipkg-build is not available on this system. Check your installation!");
-    
+    Utils.checkProgramAvailability("ipkg-build");
     
     if (error)
       throw new MojoExecutionException("Aborting due to earlier errors.");

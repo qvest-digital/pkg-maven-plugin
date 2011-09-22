@@ -71,8 +71,13 @@ public class APTUploader extends AbstractPackagingMojo {
 		if(!getPackagingType().equals("deb"))
 			throw new MojoFailureException("Uploading packaging-type '"+ getPackagingType() + "' is currently not supported.");
 
+		checkEnvironment(getLog());
 		
 		uploadPackage(getLog(), buildDir);
+	}
+	
+	protected void checkEnvironment(Log l) throws MojoExecutionException {
+	    Utils.checkProgramAvailability("dupload");
 	}
 	
 	/**
