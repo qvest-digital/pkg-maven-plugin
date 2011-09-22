@@ -22,6 +22,7 @@ public class LoadMapsTest extends TestCase {
 			"ubuntu_intrepid",
 			"ubuntu_jaunty",
 			"ubuntu_karmic",
+			"ubuntu_lucid",
 	};
 
 	/**
