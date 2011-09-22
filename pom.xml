@@ -7,11 +7,18 @@
 	
 	<packaging>maven-plugin</packaging>
 	
-	<version>3.0.6-SNAPSHOT</version>
+	<version>3.1.0-SNAPSHOT</version>
 	
 	<name>Maven Packaging Plugin</name>
 	
 	<description>Plugin to package a Maven project for different GNU/Linux distributions and IzPack.</description>
+	
+	<properties>
+		<maven.version>2.2.1</maven.version>
+		<commons-io.version>2.0.1</commons-io.version>
+		<commons-lang.version>2.6</commons-lang.version>
+		<plexus-archiver.version>2.0.1</plexus-archiver.version>
+	</properties>
 	
 	<licenses>
 		<license>
@@ -66,8 +73,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>1.6</source>
+					<target>1.6</target>
 					<encoding>utf-8</encoding>
 				</configuration>
 			</plugin>
@@ -189,58 +196,49 @@
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-plugin-api</artifactId>
-			<version>2.0</version>
+			<version>${maven.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-model</artifactId>
-			<version>2.0</version>
+			<version>${maven.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-artifact</artifactId>
-			<version>2.0</version>
+			<version>${maven.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		
-		<!--
-		<dependency>
-		<groupId>org.codehaus.plexus</groupId>
-		<artifactId>plexus-utils</artifactId>
-		<version>1.2</version>
-		<scope>compile</scope>
-		</dependency>
-		-->
 		
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-project</artifactId>
-			<version>2.0</version>
+			<version>${maven.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>1.4</version>
+			<version>${commons-io.version}</version>
 			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
-			<version>2.4</version>
+			<version>${commons-lang.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-archiver</artifactId>
-			<version>1.0-alpha-7</version>
+			<version>${plexus-archiver.version}</version>
 		</dependency>
 		
 	</dependencies>

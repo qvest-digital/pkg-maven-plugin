@@ -423,12 +423,6 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
       {
         throw new MojoExecutionException("Unknown archiver type", e);
       }
-    catch (IOException e)
-      {
-        throw new MojoExecutionException("Error unpacking file: "
-                                         + file.getAbsolutePath() + " to: "
-                                         + dst, e);
-      }
     catch (ArchiverException e)
       {
         throw new MojoExecutionException("Error unpacking file: " + file
