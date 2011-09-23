@@ -372,12 +372,11 @@ public class DebPackager extends Packager
   {
     l.info("calling dpkg-deb to create binary package");
     
-    Utils.exec(new String[] {"dpkg-deb",
-                             "--build",
+    Utils.exec(new String[] {"fakeroot", "dpkg-deb", "--build",
                              base.getName(),
                              ph.getOutputDirectory().getAbsolutePath() },
                 ph.getTempRoot(),
-                "'dpkg --build' failed.",
+                "'fakeroot dpkg-deb --build' failed.",
                 "Error creating the .deb file.");
   }
  
