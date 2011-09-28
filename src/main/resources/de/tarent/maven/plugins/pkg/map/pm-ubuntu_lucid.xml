@@ -285,6 +285,14 @@
 		</entry>
 
 		<entry>
+			<artifactSpec>org.bouncycastle:bouncycastle-jdk16-provider</artifactSpec>
+			<dependencyLine>libbcprov-java</dependencyLine>
+			<jars>
+				<jar>bcprov.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
 			<artifactSpec>log4j:log4j</artifactSpec>
 			<dependencyLine>liblog4j1.2-java</dependencyLine>
 			<jars>
