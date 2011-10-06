@@ -277,15 +277,7 @@
 		</entry>
 
 		<entry>
-			<artifactSpec>org.bouncycastle.jce:bouncycastle-jdk14-provider</artifactSpec>
-			<dependencyLine>libbcprov-java</dependencyLine>
-			<jars>
-				<jar>bcprov.jar</jar>
-			</jars>
-		</entry>
-
-		<entry>
-			<artifactSpec>org.bouncycastle:bouncycastle-jdk16-provider</artifactSpec>
+			<artifactSpec>org.bouncycastle:bcprov-jdk16</artifactSpec>
 			<dependencyLine>libbcprov-java</dependencyLine>
 			<jars>
 				<jar>bcprov.jar</jar>
@@ -299,6 +291,19 @@
 				<jar>log4j-1.2.jar</jar>
 			</jars>
 		</entry>
+
+		<!-- the packagename is wrong it is indeed version 1.2
+			look at this bug entry
+			http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=566383
+		-->
+                <entry>
+			<artifactSpec>xml-resolver:xml-resolver</artifactSpec>
+			<dependencyLine>libxml-commons-resolver1.1-java</dependencyLine>
+			<jars>
+				<jar>xml-commons-resolver-1.1.jar</jar>
+			</jars>
+		</entry>
+ 
 
 		<!-- Everything can be automatically derived from the artifactSpec -->
 		<entry>
