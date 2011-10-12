@@ -203,6 +203,13 @@
 			<version>${plexus-archiver.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.0.1</version>
+			<type>pom</type>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<licenses>
@@ -236,6 +243,18 @@
 			<id>rschus</id>
 			<name>Robert Schuster</name>
 			<email>robert.schuster@tarent.de</email>
+			<organization>tarent GmbH</organization>
+			<organizationUrl>http://www.tarent.de/</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+
+		<developer>
+			<id>plafue</id>
+			<name>Pedro Lafuente</name>
+			<email>pedro.lafuente@tarent.de</email>
 			<organization>tarent GmbH</organization>
 			<organizationUrl>http://www.tarent.de/</organizationUrl>
 			<roles>
