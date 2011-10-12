@@ -80,16 +80,14 @@ public class SPECFileGeneratorTest {
 
 		List<RPMFile> files = new ArrayList<RPMFile>();
 		
-		RPMFile testfile1 = new RPMFile();
-		testfile1.setFrom("file1");
+		RPMFile testfile1 = new RPMFile("/file1");
 		
-		RPMFile testfile2 = new RPMFile();
+		RPMFile testfile2 = new RPMFile("/file2");
 		testfile2.setOwner("user");
 		testfile2.setGroup("user");
 		testfile2.setUserRead(true);
 		testfile2.setGroupRead(true);
 		testfile2.setOthersRead(true);
-		testfile2.setFrom("file2");
 		
 		files.add(testfile1);
 		files.add(testfile2);	
@@ -99,13 +97,13 @@ public class SPECFileGeneratorTest {
 
 		String lookup1 = "%files";
 		String lookup2 = "%defattr(755,root,root)";
-		String lookup3 = "file1";
-		String lookup4 = "%attr(444,user,user) file2";
+		String lookup3 = "/file1";
+		String lookup4 = "%attr(444,user,user) /file2";
 
-		Assert.assertTrue(filecontains(lookup1));
-		Assert.assertTrue(filecontains(lookup2));
-		Assert.assertTrue(filecontains(lookup3));
-		Assert.assertTrue(filecontains(lookup4));
+		Assert.assertTrue("Could not find string", filecontains(lookup1));
+		Assert.assertTrue("Could not find string", filecontains(lookup2));
+		Assert.assertTrue("Could not find string", filecontains(lookup3));
+		Assert.assertTrue("Could not find string", filecontains(lookup4));
 
 	}
 	
@@ -266,30 +264,22 @@ public class SPECFileGeneratorTest {
 		
 	}
 
-	private boolean filecontains(String lookup) {
-		FileInputStream fis = null;
-		BufferedReader in = null;
+	private boolean filecontains(String lookup) throws IOException {
+		FileInputStream fis = new FileInputStream(spec);
 
 		try {
-			fis = new FileInputStream(spec);
-			in = new BufferedReader(new InputStreamReader(fis));
-
-			String currentLine = "";
-			while ((currentLine = in.readLine()) != null) {
-				if (currentLine.indexOf(lookup) != -1)
-					return true;
-			}
-
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		} finally {
-			try {
-				if (in != null)
+			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
+			try{
+				String currentLine = "";
+				while ((currentLine = in.readLine()) != null) {
+					if (currentLine.indexOf(lookup) != -1)
+						return true;
+				}
+			}finally{
 					in.close();
-				if (fis != null)
-					fis.close();
-			} catch (IOException ioe) {
 			}
+		} finally {
+				fis.close();			
 		}
 		return false;
 	}

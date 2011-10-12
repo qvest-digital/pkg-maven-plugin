@@ -27,12 +27,17 @@
 
 package de.tarent.maven.plugins.pkg;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +47,7 @@ import javax.jws.soap.InitParam;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
@@ -1062,9 +1068,20 @@ public class Packaging
 
   public class RPMHelper extends Helper {
 		
-
+	  	/**
+	  	 * Convenience field that denotes the BUILD directory
+	  	 */
 		private File baseBuildDir;
+		/**
+	  	 * Convenience field that denotes the SPECS directory
+	  	 */
 		private File baseSpecsDir;
+		/**
+		 * List that contains the files that will be compiled into the
+		 * package by rpmbuild. Whithout it no files would be copied
+		 * into the final package.
+		 */
+		private ArrayList<RPMFile> filelist;
 
 	    public String getVersion()
 	    {
@@ -1077,6 +1094,22 @@ public class Packaging
 
 		public void setBaseBuildDir(File baseBuildDir) {
 			this.baseBuildDir = baseBuildDir;
+		}
+
+		public File getBaseSpecsDir() {
+			return baseSpecsDir;
+		}
+
+		public void setBaseSpecsDir(File baseSpecsDir) {
+			this.baseSpecsDir = baseSpecsDir;
+		}
+
+		public ArrayList<RPMFile> getFilelist() {
+			return filelist;
+		}
+
+		public void setFilelist(ArrayList<RPMFile> filelist) {
+			this.filelist = filelist;
 		}
 		
 		/**
@@ -1166,14 +1199,54 @@ public class Packaging
 			}
 
 		}
+		/**
+		 * This method uses the methods of the superclass to prepare the files
+		 * for packaging by copying them inside the BUILD directory and sets the
+		 * file list needed inside the SPEC file with the files that have been found.
+		 * 
+		 * @throws MojoExecutionException
+		 */
+		public void copyFilesAndSetFileList() throws MojoExecutionException
+	    {
+	      ArrayList<RPMFile> list = new ArrayList<RPMFile>();
+		
+	      copyProjectArtifact();
+	      
+	      list.add(new RPMFile(getDstArtifactFile().getAbsolutePath().replaceAll(
+	    		  getBaseBuildDir().toString(), "")));
+	      super.copyFiles();
+	      List<File> directories = new ArrayList<File>();
+	      if (getDstAuxDir()!=null){
+	    	  directories.add(getDstAuxDir());
+	      }
+	      if (getDstBinDir()!=null){
+	    	  directories.add(getDstBinDir());
+	      }
+	      if (getDstSysconfDir()!=null){
+	    	  directories.add(getDstSysconfDir());
+	      }
+	      if (getDstDatarootDir()!=null){
+	    	  directories.add(getDstDatarootDir());
+	      }
+	      if (getDstJNIDir()!=null){
+	    	  directories.add(getDstJNIDir());
+	      }
+	      if (getDstDataDir()!=null){
+	    	  directories.add(getDstDataDir());
+	      }
+	      if (getDstBundledJarDir()!=null){
+	    	  directories.add(getDstBundledJarDir());
+	      }
+	      for(File directory : directories){
+	    	  if(directory.exists()){
+		    	  for(File file : FileUtils.listFiles(directory, null, TrueFileFilter.INSTANCE)){	    	  
+		    	  list.add(new RPMFile(file.getAbsolutePath()));
+		    	  }
+	    	  }
+	      }
+	      setFilelist(list);
 
-		public File getBaseSpecsDir() {
-			return baseSpecsDir;
-		}
-
-		public void setBaseSpecsDir(File baseSpecsDir) {
-			this.baseSpecsDir = baseSpecsDir;
-		}
+	    }
 	}
   
   static final String DEFAULT_SRC_AUXFILESDIR = "src/main/auxfiles";

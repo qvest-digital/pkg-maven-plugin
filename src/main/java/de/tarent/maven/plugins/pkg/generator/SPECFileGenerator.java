@@ -116,6 +116,16 @@ public class SPECFileGenerator {
 
 	private List<String> postuninstallcommands;
 
+	private String buildroot;
+
+	public String getBuildroot() {
+		return buildroot;
+	}
+
+	public void setBuildroot(String buildroot) {
+		this.buildroot = buildroot;
+	}
+
 	public SPECFileGenerator() {
 	}
 
@@ -336,7 +346,13 @@ public class SPECFileGenerator {
 	public void setPostuninstallcommandsFromFile(File parent, String filePath)  throws IOException {
 		setPostuninstallcommands(generateArrayListFromExternalFile(parent, filePath));
 	}
-
+	
+	/**
+	 * Writes the spec file based on available parameters
+	 * @param f
+	 * @throws MojoExecutionException
+	 * @throws IOException
+	 */
 	public void generate(File f) throws  MojoExecutionException, IOException {
 		
 		checkneededfields();		
@@ -358,6 +374,7 @@ public class SPECFileGenerator {
 		writeEntry("Vendor", vendor);
 		writeEntry("Packager", packager);
 		writeEntry("BuildArch", arch);
+		writeEntry("BuildRoot", buildroot);
 		writeEntry("Requires", dependencies);
 		writeEntry("Prefix", prefix);
 
@@ -403,9 +420,10 @@ public class SPECFileGenerator {
 			}
 		}
 	}
+	
 	/**
 	 * Creates a section with the given title, and iterates through the collection,
-	 * printing a new line with the contents of the collection. This 
+	 * printing a new line with the contents of the collection. 
 	 * @param w
 	 * @param sectionTitle
 	 * @param commands
@@ -446,10 +464,10 @@ public class SPECFileGenerator {
 					w.print(") ");				
 				}else{
 					if(logger!=null){
-						logger.debug("No attributes found for "+f.getFrom());
+						logger.debug("No attributes found for "+f.getAbsolutePath());
 					}
 				}
-				w.println(f.getFrom());
+				w.println(f.getAbsolutePath());
 			}
 
 		}else{

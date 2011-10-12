@@ -1,5 +1,7 @@
 package de.tarent.maven.plugins.pkg;
 
+import java.io.File;
+
 /**
  * This extension to the AuxFile class allows the user
  * to set target permissions for the file in question.
@@ -11,7 +13,15 @@ package de.tarent.maven.plugins.pkg;
  * @author plafue
  *
  */
-public class RPMFile extends AuxFile{
+public class RPMFile extends File{
+	
+	private static final long serialVersionUID = -6482658785118570712L;
+
+
+	public RPMFile(String pathname) {
+		super(pathname);
+	}
+
 
 	private String owner;
 	private String group;
@@ -25,7 +35,12 @@ public class RPMFile extends AuxFile{
 	private boolean othersWrite;
 	private boolean othersExecute;
 	
-	
+	/**
+	 * Returns the permissions for the file in unix format
+	 * as an int (there is possibly a much better way to do this).
+	 *  
+	 * @return
+	 */
 	public int getOctalPermission() {
 		short total = 0;
 				

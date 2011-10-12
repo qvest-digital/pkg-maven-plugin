@@ -84,10 +84,7 @@ public class RPMPackager extends Packager {
 		
 		RPMHelper ph = (RPMHelper) helper;
 		ph.prepareInitialDirectories();
-		ph.copyProjectArtifact();
-		
-		// TODO: This method should provide a list of all files for the spec
-		ph.copyFiles();
+		ph.copyFilesAndSetFileList();
 
 		l.debug(ph.getPackageName());
 		l.debug(ph.getPackageVersion());
@@ -125,7 +122,8 @@ public class RPMPackager extends Packager {
 	}
 
 	/**
-	 * Takes the parameters inside Packaging.Helper and
+	 * Takes the parameters inside Packaging.Helper and generates the
+	 * spec file needed for rpmbuild to work.
 	 * 
 	 * @param l
 	 * @param ph
@@ -138,6 +136,8 @@ public class RPMPackager extends Packager {
 			File specFile) throws MojoExecutionException, IOException {
 
 		SPECFileGenerator sgen = new SPECFileGenerator();
+		// TODO: Make this configurable through pom
+		sgen.setBuildroot("%{_builddir}");
 		
 		sgen.setLogger(l);
 		
@@ -154,21 +154,12 @@ public class RPMPackager extends Packager {
 		sgen.setArch(dc.getArchitecture());
 		sgen.setPrefix(dc.getPrefix());
 		sgen.setPackager(dc.getMaintainer());
+		sgen.setFiles(ph.getFilelist());
 
 		sgen.setPreinstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPreinstScript());
 		sgen.setPostinstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPostinstScript());
 		sgen.setPreuninstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPrermScript());
 		sgen.setPostuninstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPostrmScript());
-
-		// TODO: Try to define these from pom
-
-
-		// TODO: Of course, this should be dynamic
-		ArrayList<RPMFile> af = new ArrayList<RPMFile>();
-		RPMFile f = new RPMFile();
-		f.setFrom("/usr/share/java/" + ph.getPackageName() + ".jar");
-		af.add(f);
-		sgen.setFiles(af);
 
 		l.info("Creating SPEC file: " + specFile.getAbsolutePath());
 		Utils.createFile(specFile, "spec");
@@ -185,7 +176,10 @@ public class RPMPackager extends Packager {
 	}
 
 	/**
-	 * Executes rpmbuild, that will generate the final rpm package
+	 * Executes rpmbuild, that will generate the final rpm package.
+	 * 
+	 * If the parameter "sign" is set as true in pom, package will 
+	 * be signed with the Maintainer (Packager) name provided.
 	 * 
 	 * @param l
 	 * @param ph
@@ -195,6 +189,7 @@ public class RPMPackager extends Packager {
 	private void createPackage(Log l, RPMHelper ph, File specFile,
 			TargetConfiguration dc) throws MojoExecutionException {
 		l.info("Calling rpmbuild to create binary package");
+		l.info("Builddir is "+ph.getBaseBuildDir().toString());
 		String[] command;
 		if (dc.isSign()) {
 			command = new String[] { "rpmbuild", "-bb", "--sign",
