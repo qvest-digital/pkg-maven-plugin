@@ -29,22 +29,17 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
-import de.tarent.maven.plugins.pkg.RPMFile;
+import de.tarent.maven.plugins.pkg.AuxFile;
 
 /**
  * Simple generator for SPEC files.
@@ -86,7 +81,7 @@ public class SPECFileGenerator {
 
 	private List<String> cleancommands = new ArrayList<String>();
 
-	private List<RPMFile> files = new ArrayList<RPMFile>();
+	private List<AuxFile> files = new ArrayList<AuxFile>();
 
 	private String vendor;
 
@@ -257,12 +252,12 @@ public class SPECFileGenerator {
 		this.cleancommands = new ArrayList<String>(cleancommands);
 	}
 
-	public List<RPMFile> getFiles() {
+	public List<AuxFile> getFiles() {
 		return files;
 	}
 
-	public void setFiles(List<? extends RPMFile> files) {
-		this.files = new ArrayList<RPMFile>(files);
+	public void setFiles(List<? extends AuxFile> files) {
+		this.files = new ArrayList<AuxFile>(files);
 	}
 
 	public String getVendor() {
@@ -443,12 +438,12 @@ public class SPECFileGenerator {
 	 * @param w
 	 * @param files
 	 */
-	private void writeFilesSection(List<RPMFile> files) {
+	private void writeFilesSection(List<AuxFile> files) {
 		if (files!=null&&!files.isEmpty()) {
 			w.println("%files");
 			w.println("%defattr(755,root,root)");
 			
-			for (RPMFile f : files) {
+			for (AuxFile f : files) {
 				if(f.getOctalPermission()>=0 && f.getOwner()!=null && f.getOwner()!=null){
 					w.print("%attr(");
 					w.print(f.getOctalPermission());
@@ -459,10 +454,10 @@ public class SPECFileGenerator {
 					w.print(") ");				
 				}else{
 					if(logger!=null){
-						logger.debug("No attributes found for "+f.getAbsolutePath());
+						logger.debug("No attributes found for "+f.getFrom());
 					}
 				}
-				w.println(f.getAbsolutePath());
+				w.println(f.getFrom());
 			}
 
 		}else{

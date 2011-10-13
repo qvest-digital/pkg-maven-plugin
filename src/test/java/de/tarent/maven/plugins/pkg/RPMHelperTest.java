@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.After;
 import org.junit.Before;
@@ -38,27 +39,25 @@ public class RPMHelperTest {
 	public void testCreatingRpmmacrosfileWithoutMaintainerAndRemovingSuccessfully() throws IOException, MojoExecutionException{
 		
 		ph.setBasePkgDir(new File("/"));		
-		ph.createrpmmacrosfile(null, ph, dc);
-		Assert.assertTrue(f.exists());
-		ph.restorerpmmacrosfilebackup(null);
-		Assert.assertFalse(f.exists());
+		ph.createRpmMacrosFile(null, ph, dc);
+		Assert.assertTrue("File not found",f.exists());
+		ph.restoreRpmMacrosFileBackup(null);
 	}
 	
 	@Test
 	public void testCreatingRpmmacrosfileWitMaintainerAndRemovingSuccessfully() throws IOException, MojoExecutionException{
 		dc.setMaintainer("Dummy maintainer");		
 		ph.setBasePkgDir(new File("/"));		
-		ph.createrpmmacrosfile(null, ph, dc);
+		ph.createRpmMacrosFile(null, ph, dc);
 		Assert.assertTrue(f.exists());
 		Assert.assertTrue("String not found", filecontains(f, "%_gpg_name       Dummy maintainer"));
-		ph.restorerpmmacrosfilebackup(null);
-		Assert.assertFalse(f.exists());
+		ph.restoreRpmMacrosFileBackup(null);
 	}
 	
 	@Test(expected=NullPointerException.class)
 	public void testCreatingRpmmacrosfileWithoutBaseDirThrowsException() throws IOException, MojoExecutionException{
 
-		ph.createrpmmacrosfile(null, ph, dc);
+		ph.createRpmMacrosFile(null, ph, dc);
 		
 	}
 	
@@ -127,10 +126,10 @@ public class RPMHelperTest {
 						return true;
 				}
 			}finally{
-					in.close();
+				IOUtils.closeQuietly(in);
 			}
 		} finally {
-				fis.close();			
+			IOUtils.closeQuietly(fis);		
 		}
 		return false;
 	}

@@ -1,11 +1,5 @@
 <!--
-	Package maps document for Ubuntu 9.10 (Karmic Koala)
-
-	This package map does not inherit from an earlier release. Instead stuff
-	has been manually transferred here and checked whether any of the file
-	locations/names changed.
-
-	The biggest change in Ubuntu 9.10 is the inclusion of Eclipse 3.4 .
+	Package maps document for Ubuntu CentOS 5_6
 -->
 <package-maps>
 	<version>1.0</version>

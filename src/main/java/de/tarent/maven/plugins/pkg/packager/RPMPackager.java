@@ -53,14 +53,13 @@ package de.tarent.maven.plugins.pkg.packager;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.IPackagingHelper;
-import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.Packaging.RPMHelper;
-import de.tarent.maven.plugins.pkg.RPMFile;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.generator.SPECFileGenerator;
@@ -99,7 +98,7 @@ public class RPMPackager extends Packager {
 			throw new MojoExecutionException(ex.toString());
 		} finally {
 			try {
-				ph.restorerpmmacrosfilebackup(l);
+				ph.restoreRpmMacrosFileBackup(l);
 			} catch (IOException e) {
 				throw new MojoExecutionException(e.toString());
 			}
@@ -117,7 +116,7 @@ public class RPMPackager extends Packager {
 		RPMHelper ph = (RPMHelper)helper;
 		try {
 			Utils.checkProgramAvailability("rpmbuild");
-			ph.createrpmmacrosfile(l, ph, dc);
+			ph.createRpmMacrosFile(l, ph, dc);
 			
 		} catch (IOException e) {
 			throw new MojoExecutionException(e.getMessage());
@@ -141,7 +140,8 @@ public class RPMPackager extends Packager {
 		SPECFileGenerator sgen = new SPECFileGenerator();
 				
 		sgen.setLogger(l);
-		sgen.setBuildroot("%{_builddir}");
+		sgen.setBuildroot("%{_builddir}");		
+		sgen.setCleancommands(generateCleanCommands(ph, dc));
 		
 		// Following parameters MUST be provided for rpmbuild to work:
 		sgen.setPackageName(ph.getPackageName());
@@ -207,5 +207,31 @@ public class RPMPackager extends Packager {
 
 		Utils.exec(command, "'rpmbuild -bb' failed.",
 				"Error creating rpm file.");
+	}
+	/**
+	 * Creates commands for the %clean section of the
+	 * spec file, that moves the rpm to the target directory
+	 * and removes other unneeded artifacts 
+	 *
+	 * @param ph
+	 * @param dc
+	 * @return
+	 */
+	private List<String> generateCleanCommands(RPMHelper ph, TargetConfiguration dc){
+		
+		List<String> cleancommands = new ArrayList<String>();
+		StringBuilder sb = new StringBuilder();
+		sb.append("cp ");
+		sb.append(ph.getBasePkgDir().toString());
+		sb.append("/RPMS/");
+		sb.append(dc.getArchitecture());
+		sb.append("/*.rpm ");
+		sb.append(ph.getTempRoot().getParent());
+		
+		cleancommands.add(sb.toString());
+		cleancommands.add("rm -rf " + ph.getTempRoot());
+		return cleancommands;
+
+		
 	}
 }

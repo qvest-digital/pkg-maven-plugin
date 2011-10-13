@@ -1083,7 +1083,7 @@ public class Packaging
 		 * package by rpmbuild. Whithout it no files would be copied
 		 * into the final package.
 		 */
-		private ArrayList<RPMFile> filelist;
+		private ArrayList<AuxFile> filelist;
 
 	    public String getVersion()
 	    {
@@ -1106,11 +1106,11 @@ public class Packaging
 			this.baseSpecsDir = baseSpecsDir;
 		}
 
-		public ArrayList<RPMFile> getFilelist() {
+		public ArrayList<AuxFile> getFilelist() {
 			return filelist;
 		}
 
-		public void setFilelist(ArrayList<RPMFile> filelist) {
+		public void setFilelist(ArrayList<AuxFile> filelist) {
 			this.filelist = filelist;
 		}
 		
@@ -1221,11 +1221,11 @@ public class Packaging
 		 */
 		public void copyFilesAndSetFileList() throws MojoExecutionException
 	    {
-	      ArrayList<RPMFile> list = new ArrayList<RPMFile>();
+	      ArrayList<AuxFile> list = new ArrayList<AuxFile>();
 		
 	      copyProjectArtifact();
 	      
-	      list.add(new RPMFile(getDstArtifactFile().getAbsolutePath().replaceAll(
+	      list.add(new AuxFile(getDstArtifactFile().getAbsolutePath().replaceAll(
 	    		  getBaseBuildDir().toString(), "")));
 	      super.copyFiles();
 	      List<File> directories = new ArrayList<File>();
@@ -1253,7 +1253,7 @@ public class Packaging
 	      for(File directory : directories){
 	    	  if(directory.exists()){
 		    	  for(File file : FileUtils.listFiles(directory, null, TrueFileFilter.INSTANCE)){	    	  
-		    	  list.add(new RPMFile(file.getAbsolutePath()));
+		    	  list.add(new AuxFile(file.getAbsolutePath()));
 		    	  }
 	    	  }
 	      }

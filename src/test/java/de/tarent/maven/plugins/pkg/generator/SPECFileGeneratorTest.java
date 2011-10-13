@@ -12,12 +12,13 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.tarent.maven.plugins.pkg.RPMFile;
+import de.tarent.maven.plugins.pkg.AuxFile;
 
 public class SPECFileGeneratorTest {
 
@@ -26,10 +27,10 @@ public class SPECFileGeneratorTest {
 	File dummytestscript;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws IOException {
 		specgenerator = new SPECFileGenerator();
-		spec = new File("/tmp/SPECFileGeneratorTest.out");
-		dummytestscript = new File("/tmp/dummytestscript");
+		spec = File.createTempFile("SPECFileGeneratorTest","out");
+		dummytestscript = File.createTempFile("dummytestscript",null);
 	}
 
 	@Test
@@ -78,11 +79,11 @@ public class SPECFileGeneratorTest {
 	public void testWriteFilesSection() throws MojoExecutionException,
 			IOException {
 
-		List<RPMFile> files = new ArrayList<RPMFile>();
+		List<AuxFile> files = new ArrayList<AuxFile>();
 		
-		RPMFile testfile1 = new RPMFile("/file1");
+		AuxFile testfile1 = new AuxFile("/file1");
 		
-		RPMFile testfile2 = new RPMFile("/file2");
+		AuxFile testfile2 = new AuxFile("/file2");
 		testfile2.setOwner("user");
 		testfile2.setGroup("user");
 		testfile2.setUserRead(true);
@@ -240,7 +241,7 @@ public class SPECFileGeneratorTest {
 
 	@After
 	public void tearDown() {
-		//spec.delete();
+		spec.delete();
 		if (dummytestscript.exists()) {
 			dummytestscript.delete();
 		}
@@ -276,10 +277,10 @@ public class SPECFileGeneratorTest {
 						return true;
 				}
 			}finally{
-					in.close();
+				IOUtils.closeQuietly(in);
 			}
 		} finally {
-				fis.close();			
+			IOUtils.closeQuietly(fis);			
 		}
 		return false;
 	}
