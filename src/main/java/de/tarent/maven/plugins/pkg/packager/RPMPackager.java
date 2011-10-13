@@ -139,10 +139,9 @@ public class RPMPackager extends Packager {
 			File specFile) throws MojoExecutionException, IOException {
 
 		SPECFileGenerator sgen = new SPECFileGenerator();
-		// TODO: Make this configurable through pom
-		sgen.setBuildroot("%{_builddir}");
-		
+				
 		sgen.setLogger(l);
+		sgen.setBuildroot("%{_builddir}");
 		
 		// Following parameters MUST be provided for rpmbuild to work:
 		sgen.setPackageName(ph.getPackageName());
