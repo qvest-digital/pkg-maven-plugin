@@ -99,7 +99,7 @@ public class RPMPackager extends Packager {
 			throw new MojoExecutionException(ex.toString());
 		} finally {
 			try {
-				ph.restorerpmmacrosfile(l);
+				ph.restorerpmmacrosfilebackup(l);
 			} catch (IOException e) {
 				throw new MojoExecutionException(e.toString());
 			}
