@@ -90,10 +90,26 @@ public class RPMHelperTest {
 		*/
 	}
 	
+	@Test
+	public void testGetVersionReturnsPackagingVersion(){
+		Assert.assertEquals(p.version,ph.getVersion());		
+	}
+	
+	@Test
+	public void testGetDstArtifactFileReturnsgetBaseBuildDirAndgetTargetArtifactFiletoStringIfNotSet(){
+		File testTempdir = new File("/tmp/BaseTestTemp");
+		File testArtifactfile = new File("file1");
+		ph.setBaseBuildDir(testTempdir);
+		ph.setTargetArtifactFile(testArtifactfile);
+		Assert.assertEquals(ph.getBaseBuildDir()+"/"+ph.getTargetArtifactFile().toString(),ph.getDstArtifactFile().toString());
+		
+	}
+	
 	@After
 	public void tearDown() throws IOException{
 		
 		if(previousfilefound){
+			f.delete();
 			FileUtils.moveFile(new File(homedir + "/.rpmmacros_Test_backup"),f);
 		}
 		
