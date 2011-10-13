@@ -356,12 +356,7 @@ public class SPECFileGenerator {
 	public void generate(File f) throws  MojoExecutionException, IOException {
 		
 		checkneededfields();		
-		w = new PrintWriter(new FileOutputStream(f));	
-		
-		// Make the "all" architecture RPM Compliant
-		if (arch == "all") {
-			arch = "noarch";
-		}
+		w = new PrintWriter(new FileOutputStream(f));
 		
 		writeEntry("Summary", summary);
 		writeEntry("Name", packageName);
