@@ -14,86 +14,52 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.tarent.maven.plugins.pkg.Packaging.RPMHelper;
-
 public class RPMHelperTest {
 	Packaging p;
 	Packaging.RPMHelper ph;
 	TargetConfiguration dc;
+	boolean previousfilefound;
+	String homedir = System.getProperty("user.home");
+	File f = new File(homedir + "/.rpmmacros");
 	
 	@Before
-	public void setUp(){		
+	public void setUp() throws IOException{		
 		p = new Packaging();
 		ph = p.new RPMHelper();
-		dc = new TargetConfiguration();
-	}
-	
-	@Test
-	public void testCreatingRpmmacrosfileWithoutMaintainerAndRemovingSuccessfully() throws IOException, MojoExecutionException{
-
-		String homedir = System.getProperty("user.home");
-		File f = new File(homedir + "/.rpmmacros");
-		boolean previousfilefound = false;
-		
+		dc = new TargetConfiguration();	
+		previousfilefound = false;	
 		if(f.exists()){
 			FileUtils.moveFile(f, new File(homedir + "/.rpmmacros_Test_backup"));
 			previousfilefound = true;
 		}
+	}
+	
+	@Test
+	public void testCreatingRpmmacrosfileWithoutMaintainerAndRemovingSuccessfully() throws IOException, MojoExecutionException{
 		
 		ph.setBasePkgDir(new File("/"));		
 		ph.createrpmmacrosfile(null, ph, dc);
 		Assert.assertTrue(f.exists());
 		ph.restorerpmmacrosfilebackup(null);
 		Assert.assertFalse(f.exists());
-		
-		if(previousfilefound){
-			FileUtils.moveFile(new File(homedir + "/.rpmmacros_Test_backup"),f);
-		}
 	}
 	
 	@Test
 	public void testCreatingRpmmacrosfileWitMaintainerAndRemovingSuccessfully() throws IOException, MojoExecutionException{
-		dc.setMaintainer("Dummy maintainer");
-		String homedir = System.getProperty("user.home");
-		File f = new File(homedir + "/.rpmmacros");
-		boolean previousfilefound = false;		
-		
-		if(f.exists()){
-			FileUtils.moveFile(f, new File(homedir + "/.rpmmacros_Test_backup"));
-			previousfilefound = true;
-		}
-		
+		dc.setMaintainer("Dummy maintainer");		
 		ph.setBasePkgDir(new File("/"));		
 		ph.createrpmmacrosfile(null, ph, dc);
 		Assert.assertTrue(f.exists());
 		Assert.assertTrue("String not found", filecontains(f, "%_gpg_name       Dummy maintainer"));
 		ph.restorerpmmacrosfilebackup(null);
 		Assert.assertFalse(f.exists());
-		
-		if(previousfilefound){
-			FileUtils.moveFile(new File(homedir + "/.rpmmacros_Test_backup"),f);
-		}
 	}
 	
 	@Test(expected=NullPointerException.class)
 	public void testCreatingRpmmacrosfileWithoutBaseDirThrowsException() throws IOException, MojoExecutionException{
 
-		String homedir = System.getProperty("user.home");
-		File f = new File(homedir + "/.rpmmacros");
-		boolean previousfilefound = false;
-		
-		if(f.exists()){
-			FileUtils.moveFile(f, new File(homedir + "/.rpmmacros_Test_backup"));
-			previousfilefound = true;
-		}	
 		ph.createrpmmacrosfile(null, ph, dc);
-		Assert.assertTrue(f.exists());
-		ph.restorerpmmacrosfilebackup(null);
-		Assert.assertFalse(f.exists());
 		
-		if(previousfilefound){
-			FileUtils.moveFile(new File(homedir + "/.rpmmacros_Test_backup"),f);
-		}
 	}
 	
 	@Test
@@ -125,7 +91,11 @@ public class RPMHelperTest {
 	}
 	
 	@After
-	public void tearDown(){
+	public void tearDown() throws IOException{
+		
+		if(previousfilefound){
+			FileUtils.moveFile(new File(homedir + "/.rpmmacros_Test_backup"),f);
+		}
 		
 	}
 	
