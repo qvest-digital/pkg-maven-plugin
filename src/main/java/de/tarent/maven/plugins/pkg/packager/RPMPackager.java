@@ -151,6 +151,7 @@ public class RPMPackager extends Packager {
 		sgen.setLicense(dc.getLicense());
 		sgen.setRelease(dc.getRelease());
 		sgen.setSource(dc.getSource());
+		sgen.setUrl(ph.getProjectUrl());
 		
 		// Following parameters are not mandatory
 		sgen.setArch(dc.getArchitecture());
