@@ -109,13 +109,16 @@ public class RPMPackager extends Packager {
 
 	/**
 	 * Will prepare the custom Build Area by creating the .rpmmacrosfile
+	 * and will check for rpmbuild to exist.
 	 */
 	@Override
 	public void checkEnvironment(Log l, IPackagingHelper helper,
 			TargetConfiguration dc) throws MojoExecutionException {
 		RPMHelper ph = (RPMHelper)helper;
 		try {
+			Utils.checkProgramAvailability("rpmbuild");
 			ph.createrpmmacrosfile(l, ph, dc);
+			
 		} catch (IOException e) {
 			throw new MojoExecutionException(e.getMessage());
 		}
