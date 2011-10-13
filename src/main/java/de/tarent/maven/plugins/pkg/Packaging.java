@@ -1148,19 +1148,25 @@ public class Packaging
 		 * @param l
 		 * @param basedirectory
 		 * @throws IOException
+		 * @throws MojoExecutionException 
 		 */
 		public void createrpmmacrosfile(Log l, Packaging.Helper ph,
-				TargetConfiguration dc) throws IOException {
+				TargetConfiguration dc) throws IOException, MojoExecutionException {
 			String userHome = System.getProperty("user.home");
 			File original = new File(userHome + "/.rpmmacros");
+			
 			if (original.exists()) {
-				l.info("File " + userHome + "/.rpmmacros found. Creating back-up.");
+				if(l!=null){
+					l.info("File " + userHome + "/.rpmmacros found. Creating back-up.");
+				}
 				File backup = new File(userHome + "/.rpmmacros_bck");
 				FileUtils.copyFile(original, backup);
 			}
 			original.delete();
 			if (!original.exists()) {
-				l.info("Creating " + userHome + "/.rpmmacros file.");
+				if(l!=null){
+					l.info("Creating " + userHome + "/.rpmmacros file.");
+				}
 				PrintWriter p = new PrintWriter(original);
 				p.print("%_topdir       ");
 				p.println(ph.getBasePkgDir().getAbsolutePath());
@@ -1168,7 +1174,9 @@ public class Packaging
 				p.println(ph.getBasePkgDir().getAbsolutePath());
 
 				if (dc.getMaintainer() != null) {
-					l.info("Maintainer found, its name could be used to sign the RPM.");
+					if(l!=null){
+						l.info("Maintainer found, its name could be used to sign the RPM.");
+					}
 					p.print("%_gpg_name       ");
 					p.println(dc.getMaintainer());
 				}
@@ -1179,18 +1187,21 @@ public class Packaging
 
 		/**
 		 * 
-		 * Restores the .rpmmacros backup file created by
-		 * {@link #createrpmmacrosfile}.
+		 * Removes the new macros file and 
+		 * restores the backup created by
+		 * {@link #createrpmmacrosfile}
 		 * 
 		 * @param l
 		 * @throws IOException
 		 */
-		public void restorerpmmacrosfile(Log l) throws IOException {
+		public void restorerpmmacrosfilebackup(Log l) throws IOException {
 			String userHome = System.getProperty("user.home");
 			File original = new File(userHome + "/.rpmmacros");
 			File backup = new File(userHome + "/.rpmmacros_bck");
 			if (backup.exists()) {
-				l.info("Restoring .rpmmacros backup file.");
+				if(l!=null){
+					l.info("Restoring .rpmmacros backup file.");
+				}
 				if (original.delete()) {
 					FileUtils.copyFile(backup, original);
 				}
