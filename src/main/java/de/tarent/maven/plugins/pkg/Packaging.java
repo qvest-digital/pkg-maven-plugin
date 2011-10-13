@@ -38,9 +38,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.jws.soap.InitParam;
@@ -1150,7 +1152,7 @@ public class Packaging
 		 * @throws IOException
 		 * @throws MojoExecutionException 
 		 */
-		public void createrpmmacrosfile(Log l, Packaging.Helper ph,
+		public void createRpmMacrosFile(Log l, Packaging.Helper ph,
 				TargetConfiguration dc) throws IOException, MojoExecutionException {
 			String userHome = System.getProperty("user.home");
 			File original = new File(userHome + "/.rpmmacros");
@@ -1194,7 +1196,7 @@ public class Packaging
 		 * @param l
 		 * @throws IOException
 		 */
-		public void restorerpmmacrosfilebackup(Log l) throws IOException {
+		public void restoreRpmMacrosFileBackup(Log l) throws IOException {
 			String userHome = System.getProperty("user.home");
 			File original = new File(userHome + "/.rpmmacros");
 			File backup = new File(userHome + "/.rpmmacros_bck");
@@ -1275,7 +1277,7 @@ public class Packaging
    */
   protected List<TargetConfiguration> targetConfigurations;
 
-  private PackageMap pm;
+  private PackageMap pm;  
 
   /**
    * Validates arguments and test tools.
@@ -1742,35 +1744,42 @@ public class Packaging
     pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL, d,
                         dc.bundleDependencies);
 
-    Helper ph;
+    
 
     String packaging = pm.getPackaging();
     if (packaging == null)
       throw new MojoExecutionException(
                                        "Package maps document set no packaging for distro: "
                                            + dc.chosenDistro);
-    // Create packager according to the chosen packaging type.
+
+    // Create packager according to the chosen packaging type.    
+    Map<String, IPackagingHelper> extPackagerHelperMap = new HashMap<String,IPackagingHelper>();
+    Map<String, Packager> extPackagerMap = new HashMap<String,Packager>();
+    
+    extPackagerHelperMap.put("deb", new Helper());
+    extPackagerHelperMap.put("ipk", new Helper());
+    extPackagerHelperMap.put("izpack", new Helper());
+    extPackagerHelperMap.put("rpm", new RPMHelper());
+    extPackagerMap.put("deb", new DebPackager());
+    extPackagerMap.put("ipk", new IpkPackager());
+    extPackagerMap.put("izpack", new IzPackPackager());
+    extPackagerMap.put("rpm", new RPMPackager());
+    
+    IPackagingHelper ph;
     Packager packager;
-    if ("deb".equals(packaging)){
-      ph = new Helper();
-      packager = new DebPackager();
-    }else if ("ipk".equals(packaging)){
-      ph = new Helper();
-      packager = new IpkPackager();
-    }else if ("izpack".equals(packaging)){
-      ph = new Helper();
-      packager = new IzPackPackager();
-    }else if ("rpm".equals(packaging)){
-    	ph = new RPMHelper();
-        packager = new RPMPackager();
-    }else{
+    
+    ph = extPackagerHelperMap.get(packaging);
+    packager = extPackagerMap.get(packaging);    
+    
+    if (packager == null){
       throw new MojoExecutionException("Unsupported packaging type: "
                                        + packaging);
     }
+  
     // Store configuration in plugin-context for later use by signer- and deploy-goal
     getPluginContext().put("dc", dc);
     getPluginContext().put("pm", pm);
-    getPluginContext().put("packageVersion", ph.getPackageVersion());
+    getPluginContext().put("packageVersion", ((Helper) ph).getPackageVersion());
     
     checkEnvironment(getLog());
 
