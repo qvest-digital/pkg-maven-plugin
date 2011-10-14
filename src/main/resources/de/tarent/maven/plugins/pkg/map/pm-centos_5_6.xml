@@ -412,13 +412,11 @@
 			<entry>
 				<!-- OO.o java_uno_accessbridge not available in distro -->
 				<artifactSpec>org.openoffice:jurt</artifactSpec>
-				<dependencyLine>ure</dependencyLine>
 				<bundle/>
 			</entry>
 			<entry>
 				<!-- OO.o java_uno_accessbridge not available in distro -->
 				<artifactSpec>org.openoffice:java_uno</artifactSpec>
-				<dependencyLine>ure</dependencyLine>
 				<bundle/>
 			</entry>
 			<entry>
