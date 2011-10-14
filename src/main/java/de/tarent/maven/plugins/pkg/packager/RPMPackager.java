@@ -54,12 +54,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.IPackagingHelper;
 import de.tarent.maven.plugins.pkg.Packaging.RPMHelper;
+import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.generator.SPECFileGenerator;
@@ -80,20 +82,51 @@ public class RPMPackager extends Packager {
 		if(!(helper instanceof RPMHelper)){
 			throw new IllegalArgumentException("RPMHelper needed");
 		}
-		
-		RPMHelper ph = (RPMHelper) helper;
-		ph.prepareInitialDirectories();
-		ph.copyFilesAndSetFileList();
 
+		RPMHelper ph = (RPMHelper) helper;
+		
+		ph.prepareInitialDirectories();
+		
+		//Setting all destination directories to /BUILD/ + target name
+		ph.setDstBinDir(new File(ph.getBaseBuildDir(),ph.getTargetBinDir().toString()));
+	    ph.setDstSysconfDir(new File(ph.getBaseBuildDir(),ph.getTargetSysconfDir().toString()));
+	    ph.setDstDatarootDir(new File(ph.getBaseBuildDir(),ph.getTargetDatarootDir().toString()));
+	    ph.setDstDataDir(new File(ph.getBaseBuildDir(),ph.getTargetDataDir().toString()));
+	    ph.setDstJNIDir(new File(ph.getBaseBuildDir(),ph.getTargetJNIDir().toString()));	    
+	    ph.setDstBundledJarDir(new File(ph.getBaseBuildDir(),ph.getTargetBundledJarDir().toString()));
+	    ph.setDstStarterDir(new File(ph.getBaseBuildDir(),ph.getTargetStarterDir().toString()));
+	    ph.setDstWrapperScriptFile(new File(ph.getBaseBuildDir(),ph.getTargetWrapperScriptFile().toString()));
+	    
+	    ph.copyProjectArtifact();	    
+		ph.copyFiles();
+		
 		l.debug(ph.getPackageName());
 		l.debug(ph.getPackageVersion());
 		l.debug(ph.getBasePkgDir().getPath());
+		
+	    
+
+
+	    /* If there is a main class, we will create a starter script for it
+	     * and we will make sure that the bundled artifacts are copied.
+	    */
+	    if (distroConfig.getMainClass() != null){
+		    Path bcp = new Path();
+		    Path cp = new Path();
+	    	Set bundledArtifacts = ph.createClasspathLine(bcp, cp);
+            ph.generateWrapperScript(bundledArtifacts, bcp, cp, false);
+            ph.copyArtifacts(bundledArtifacts);
+        }
 
 		File specFile = new File(ph.getBaseSpecsDir(), ph.getPackageName() + ".spec");
 
 		try {
+	        
+	        
 			generateSPECFile(l, (RPMHelper) ph, distroConfig, specFile);
+			l.info("SPEC file generated.");
 			createPackage(l, ph, specFile, distroConfig);
+			l.info("Package created.");
 		} catch (Exception ex) {
 			throw new MojoExecutionException(ex.toString());
 		} finally {
@@ -136,44 +169,50 @@ public class RPMPackager extends Packager {
 	 */
 	private void generateSPECFile(Log l, RPMHelper ph, TargetConfiguration dc,
 			File specFile) throws MojoExecutionException, IOException {
-
-		SPECFileGenerator sgen = new SPECFileGenerator();
-				
-		sgen.setLogger(l);
-		sgen.setBuildroot("%{_builddir}");		
-		sgen.setCleancommands(generateCleanCommands(ph, dc));
-		
-		// Following parameters MUST be provided for rpmbuild to work:
-		sgen.setPackageName(ph.getPackageName());
-		sgen.setVersion(ph.getVersion());
-		sgen.setSummary(ph.getProjectDescription());
-		sgen.setDescription(ph.getProjectDescription());
-		sgen.setLicense(dc.getLicense());
-		sgen.setRelease(dc.getRelease());
-		sgen.setSource(dc.getSource());
-		sgen.setUrl(ph.getProjectUrl());
-		
-		// Following parameters are not mandatory
-		sgen.setArch(dc.getArchitecture());
-		sgen.setPrefix(dc.getPrefix());
-		sgen.setPackager(dc.getMaintainer());
-		sgen.setFiles(ph.getFilelist());
-
-		sgen.setPreinstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPreinstScript());
-		sgen.setPostinstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPostinstScript());
-		sgen.setPreuninstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPrermScript());
-		sgen.setPostuninstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPostrmScript());
-
 		l.info("Creating SPEC file: " + specFile.getAbsolutePath());
-		Utils.createFile(specFile, "spec");
+		SPECFileGenerator sgen = new SPECFileGenerator();
+		sgen.setLogger(l);
+		try {				
+			sgen.setLogger(l);
+			sgen.setBuildroot("%{_builddir}");		
+			sgen.setCleancommands(generateCleanCommands(ph, dc));
 
-		try {
+			// Following parameters MUST be provided for rpmbuild to work:
+			l.info("Adding mandatory parameters to SPEC file.");
+			sgen.setPackageName(ph.getPackageName());
+			sgen.setVersion(ph.getVersion());
+			sgen.setSummary(ph.getProjectDescription());
+			sgen.setDescription(ph.getProjectDescription());
+			sgen.setLicense(dc.getLicense());
+			sgen.setRelease(dc.getRelease());
+			sgen.setSource(dc.getSource());
+			sgen.setUrl(ph.getProjectUrl());
+			sgen.setDependencies(ph.createDependencyLine());
+			
+			// Following parameters are not mandatory
+			l.info("Adding optional parameters to SPEC file.");
+			sgen.setArch(dc.getArchitecture());
+			sgen.setPrefix(dc.getPrefix());
+			sgen.setPackager(dc.getMaintainer());
+			sgen.setFiles(ph.generateFilelist());
+
+			sgen.setPreinstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPreinstScript());	
+			sgen.setPostinstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPostinstScript());	
+			sgen.setPreuninstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPrermScript());
+			sgen.setPostuninstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPostrmScript());
+	
+			l.info("Creating SPEC file: " + specFile.getAbsolutePath());
+			Utils.createFile(specFile, "spec");
 			sgen.generate(specFile);
 		} catch (IOException ioe) {
 			throw new MojoExecutionException(
 					"IOException while creating SPEC file.", ioe);
 		} catch (MojoExecutionException e) {
 			throw e;
+		} catch(NullPointerException e){
+			throw new MojoExecutionException(
+					"Parameter not found while creating SPEC file.", e);
+			
 		}
 
 	}

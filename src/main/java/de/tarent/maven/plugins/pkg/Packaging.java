@@ -173,7 +173,18 @@ public class Packaging
      */
     File srcArtifactFile;
 
-    /**
+
+    File targetAuxDir;
+    
+    public File getTargetAuxDir() {
+		return targetAuxDir;
+	}
+
+	public void setTargetAuxDir(File targetAuxDir) {
+		this.targetAuxDir = targetAuxDir;
+	}
+
+	/**
      * Location of the project's artifact on the target system (needed for the
      * classpath construction). (e.g. /usr/share/java/app-2.0-SNAPSHOT.jar)
      */
@@ -1078,12 +1089,6 @@ public class Packaging
 	  	 * Convenience field that denotes the SPECS directory
 	  	 */
 		private File baseSpecsDir;
-		/**
-		 * List that contains the files that will be compiled into the
-		 * package by rpmbuild. Whithout it no files would be copied
-		 * into the final package.
-		 */
-		private ArrayList<AuxFile> filelist;
 
 	    public String getVersion()
 	    {
@@ -1106,14 +1111,6 @@ public class Packaging
 			this.baseSpecsDir = baseSpecsDir;
 		}
 
-		public ArrayList<AuxFile> getFilelist() {
-			return filelist;
-		}
-
-		public void setFilelist(ArrayList<AuxFile> filelist) {
-			this.filelist = filelist;
-		}
-		
 		/**
 		 * Provides the same functionality as getDstArtifactFile 
 		 * in the superclass, but using getBaseBuildDir instead of getBasePkgDir 
@@ -1212,53 +1209,15 @@ public class Packaging
 			}
 
 		}
-		/**
-		 * This method uses the methods of the superclass to prepare the files
-		 * for packaging by copying them inside the BUILD directory and sets the
-		 * file list needed inside the SPEC file with the files that have been found.
-		 * 
-		 * @throws MojoExecutionException
-		 */
-		public void copyFilesAndSetFileList() throws MojoExecutionException
+		public List<AuxFile> generateFilelist() throws MojoExecutionException
 	    {
-	      ArrayList<AuxFile> list = new ArrayList<AuxFile>();
-		
-	      copyProjectArtifact();
-	      
-	      list.add(new AuxFile(getDstArtifactFile().getAbsolutePath().replaceAll(
-	    		  getBaseBuildDir().toString(), "")));
-	      super.copyFiles();
-	      List<File> directories = new ArrayList<File>();
-	      if (getDstAuxDir()!=null){
-	    	  directories.add(getDstAuxDir());
-	      }
-	      if (getDstBinDir()!=null){
-	    	  directories.add(getDstBinDir());
-	      }
-	      if (getDstSysconfDir()!=null){
-	    	  directories.add(getDstSysconfDir());
-	      }
-	      if (getDstDatarootDir()!=null){
-	    	  directories.add(getDstDatarootDir());
-	      }
-	      if (getDstJNIDir()!=null){
-	    	  directories.add(getDstJNIDir());
-	      }
-	      if (getDstDataDir()!=null){
-	    	  directories.add(getDstDataDir());
-	      }
-	      if (getDstBundledJarDir()!=null){
-	    	  directories.add(getDstBundledJarDir());
-	      }
-	      for(File directory : directories){
-	    	  if(directory.exists()){
-		    	  for(File file : FileUtils.listFiles(directory, null, TrueFileFilter.INSTANCE)){	    	  
-		    	  list.add(new AuxFile(file.getAbsolutePath()));
-		    	  }
-	    	  }
-	      }
-	      setFilelist(list);
-
+			List<AuxFile> list = new ArrayList<AuxFile>();
+			
+			for (File file : FileUtils.listFiles(getBaseBuildDir(), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE))
+			{
+		    	  list.add(new AuxFile(file.getAbsolutePath().replace(getBaseBuildDir().toString(),"")));
+		    }	  
+			return list;
 	    }
 	}
   

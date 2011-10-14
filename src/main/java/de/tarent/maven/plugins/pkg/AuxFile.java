@@ -84,8 +84,8 @@ public class AuxFile {
 		
 	}
 	
-	public AuxFile(String from){
-		this.from = from;
+	public AuxFile(String to){
+		this.to = to;
 	}
 	
 	public String getFrom() {

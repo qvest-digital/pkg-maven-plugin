@@ -49,17 +49,17 @@ import de.tarent.maven.plugins.pkg.AuxFile;
  */
 public class SPECFileGenerator {
 
-	private String packageName = "notset";
+	private String packageName = "unknown";
 
-	private String version = "notset";
+	private String version = "unknown";
 
-	private String description = "notset";
+	private String description = "uknown";
 
-	private String summary = "notset";
+	private String summary = "unknown";
 
-	private String license = "notset";
+	private String license = "unknown";
 
-	private String release = "notset";
+	private String release = "unknown";
 
 	private String dependencies;
 
@@ -129,7 +129,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setDependencies(String dependencies) {
-		this.dependencies = dependencies;
+		if (dependencies != null){
+			this.dependencies = dependencies;
+		}else{
+			if(logger!=null){
+				logger.error("dependencies not set");
+			}
+			this.dependencies = "unknown";
+		}
 	}
 
 	public String getRecommends() {
@@ -137,7 +144,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setRecommends(String recommends) {
-		this.recommends = recommends;
+		if (recommends != null){
+			this.description = recommends;
+		}else{
+			if(logger!=null){
+				logger.error("recommends not set");
+			}
+			this.recommends = "unknown";
+		}
 	}
 
 	public String getSuggests() {
@@ -145,7 +159,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setSuggests(String suggests) {
-		this.suggests = suggests;
+		if (suggests != null){
+			this.description = suggests;
+		}else{
+			if(logger!=null){
+				logger.error("suggests not set");
+			}
+			this.suggests = "unknown";
+		}
 	}
 
 	public String getDescription() {
@@ -153,7 +174,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		if (description != null){
+			this.description = description;
+		}else{
+			if(logger!=null){
+				logger.error("description not set");
+			}
+			this.description = "unknown";
+		}
 	}
 
 	public String getPackageName() {
@@ -161,7 +189,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setPackageName(String packageName) {
-		this.packageName = packageName;
+		if (packageName != null){
+			this.packageName = packageName;
+		}else{
+			if(logger!=null){
+				logger.error("packageName not set");
+			}
+			this.packageName = "unknown";
+		}
 	}
 
 	public String getVersion() {
@@ -169,7 +204,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setVersion(String version) {
-		this.version = version;
+		if (version != null){
+			this.version = version.replace("-", "_");
+		}else{
+			if(logger!=null){
+				logger.error("version not set");
+			}
+			this.version = "unknown";
+		}
 	}
 
 	public String getSource() {
@@ -177,7 +219,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setSource(String source) {
-		this.source = source;
+		if (source != null){
+			this.source = source;
+		}else{
+			if(logger!=null){
+				logger.error("source not set");				
+			}
+			this.source = "unknown";
+		}
 	}
 
 	public String getSummary() {
@@ -185,7 +234,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setSummary(String summary) {
-		this.summary = summary;
+		if (summary != null){
+			this.summary = summary;
+		}else{
+			if(logger!=null){
+				logger.debug("summary not set");
+			}
+			this.summary = "unknown";
+		}
 	}
 
 	public String getRelease() {
@@ -193,7 +249,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setRelease(String release) {
-		this.release = release;
+		if (release != null){
+			this.release = release;
+		}else{
+			if(logger!=null){
+				logger.debug("release not set");
+			}
+			this.release = "unknown";
+		}
 	}
 
 	public String getUrl() {
@@ -201,7 +264,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setUrl(String url) {
-		this.url = url;
+		if (url != null){
+			this.url = url;
+		}else{
+			if(logger!=null){
+				logger.error("url not set");
+			}
+			this.url = "http://unknown.com";
+		}
 	}
 
 	public String getLicense() {
@@ -209,7 +279,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setLicense(String license) {
-		this.license = license;
+		if (license != null){
+			this.license = license;
+		}else{
+			if(logger!=null){
+				logger.error("license not set");
+			}
+			this.license = "unknown";
+		}
 	}
 
 	public String getGroup() {
@@ -217,7 +294,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setGroup(String group) {
-		this.group = group;
+		if (group != null){
+			this.group = group;
+		}else{
+			if(logger!=null){
+				logger.debug("group not set");
+			}
+			this.group = "unknown";
+		}
 	}
 
 	public String getArch() {
@@ -225,15 +309,29 @@ public class SPECFileGenerator {
 	}
 
 	public void setArch(String arch) {
-		this.arch = arch;
+		if (arch != null){
+			this.arch = arch;
+		}else{
+			if(logger!=null){
+				logger.debug("arch not set");
+			}
+			this.arch = "noarch";
+		}
 	}
 
 	public List<String> getBuildcommands() {
 		return buildcommands;
 	}
 
-	public void setBuildcommands(List<String> setBuildcommands) {
-		this.buildcommands = new ArrayList<String>(setBuildcommands);
+	public void setBuildcommands(List<String> setBuildcommands) {		
+		if (buildcommands != null){
+			this.buildcommands = new ArrayList<String>(setBuildcommands);
+		}else{
+			if(logger!=null){
+				logger.debug("buildcommands not set");
+			}
+			this.buildcommands = new ArrayList<String>();
+		}
 	}
 
 	public List<String> getInstallcommands() {
@@ -241,7 +339,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setInstallcommands(List<String> installcommands) {
-		this.installcommands = new ArrayList<String>(installcommands);
+		if (installcommands != null){
+			this.installcommands = new ArrayList<String>(installcommands);
+		}else{
+			if(logger!=null){
+				logger.debug("installcommands not set");
+			}
+			this.installcommands = new ArrayList<String>();
+		}
 	}
 
 	public List<String> getCleancommands() {
@@ -249,7 +354,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setCleancommands(List<String> cleancommands) {
-		this.cleancommands = new ArrayList<String>(cleancommands);
+		if (cleancommands != null){
+			this.cleancommands = new ArrayList<String>(cleancommands);
+		}else{
+			if(logger!=null){
+				logger.debug("cleancommands not set");
+			}
+			this.cleancommands = new ArrayList<String>();
+		}
 	}
 
 	public List<AuxFile> getFiles() {
@@ -257,7 +369,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setFiles(List<? extends AuxFile> files) {
-		this.files = new ArrayList<AuxFile>(files);
+		if (files != null){
+			this.files = new ArrayList<AuxFile>(files);
+		}else{
+			if(logger!=null){
+				logger.debug("files not set");
+			}
+			this.files = new ArrayList<AuxFile>();
+		}
 	}
 
 	public String getVendor() {
@@ -265,7 +384,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setVendor(String vendor) {
-		this.vendor = vendor;
+		if (vendor != null){
+			this.vendor = vendor;
+		}else{
+			if(logger!=null){
+				logger.debug("vendor not set");
+			}
+			this.vendor = "unknown";
+		}
 	}
 
 	public String getPackager() {
@@ -273,7 +399,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setPackager(String packager) {
-		this.packager = packager;
+		if (packager != null){
+			this.packager = packager;
+		}else{
+			if(logger!=null){
+				logger.debug("packager not set");
+			}
+			this.packager = "unknown";
+		}
 	}
 
 	public String getPrefix() {
@@ -281,15 +414,30 @@ public class SPECFileGenerator {
 	}
 
 	public void setPrefix(String prefix) {
-		this.prefix = prefix;
+		if (prefix != null){
+			this.prefix = prefix;
+		}else{
+			if(logger!=null){
+				logger.debug("prefix not set");
+			}
+			this.prefix = "/";
+		}
 	}
+
 
 	public List<String> getPreparecommands() {
 		return preparecommands;
 	}
 
 	public void setPreparecommands(List<String> preparecommands) {
-		this.preparecommands = preparecommands;
+		if (preparecommands != null){
+			this.preparecommands = preparecommands;
+		}else{
+			if(logger!=null){
+				logger.debug("preparecommands not set");
+			}
+			this.preparecommands = new ArrayList<String>();
+		}
 	}
 
 	public List<String> getPreinstallcommands() {
@@ -297,7 +445,14 @@ public class SPECFileGenerator {
 	}
 
 	public void setPreinstallcommands(List<String> preinstallcommands) {
-		this.preinstallcommands = preinstallcommands;
+		if (preinstallcommands != null){
+			this.preinstallcommands = preinstallcommands;
+		}else{
+			if(logger!=null){
+				logger.debug("preinstallcommands not set");
+			}
+			this.preinstallcommands = new ArrayList<String>();
+		}
 	}
 
 	public List<String> getPostinstallcommands() {
@@ -305,15 +460,36 @@ public class SPECFileGenerator {
 	}
 
 	public void setPostinstallcommands(List<String> postinstallcommands) {
-		this.postinstallcommands = postinstallcommands;
+		if (postinstallcommands != null){
+			this.postinstallcommands = postinstallcommands;
+		}else{
+			if(logger!=null){
+				logger.debug("postinstallcommands not set");
+			}
+			this.postinstallcommands = new ArrayList<String>();
+		}
 	}
 	
 	public void setPreinstallcommandsFromFile(File parent, String filePath) throws IOException {
-		setPreinstallcommands(generateArrayListFromExternalFile(parent, filePath));
+		if(parent != null && filePath != null && parent.exists() && !filePath.isEmpty()){
+			setPreinstallcommands(generateArrayListFromExternalFile(parent, filePath));
+		}else{
+			if(logger!=null){
+				logger.debug("Error setting preinstall commands.");
+			}
+			this.preinstallcommands = new ArrayList<String>();
+		}
 	}
 	
 	public void setPostinstallcommandsFromFile(File parent, String filePath) throws IOException {
-		setPostinstallcommands(generateArrayListFromExternalFile(parent, filePath));
+		if(parent != null && filePath != null && parent.exists() && !filePath.isEmpty()){
+			setPostinstallcommands(generateArrayListFromExternalFile(parent, filePath));
+		}else{
+			if(logger!=null){
+				logger.debug("Error setting postinstall commands.");
+			}
+			this.postinstallcommands = new ArrayList<String>();
+		}
 	}
 	
 	public List<String> getPreuninstallcommands() {
@@ -321,12 +497,26 @@ public class SPECFileGenerator {
 	}
 
 	public void setPreuninstallcommands(List<String> preuninstallcommands) {
-		this.preuninstallcommands = preuninstallcommands;
+		if (preuninstallcommands != null){
+			this.preuninstallcommands = preuninstallcommands;
+		}else{
+			if(logger!=null){
+				logger.debug("preuninstallcommands not set");
+			}
+			this.preuninstallcommands = new ArrayList<String>();
+		}
 	}
 
 	
 	public void setPreuninstallcommandsFromFile(File parent, String filePath) throws IOException {
+		if(parent != null && filePath != null && parent.exists() && !filePath.isEmpty()){
 			setPreuninstallcommands(generateArrayListFromExternalFile(parent, filePath));
+		}else{
+			if(logger!=null){
+				logger.debug("Error setting preuninstall commands.");
+			}
+			this.preuninstallcommands = new ArrayList<String>();
+		}
 
 	}
 	
@@ -335,11 +525,26 @@ public class SPECFileGenerator {
 	}
 
 	public void setPostuninstallcommands(List<String> postuninstallcommands) {
-		this.postuninstallcommands = postuninstallcommands;
+		if (postuninstallcommands != null){
+			this.postuninstallcommands = postuninstallcommands;
+		}else{
+			if(logger!=null){
+				logger.debug("postuninstallcommands not set");
+			}
+			this.postuninstallcommands = new ArrayList<String>();
+		}
 	}
 	
 	public void setPostuninstallcommandsFromFile(File parent, String filePath)  throws IOException {
-		setPostuninstallcommands(generateArrayListFromExternalFile(parent, filePath));
+		
+		if(parent != null && filePath != null && parent.exists() && !filePath.isEmpty()){
+			setPostuninstallcommands(generateArrayListFromExternalFile(parent, filePath));
+		}else{
+			if(logger!=null){
+				logger.debug("Error setting postuninstall commands.");
+			}
+			this.postuninstallcommands = new ArrayList<String>();
+		}
 	}
 	
 	/**
@@ -373,6 +578,7 @@ public class SPECFileGenerator {
 		writeCommandsSection("build", buildcommands);
 		writeCommandsSection("install", installcommands);
 		writeCommandsSection("clean", cleancommands);
+		
 		writeCommandsSection("pre", preinstallcommands);
 		writeCommandsSection("post", postinstallcommands);
 		writeCommandsSection("preun", preuninstallcommands);
@@ -383,10 +589,11 @@ public class SPECFileGenerator {
 	}
 
 	private void checkneededfields() throws MojoExecutionException {
-		if(packageName=="notset"||version=="notset"||
-				summary=="notset"||description=="notset"||
-				license=="notset"||release=="notset"){
-			String message = "At least PackageName, Version, Description, Summary License and Release are needed for the spec file.";
+		if(packageName=="unknown"||version=="unknown"||
+				summary=="unknown"||description=="unknown"||
+				license=="unknown"||release=="unknown"){
+			String message = "At least PackageName, Version, Description, Summary, "+ 
+							 "License and Release are needed for the spec file.";
 			if(logger!=null){
 				logger.error(message);
 			}
@@ -404,6 +611,7 @@ public class SPECFileGenerator {
 			w.print("%");
 			w.println(sectionTitle);
 			w.println(text);
+			
 		}else{
 			if(logger!=null){
 				logger.info("Skipping empty text section "+sectionTitle);
@@ -454,23 +662,31 @@ public class SPECFileGenerator {
 					w.print(") ");				
 				}else{
 					if(logger!=null){
-						logger.debug("No attributes found for "+f.getFrom());
+						logger.debug("No attributes found for "+f.getTo());
 					}
 				}
-				w.println(f.getFrom());
+				w.println(f.getTo());
 			}
 
 		}else{
 			if(logger!=null){
-				logger.warn("Skipping empty files section (Is this a meta-package?)...");
+				logger.debug("Skipping empty files section (Is this a meta-package?)...");
 			}
 		}
 	}
 	
 
 	protected void writeEntry(String name, String value) {
-		if (value != null)
+		if (value != null){
+			if (logger!=null){
+				logger.debug(name + ": " + value);
+			}
 			w.println(name + ": " + value);
+		}else{
+			if (logger!=null){
+			logger.debug(name + " not set!");
+			}
+		}
 	}	
 
 	/**
