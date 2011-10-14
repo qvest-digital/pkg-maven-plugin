@@ -763,6 +763,41 @@ public class TargetConfiguration {
 	 * </p>
 	 */
 	String customCodeWindows;
+	
+	/**
+	 * Denothes wether the package should be signed or not. As of now, this value is
+	 * only taken in consideration when building RPM packages.
+	 * 
+	 * <p>Default value is <code>false</code>.</p>
+	 * 
+	 */
+	Boolean sign;
+	
+	/**
+	 * Denothes the license of the package to build. As of now, this value is
+	 * only taken in consideration when building RPM packages.
+	 * 
+	 * <p>Default value is <code>unknown</code>.</p>
+	 * 
+	 */
+	String license;
+	/**
+	 * Denothes the release of the package to build. As of now, this value is
+	 * only taken in consideration when building RPM packages.
+	 * 
+	 * <p>Default value is <code>unknown</code>.</p>
+	 * 
+	 */
+	String release;
+	
+	/**
+	 * Denothes the source of the package to build. As of now, this value is
+	 * only taken in consideration when building RPM packages.
+	 * 
+	 * <p>Default value is <code>unknown</code>.</p>
+	 * 
+	 */
+	String source;
 
 	public TargetConfiguration() {
 		// For instantiation.
@@ -1099,6 +1134,12 @@ public class TargetConfiguration {
 		systemProperties = merge(systemProperties,
 				parent.systemProperties, new Properties());
 
+		// RPM sign configuration
+		sign = (Boolean)merge(sign, parent.sign, Boolean.FALSE);
+		
+		// RPM License configuration (it must always contain a value)
+		license = (String) merge(license, parent.license,"unknown");
+
 		return this;
 	}
 
@@ -1325,6 +1366,10 @@ public class TargetConfiguration {
 		appendBoolean(sb, "aotCompile", aotCompile);
 		appendBoolean(sb, "bundleAll", bundleAll);
 		appendBoolean(sb, "advancedStarter", advancedStarter);
+		appendBoolean(sb, "sign", sign);
+		appendStringDefault(sb, "license", license);
+		appendStringDefault(sb, "release", license);
+		appendStringDefault(sb, "source", source);
 		// TODO rschuster: To my knowledge this is not implemented yet.
 //		sb.append("createWindowsExecutable: " + createWindowsExecutable + "\n");
 //		sb.append("createOSXApp: " + createOSXApp + "\n");
@@ -1472,6 +1517,46 @@ public class TargetConfiguration {
 
 	public void setCustomCodeWindows(String customCodeWindows) {
 		this.customCodeWindows = customCodeWindows;
+	}
+
+
+	public boolean isSign() {
+		return sign.booleanValue();
+	}
+
+
+	public void setSign(boolean sign) {
+		this.sign = Boolean.valueOf(sign);
+	}
+
+
+	public String getLicense() {
+		return license;
+	}
+
+
+	public void setLicense(String license) {
+		this.license = license;
+	}
+
+
+	public String getRelease() {
+		return release;
+	}
+
+
+	public void setRelease(String release) {
+		this.release = release;
+	}
+
+
+	public String getSource() {
+		return source;
+	}
+
+
+	public void setSource(String source) {
+		this.source = source;
 	}
 
 }

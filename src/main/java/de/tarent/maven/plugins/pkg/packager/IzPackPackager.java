@@ -61,6 +61,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
+import de.tarent.maven.plugins.pkg.IPackagingHelper;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.Path;
@@ -72,10 +73,16 @@ public class IzPackPackager extends Packager
   private static final String IZPACK_EMBEDDED_JAR = "izpack-embedded.jar";
   
   public void execute(Log l,
-                      Packaging.Helper ph,
+                      IPackagingHelper helper,
                       TargetConfiguration distroConfig,
                       PackageMap packageMap) throws MojoExecutionException
   {
+		
+	if(!(helper instanceof Packaging.Helper)){
+		throw new IllegalArgumentException("Debian helper needed");
+	}
+	Packaging.Helper ph = (Packaging.Helper) helper;
+	
     // The root directory into which everything from srcRoot is copied
     // into (inside the outputDirectory).
     File packagingBaseDir = new File(ph.getTempRoot(), "izpack-packaging");
@@ -214,9 +221,15 @@ public class IzPackPackager extends Packager
    * @throws MojoExecutionException
    */
   public void checkEnvironment(Log l,
-                               Packaging.Helper ph,
+                               IPackagingHelper helper,
                                TargetConfiguration dc) throws MojoExecutionException
   {
+		
+	if(!(helper instanceof Packaging.Helper)){
+		throw new IllegalArgumentException("Debian helper needed");
+	}
+	Packaging.Helper ph = (Packaging.Helper) helper;
+	
     l.info("java executable          : " + ph.getJavaExec());
     l.info("7zip executable          : " + ph.get7ZipExec());
     l.info("create OS X app          : " + (dc.isCreateOSXApp() ? "yes" : "no"));

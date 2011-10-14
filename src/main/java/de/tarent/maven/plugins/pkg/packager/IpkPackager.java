@@ -57,6 +57,7 @@ import java.util.Set;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
+import de.tarent.maven.plugins.pkg.IPackagingHelper;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.Path;
@@ -72,10 +73,16 @@ public class IpkPackager extends Packager
 {
   
   public void execute(Log l,
-                      Packaging.Helper ph,
+                      IPackagingHelper helper,
                       TargetConfiguration distroConfig,
                       PackageMap packageMap) throws MojoExecutionException
   {
+		
+	if(!(helper instanceof Packaging.Helper)){
+		throw new IllegalArgumentException("Debian helper needed");
+	}
+	Packaging.Helper ph = (Packaging.Helper) helper;
+	
     String packageName = ph.getPackageName();
     String packageVersion = ph.getPackageVersion();
     
@@ -150,9 +157,15 @@ public class IpkPackager extends Packager
    * @throws MojoExecutionException
    */
   public void checkEnvironment(Log l,
-                               Packaging.Helper ph,
+                               IPackagingHelper helper,
                                TargetConfiguration dc) throws MojoExecutionException
   {
+		
+	if(!(helper instanceof Packaging.Helper)){
+		throw new IllegalArgumentException("Debian helper needed");
+	}
+	Packaging.Helper ph = (Packaging.Helper) helper;
+	
     boolean error = false;
     
     l.info("Maintainer               : " + dc.getMaintainer());

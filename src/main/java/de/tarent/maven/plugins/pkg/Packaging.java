@@ -27,19 +27,29 @@
 
 package de.tarent.maven.plugins.pkg;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import javax.jws.soap.InitParam;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
@@ -60,6 +70,7 @@ import de.tarent.maven.plugins.pkg.packager.DebPackager;
 import de.tarent.maven.plugins.pkg.packager.IpkPackager;
 import de.tarent.maven.plugins.pkg.packager.IzPackPackager;
 import de.tarent.maven.plugins.pkg.packager.Packager;
+import de.tarent.maven.plugins.pkg.packager.RPMPackager;
 
 /**
  * Creates a package file for the project and the given distribution.
@@ -104,7 +115,7 @@ public class Packaging
    * 
    * @author Robert Schuster (robert.schuster@tarent.de)
    */
-  public class Helper
+  public class Helper implements IPackagingHelper
   {
     String aotPackageName;
 
@@ -162,7 +173,18 @@ public class Packaging
      */
     File srcArtifactFile;
 
-    /**
+
+    File targetAuxDir;
+    
+    public File getTargetAuxDir() {
+		return targetAuxDir;
+	}
+
+	public void setTargetAuxDir(File targetAuxDir) {
+		this.targetAuxDir = targetAuxDir;
+	}
+
+	/**
      * Location of the project's artifact on the target system (needed for the
      * classpath construction). (e.g. /usr/share/java/app-2.0-SNAPSHOT.jar)
      */
@@ -206,10 +228,6 @@ public class Packaging
     File targetWrapperScriptFile;
 
     File tempRoot;
-
-    Helper()
-    {
-    }
 
     /**
      * Copies the given set of artifacts to the location specified by
@@ -666,7 +684,7 @@ public class Packaging
 
       return packageVersion;
     }
-
+    
     public String getProjectDescription()
     {
       return project.getDescription();
@@ -1061,6 +1079,148 @@ public class Packaging
     }
   }
 
+  public class RPMHelper extends Helper {
+		
+	  	/**
+	  	 * Convenience field that denotes the BUILD directory
+	  	 */
+		private File baseBuildDir;
+		/**
+	  	 * Convenience field that denotes the SPECS directory
+	  	 */
+		private File baseSpecsDir;
+
+	    public String getVersion()
+	    {
+	    	return version;
+	    }
+
+		public File getBaseBuildDir() {
+			return baseBuildDir;
+		}
+
+		public void setBaseBuildDir(File baseBuildDir) {
+			this.baseBuildDir = baseBuildDir;
+		}
+
+		public File getBaseSpecsDir() {
+			return baseSpecsDir;
+		}
+
+		public void setBaseSpecsDir(File baseSpecsDir) {
+			this.baseSpecsDir = baseSpecsDir;
+		}
+
+		/**
+		 * Provides the same functionality as getDstArtifactFile 
+		 * in the superclass, but using getBaseBuildDir instead of getBasePkgDir 
+		 */
+		@Override
+	    public File getDstArtifactFile()
+	    {
+	      if (dstArtifactFile == null)
+	        dstArtifactFile = new File(getBaseBuildDir(),
+	                                   getTargetArtifactFile().toString());
+
+	      return dstArtifactFile;
+	    }
+	    
+		/**
+		 * Provides the same functionality as prepareInitialDirectories 
+		 * in the superclass, and extends it setting up directories for RPM compliance   
+		 */
+		@Override
+		public void prepareInitialDirectories() throws MojoExecutionException{
+			super.prepareInitialDirectories();
+			setBaseBuildDir(new File(basePkgDir,"/BUILD"));
+			setBaseSpecsDir(new File(basePkgDir,"/SPECS"));	
+			
+		}
+		
+		/**
+		 * Creates a .rpmmacros file in the users home directory in order to be able
+		 * to specify a Build Area other than the user's home.
+		 * 
+		 * If a .rpmmacros file already exists will be backed up. This file can be
+		 * restored using {@link #restorerpmmacrosfile}.
+		 * 
+		 * @param l
+		 * @param basedirectory
+		 * @throws IOException
+		 * @throws MojoExecutionException 
+		 */
+		public void createRpmMacrosFile(Log l, Packaging.Helper ph,
+				TargetConfiguration dc) throws IOException, MojoExecutionException {
+			String userHome = System.getProperty("user.home");
+			File original = new File(userHome + "/.rpmmacros");
+			
+			if (original.exists()) {
+				if(l!=null){
+					l.info("File " + userHome + "/.rpmmacros found. Creating back-up.");
+				}
+				File backup = new File(userHome + "/.rpmmacros_bck");
+				FileUtils.copyFile(original, backup);
+			}
+			original.delete();
+			if (!original.exists()) {
+				if(l!=null){
+					l.info("Creating " + userHome + "/.rpmmacros file.");
+				}
+				PrintWriter p = new PrintWriter(original);
+				p.print("%_topdir       ");
+				p.println(ph.getBasePkgDir().getAbsolutePath());
+				p.print("%tmppath       ");
+				p.println(ph.getBasePkgDir().getAbsolutePath());
+
+				if (dc.getMaintainer() != null) {
+					if(l!=null){
+						l.info("Maintainer found, its name could be used to sign the RPM.");
+					}
+					p.print("%_gpg_name       ");
+					p.println(dc.getMaintainer());
+				}
+
+				p.close();
+			}
+		}
+
+		/**
+		 * 
+		 * Removes the new macros file and 
+		 * restores the backup created by
+		 * {@link #createrpmmacrosfile}
+		 * 
+		 * @param l
+		 * @throws IOException
+		 */
+		public void restoreRpmMacrosFileBackup(Log l) throws IOException {
+			String userHome = System.getProperty("user.home");
+			File original = new File(userHome + "/.rpmmacros");
+			File backup = new File(userHome + "/.rpmmacros_bck");
+			if (backup.exists()) {
+				if(l!=null){
+					l.info("Restoring .rpmmacros backup file.");
+				}
+				if (original.delete()) {
+					FileUtils.copyFile(backup, original);
+				}
+			} else {
+				original.delete();
+			}
+
+		}
+		public List<AuxFile> generateFilelist() throws MojoExecutionException
+	    {
+			List<AuxFile> list = new ArrayList<AuxFile>();
+			
+			for (File file : FileUtils.listFiles(getBaseBuildDir(), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE))
+			{
+		    	  list.add(new AuxFile(file.getAbsolutePath().replace(getBaseBuildDir().toString(),"")));
+		    }	  
+			return list;
+	    }
+	}
+  
   static final String DEFAULT_SRC_AUXFILESDIR = "src/main/auxfiles";
 
   private TargetConfiguration dc;
@@ -1076,7 +1236,7 @@ public class Packaging
    */
   protected List<TargetConfiguration> targetConfigurations;
 
-  private PackageMap pm;
+  private PackageMap pm;  
 
   /**
    * Validates arguments and test tools.
@@ -1538,36 +1698,48 @@ public class Packaging
     dc = getMergedConfiguration(t, d, true);
     dc.chosenDistro = d;
     dc.chosenTarget = t;
-
+    
     // Retrieve package map for chosen distro.
     pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL, d,
                         dc.bundleDependencies);
 
-    Helper ph = new Helper();
+    
 
     String packaging = pm.getPackaging();
     if (packaging == null)
       throw new MojoExecutionException(
                                        "Package maps document set no packaging for distro: "
                                            + dc.chosenDistro);
+
+    // Create packager according to the chosen packaging type.    
+    Map<String, IPackagingHelper> extPackagerHelperMap = new HashMap<String,IPackagingHelper>();
+    Map<String, Packager> extPackagerMap = new HashMap<String,Packager>();
     
+    extPackagerHelperMap.put("deb", new Helper());
+    extPackagerHelperMap.put("ipk", new Helper());
+    extPackagerHelperMap.put("izpack", new Helper());
+    extPackagerHelperMap.put("rpm", new RPMHelper());
+    extPackagerMap.put("deb", new DebPackager());
+    extPackagerMap.put("ipk", new IpkPackager());
+    extPackagerMap.put("izpack", new IzPackPackager());
+    extPackagerMap.put("rpm", new RPMPackager());
+    
+    IPackagingHelper ph;
+    Packager packager;
+    
+    ph = extPackagerHelperMap.get(packaging);
+    packager = extPackagerMap.get(packaging);    
+    
+    if (packager == null){
+      throw new MojoExecutionException("Unsupported packaging type: "
+                                       + packaging);
+    }
+  
     // Store configuration in plugin-context for later use by signer- and deploy-goal
     getPluginContext().put("dc", dc);
     getPluginContext().put("pm", pm);
-    getPluginContext().put("packageVersion", ph.getPackageVersion());
-
-    // Create packager according to the chosen packaging type.
-    Packager packager;
-    if ("deb".equals(packaging))
-      packager = new DebPackager();
-    else if ("ipk".equals(packaging))
-      packager = new IpkPackager();
-    else if ("izpack".equals(packaging))
-      packager = new IzPackPackager();
-    else
-      throw new MojoExecutionException("Unsupported packaging type: "
-                                       + packaging);
-
+    getPluginContext().put("packageVersion", ((Helper) ph).getPackageVersion());
+    
     checkEnvironment(getLog());
 
     packager.checkEnvironment(getLog(), ph, dc);
