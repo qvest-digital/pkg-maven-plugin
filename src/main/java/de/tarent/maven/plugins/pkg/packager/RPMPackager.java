@@ -52,10 +52,13 @@ package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
@@ -103,9 +106,6 @@ public class RPMPackager extends Packager {
 		l.debug(ph.getPackageName());
 		l.debug(ph.getPackageVersion());
 		l.debug(ph.getBasePkgDir().getPath());
-		
-	    
-
 
 	    /* If there is a main class, we will create a starter script for it
 	     * and we will make sure that the bundled artifacts are copied.
@@ -127,6 +127,11 @@ public class RPMPackager extends Packager {
 			l.info("SPEC file generated.");
 			createPackage(l, ph, specFile, distroConfig);
 			l.info("Package created.");
+			l.info("Output of rpm -pqi :");	 
+			l.info(IOUtils.toString(Utils.exec(new String[] {"rpm", "-pqi", 
+					 copyRPMToTargetFolder(l, ph, distroConfig)}
+					 ,ph.getTempRoot().getParentFile(),"RPM not found", "RPM not found")));
+			
 		} catch (Exception ex) {
 			throw new MojoExecutionException(ex.toString());
 		} finally {
@@ -136,6 +141,40 @@ public class RPMPackager extends Packager {
 				throw new MojoExecutionException(e.toString());
 			}
 		}
+	}
+
+	/**
+	 * Copies the created artifact from 
+	 * @param l 
+	 * @param ph
+	 * @param distroConfig
+	 * @return
+	 * @throws IOException
+	 */
+	private String copyRPMToTargetFolder(Log l, RPMHelper ph, TargetConfiguration distroConfig) throws IOException {
+		StringBuilder rpmPackagePath= new StringBuilder(ph.getBaseBuildDir().getParent().toString());				
+		rpmPackagePath.append("/RPMS/");
+		rpmPackagePath.append(distroConfig.getArchitecture());
+		rpmPackagePath.append("/");
+		
+		StringBuilder rpmPackageName = new StringBuilder();			
+		rpmPackageName.append(ph.getPackageName());
+		rpmPackageName.append("-");
+		rpmPackageName.append(ph.getVersion().replace("-", "_"));
+		rpmPackageName.append("-");
+		rpmPackageName.append(distroConfig.getRelease());
+		rpmPackageName.append(".");
+		rpmPackageName.append(distroConfig.getArchitecture());
+		rpmPackageName.append(".rpm");
+		
+		l.debug("Attempting to copy from "+ rpmPackagePath.toString() + rpmPackageName.toString()+
+				" to " + ph.getTempRoot().getParent()+"/"+rpmPackageName.toString());
+		
+		FileUtils.copyFile(new File(rpmPackagePath.toString(),rpmPackageName.toString()), 
+				new File(ph.getTempRoot().getParentFile(),rpmPackageName.toString()));
+		
+		l.info("RPM file copied to "+ph.getTempRoot().getParent()+"/"+rpmPackageName.toString());		
+		return rpmPackageName.toString();
 	}
 
 
@@ -175,7 +214,7 @@ public class RPMPackager extends Packager {
 		try {				
 			sgen.setLogger(l);
 			sgen.setBuildroot("%{_builddir}");		
-			sgen.setCleancommands(generateCleanCommands(ph, dc));
+			//sgen.setCleancommands(generateCleanCommands(ph, dc));
 
 			// Following parameters MUST be provided for rpmbuild to work:
 			l.info("Adding mandatory parameters to SPEC file.");
