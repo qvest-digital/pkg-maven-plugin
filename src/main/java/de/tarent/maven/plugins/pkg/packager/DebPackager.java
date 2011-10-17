@@ -61,12 +61,11 @@ import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.AotCompileUtils;
 import de.tarent.maven.plugins.pkg.IPackagingHelper;
-import de.tarent.maven.plugins.pkg.SysconfFile;
-import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.Path;
+import de.tarent.maven.plugins.pkg.SysconfFile;
+import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
-import de.tarent.maven.plugins.pkg.Packaging.RPMHelper;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
@@ -381,12 +380,15 @@ public class DebPackager extends Packager
   {
     l.info("calling dpkg-deb to create binary package");
     
-    Utils.exec(new String[] {"dpkg-deb",
+    
+    
+    Utils.exec(new String[] {"fakeroot",
+                             "dpkg-deb",
                              "--build",
                              base.getName(),
                              ph.getOutputDirectory().getAbsolutePath() },
                 ph.getTempRoot(),
-                "'dpkg --build' failed.",
+                "'fakeroot dpkg --build' failed.",
                 "Error creating the .deb file.");
   }
  
