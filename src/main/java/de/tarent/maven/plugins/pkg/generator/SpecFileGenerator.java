@@ -324,7 +324,7 @@ public class SpecFileGenerator {
 	}
 
 	public void setBuildcommands(List<String> setBuildcommands) {		
-		if (buildcommands != null){
+		if (setBuildcommands != null){
 			this.buildcommands = new ArrayList<String>(setBuildcommands);
 		}else{
 			if(logger!=null){
@@ -470,9 +470,9 @@ public class SpecFileGenerator {
 		}
 	}
 	
-	public void setPreinstallcommandsFromFile(File parent, String filePath) throws IOException {
-		if(parent != null && filePath != null && parent.exists() && !filePath.isEmpty()){
-			setPreinstallcommands(generateArrayListFromExternalFile(parent, filePath));
+	public void setPreinstallcommandsFromFile(File parent, String fileName) throws IOException {
+		if(parent != null && fileName != null && parent.exists() && !fileName.isEmpty()){
+			setPreinstallcommands(generateArrayListFromExternalFile(parent, fileName));
 		}else{
 			if(logger!=null){
 				logger.debug("Error setting preinstall commands.");
