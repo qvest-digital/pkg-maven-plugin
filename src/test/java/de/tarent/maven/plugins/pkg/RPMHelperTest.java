@@ -80,13 +80,11 @@ public class RPMHelperTest {
 		ph.prepareInitialDirectories();
 	}
 	@Test
-	public void testCopyFilesAndSetFileListSuccessfully() throws MojoExecutionException{
-		/* TODO: Find a way to test this method
-		dc.setSrcAuxFilesDir("/tmp/SrcAuxFilesDir");
-		ph.setDstAuxDir(new File("/tmp/DestAuxFilesDir"));
-		ph.copyFilesAndSetFileList();
-		Assert.assertTrue(new File("/tmp/DestAuxFilesDir/testfile1").exists());
-		*/
+	public void testGenerateFilelist() throws MojoExecutionException, IOException{
+		File tempdir = File.createTempFile("temp", "file");
+		ph.setBaseBuildDir(tempdir.getParentFile());
+		Assert.assertTrue(ph.generateFilelist().size()>0);
+
 	}
 	
 	@Test
