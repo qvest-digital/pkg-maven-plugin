@@ -129,7 +129,7 @@ public class SpecFileGenerator {
 	}
 
 	public void setDependencies(String dependencies) {
-		if (dependencies != null){
+		if (dependencies != null && !dependencies.isEmpty()){
 			this.dependencies = dependencies;
 		}else{
 			if(logger!=null){
@@ -204,7 +204,7 @@ public class SpecFileGenerator {
 	}
 
 	public void setVersion(String version) {
-		if (version != null){
+		if (version != null && !version.isEmpty()){
 			this.version = version.replace("-", "_");
 		}else{
 			if(logger!=null){
@@ -219,7 +219,7 @@ public class SpecFileGenerator {
 	}
 
 	public void setSource(String source) {
-		if (source != null){
+		if (source != null && !source.isEmpty()){
 			this.source = source;
 		}else{
 			if(logger!=null){
@@ -234,7 +234,7 @@ public class SpecFileGenerator {
 	}
 
 	public void setSummary(String summary) {
-		if (summary != null){
+		if (summary != null && !summary.isEmpty()){
 			this.summary = summary;
 		}else{
 			if(logger!=null){
@@ -249,7 +249,7 @@ public class SpecFileGenerator {
 	}
 
 	public void setRelease(String release) {
-		if (release != null){
+		if (release != null && !release.isEmpty()){
 			this.release = release;
 		}else{
 			if(logger!=null){
@@ -264,7 +264,7 @@ public class SpecFileGenerator {
 	}
 
 	public void setUrl(String url) {
-		if (url != null){
+		if (url != null && !url.isEmpty()){
 			this.url = url;
 		}else{
 			if(logger!=null){
@@ -279,7 +279,7 @@ public class SpecFileGenerator {
 	}
 
 	public void setLicense(String license) {
-		if (license != null){
+		if (license != null&& !license.isEmpty()){
 			this.license = license;
 		}else{
 			if(logger!=null){
@@ -294,7 +294,7 @@ public class SpecFileGenerator {
 	}
 
 	public void setGroup(String group) {
-		if (group != null){
+		if (group != null && !group.isEmpty()){
 			this.group = group;
 		}else{
 			if(logger!=null){
@@ -309,7 +309,7 @@ public class SpecFileGenerator {
 	}
 
 	public void setArch(String arch) {
-		if (arch != null){
+		if (arch != null && !arch.isEmpty()){
 			this.arch = arch;
 		}else{
 			if(logger!=null){

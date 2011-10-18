@@ -387,7 +387,147 @@ public class SpecFileGeneratorTest {
 		Assert.assertEquals(3,specgenerator.getInstallcommands().size());
 		
 	} 
-
+	@Test
+	public void testSetPostInstallCommandsFromNullArrayCreatesEmptyArrayList(){
+		
+		specgenerator.setPostinstallcommands(null);
+		Assert.assertEquals(0,specgenerator.getPostinstallcommands().size());
+		
+	}
+	@Test
+	public void testSetPostUninstallCommandsFromNullArrayCreatesEmptyArrayList(){
+		
+		specgenerator.setPostuninstallcommands(null);
+		Assert.assertEquals(0,specgenerator.getPostuninstallcommands().size());
+		
+	}
+	@Test
+	public void testSetPreInstallCommandsFromNullArrayCreatesEmptyArrayList(){
+		
+		specgenerator.setPreinstallcommands(null);
+		Assert.assertEquals(0,specgenerator.getPreinstallcommands().size());
+		
+	}
+	@Test
+	public void testSetPreUninstallCommandsFromNullArrayCreatesEmptyArrayList(){
+		
+		specgenerator.setPreuninstallcommands(null);
+		Assert.assertEquals(0,specgenerator.getPreuninstallcommands().size());
+		
+	}
+	@Test
+	public void testSetCleanCommandsFromNullArrayCreatesEmptyArrayList(){
+		
+		specgenerator.setCleancommands(null);
+		Assert.assertEquals(0,specgenerator.getCleancommands().size());
+		
+	}
+	
+	@Test
+	public void testSetPrepareCommandsFromArrayList() throws IOException{
+		
+		List<String> setPrepareCommands = new ArrayList<String>();
+		setPrepareCommands.add("test1");
+		setPrepareCommands.add("test2");
+		setPrepareCommands.add("test3");
+		specgenerator.setPreparecommands(setPrepareCommands);
+		Assert.assertEquals(3,specgenerator.getPreparecommands().size());
+		
+	} 
+	@Test
+	public void testSetPrepareCommandsFromNullArrayCreatesEmptyArrayList(){
+		
+		specgenerator.setPreparecommands(null);
+		Assert.assertEquals(0,specgenerator.getPreparecommands().size());
+		
+	}
+	@Test
+	public void testSetArchDefaultsToNoarchIfNullOrEmpty(){
+		specgenerator.setArch(null);
+		Assert.assertEquals("noarch",specgenerator.getArch());
+		specgenerator.setArch("");
+		Assert.assertEquals("noarch",specgenerator.getArch());		
+	}
+	
+	@Test
+	public void testSetGroupDefaultsToUnknownIfNullOrEmpty(){
+		specgenerator.setGroup(null);
+		Assert.assertEquals("unknown",specgenerator.getGroup());
+		specgenerator.setGroup("");
+		Assert.assertEquals("unknown",specgenerator.getGroup());		
+	}
+	
+	@Test
+	public void testSetLicenseDefaultsToUnknownIfNullOrEmpty(){
+		specgenerator.setLicense(null);
+		Assert.assertEquals("unknown",specgenerator.getLicense());
+		specgenerator.setLicense("");
+		Assert.assertEquals("unknown",specgenerator.getLicense());		
+	}
+	
+	@Test
+	public void testSetReleaseDefaultsToUnknownIfNullOrEmpty(){
+		specgenerator.setRelease(null);
+		Assert.assertEquals("unknown",specgenerator.getRelease());
+		specgenerator.setRelease("");
+		Assert.assertEquals("unknown",specgenerator.getRelease());		
+	}
+	
+	@Test
+	public void testSetUrlDefaultsToUnknownDotComIfNullOrEmpty(){
+		specgenerator.setUrl(null);
+		Assert.assertEquals("http://unknown.com",specgenerator.getUrl());
+		specgenerator.setUrl("");
+		Assert.assertEquals("http://unknown.com",specgenerator.getUrl());		
+	}
+	
+	@Test
+	public void testSetSummaryDefaultsToUnknownIfNullOrEmpty(){
+		specgenerator.setSummary(null);
+		Assert.assertEquals("unknown",specgenerator.getSummary());
+		specgenerator.setSummary("");
+		Assert.assertEquals("unknown",specgenerator.getSummary());		
+	}
+	
+	@Test
+	public void testSetSourceDefaultsToUnknownIfNullOrEmpty(){
+		specgenerator.setSource(null);
+		Assert.assertEquals("unknown",specgenerator.getSource());
+		specgenerator.setSource("");
+		Assert.assertEquals("unknown",specgenerator.getSource());		
+	}
+	
+	@Test
+	public void testSetVersionDefaultsToUnknownIfNullOrEmpty(){
+		specgenerator.setVersion(null);
+		Assert.assertEquals("unknown",specgenerator.getVersion());
+		specgenerator.setVersion("");
+		Assert.assertEquals("unknown",specgenerator.getVersion());		
+	}
+	
+	@Test
+	public void testSetSuggestsDefaultsToUnknownIfNullOrEmpty(){
+		specgenerator.setSuggests(null);
+		Assert.assertEquals("unknown",specgenerator.getSuggests());
+		specgenerator.setSuggests("");
+		Assert.assertEquals("unknown",specgenerator.getSuggests());		
+	}
+	
+	@Test
+	public void testSetDependenciesDefaultsToUnknownIfNullOrEmpty(){
+		specgenerator.setDependencies(null);
+		Assert.assertEquals("unknown",specgenerator.getDependencies());
+		specgenerator.setDependencies("");
+		Assert.assertEquals("unknown",specgenerator.getDependencies());		
+	}
+	
+	@Test
+	public void testSetRecommendsDefaultsToUnknownIfNullOrEmpty(){
+		specgenerator.setRecommends(null);
+		Assert.assertEquals("unknown",specgenerator.getRecommends());
+		specgenerator.setRecommends("");
+		Assert.assertEquals("unknown",specgenerator.getRecommends());		
+	}
 	@After
 	public void tearDown() {
 		spec.delete();
