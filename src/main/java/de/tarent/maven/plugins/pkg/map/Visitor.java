@@ -32,7 +32,7 @@ import org.apache.maven.artifact.Artifact;
 
 /**
  * Small interface that is used as an argument for the
- * {@link PackageMap#iterateDependencyArtifacts(org.apache.maven.plugin.logging.Log, java.util.Collection, Visitor, boolean)
+ * {@link PackageMap#iterateDependencyArtifacts(org.apache.maven.plugin.logging.Log, java.util.Collection, Visitor, boolean)}
  * method.
  * 
  * <p>The method iterates through the dependencies and calls the interface's
