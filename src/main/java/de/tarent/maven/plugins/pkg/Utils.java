@@ -28,7 +28,6 @@ package de.tarent.maven.plugins.pkg;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +39,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -58,7 +58,7 @@ public class Utils
   /**
    * File filter that ignores files ending with "~", ".cvsignore" and CVS and SVN files.
    */
-  public static final FileFilter FILTER = FileFilterUtils.makeSVNAware(FileFilterUtils.makeCVSAware(new NotFileFilter(new SuffixFileFilter(new String[] { "~", ".cvsignore" }))));
+  public static final IOFileFilter FILTER = FileFilterUtils.makeSVNAware(FileFilterUtils.makeCVSAware(new NotFileFilter(new SuffixFileFilter(new String[] { "~", ".cvsignore" }))));
 
   public static void createParentDirs(File f, String item)
       throws MojoExecutionException
@@ -255,7 +255,7 @@ public class Utils
 
   }
 
-  public static final void copyProjectArtifact(Log l, File src, File dst)
+  public static final long copyProjectArtifact(Log l, File src, File dst)
       throws MojoExecutionException
   {
     l.info("copying artifact: " + src.getAbsolutePath());
@@ -265,6 +265,7 @@ public class Utils
     try
       {
         FileUtils.copyFile(src, dst);
+        return src.length();
       }
     catch (IOException ioe)
       {
@@ -348,7 +349,8 @@ public class Utils
   {
     long size = 0;
     
-    Iterator<? extends AuxFile> ite = auxFiles.iterator();
+    final Iterator<? extends AuxFile> ite = auxFiles.iterator();
+    
     while (ite.hasNext())
       {
         AuxFile af = (AuxFile) ite.next();
@@ -370,6 +372,10 @@ public class Utils
               {
                 to = new File(to, from.getName());
                 FileUtils.copyDirectory(from, to, FILTER);
+                for (final Iterator<File> files = FileUtils.iterateFiles(from, FILTER, FILTER); files.hasNext(); ) {
+                	final File nextFile = files.next();
+                    size += nextFile.length();
+                }
               }
             else if (af.isRename())
               {

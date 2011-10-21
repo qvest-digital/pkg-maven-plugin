@@ -765,11 +765,16 @@ public class TargetConfiguration {
 	String customCodeWindows;
 	
 	/**
+	 * Defines whether the generated project artefact (pom, jar, war, ..) is included or not.
+	 * <p>This property is <em>optional</em> and default is <code>true</code>.<p>
+	 */
+	Boolean includeProjectArtefact;
+	
+	/**
 	 * Denothes wether the package should be signed or not. As of now, this value is
 	 * only taken in consideration when building RPM packages.
 	 * 
 	 * <p>Default value is <code>false</code>.</p>
-	 * 
 	 */
 	Boolean sign;
 	
@@ -778,15 +783,14 @@ public class TargetConfiguration {
 	 * only taken in consideration when building RPM packages.
 	 * 
 	 * <p>Default value is <code>unknown</code>.</p>
-	 * 
 	 */
 	String license;
+	
 	/**
 	 * Denothes the release of the package to build. As of now, this value is
 	 * only taken in consideration when building RPM packages.
 	 * 
 	 * <p>Default value is <code>unknown</code>.</p>
-	 * 
 	 */
 	String release;
 	
@@ -795,7 +799,6 @@ public class TargetConfiguration {
 	 * only taken in consideration when building RPM packages.
 	 * 
 	 * <p>Default value is <code>unknown</code>.</p>
-	 * 
 	 */
 	String source;
 
@@ -1130,7 +1133,9 @@ public class TargetConfiguration {
 		conflicts = (List) merge(conflicts, parent.conflicts, new ArrayList());
 
 		replaces = (List) merge(replaces, parent.replaces, new ArrayList());
-
+		
+		includeProjectArtefact = (Boolean) merge(includeProjectArtefact, parent.includeProjectArtefact, Boolean.TRUE);
+		
 		systemProperties = merge(systemProperties,
 				parent.systemProperties, new Properties());
 
@@ -1366,6 +1371,7 @@ public class TargetConfiguration {
 		appendBoolean(sb, "aotCompile", aotCompile);
 		appendBoolean(sb, "bundleAll", bundleAll);
 		appendBoolean(sb, "advancedStarter", advancedStarter);
+		appendBoolean(sb, "includeProjectArtefact", includeProjectArtefact);
 		appendBoolean(sb, "sign", sign);
 		appendStringDefault(sb, "license", license);
 		appendStringDefault(sb, "release", license);
@@ -1518,7 +1524,14 @@ public class TargetConfiguration {
 	public void setCustomCodeWindows(String customCodeWindows) {
 		this.customCodeWindows = customCodeWindows;
 	}
-
+	
+	public Boolean getIncludeProjectArtefact() {
+		return includeProjectArtefact;
+	}
+	
+	public void setIncludeProjectArtefact(Boolean includeProjectArtefact) {
+		this.includeProjectArtefact = includeProjectArtefact;
+	}
 
 	public boolean isSign() {
 		return sign.booleanValue();
@@ -1558,5 +1571,4 @@ public class TargetConfiguration {
 	public void setSource(String source) {
 		this.source = source;
 	}
-
 }

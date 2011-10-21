@@ -302,16 +302,12 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
       throws ArtifactResolutionException, ArtifactNotFoundException,
       ProjectBuildingException, InvalidDependencyVersionException
   {
-    Set deps = project.createArtifacts(factory, Artifact.SCOPE_COMPILE, filter);
-
-    ArtifactResolutionResult result = resolver.resolveTransitively(
-                                                                   deps,
+    ArtifactResolutionResult result = resolver.resolveTransitively(project.getDependencyArtifacts(),
                                                                    artifact,
                                                                    local,
                                                                    remoteRepos,
                                                                    metadataSource,
                                                                    filter);
-
     return result.getArtifacts();
   }
 

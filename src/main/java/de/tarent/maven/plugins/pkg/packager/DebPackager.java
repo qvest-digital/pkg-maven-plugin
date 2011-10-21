@@ -131,11 +131,11 @@ public class DebPackager extends Packager
     
     // A set which will be filled with the artifacts which need to be bundled with the
     // application.
-    Set bundledArtifacts = null;
     Path bcp = new Path();
     Path cp = new Path();
+    final Set bundledArtifacts = ph.createClasspathLine(bcp, cp);
     
-    long byteAmount = srcArtifactFile.length();
+    long byteAmount = 0;
     
     try
       {
@@ -147,7 +147,8 @@ public class DebPackager extends Packager
     	
         ph.prepareInitialDirectories();
 
-        ph.copyProjectArtifact();
+        if (distroConfig.getIncludeProjectArtefact())
+        	byteAmount += ph.copyProjectArtifact();
         
         byteAmount += ph.copyFiles();
         
@@ -155,17 +156,16 @@ public class DebPackager extends Packager
         
         ph.copyScripts();
 
-        // Create classpath line, copy bundled jars and generate wrapper
-        // start script only if the project is an application.
-        if (distroConfig.getMainClass() != null)
-          {
+        // if the project is an plain java application then copy bundled jars and generate wrapper start script only
+        if (distroConfig.getMainClass() != null) {
             // TODO: Handle native library artifacts properly.
-            bundledArtifacts = ph.createClasspathLine(bcp, cp);
-
             ph.generateWrapperScript(bundledArtifacts, bcp, cp, false);
-
-            byteAmount += ph.copyArtifacts(bundledArtifacts);
-          }
+        	byteAmount += ph.copyArtifacts(bundledArtifacts);
+        }
+        // if ear or war app with e.g. shared libs
+        else if (distroConfig.isBundleAll()) {
+        	byteAmount += ph.copyArtifacts(bundledArtifacts);
+        }
         
         generateControlFile(l,
                             ph,
@@ -302,7 +302,8 @@ public class DebPackager extends Packager
 	cgen.setDescription(ph.getProjectDescription());
 	cgen.setArchitecture(dc.getArchitecture());
 	cgen.setInstalledSize(getInstalledSize(byteAmount));
-	    
+	cgen.setHomepage(ph.getProjectUrl());
+	
     l.info("creating control file: " + controlFile.getAbsolutePath());
     Utils.createFile(controlFile, "control");
     
@@ -388,7 +389,7 @@ public class DebPackager extends Packager
                              base.getName(),
                              ph.getOutputDirectory().getAbsolutePath() },
                 ph.getTempRoot(),
-                "'fakeroot dpkg --build' failed.",
+                "'fakeroot dpkg-deb --build' failed.",
                 "Error creating the .deb file.");
   }
  

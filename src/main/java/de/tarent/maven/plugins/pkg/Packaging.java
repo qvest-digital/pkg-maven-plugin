@@ -260,25 +260,26 @@ public class Packaging
     {
       long size = 0;
       Log l = getLog();
-      size = Utils.copyFiles(l, getSrcAuxFilesDir(), getDstAuxDir(),
+      
+      size += Utils.copyFiles(l, getSrcAuxFilesDir(), getDstAuxDir(),
                              dc.auxFiles, "aux file");
 
-      size = Utils.copyFiles(l, getSrcBinFilesDir(), getDstBinDir(),
+      size += Utils.copyFiles(l, getSrcBinFilesDir(), getDstBinDir(),
               dc.binFiles, "bin file", true);
       
-      size = Utils.copyFiles(l, getSrcSysconfFilesDir(), getDstSysconfDir(),
+      size += Utils.copyFiles(l, getSrcSysconfFilesDir(), getDstSysconfDir(),
                              dc.sysconfFiles, "sysconf file");
 
-      size = Utils.copyFiles(l, getSrcDatarootFilesDir(), getDstDatarootDir(),
+      size += Utils.copyFiles(l, getSrcDatarootFilesDir(), getDstDatarootDir(),
                              dc.datarootFiles, "dataroot file");
 
-      size = Utils.copyFiles(l, getSrcDataFilesDir(), getDstDataDir(),
+      size += Utils.copyFiles(l, getSrcDataFilesDir(), getDstDataDir(),
                              dc.dataFiles, "data file");
 
-      size = Utils.copyFiles(l, getSrcJNIFilesDir(), getDstJNIDir(),
+      size += Utils.copyFiles(l, getSrcJNIFilesDir(), getDstJNIDir(),
                              dc.jniFiles, "JNI library");
 
-      size = Utils.copyFiles(l, getSrcJarFilesDir(), getDstBundledJarDir(),
+      size += Utils.copyFiles(l, getSrcJarFilesDir(), getDstBundledJarDir(),
               dc.jarFiles, "jar file");
 
       return size;
@@ -293,9 +294,9 @@ public class Packaging
      * 
      * @throws MojoExecutionException
      */
-    public void copyProjectArtifact() throws MojoExecutionException
+    public long copyProjectArtifact() throws MojoExecutionException
     {
-      Utils.copyProjectArtifact(getLog(), getSrcArtifactFile(),
+      return Utils.copyProjectArtifact(getLog(), getSrcArtifactFile(),
                                 getDstArtifactFile());
     }
 
@@ -1300,19 +1301,17 @@ public class Packaging
 
     if (dc.getMainClass() == null)
       {
-        if (! "libs".equals(dc.getSection()))
-          throw new MojoExecutionException(
-                                           "section has to be 'libs' if no main class is given.");
-
-        if (dc.isBundleAll())
-          throw new MojoExecutionException(
-                                           "Bundling dependencies to a library makes no sense.");
+        // wars and ears are application without a MainClass and sometimes they need shared-(bundled)-libs
+    	if ("libs".equals(dc.getSection())) {
+	        if (dc.isBundleAll()) {
+	        	throw new MojoExecutionException("Bundling dependencies to a library makes no sense.");
+	        }
+        }
       }
     else
       {
         if ("libs".equals(dc.getSection()))
-          throw new MojoExecutionException(
-                                           "Set a proper section if main class parameter is set.");
+          throw new MojoExecutionException("Set a proper section if main class parameter is set.");
       }
 
     if (dc.isAotCompile())
@@ -1396,17 +1395,22 @@ public class Packaging
 
     l.info("resolving dependency artifacts");
 
-    Set dependencies = null;
+    final Set dependencies = new HashSet();
     try
       {
         // Notice only compilation dependencies which are Jars.
         // Shared Libraries ("so") are filtered out because the
         // JNI dependency is solved by the system already.
-        AndArtifactFilter andFilter = new AndArtifactFilter();
-        andFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE));
-        andFilter.add(new TypeArtifactFilter("jar"));
+    	
+        AndArtifactFilter compileFilter = new AndArtifactFilter();
+        compileFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE));
+        compileFilter.add(new TypeArtifactFilter("jar"));
+        dependencies.addAll(findArtifacts(compileFilter));
 
-        dependencies = findArtifacts(andFilter);
+        AndArtifactFilter runtimeFilter = new AndArtifactFilter();
+        runtimeFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME));
+        runtimeFilter.add(new TypeArtifactFilter("jar"));
+        dependencies.addAll(findArtifacts(runtimeFilter));
       }
     catch (ArtifactNotFoundException anfe)
       {
