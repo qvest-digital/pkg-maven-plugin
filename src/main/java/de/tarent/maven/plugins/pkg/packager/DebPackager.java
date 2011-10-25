@@ -52,6 +52,7 @@ package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -128,12 +129,12 @@ public class DebPackager extends Packager
 
     // The destination file for the 'control' file.
     File aotControlFile = new File(aotPkgDir, "DEBIAN/control");
-    
+
     // A set which will be filled with the artifacts which need to be bundled with the
     // application.
-    Path bcp = new Path();
-    Path cp = new Path();
-    final Set bundledArtifacts = ph.createClasspathLine(bcp, cp);
+    final Path bcp = new Path();
+    final Path cp = new Path();
+    final Set<?> bundledArtifacts = ph.createClasspathLine(bcp, cp);
     
     long byteAmount = 0;
     
@@ -154,7 +155,7 @@ public class DebPackager extends Packager
         
         generateConffilesFile(l, conffilesFile, ph, distroConfig);
         
-        ph.copyScripts();
+        byteAmount += ph.copyScripts();
 
         // if the project is an plain java application then copy bundled jars and generate wrapper start script only
         if (distroConfig.getMainClass() != null) {
@@ -347,15 +348,27 @@ public class DebPackager extends Packager
 		  if (scf.isRename())
 		  {
 			  targetFile = new File(ph.getTargetSysconfDir(), scf.getTo());
+			  sb.append(targetFile.getAbsolutePath()).append("\n");
 		  }
 		  else
 		  {
-			  File srcFile = new File(ph.getSrcSysconfFilesDir(), scf.getFrom());  
-			  File targetPath = new File(ph.getTargetSysconfDir(), scf.getTo());
-			  targetFile = new File(targetPath, srcFile.getName());
+			  final File srcFile = new File(ph.getSrcSysconfFilesDir(), scf.getFrom());
+			  final File targetPath = new File(ph.getTargetSysconfDir(), scf.getTo());
+			  
+			  if (srcFile.isFile()) {
+				  targetFile = new File(targetPath, srcFile.getName());
+				  sb.append(targetFile.getAbsolutePath()).append("\n");
+			  }
+			  else {
+	                final Iterator<File> files = FileUtils.iterateFiles(srcFile, Utils.FILTER, Utils.FILTER);
+	                final int srcFileStrLength = srcFile.getPath().length();
+	                while (files.hasNext()) {
+	                	final File nextFile = files.next();
+	  				  	targetFile = new File(targetPath, nextFile.getAbsolutePath().substring(srcFileStrLength));
+	  				  	sb.append(targetFile.getAbsolutePath()).append("\n");
+	                }
+			  }
 		  }
-		  sb.append(targetFile.getAbsolutePath());
-		  sb.append("\n");
 	  }
 
 	  	if (!conffilesFile.getParentFile().mkdirs())
@@ -381,11 +394,7 @@ public class DebPackager extends Packager
   {
     l.info("calling dpkg-deb to create binary package");
     
-    
-    
-    Utils.exec(new String[] {"fakeroot",
-                             "dpkg-deb",
-                             "--build",
+    Utils.exec(new String[] {"fakeroot", "dpkg-deb", "--build",
                              base.getName(),
                              ph.getOutputDirectory().getAbsolutePath() },
                 ph.getTempRoot(),

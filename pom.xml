@@ -262,5 +262,17 @@
 			</roles>
 			<timezone>+1</timezone>
 		</developer>
+		
+		<developer>
+			<id>trink</id>
+			<name>Tino Rink</name>
+			<email>t.rink@tarent.de</email>
+			<organization>tarent solutions GmbH</organization>
+			<organizationUrl>http://www.tarent.de/</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
 	</developers>
 </project>

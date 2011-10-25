@@ -88,6 +88,12 @@ public class RPMPackager extends Packager {
 
 		RPMHelper ph = (RPMHelper) helper;
 		
+	    // A set which will be filled with the artifacts which need to be bundled with the
+	    // application.
+	    final Path bcp = new Path();
+	    final Path cp = new Path();
+	    final Set<?> bundledArtifacts = ph.createClasspathLine(bcp, cp);
+		
 		ph.prepareInitialDirectories();
 		
 		//Setting all destination directories to /BUILD/ + target name
@@ -100,8 +106,10 @@ public class RPMPackager extends Packager {
 	    ph.setDstStarterDir(new File(ph.getBaseBuildDir(),ph.getTargetStarterDir().toString()));
 	    ph.setDstWrapperScriptFile(new File(ph.getBaseBuildDir(),ph.getTargetWrapperScriptFile().toString()));
 	    
-	    ph.copyProjectArtifact();	    
-		ph.copyFiles();
+	    if (distroConfig.getIncludeProjectArtefact())
+	    	ph.copyProjectArtifact();	    
+		
+	    ph.copyFiles();
 		
 		l.debug(ph.getPackageName());
 		l.debug(ph.getPackageVersion());
@@ -111,18 +119,17 @@ public class RPMPackager extends Packager {
 	     * and we will make sure that the bundled artifacts are copied.
 	    */
 	    if (distroConfig.getMainClass() != null){
-		    Path bcp = new Path();
-		    Path cp = new Path();
-	    	Set bundledArtifacts = ph.createClasspathLine(bcp, cp);
             ph.generateWrapperScript(bundledArtifacts, bcp, cp, false);
             ph.copyArtifacts(bundledArtifacts);
+        }
+        // if ear or war app with e.g. shared libs
+        else if (distroConfig.isBundleAll()) {
+        	ph.copyArtifacts(bundledArtifacts);
         }
 
 		File specFile = new File(ph.getBaseSpecsDir(), ph.getPackageName() + ".spec");
 
 		try {
-	        
-	        
 			generateSPECFile(l, (RPMHelper) ph, distroConfig, specFile);
 			l.info("SPEC file generated.");
 			createPackage(l, ph, specFile, distroConfig);
@@ -132,9 +139,11 @@ public class RPMPackager extends Packager {
 					 copyRPMToTargetFolder(l, ph, distroConfig)}
 					 ,ph.getTempRoot().getParentFile(),"RPM not found", "RPM not found")));
 			
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			throw new MojoExecutionException(ex.toString());
-		} finally {
+		}
+		finally {
 			try {
 				ph.restoreRpmMacrosFileBackup(l);
 			} catch (IOException e) {

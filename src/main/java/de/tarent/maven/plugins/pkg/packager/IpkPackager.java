@@ -93,14 +93,13 @@ public class IpkPackager extends Packager
 
     // A set which will be filled with the artifacts which need to be bundled with the
     // application.
-    Set bundledArtifacts = null;
-    Path bcp = new Path();
-    Path cp = new Path();
+    final Path bcp = new Path();
+    final Path cp = new Path();
+    final Set<?> bundledArtifacts = ph.createClasspathLine(bcp, cp);
     
-    long byteAmount = srcArtifactFile.length();
+    long byteAmount = 0;
 
-    try
-      {
+    try {
     	// The following section does the coarse-grained steps
     	// to build the package(s). It is meant to be kept clean
     	// from simple Java statements. Put additional functionality
@@ -109,24 +108,24 @@ public class IpkPackager extends Packager
     	
         ph.prepareInitialDirectories();
 
-        ph.copyProjectArtifact();
+        if (distroConfig.getIncludeProjectArtefact())
+        	byteAmount += ph.copyProjectArtifact();
         
         byteAmount += ph.copyFiles();
         
-        ph.copyScripts();
+        byteAmount += ph.copyScripts();
 
-        // Create classpath line, copy bundled jars and generate wrapper
-        // start script only if the project is an application.
-        if (distroConfig.getMainClass() != null)
-          {
-            // TODO: Handle native library artifacts properly.
-            
-            bundledArtifacts = ph.createClasspathLine(bcp, cp);
-
-            ph.generateWrapperScript(bundledArtifacts, bcp, cp, false);
-
-            byteAmount += ph.copyArtifacts(bundledArtifacts);
-          }
+		// Create classpath line, copy bundled jars and generate wrapper
+		// start script only if the project is an application.
+		if (distroConfig.getMainClass() != null) {
+			// TODO: Handle native library artifacts properly.
+			ph.generateWrapperScript(bundledArtifacts, bcp, cp, false);
+			byteAmount += ph.copyArtifacts(bundledArtifacts);
+		}
+        // if ear or war app with e.g. shared libs
+        else if (distroConfig.isBundleAll()) {
+        	byteAmount += ph.copyArtifacts(bundledArtifacts);
+        }
         
         generateControlFile(l,
                             ph,
