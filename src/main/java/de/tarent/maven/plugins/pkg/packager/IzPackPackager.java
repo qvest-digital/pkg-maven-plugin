@@ -143,10 +143,12 @@ public class IzPackPackager extends Packager
     // The directory in which the embedded IzPack installation is unpacked
     // at runtime.
     File izPackEmbeddedRoot = new File(ph.getTempRoot(), "izpack-embedded");
-    
-    Set bundledArtifacts = null;
-    Path bcp = new Path();
-    Path cp = new Path();
+
+    // A set which will be filled with the artifacts which need to be bundled with the
+    // application.
+    final Path bcp = new Path();
+    final Path cp = new Path();
+    final Set<?> bundledArtifacts = ph.createClasspathLine(bcp, cp);
     
     try
       {
@@ -159,13 +161,23 @@ public class IzPackPackager extends Packager
         
         unpackIzPack(l, izPackEmbeddedJarFile, izPackEmbeddedRoot);
         
-        bundledArtifacts = ph.createClasspathLine(bcp, cp);
-        
-        ph.copyProjectArtifact();
-        
-        ph.copyArtifacts(bundledArtifacts);
+        if (distroConfig.getIncludeProjectArtefact())
+        	ph.copyProjectArtifact();
         
         ph.copyFiles();
+        
+        // if the project is an plain java application then copy bundled jars and generate wrapper start script only
+        if (distroConfig.getMainClass() != null) {
+            // TODO: Handle native library artifacts properly.
+            ph.generateWrapperScript(bundledArtifacts, bcp, cp, true);
+        	ph.copyArtifacts(bundledArtifacts);
+        }
+        // if ear or war app with e.g. shared libs
+        else if (distroConfig.isBundleAll()) {
+        	ph.copyArtifacts(bundledArtifacts);
+        }
+        
+        ph.copyArtifacts(bundledArtifacts);
 
         l.info("parsing installer xml file: " + installerXmlFile);
         IzPackDescriptor desc = new IzPackDescriptor(installerXmlFile, "Unable to parse installer xml file.");
@@ -175,8 +187,6 @@ public class IzPackPackager extends Packager
         
         desc.removeAotPack();
 
-        ph.generateWrapperScript(bundledArtifacts, bcp, cp, true);
-        
         if (distroConfig.isAdvancedStarter())
           desc.addStarter("_starter", "_classpath");
 
