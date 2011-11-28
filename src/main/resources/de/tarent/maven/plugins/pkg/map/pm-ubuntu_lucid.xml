@@ -46,8 +46,17 @@
 			</jars>
 		</entry>
 		
+		<!-- The following 2 entries are found in the JBoss repositories -->
 		<entry>
-			<artifactSpec>org.eclipse.swt.gtk.linux:x86</artifactSpec>
+			<artifactSpec>org.eclipse.swt:org.eclipse.swt.gtk.linux.x86</artifactSpec>
+			<dependencyLine>libswt-gtk-3.5-java</dependencyLine>
+			<jars>
+				<jar>swt-gtk-3.5.1.jar</jar>
+			</jars>
+		</entry>
+
+		<entry>
+			<artifactSpec>org.eclipse.swt:org.eclipse.swt.gtk.linux.x86_64</artifactSpec>
 			<dependencyLine>libswt-gtk-3.5-java</dependencyLine>
 			<jars>
 				<jar>swt-gtk-3.5.1.jar</jar>
