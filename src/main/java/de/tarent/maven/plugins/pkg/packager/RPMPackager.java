@@ -127,10 +127,14 @@ public class RPMPackager extends Packager {
 			l.info("SPEC file generated.");
 			createPackage(l, ph, specFile, distroConfig);
 			l.info("Package created.");
-			l.info("Output of rpm -pqi :");	 
-			l.info(IOUtils.toString(Utils.exec(new String[] {"rpm", "-pqi", 
+			l.info("Output of rpm -pqi :");
+			String out = IOUtils.toString(Utils.exec(new String[] {"rpm", "-pqi", 
 					 copyRPMToTargetFolder(l, ph, distroConfig)}
-					 ,ph.getTempRoot().getParentFile(),"RPM not found", "RPM not found")));
+					 ,ph.getTempRoot().getParentFile(),"RPM not found", "RPM not found"));
+
+			l.info("=======================================");
+			for(String s: out.split("\\r?\\n")){l.info(s);}
+			l.info("=======================================");
 			
 		} catch (Exception ex) {
 			throw new MojoExecutionException(ex.toString());
