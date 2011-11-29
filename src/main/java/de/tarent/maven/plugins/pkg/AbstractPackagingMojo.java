@@ -257,15 +257,6 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
    */
   protected URL auxPackageMapURL;
 
-
-  /**
-   * Set default distribution to package for.
-   * 
-   * @parameter expression="${defaultDistro}"
-   * @required
-   */
-  protected String defaultDistro;
-
   /**
    * Overrides "defaultDistro" parameter. For use on the command-line. 
    * 
@@ -282,7 +273,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
   protected String defaultTarget;
 
   /**
-   * Overrides "defaultTarget" parameter. For use on the command-line. 
+   * Overrides "defaultTarget" parameter with a comma separated list of targets. For use on the command-line. 
    * 
    * @parameter expression="${target}"
    */

@@ -1691,60 +1691,66 @@ public class Packaging
 
   public void execute() throws MojoExecutionException, MojoFailureException
   {
-	String t = (target != null) ? target : defaultTarget;
-    String d = (distro != null) ? distro : defaultDistro;
-    
-    // Generate merged distro configuration.
-    dc = getMergedConfiguration(t, d, true);
-    dc.chosenDistro = d;
-    dc.chosenTarget = t;
-    
-    // Retrieve package map for chosen distro.
-    pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL, d,
-                        dc.bundleDependencies);
 
+    Log l = getLog();
     
-
-    String packaging = pm.getPackaging();
-    if (packaging == null)
-      throw new MojoExecutionException(
-                                       "Package maps document set no packaging for distro: "
-                                           + dc.chosenDistro);
-
-    // Create packager according to the chosen packaging type.    
-    Map<String, IPackagingHelper> extPackagerHelperMap = new HashMap<String,IPackagingHelper>();
-    Map<String, Packager> extPackagerMap = new HashMap<String,Packager>();
+    // Maven < 3.0.3 does not accept comma separated values as String[] so we need to split the values ourselves    
+    String[] targetArray =  (target != null) ? target.split(",") : new String[]{defaultTarget};	
+	
+	for(String t : targetArray){
     
-    extPackagerHelperMap.put("deb", new Helper());
-    extPackagerHelperMap.put("ipk", new Helper());
-    extPackagerHelperMap.put("izpack", new Helper());
-    extPackagerHelperMap.put("rpm", new RPMHelper());
-    extPackagerMap.put("deb", new DebPackager());
-    extPackagerMap.put("ipk", new IpkPackager());
-    extPackagerMap.put("izpack", new IzPackPackager());
-    extPackagerMap.put("rpm", new RPMPackager());
-    
-    IPackagingHelper ph;
-    Packager packager;
-    
-    ph = extPackagerHelperMap.get(packaging);
-    packager = extPackagerMap.get(packaging);    
-    
-    if (packager == null){
-      throw new MojoExecutionException("Unsupported packaging type: "
-                                       + packaging);
-    }
-  
-    // Store configuration in plugin-context for later use by signer- and deploy-goal
-    getPluginContext().put("dc", dc);
-    getPluginContext().put("pm", pm);
-    getPluginContext().put("packageVersion", ((Helper) ph).getPackageVersion());
-    
-    checkEnvironment(getLog());
-
-    packager.checkEnvironment(getLog(), ph, dc);
-
-    packager.execute(getLog(), ph, dc, pm);
+		// Generate merged distro configuration.		
+	    String d = (distro != null) ? distro : getDefaultDistroForConfiguration(t);	    
+		dc = getMergedConfiguration(t, d, true);
+		dc.chosenTarget = t;
+	    
+	    // Retrieve package map for chosen distro.
+	    pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL, d,
+	                        dc.bundleDependencies);
+	
+	    
+	
+	    String packaging = pm.getPackaging();
+	    if (packaging == null)
+	      throw new MojoExecutionException(
+	                                       "Package maps document set no packaging for distro: "
+	                                           + dc.chosenDistro);
+	
+	    // Create packager according to the chosen packaging type.    
+	    Map<String, IPackagingHelper> extPackagerHelperMap = new HashMap<String,IPackagingHelper>();
+	    Map<String, Packager> extPackagerMap = new HashMap<String,Packager>();
+	    
+	    extPackagerHelperMap.put("deb", new Helper());
+	    extPackagerHelperMap.put("ipk", new Helper());
+	    extPackagerHelperMap.put("izpack", new Helper());
+	    extPackagerHelperMap.put("rpm", new RPMHelper());
+	    extPackagerMap.put("deb", new DebPackager());
+	    extPackagerMap.put("ipk", new IpkPackager());
+	    extPackagerMap.put("izpack", new IzPackPackager());
+	    extPackagerMap.put("rpm", new RPMPackager());
+	    
+	    IPackagingHelper ph;
+	    Packager packager;
+	    
+	    ph = extPackagerHelperMap.get(packaging);
+	    packager = extPackagerMap.get(packaging);    
+	    
+	    if (packager == null){
+	      throw new MojoExecutionException("Unsupported packaging type: "
+	                                       + packaging);
+	    }
+	  
+	    // Store configuration in plugin-context for later use by signer- and deploy-goal
+	    getPluginContext().put("dc", dc);
+	    getPluginContext().put("pm", pm);
+	    getPluginContext().put("packageVersion", ((Helper) ph).getPackageVersion());
+	    
+	    checkEnvironment(getLog());
+	
+	    packager.checkEnvironment(getLog(), ph, dc);
+	
+	    packager.execute(getLog(), ph, dc, pm);
+	}
   }
 
   /**
@@ -1762,24 +1768,24 @@ public class Packaging
     Iterator<TargetConfiguration> ite = targetConfigurations.iterator();
     while (ite.hasNext())
       {
-        TargetConfiguration dc = ite.next();
+        TargetConfiguration currentTargetConfiguration = ite.next();
         
         // The target configuration should be for the requested target.
-        if (!dc.target.equals(target))
+        if (!currentTargetConfiguration.target.equals(target))
         	continue;
         
-        TargetConfiguration merged = getMergedConfiguration(dc.parent, distro, false);
+        TargetConfiguration merged = getMergedConfiguration(currentTargetConfiguration.parent, distro, false);
 
         // Checks whether this targetconfiguration supports
         // the wanted distro.
-        if (dc.distros.contains(distro) || merged.distros.contains(distro))
+        if (currentTargetConfiguration.distros.contains(distro) || merged.distros.contains(distro))
           {
             // Stores the chosen distro in the configuration for later use.
-            dc.chosenDistro = distro;
+            currentTargetConfiguration.chosenDistro = distro;
 
             // Returns a configuration that is merged with
             // the default configuration-
-            return dc.merge(merged);
+            return currentTargetConfiguration.merge(merged);
           }
       }
     
@@ -1797,6 +1803,47 @@ public class Packaging
     
   }
 
+  /**
+   * Returns the default Distro to use for a certain TargetConfiguration.
+   * @param target
+   * @return
+   * @throws MojoExecutionException 
+   */
+  private String getDefaultDistroForConfiguration(String target) throws MojoExecutionException{
+	  String distro = new String();
+	  Log l = getLog();
+	    Iterator<TargetConfiguration> ite = targetConfigurations.iterator();
+	    while (ite.hasNext())
+	      {
+	        TargetConfiguration currentTargetConfiguration = ite.next();
+	        
+	        // The target configuration should be for the requested target.
+	        if (!currentTargetConfiguration.target.equals(target))
+	        	continue;
+
+	        // Checks whether this targetconfiguration supports
+	        // the wanted distro.
+	        if(currentTargetConfiguration.defaultDistro!=null){
+	        	distro = currentTargetConfiguration.defaultDistro;
+	        	l.info("Default distribution is set to \"" +distro + "\".");
+	        }else if(currentTargetConfiguration.distros!=null){
+			    if(currentTargetConfiguration.distros.size()==1){
+			    	distro = (String) currentTargetConfiguration.distros.iterator().next();		
+		        	l.info("Size of \"Distros\" list is one. Using \""+distro +"\" as default." );	    	
+			    }else if(currentTargetConfiguration.distros.size()>1){
+			    	String m = "No default configuration given for"+ currentTargetConfiguration.getTarget() 
+			    	+", and more than one distro is supported. Please provide one.";
+			    	l.error(m);
+			    	throw new MojoExecutionException(m);
+			    }
+		    }else{
+		    	throw new MojoExecutionException("No distros defined for configuration " + dc.getTarget());
+		    }
+	    	break;
+	      }
+	    return distro;	  
+  }
+  
   /**
    * Creates the temporary and package base directory.
    * 

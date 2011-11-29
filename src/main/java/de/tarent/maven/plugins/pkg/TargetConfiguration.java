@@ -260,6 +260,13 @@ public class TargetConfiguration {
 	 */
 	Set distros = new HashSet();
 
+
+	/**
+	 * Set default distribution to package for.
+	 * 
+	 */
+	protected String defaultDistro;
+	
 	/**
 	 * Denotes the name of the gcj-dbtool executable. This allows the use of
 	 * e.g. "gcj-dbtool-4.2" or "gcj-dbtool-4.3" depending on the targeted
@@ -1139,6 +1146,9 @@ public class TargetConfiguration {
 		
 		// RPM License configuration (it must always contain a value)
 		license = (String) merge(license, parent.license,"unknown");
+		
+		// RPM License configuration (it must always contain a value)
+		defaultDistro = (String) merge(defaultDistro, parent.defaultDistro,"unknown");
 
 		return this;
 	}
@@ -1335,6 +1345,7 @@ public class TargetConfiguration {
 		StringBuilder sb = new StringBuilder();
 		appendStringDefault(sb, "target", target);
 		appendStringDefault(sb, "parent", parent);
+		appendStringDefault(sb, "defaultDistro", defaultDistro);
 		appendStringDefault(sb, "chosenDistro", chosenDistro);
 		
 		sb.append("\n");

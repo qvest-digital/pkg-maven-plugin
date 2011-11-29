@@ -3,7 +3,9 @@ package de.tarent.maven.plugins.pkg;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import junit.framework.Assert;
 
@@ -26,7 +28,6 @@ public class RPMPackagerTest {
 	public void setUp(){
 		//TODO: Mock these property in order to write tests
 		p = new Packaging();
-		p.defaultDistro = "centos_5_6";
 		p.defaultTarget = "noarch";
 		p.project = mockProject();
 		dc = mockTargetConfiguration();
@@ -57,7 +58,9 @@ public class RPMPackagerTest {
 		TargetConfiguration dc = new TargetConfiguration();
 		dc.setAdvancedStarter(false);
 		dc.setArchitecture("all");
-		dc.setDistro("centos_5_6");
+		Set<String>distros = new HashSet<String>();
+		distros.add("centos_5_6");
+		dc.setDistros(distros);
 		dc.target = "noarch";
 		dc.setLicense("GPL");
 		dc.setMaintainer("Maintainer name");
