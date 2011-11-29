@@ -135,7 +135,7 @@ public class DebPackager extends Packager
     Path bcp = new Path();
     Path cp = new Path();
     
-    long byteAmount = srcArtifactFile.length();
+    long byteAmount = 0;
     
     try
       {
@@ -147,7 +147,7 @@ public class DebPackager extends Packager
     	
         ph.prepareInitialDirectories();
 
-        ph.copyProjectArtifact();
+        byteAmount += ph.copyProjectArtifact();
         
         byteAmount += ph.copyFiles();
         

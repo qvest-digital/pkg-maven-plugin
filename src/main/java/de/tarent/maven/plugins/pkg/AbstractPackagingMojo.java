@@ -265,6 +265,21 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
   protected String distro;
 
   /**
+   * Overrides "defaultIgnorePackagingTypes" defines a list of comma speparated packaging types that, when used, 
+   * will skip copying the main artifact for the project (if any) in the final package. For use on the command-line. 
+   * 
+   * @parameter expression="${ignorePackagingTypes}"
+   */
+  protected String ignorePackagingTypes;
+
+  /**
+   * Default list of packaging types that, when used, will skip copying the main artifact for
+   * the project (if any) in the final package. This list contains at the moment only one item: "pom".
+   */
+  protected String defaultIgnorePackagingTypes = "pom";
+  
+  
+  /**
    * Set default target configuration to package for.
    * 
    * @parameter expression="${defaultTarget}"
@@ -459,6 +474,32 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
   protected final String sanitizePackageVersion(String string) {
 	  
 	  return string.replaceAll("_", "");	
+  }
+  
+  /**
+   * Checks if the packaging type of the current Maven project belongs to the packaging types that, when used, 
+   * woint contain the main artifact for the project (if any) in the final package.    
+   * @return
+   */
+  
+  protected final boolean packagingTypeBelongsToIgnoreList(){
+	boolean inList = false;
+	Log l = getLog();
+	
+	if (ignorePackagingTypes!=null){
+		l.info("ignorePackagingTypes set. Contains: " + ignorePackagingTypes 
+				+ " . Project packaging is "+project.getPackaging());
+	  for(String s : ignorePackagingTypes.split(",")){
+		  if(project.getPackaging().compareToIgnoreCase(s)==0){
+			  	inList = true;
+			  }
+	  }
+	}else{
+		if(project.getPackaging().compareToIgnoreCase(defaultIgnorePackagingTypes)==0){
+			return true;
+		}
+	}
+	  return inList;
   }
   
 }

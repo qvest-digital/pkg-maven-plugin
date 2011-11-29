@@ -89,7 +89,6 @@ public class IpkPackager extends Packager
     ph.setDstScriptDir(new File(ph.getBasePkgDir(), "CONTROL"));
 
     File controlFile = new File(ph.getBasePkgDir(), "CONTROL/control");
-    File srcArtifactFile = ph.getSrcArtifactFile();
 
     // A set which will be filled with the artifacts which need to be bundled with the
     // application.
@@ -97,7 +96,7 @@ public class IpkPackager extends Packager
     Path bcp = new Path();
     Path cp = new Path();
     
-    long byteAmount = srcArtifactFile.length();
+    long byteAmount = 0;
 
     try
       {
@@ -109,7 +108,7 @@ public class IpkPackager extends Packager
     	
         ph.prepareInitialDirectories();
 
-        ph.copyProjectArtifact();
+        byteAmount += ph.copyProjectArtifact();
         
         byteAmount += ph.copyFiles();
         

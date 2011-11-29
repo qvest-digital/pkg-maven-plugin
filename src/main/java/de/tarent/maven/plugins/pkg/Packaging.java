@@ -285,18 +285,25 @@ public class Packaging
     }
 
     /**
-     * Copies the project's artifact file possibly renaming it.
+     * Copies the project's artifact file possibly renaming it and returns its size (important for Debian and iPKG).
      * <p>
-     * For the destination the value of the property <code<dstArtifactFile</code>
+     * For the destination the value of the property <code>dstArtifactFile</code>
      * is used.
      * </p>
      * 
      * @throws MojoExecutionException
      */
-    public void copyProjectArtifact() throws MojoExecutionException
+    public long copyProjectArtifact() throws MojoExecutionException
     {
-      Utils.copyProjectArtifact(getLog(), getSrcArtifactFile(),
-                                getDstArtifactFile());
+    	if (!packagingTypeBelongsToIgnoreList()){
+    		Utils.copyProjectArtifact(getLog(), getSrcArtifactFile(), getDstArtifactFile());
+    		return getSrcArtifactFile().length();
+    	}else{
+    		Log l = getLog();
+    		l.info("Packaging type for this project has been found in the packageTypeIngore list. " +
+    				"No main artifact will be bundled.");
+    		return 0;
+    	}
     }
 
     /**
@@ -689,7 +696,7 @@ public class Packaging
     {
       return project.getDescription();
     }
-
+    
     public String getProjectUrl()
     {
       return project.getUrl();
