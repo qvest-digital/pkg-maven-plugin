@@ -1,0 +1,244 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>de.maven.plugins.test</groupId>
+  <artifactId>dummytest</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>Test mvn-pkg-plugin</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+    			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>utf-8</encoding>
+				</configuration>
+			</plugin>
+      <plugin>
+				<groupId>de.tarent.maven.plugins</groupId>
+				<artifactId>maven-pkg-plugin</artifactId>
+				<version>4.0</version>
+				<configuration>
+					<defaultTarget>ubuntu_lucid_target_simple</defaultTarget>
+					<defaults>
+						<distros>
+							<distro>ubuntu_lucid</distro>
+						</distros>
+							<section>misc</section>
+							<mainClass>de.tarent.maven.plugins.dummytest</mainClass>
+							<maintainer>Robert Schuster &lt;r.schuster@tarent.de&gt;</maintainer>
+					</defaults>
+
+					<targetConfigurations>
+						<targetConfiguration> <!-- simple ubuntu lucid target-->
+							<target>ubuntu_lucid_target</target>
+
+							<manualDependencies>
+								<string>kdm</string>
+								<string>usbmount</string>
+								<string>blackbox</string>
+							</manualDependencies>							
+							<distros>
+								<distro>ubuntu_lucid</distro>
+							</distros>
+							<!-- 
+							<sysconfFiles>
+								<sysconfFile>
+									<from>org.evolvis.multipc.pkla</from>
+									<to>polkit-1/localauthority/20-org.d</to>
+								</sysconfFile>
+							</sysconfFiles>
+
+							<jniFiles>
+								<jniFile>
+									<from>libjinput-linux.so</from>
+								</jniFile>
+							</jniFiles>
+
+							<dataFiles>
+								<dataFile>
+									<from>emptyCursor.xbm</from>
+								</dataFile>
+							</dataFiles> -->
+
+						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>ubuntu_lucid_target_simple</target>
+							<parent>ubuntu_lucid_target</parent>
+							<distros>
+								<distro>ubuntu_lucid</distro>
+							</distros>
+							<!--
+							<postinstScript>postinst</postinstScript>
+							<prermScript>prerm</prermScript>
+							<postrmScript>postrm</postrmScript>
+							
+							<binFiles>
+								<binFile>
+									<from>multipc-wm</from>
+								</binFile>
+								<binFile>
+									<from>multipc_helper</from>
+								</binFile>
+							</binFiles>
+
+							<dataFiles>
+								<dataFile>
+									<from>blackboxrc</from>
+								</dataFile>
+							</dataFiles>
+
+							<datarootFiles>
+								<datarootFile>
+									<from>multipc.desktop</from>
+									<to>xsessions/</to>
+								</datarootFile>
+								<datarootFile>
+									<from>Black</from>
+									<to>blackbox/styles/</to>
+								</datarootFile>
+							</datarootFiles>
+
+							<sysconfFiles>
+								<sysconfFile>
+									<from>multipc-demoboard2.properties</from>
+									<to>multipc/multipc.properties</to>
+									<rename>true</rename>
+								</sysconfFile>
+
+								<sysconfFile>
+									<from>devices.properties</from>
+									<to>multipc/devices.properties</to>
+									<rename>true</rename>
+								</sysconfFile>
+
+								<sysconfFile>
+									<from>stvo.txt</from>
+									<to>multipc/</to>
+								</sysconfFile>
+							</sysconfFiles>
+
+							<systemProperties>
+								<property>
+									<name>org.evolvis.argos2.main.profile</name>
+									<value>multipc</value>
+								</property>
+							</systemProperties>  -->
+						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>ubuntu_lucid_target_double</target>
+							<parent>ubuntu_lucid_target</parent>
+							<distros>
+								<distro>ubuntu_lucid</distro>
+								<distro>ubuntu_karmic</distro>
+							</distros>
+						</targetConfiguration>
+						
+						<targetConfiguration>
+							<target>centos_5_6_target_simple</target>							
+							<distros>
+								<distro>centos_5_6</distro>
+							</distros>
+							
+							<revision>r0</revision>
+							<source>dummysource</source>
+							<release>dummyrelease</release>
+							<license>GPL</license>
+							<architecture>x86_64</architecture>
+							<!--
+							<sysconfFiles>
+								<sysconfFile>
+									<from>multipc-zdpol-presentation.properties</from>
+									<to>multipc/multipc.properties</to>
+									<rename>true</rename>
+								</sysconfFile>
+
+								<sysconfFile>
+									<from>devices-zdpol-presentation.properties</from>
+									<to>multipc/devices.properties</to>
+									<rename>true</rename>
+								</sysconfFile>
+
+								<sysconfFile>
+									<from>org.evolvis.multipc.pkla</from>
+									<to>polkit-1/localauthority/20-org.d</to>
+								</sysconfFile>
+							</sysconfFiles>
+
+							<jniFiles>
+								<jniFile>
+									<from>libjinput-linux.so</from>
+								</jniFile>
+							</jniFiles>
+
+							<systemProperties>
+								<property>
+									<name>org.evolvis.argos2.main.profile</name>
+									<value>multipc</value>
+								</property>
+							</systemProperties>-->
+														
+						</targetConfiguration>
+					
+						<targetConfiguration>
+							<target>ubuntu_lucid_target_manual_dependencies</target>
+							<parent>ubuntu_lucid_target</parent>
+							<distros><distro>ubuntu_lucid</distro></distros>
+							<manualDependencies>
+								<string>kdm</string>
+								<string>usbmount</string>
+								<string>blackbox</string>
+							</manualDependencies>
+						</targetConfiguration>
+						
+						<targetConfiguration>
+							<target>centos_5_6_target_manual_dependencies</target>		
+												
+							<distros>
+								<distro>centos_5_6</distro>
+							</distros>
+							
+							<revision>r0</revision>
+							<source>dummysource</source>
+							<release>dummyrelease</release>
+							<license>GPL</license>
+							<architecture>x86_64</architecture>
+							<manualDependencies>
+								<string>kdm</string>
+								<string>usbmount</string>
+								<string>blackbox</string>
+							</manualDependencies>							
+						</targetConfiguration>
+						
+						
+					</targetConfigurations>
+				</configuration>
+				    <executions>
+                        <execution>
+                            <goals>
+                                <goal>pkg</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+			</plugin>
+    </plugins>
+  </build>
+</project>
