@@ -228,7 +228,56 @@
 							</manualDependencies>							
 						</targetConfiguration>
 						
+						<targetConfiguration>
+							<target>centos_5_6_target_external_artifact</target>		
+												
+							<distros>
+								<distro>centos_5_6</distro>
+							</distros>
+							<revision>r0</revision>
+							<source>dummysource</source>
+							<release>dummyrelease</release>
+							<license>GPL</license>
+							<architecture>x86_64</architecture>
+							<manualDependencies>
+								<string>kdm</string>
+								<string>usbmount</string>
+								<string>blackbox</string>
+							</manualDependencies>
+							<sysconfFiles>
+							<sysconfFile>
+									<from>dummy.properties</from>
+									<to>dummyProject/dummy.properties</to>
+									<rename>true</rename>
+							</sysconfFile>					
+							</sysconfFiles>
+						</targetConfiguration>						
 						
+						<targetConfiguration>
+							<target>ubuntu_lucid_target_external_artifact</target>		
+												
+							<distros>
+								<distro>ubuntu_lucid</distro>
+							</distros>
+							<revision>r0</revision>
+							<source>dummysource</source>
+							<release>dummyrelease</release>
+							<license>GPL</license>
+							<architecture>x86_64</architecture>
+							<manualDependencies>
+								<string>kdm</string>
+								<string>usbmount</string>
+								<string>blackbox</string>
+							</manualDependencies>
+							<sysconfFiles>	
+							<sysconfFile>
+									<from>dummy.properties</from>
+									<to>dummyProject/dummy.properties</to>
+									<rename>true</rename>
+							</sysconfFile>
+							</sysconfFiles>
+							</targetConfiguration>		
+												
 					</targetConfigurations>
 				</configuration>
 				    <executions>
