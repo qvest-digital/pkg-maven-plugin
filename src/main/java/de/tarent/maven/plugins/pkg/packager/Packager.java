@@ -28,20 +28,18 @@ package de.tarent.maven.plugins.pkg.packager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
-import de.tarent.maven.plugins.pkg.IPackagingHelper;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
+import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 public abstract class Packager
 {
   
   public abstract void execute(Log l,
-		  					   IPackagingHelper ph,
-                               TargetConfiguration distroConfig,
+		  					   Helper ph,
                                PackageMap packageMap) throws MojoExecutionException;
   
   public abstract void checkEnvironment(Log l,
-		  								IPackagingHelper ph,
-                                        TargetConfiguration dc) throws MojoExecutionException;
+		  								Helper ph) throws MojoExecutionException;
                       
 }

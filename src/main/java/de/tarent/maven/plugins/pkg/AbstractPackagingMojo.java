@@ -77,37 +77,19 @@
 package de.tarent.maven.plugins.pkg;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.TimeZone;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
-import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
-import org.apache.maven.project.ProjectBuildingException;
-import org.apache.maven.project.artifact.InvalidDependencyVersionException;
-import org.codehaus.plexus.archiver.ArchiverException;
-import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
-import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
-import org.codehaus.plexus.util.FileUtils;
 
 /**
  * Base Mojo for all packaging mojos. It provides convenient access to a mean to
@@ -193,14 +175,6 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
    * @readonly
    */
   protected String artifactId;
-
-  /**
-   * Look up Archiver/UnArchiver implementations.
-   * @component role="org.codehaus.plexus.archiver.manager.ArchiverManager"
-   * @required
-   * @readonly
-   */
-  protected ArchiverManager archiverManager;
   
   /**
    * @parameter expression="${project.build.finalName}"
@@ -268,16 +242,10 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
    * Overrides "defaultIgnorePackagingTypes" defines a list of comma speparated packaging types that, when used, 
    * will skip copying the main artifact for the project (if any) in the final package. For use on the command-line. 
    * 
-   * @parameter expression="${ignorePackagingTypes}"
+   * @parameter expression="${ignorePackagingTypes}" default-value="pom"
+   * @required
    */
-  protected String ignorePackagingTypes;
-
-  /**
-   * Default list of packaging types that, when used, will skip copying the main artifact for
-   * the project (if any) in the final package. This list contains at the moment only one item: "pom".
-   */
-  protected String defaultIgnorePackagingTypes = "pom";
-  
+  protected String ignorePackagingTypes; 
   
   /**
    * Set default target configuration to package for.
@@ -293,188 +261,6 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
    * @parameter expression="${target}"
    */
   protected String target;
-
-  /**
-   * Gathers the project's artifacts and the artifacts of all its (transitive)
-   * dependencies filtered by the given filter instance.
-   * @param filter
-   * @return
-   * @throws ArtifactResolutionException
-   * @throws ArtifactNotFoundException
-   * @throws ProjectBuildingException
-   * @throws InvalidDependencyVersionException
-   */
-  protected final Set findArtifacts(ArtifactFilter filter)
-      throws ArtifactResolutionException, ArtifactNotFoundException,
-      ProjectBuildingException, InvalidDependencyVersionException
-  {
-    Set deps = project.createArtifacts(factory, Artifact.SCOPE_COMPILE, filter);
-
-    ArtifactResolutionResult result = resolver.resolveTransitively(
-                                                                   deps,
-                                                                   artifact,
-                                                                   local,
-                                                                   remoteRepos,
-                                                                   metadataSource,
-                                                                   filter);
-
-    return result.getArtifacts();
-  }
-
-  /**
-   * Gathers the project's artifacts and the artifacts of all its (transitive)
-   * compilation (and implicitly runtime) dependencies.
-   * @param filter
-   * @return
-   * @throws ArtifactResolutionException
-   * @throws ArtifactNotFoundException
-   * @throws ProjectBuildingException
-   * @throws InvalidDependencyVersionException
-   */
-  protected final Set findArtifacts() throws ArtifactResolutionException,
-      ArtifactNotFoundException, ProjectBuildingException,
-      InvalidDependencyVersionException
-  {
-    return findArtifacts(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE));
-  }
-
-  /**
-   * Copies the Artifacts contained in the set to the folder denoted by
-   * <code>dst</code> and returns the amount of bytes copied.
-   * 
-   * <p>If an artifact is a zip archive it is unzipped in this folder.</p>
-   * 
-   * @param l
-   * @param artifacts
-   * @param dst
-   * @return
-   * @throws MojoExecutionException
-   */
-  protected final long copyArtifacts(Log l, Set artifacts, File dst)
-      throws MojoExecutionException
-  {
-    long byteAmount = 0;
-
-    if (artifacts.size() == 0)
-      {
-        l.info("no artifact to copy.");
-        return byteAmount;
-      }
-
-    l.info("copying " + artifacts.size() + " dependency artifacts.");
-    l.info("destination: " + dst.toString());
-
-    try
-      {
-        Iterator ite = artifacts.iterator();
-        while (ite.hasNext())
-          {
-            Artifact a = (Artifact) ite.next();
-            l.info("copying artifact: " + a);
-            File f = a.getFile();
-            if (f != null)
-              {
-                l.debug("from file: " + f);
-                if (a.getType().equals("zip"))
-                  {
-                    // Assume that this is a ZIP file with native libraries
-                    // inside.
-                    
-                    // TODO: Determine size of all entries and add this
-                    // to the byteAmount.
-                    unpack(a.getFile(), dst);
-                  }
-                else
-                  {
-                    FileUtils.copyFileToDirectory(f, dst);
-                    byteAmount += (long) f.length();
-                  }
-
-              }
-            else
-              throw new MojoExecutionException(
-                                               "Unable to copy Artifact "
-                                                   + a
-                                                   + " because it is not locally available.");
-          }
-      }
-    catch (IOException ioe)
-      {
-        throw new MojoExecutionException(
-                                         "IOException while copying dependency artifacts.",ioe);
-      }
-
-    return byteAmount;
-  }
-
-  /**
-   * Unpacks the given file.
-   * @param file
-   *          File to be unpacked.
-   * @param dst
-   *          Location where to put the unpacked files.
-   */
-  protected void unpack(File file, File dst) throws MojoExecutionException
-  {
-    try
-      {
-        dst.mkdirs();
-
-        UnArchiver unArchiver = archiverManager.getUnArchiver(file);
-        unArchiver.setSourceFile(file);
-        unArchiver.setDestDirectory(dst);
-        unArchiver.extract();
-      }
-    catch (NoSuchArchiverException e)
-      {
-        throw new MojoExecutionException("Unknown archiver type", e);
-      }
-    catch (ArchiverException e)
-      {
-        throw new MojoExecutionException("Error unpacking file: " + file
-                                         + " to: " + dst + "\r\n"
-                                         + e.toString(), e);
-      }
-  }
-  
-  /**
-   * Makes the version string compatible to the system's requirements.
-   * 
-   * @param v
-   * @return
-   */
-  protected final String fixVersion(String v)
-  {
-    int i = v.indexOf("-SNAPSHOT");
-    if (i > 0)
-      return v.substring(0, i) + "~SNAPSHOT~" + createSnapshotTimestamp();
-  
-    return v;
-  }
-  
-  /**
-   * Returns a String representing the current time (UTC) in format yyyyMMddHHmmss
-   * 
-   * @return
-   */
-  private final String createSnapshotTimestamp() {
-	  
-	return new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime());  
-  }
-  
-  /**
-   * Makes a valid and useful package version string from one that cannot
-   * be used or is unsuitable.
-   *  
-   * <p>At the moment the method removes underscores only.</p>
-   * 
-   * @param string The string which might contain underscores
-   * @return The given string without underscores
-   */
-  protected final String sanitizePackageVersion(String string) {
-	  
-	  return string.replaceAll("_", "");	
-  }
   
   /**
    * Checks if the packaging type of the current Maven project belongs to the packaging types that, when used, 
@@ -485,8 +271,6 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
   protected final boolean packagingTypeBelongsToIgnoreList(){
 	boolean inList = false;
 	Log l = getLog();
-	
-	if (ignorePackagingTypes!=null){
 		l.info("ignorePackagingTypes set. Contains: " + ignorePackagingTypes 
 				+ " . Project packaging is "+project.getPackaging());
 	  for(String s : ignorePackagingTypes.split(",")){
@@ -494,12 +278,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo
 			  	inList = true;
 			  }
 	  }
-	}else{
-		if(project.getPackaging().compareToIgnoreCase(defaultIgnorePackagingTypes)==0){
-			return true;
-		}
-	}
 	  return inList;
   }
-  
+
 }

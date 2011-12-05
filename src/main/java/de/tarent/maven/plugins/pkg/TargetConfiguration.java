@@ -98,7 +98,7 @@ public class TargetConfiguration {
 	/**
 	 * Denotes the target this configuration is for.
 	 */
-	String target;
+	public String target;
 	
 	Boolean createWindowsExecutable;
 
@@ -200,13 +200,13 @@ public class TargetConfiguration {
 	 * Default value is <code>null</code>, after merging it is the empty string
 	 * (meaning the default bundled jar dir is used) or the parent's value.
 	 */
-	String bundledJarDir;
+	private String bundledJarDir;
 
 	/**
 	 * The target which is chosen to be built. This is not handled by
 	 * Maven2 but only by the Packaging class.
 	 */
-	String chosenTarget;
+	private String chosenTarget;
 
 	/**
 	 * The distribution which is chosen to be built. This is not handled by
@@ -258,14 +258,14 @@ public class TargetConfiguration {
 	/**
 	 * Denotes the distributions this configuration is used for.
 	 */
-	Set distros = new HashSet();
+	public Set distros = new HashSet();
 
 
 	/**
 	 * Set default distribution to package for.
 	 * 
 	 */
-	protected String defaultDistro;
+	public String defaultDistro;
 	
 	/**
 	 * Denotes the name of the gcj-dbtool executable. This allows the use of
@@ -367,7 +367,7 @@ public class TargetConfiguration {
 	 * parent's value.
 	 * </p>
 	 */
-	List manualDependencies;
+	List<String> manualDependencies;
 
 	/**
 	 * Denotes a list of strings which should be added to the "Recommends"-field
@@ -383,7 +383,7 @@ public class TargetConfiguration {
 	 * <p>
 	 * Default is <code>null</code>
 	 */
-	List recommends;
+	List<String> recommends;
 
 	/**
 	 * Denotes a list of strings which should be added to the "Suggests"-field
@@ -401,7 +401,7 @@ public class TargetConfiguration {
 	 * <p>
 	 * Default is <code>null</code>
 	 */
-	List suggests;
+	List<String> suggests;
 
 	/**
 	 * Denotes a list of strings which should be added to the "Provides"-field
@@ -830,11 +830,11 @@ public class TargetConfiguration {
 		return datadir;
 	}
 
-	public List getDataFiles() {
+	public List<? extends DataFile> getDataFiles() {
 		return dataFiles;
 	}
 	
-	public List getBinFiles() {
+	public List<? extends DataFile> getBinFiles() {
 		return binFiles;
 	}
 
@@ -842,7 +842,7 @@ public class TargetConfiguration {
 		return datarootdir;
 	}
 
-	public List getDatarootFiles() {
+	public List<? extends DatarootFile> getDatarootFiles() {
 		return datarootFiles;
 	}
 
@@ -862,11 +862,11 @@ public class TargetConfiguration {
 		return izPackInstallerXml;
 	}
 
-	public List getJarFiles() {
+	public List<JarFile> getJarFiles() {
 		return jarFiles;
 	}
 
-	public List getJniFiles() {
+	public List<? extends AuxFile> getJniFiles() {
 		return jniFiles;
 	}
 
@@ -942,12 +942,16 @@ public class TargetConfiguration {
 		return revision;
 	}
 
+	public void setRevision(String revision) {
+		this.revision = revision;
+	}
+
 	public String getChosenDistro() {
 		return chosenDistro;
 	}
 	
 	public String getChosenTarget() {
-		return chosenDistro;
+		return chosenTarget;
 	}
 
 	public String getSrcAuxFilesDir() {
@@ -986,7 +990,7 @@ public class TargetConfiguration {
 		return sysconfdir;
 	}
 
-	public List getSysconfFiles() {
+	public List<SysconfFile> getSysconfFiles() {
 		return sysconfFiles;
 	}
 
@@ -1049,7 +1053,7 @@ public class TargetConfiguration {
 		datarootdir = (String) merge(datarootdir, parent.datarootdir, "");
 		datadir = (String) merge(datadir, parent.datadir, "");
 
-		bundledJarDir = (String) merge(bundledJarDir, parent.bundledJarDir, "");
+		setBundledJarDir((String) merge(getBundledJarDir(), parent.getBundledJarDir(), ""));
 
 		architecture = (String) merge(architecture, parent.architecture, "all");
 		gcjDbToolExec = (String) merge(gcjDbToolExec, parent.gcjDbToolExec,
@@ -1361,7 +1365,7 @@ public class TargetConfiguration {
 		appendStringDefault(sb, "sysconfdir", sysconfdir);
 		appendStringDefault(sb, "datarootdir", datarootdir);
 		appendStringDefault(sb, "datadir", datadir);
-		appendStringNotSet(sb, "bundledJarDir", bundledJarDir);
+		appendStringNotSet(sb, "bundledJarDir", getBundledJarDir());
 		appendStringNotSet(sb, "jniLibraryPath", jniLibraryPath);
 		appendStringDefault(sb, "izPackInstallerXml", izPackInstallerXml);
 		
@@ -1568,6 +1572,21 @@ public class TargetConfiguration {
 
 	public void setSource(String source) {
 		this.source = source;
+	}
+
+
+	public void setChosenTarget(String chosenTarget) {
+		this.chosenTarget = chosenTarget;
+	}
+
+
+	public String getBundledJarDir() {
+		return bundledJarDir;
+	}
+
+
+	public void setBundledJarDir(String bundledJarDir) {
+		this.bundledJarDir = bundledJarDir;
 	}
 
 }

@@ -6,7 +6,7 @@
 
   <groupId>de.maven.plugins.test</groupId>
   <artifactId>dummytest</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
   <name>Test mvn-pkg-plugin</name>
 
@@ -284,6 +284,7 @@
                         <execution>
                             <goals>
                                 <goal>pkg</goal>
+                                <goal>transport</goal>
                             </goals>
                         </execution>
                     </executions>

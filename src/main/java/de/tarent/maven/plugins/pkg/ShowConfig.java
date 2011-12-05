@@ -42,14 +42,14 @@ public class ShowConfig extends Packaging
   public void execute() throws MojoExecutionException, MojoFailureException
   {
     if (targetConfigurations == null)
-      targetConfigurations = new ArrayList();
+      targetConfigurations = new ArrayList<TargetConfiguration>();
     
     getLog().info("default configuration: ");
     
     getLog().info(defaults.toString());
     getLog().info("specific configurations: ");
     
-    Iterator ite = targetConfigurations.iterator();
+    Iterator<TargetConfiguration> ite = targetConfigurations.iterator();
     while (ite.hasNext())
       getLog().info(ite.next().toString());
     

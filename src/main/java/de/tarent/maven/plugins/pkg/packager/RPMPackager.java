@@ -52,22 +52,22 @@ package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
-import de.tarent.maven.plugins.pkg.IPackagingHelper;
-import de.tarent.maven.plugins.pkg.Packaging.RPMHelper;
+import de.tarent.maven.plugins.pkg.helper.RpmHelper;
 import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.generator.SpecFileGenerator;
+import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 /**
@@ -78,15 +78,16 @@ import de.tarent.maven.plugins.pkg.map.PackageMap;
 public class RPMPackager extends Packager {
 
 	@Override
-	public void execute(Log l, IPackagingHelper helper,
-			TargetConfiguration distroConfig, PackageMap packageMap)
+	public void execute(Log l, Helper helper, PackageMap packageMap)
 			throws MojoExecutionException {	
+
+		TargetConfiguration distroConfig = helper.getTargetConfiguration();
 		
-		if(!(helper instanceof RPMHelper)){
+		if(!(helper instanceof RpmHelper)){
 			throw new IllegalArgumentException("RPMHelper needed");
 		}
 
-		RPMHelper ph = (RPMHelper) helper;
+		RpmHelper ph = (RpmHelper) helper;
 		
 		ph.prepareInitialDirectories();
 		
@@ -113,7 +114,7 @@ public class RPMPackager extends Packager {
 	    if (distroConfig.getMainClass() != null){
 		    Path bcp = new Path();
 		    Path cp = new Path();
-	    	Set bundledArtifacts = ph.createClasspathLine(bcp, cp);
+	    	Set<Artifact> bundledArtifacts = ph.createClasspathLine(bcp, cp);
             ph.generateWrapperScript(bundledArtifacts, bcp, cp, false);
             ph.copyArtifacts(bundledArtifacts);
         }
@@ -123,7 +124,7 @@ public class RPMPackager extends Packager {
 		try {
 	        
 	        
-			generateSPECFile(l, (RPMHelper) ph, distroConfig, specFile);
+			generateSPECFile(l, (RpmHelper) ph, distroConfig, specFile);
 			l.info("SPEC file generated.");
 			createPackage(l, ph, specFile, distroConfig);
 			l.info("Package created.");
@@ -155,27 +156,19 @@ public class RPMPackager extends Packager {
 	 * @return
 	 * @throws IOException
 	 */
-	private String copyRPMToTargetFolder(Log l, RPMHelper ph, TargetConfiguration distroConfig) throws IOException {
+	private String copyRPMToTargetFolder(Log l, RpmHelper ph, TargetConfiguration distroConfig) throws IOException {
 		StringBuilder rpmPackagePath= new StringBuilder(ph.getBaseBuildDir().getParent().toString());				
 		rpmPackagePath.append("/RPMS/");
 		rpmPackagePath.append(distroConfig.getArchitecture());
 		rpmPackagePath.append("/");
 		
-		StringBuilder rpmPackageName = new StringBuilder();			
-		rpmPackageName.append(ph.getPackageName());
-		rpmPackageName.append("-");
-		rpmPackageName.append(ph.getVersion().replace("-", "_"));
-		rpmPackageName.append("-");
-		rpmPackageName.append(distroConfig.getRelease());
-		rpmPackageName.append(".");
-		rpmPackageName.append(distroConfig.getArchitecture());
-		rpmPackageName.append(".rpm");
+		String rpmPackageName = ph.generatePackageFileName(distroConfig);
 		
 		l.debug("Attempting to copy from "+ rpmPackagePath.toString() + rpmPackageName.toString()+
 				" to " + ph.getTempRoot().getParent()+"/"+rpmPackageName.toString());
 		
 		FileUtils.copyFile(new File(rpmPackagePath.toString(),rpmPackageName.toString()), 
-				new File(ph.getTempRoot().getParentFile(),rpmPackageName.toString()));
+				new File(ph.getTempRoot().getParentFile(),rpmPackageName));
 		
 		l.info("RPM file copied to "+ph.getTempRoot().getParent()+"/"+rpmPackageName.toString());		
 		return rpmPackageName.toString();
@@ -187,12 +180,11 @@ public class RPMPackager extends Packager {
 	 * and will check for rpmbuild to exist.
 	 */
 	@Override
-	public void checkEnvironment(Log l, IPackagingHelper helper,
-			TargetConfiguration dc) throws MojoExecutionException {
-		RPMHelper ph = (RPMHelper)helper;
+	public void checkEnvironment(Log l, Helper helper) throws MojoExecutionException {
+		RpmHelper ph = (RpmHelper)helper;
 		try {
 			Utils.checkProgramAvailability("rpmbuild");
-			ph.createRpmMacrosFile(l, ph, dc);
+			ph.createRpmMacrosFile();
 			
 		} catch (IOException e) {
 			throw new MojoExecutionException(e.getMessage());
@@ -210,7 +202,7 @@ public class RPMPackager extends Packager {
 	 * @throws MojoExecutionException
 	 * @throws IOException 
 	 */
-	private void generateSPECFile(Log l, RPMHelper ph, TargetConfiguration dc,
+	private void generateSPECFile(Log l, RpmHelper ph, TargetConfiguration dc,
 			File specFile) throws MojoExecutionException, IOException {
 		l.info("Creating SPEC file: " + specFile.getAbsolutePath());
 		SpecFileGenerator sgen = new SpecFileGenerator();
@@ -271,7 +263,7 @@ public class RPMPackager extends Packager {
 	 * @param specFile
 	 * @throws MojoExecutionException
 	 */
-	private void createPackage(Log l, RPMHelper ph, File specFile,
+	private void createPackage(Log l, RpmHelper ph, File specFile,
 			TargetConfiguration dc) throws MojoExecutionException {
 		l.info("Calling rpmbuild to create binary package");
 		l.info("Builddir is "+ph.getBaseBuildDir().toString());
@@ -299,7 +291,7 @@ public class RPMPackager extends Packager {
 	 * @param dc
 	 * @return
 	 */
-	private List<String> generateCleanCommands(RPMHelper ph, TargetConfiguration dc){
+	private List<String> generateCleanCommands(RpmHelper ph, TargetConfiguration dc){
 		
 		List<String> cleancommands = new ArrayList<String>();
 		StringBuilder sb = new StringBuilder();

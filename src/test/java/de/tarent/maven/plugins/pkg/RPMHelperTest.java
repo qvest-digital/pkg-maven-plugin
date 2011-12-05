@@ -11,53 +11,74 @@ import junit.framework.Assert;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class RPMHelperTest {
-	Packaging p;
-	Packaging.RPMHelper ph;
-	TargetConfiguration dc;
+import de.tarent.maven.plugins.pkg.helper.RpmHelper;
+import de.tarent.maven.plugins.pkg.testingstubs.PkgProjectStub;
+
+public class RPMHelperTest extends AbstractMvnPkgPluginTestCase{
+	Packaging packaging;
+	RpmHelper rpmPackageHelper;
+	TargetConfiguration targetConfiguration;
 	boolean previousfilefound;
 	String homedir = System.getProperty("user.home");
 	File f = new File(homedir + "/.rpmmacros");
+	File buildDir = new File("src/test/resources/target");
+	String ignorePackagingTypes = "pom";
 	
 	@Before
-	public void setUp() throws IOException{		
-		p = new Packaging();
-		ph = p.new RPMHelper();
-		dc = new TargetConfiguration();	
-		previousfilefound = false;	
+	public void setUp() throws Exception{
+		super.setUp();
+		packaging = (Packaging) mockEnvironment("simplepom.xml","pkg");		
+		targetConfiguration = new TargetConfiguration();
+		targetConfiguration.setChosenTarget("");
+		targetConfiguration.setRevision("r0");		
+		rpmPackageHelper = new RpmHelper(targetConfiguration, packaging);
+		previousfilefound = false;
 		if(f.exists()){
 			FileUtils.moveFile(f, new File(homedir + "/.rpmmacros_Test_backup"));
 			previousfilefound = true;
+		}		
+	}
+
+	
+	@After
+	public void tearDown() throws Exception{
+		super.tearDown();
+		if(previousfilefound){
+			f.delete();
+			FileUtils.moveFile(new File(homedir + "/.rpmmacros_Test_backup"),f);
 		}
+		
 	}
 	
 	@Test
 	public void testCreatingRpmmacrosfileWithoutMaintainerAndRemovingSuccessfully() throws IOException, MojoExecutionException{
 		
-		ph.setBasePkgDir(new File("/"));		
-		ph.createRpmMacrosFile(null, ph, dc);
+		rpmPackageHelper.setBasePkgDir(new File("/"));		
+		rpmPackageHelper.createRpmMacrosFile();
 		Assert.assertTrue("File not found",f.exists());
-		ph.restoreRpmMacrosFileBackup(null);
+		rpmPackageHelper.restoreRpmMacrosFileBackup(null);
 	}
 	
 	@Test
 	public void testCreatingRpmmacrosfileWitMaintainerAndRemovingSuccessfully() throws IOException, MojoExecutionException{
-		dc.setMaintainer("Dummy maintainer");		
-		ph.setBasePkgDir(new File("/"));		
-		ph.createRpmMacrosFile(null, ph, dc);
+		targetConfiguration.setMaintainer("Dummy maintainer");		
+		rpmPackageHelper.setBasePkgDir(new File("/"));		
+		rpmPackageHelper.createRpmMacrosFile();
 		Assert.assertTrue(f.exists());
 		Assert.assertTrue("String not found", filecontains(f, "%_gpg_name       Dummy maintainer"));
-		ph.restoreRpmMacrosFileBackup(null);
+		rpmPackageHelper.restoreRpmMacrosFileBackup(null);
 	}
 	
 	@Test(expected=NullPointerException.class)
 	public void testCreatingRpmmacrosfileWithoutBaseDirThrowsException() throws IOException, MojoExecutionException{
 
-		ph.createRpmMacrosFile(null, ph, dc);
+		try{rpmPackageHelper.createRpmMacrosFile();}catch(Exception e){Assert.assertTrue(true);}		
 		
 	}
 	
@@ -65,50 +86,40 @@ public class RPMHelperTest {
 	public void testPrepareInitialDirectoriesScuccesfully() throws MojoExecutionException{
 		File tempRoot = new File("/tmp/BaseTestTemp");
 		File base = new File("/tmp/BaseTestTemp/Base");
-		ph.setBasePkgDir(base);
-		ph.setTempRoot(tempRoot);
-		ph.prepareInitialDirectories();
+		rpmPackageHelper.setBasePkgDir(base);
+		rpmPackageHelper.setTempRoot(tempRoot);
+		rpmPackageHelper.prepareInitialDirectories();
 		Assert.assertTrue(new File("/tmp/BaseTestTemp/Base").exists());
-		Assert.assertEquals(new File(ph.basePkgDir,"/BUILD"),ph.getBaseBuildDir());
-		Assert.assertEquals(new File(ph.basePkgDir,"/SPECS"),ph.getBaseSpecsDir());		
+		Assert.assertEquals(new File(rpmPackageHelper.getBasePkgDir(),"/BUILD"),rpmPackageHelper.getBaseBuildDir());
+		Assert.assertEquals(new File(rpmPackageHelper.getBasePkgDir(),"/SPECS"),rpmPackageHelper.getBaseSpecsDir());		
 		base.delete();
 		
 	}
 	
 	@Test(expected=NullPointerException.class)
 	public void testPrepareInitialDirectoriesWithoutBaseOrTempRootThrowsException() throws MojoExecutionException{
-		ph.prepareInitialDirectories();
+		try{rpmPackageHelper.prepareInitialDirectories();}catch(Exception e){Assert.assertTrue(true);}
 	}
 	@Test
 	public void testGenerateFilelist() throws MojoExecutionException, IOException{
 		File tempdir = File.createTempFile("temp", "file");
-		ph.setBaseBuildDir(tempdir.getParentFile());
-		Assert.assertTrue(ph.generateFilelist().size()>0);
+		rpmPackageHelper.setBaseBuildDir(tempdir.getParentFile());
+		Assert.assertTrue(rpmPackageHelper.generateFilelist().size()>0);
 
 	}
 	
 	@Test
 	public void testGetVersionReturnsPackagingVersion(){
-		Assert.assertEquals(p.version,ph.getVersion());		
+		Assert.assertTrue(rpmPackageHelper.getVersion().contains(packaging.project.getVersion()));
 	}
 	
 	@Test
 	public void testGetDstArtifactFileReturnsgetBaseBuildDirAndgetTargetArtifactFiletoStringIfNotSet(){
 		File testTempdir = new File("/tmp/BaseTestTemp");
 		File testArtifactfile = new File("file1");
-		ph.setBaseBuildDir(testTempdir);
-		ph.setTargetArtifactFile(testArtifactfile);
-		Assert.assertEquals(ph.getBaseBuildDir()+"/"+ph.getTargetArtifactFile().toString(),ph.getDstArtifactFile().toString());
-		
-	}
-	
-	@After
-	public void tearDown() throws IOException{
-		
-		if(previousfilefound){
-			f.delete();
-			FileUtils.moveFile(new File(homedir + "/.rpmmacros_Test_backup"),f);
-		}
+		rpmPackageHelper.setBaseBuildDir(testTempdir);
+		rpmPackageHelper.setTargetArtifactFile(testArtifactfile);
+		Assert.assertEquals(rpmPackageHelper.getBaseBuildDir()+"/"+rpmPackageHelper.getTargetArtifactFile().toString(),rpmPackageHelper.getDstArtifactFile().toString());
 		
 	}
 	

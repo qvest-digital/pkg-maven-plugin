@@ -58,14 +58,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
-import de.tarent.maven.plugins.pkg.IPackagingHelper;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
-import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.Utils;
+import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 public class IzPackPackager extends Packager
@@ -73,15 +73,16 @@ public class IzPackPackager extends Packager
   private static final String IZPACK_EMBEDDED_JAR = "izpack-embedded.jar";
   
   public void execute(Log l,
-                      IPackagingHelper helper,
-                      TargetConfiguration distroConfig,
+                      Helper helper,
                       PackageMap packageMap) throws MojoExecutionException
   {
-		
-	if(!(helper instanceof Packaging.Helper)){
+
+	TargetConfiguration distroConfig = helper.getTargetConfiguration();
+	
+	if(!(helper instanceof Helper)){
 		throw new IllegalArgumentException("Debian helper needed");
 	}
-	Packaging.Helper ph = (Packaging.Helper) helper;
+	Helper ph = (Helper) helper;
 	
     // The root directory into which everything from srcRoot is copied
     // into (inside the outputDirectory).
@@ -144,7 +145,7 @@ public class IzPackPackager extends Packager
     // at runtime.
     File izPackEmbeddedRoot = new File(ph.getTempRoot(), "izpack-embedded");
     
-    Set bundledArtifacts = null;
+    Set<Artifact> bundledArtifacts = null;
     Path bcp = new Path();
     Path cp = new Path();
     
@@ -221,23 +222,22 @@ public class IzPackPackager extends Packager
    * @throws MojoExecutionException
    */
   public void checkEnvironment(Log l,
-                               IPackagingHelper helper,
-                               TargetConfiguration dc) throws MojoExecutionException
+                               Helper helper) throws MojoExecutionException
   {
 		
-	if(!(helper instanceof Packaging.Helper)){
+	if(!(helper instanceof Helper)){
 		throw new IllegalArgumentException("Debian helper needed");
 	}
-	Packaging.Helper ph = (Packaging.Helper) helper;
+	Helper ph = (Helper) helper;
 	
     l.info("java executable          : " + ph.getJavaExec());
     l.info("7zip executable          : " + ph.get7ZipExec());
-    l.info("create OS X app          : " + (dc.isCreateOSXApp() ? "yes" : "no"));
-    l.info("create Windows setup file: " + (dc.isCreateWindowsExecutable() ? "yes" : "no"));
+    l.info("create OS X app          : " + (helper.getTargetConfiguration().isCreateOSXApp() ? "yes" : "no"));
+    l.info("create Windows setup file: " + (helper.getTargetConfiguration().isCreateWindowsExecutable() ? "yes" : "no"));
 
     Utils.checkProgramAvailability(ph.getJavaExec());
     
-    if (dc.isCreateWindowsExecutable())
+    if (helper.getTargetConfiguration().isCreateWindowsExecutable())
       Utils.checkProgramAvailability(ph.get7ZipExec());
   }
 
@@ -317,7 +317,7 @@ public class IzPackPackager extends Packager
     try
     {
     ZipFile zip = new ZipFile(izPackEmbeddedFile);
-    Enumeration e = zip.entries();
+    Enumeration<? extends ZipEntry> e = zip.entries();
     
     while (e.hasMoreElements())
       {

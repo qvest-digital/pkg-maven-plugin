@@ -79,12 +79,12 @@ public class AotCompileUtils
    * @param overridePath The path should be put into the classmap file instead of the real file location. 
    * @throws MojoExecutionException
    */
-  public static long compileAndMap(Log l, Set artifacts, File aotDstDir, String extension, File aotDstClassmapDir, String overridePath)
+  public static long compileAndMap(Log l, Set<Artifact> artifacts, File aotDstDir, String extension, File aotDstClassmapDir, String overridePath)
     throws MojoExecutionException
   {
 	long byteAmount = 0;
 	  
-	Iterator ite = artifacts.iterator();
+	Iterator<Artifact> ite = artifacts.iterator();
 	while (ite.hasNext())
 	{
 		Artifact a = (Artifact) ite.next();

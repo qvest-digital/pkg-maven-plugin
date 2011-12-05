@@ -9,6 +9,7 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.codehaus.plexus.util.ReaderFactory;
+import org.junit.Ignore;
 /**
  * Defines a stub project for testing purposes 
  * @author plafue
@@ -40,7 +41,6 @@ public class PkgProjectStub
         setName( model.getName() );
         setUrl( model.getUrl() );
         setPackaging( model.getPackaging() );
-
         
         Build build = new Build();
         build.setFinalName( model.getArtifactId() );
@@ -58,6 +58,9 @@ public class PkgProjectStub
         List testCompileSourceRoots = new ArrayList();
         testCompileSourceRoots.add( getBasedir() + "/src/test/java" );
         setTestCompileSourceRoots( testCompileSourceRoots );
+        
+        
+        
     }
 
     /** {@inheritDoc} */

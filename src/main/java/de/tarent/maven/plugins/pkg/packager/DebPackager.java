@@ -56,17 +56,17 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.AotCompileUtils;
-import de.tarent.maven.plugins.pkg.IPackagingHelper;
-import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.SysconfFile;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
+import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 /**
@@ -78,15 +78,15 @@ public class DebPackager extends Packager
 {
 
   public void execute(Log l,
-                      IPackagingHelper helper,
-                      TargetConfiguration distroConfig,
+                      Helper helper,
                       PackageMap packageMap) throws MojoExecutionException
   {
-		
-	if(!(helper instanceof Packaging.Helper)){
+	
+	TargetConfiguration distroConfig = helper.getTargetConfiguration();
+	if(!(helper instanceof Helper)){
 		throw new IllegalArgumentException("Debian helper needed");
 	}
-	Packaging.Helper ph = (Packaging.Helper) helper;
+	Helper ph = (Helper) helper;
 	
     String packageName = ph.getPackageName();
     String packageVersion = ph.getPackageVersion();
@@ -131,7 +131,7 @@ public class DebPackager extends Packager
     
     // A set which will be filled with the artifacts which need to be bundled with the
     // application.
-    Set bundledArtifacts = null;
+    Set<Artifact> bundledArtifacts = null;
     Path bcp = new Path();
     Path cp = new Path();
     
@@ -256,8 +256,7 @@ public class DebPackager extends Packager
    * @override
    */
   public void checkEnvironment(Log l,
-                               IPackagingHelper ph,
-                               TargetConfiguration dc) throws MojoExecutionException
+                               Helper ph) throws MojoExecutionException
   {
     // No specifics to show or test.
   }
@@ -273,7 +272,7 @@ public class DebPackager extends Packager
    * @throws MojoExecutionException
    */
   private void generateControlFile(Log l,
-                                   Packaging.Helper ph,
+                                   Helper ph,
                                    TargetConfiguration dc,
                                    File controlFile,
                                    String packageName,
@@ -329,7 +328,7 @@ public class DebPackager extends Packager
    * @param tc
    * @throws MojoExecutionException
    */
-  private void generateConffilesFile(Log l, File conffilesFile, Packaging.Helper ph, TargetConfiguration tc)
+  private void generateConffilesFile(Log l, File conffilesFile, Helper ph, TargetConfiguration tc)
   	throws MojoExecutionException
   	{
 	  List<SysconfFile> sysconffiles = (List<SysconfFile>) tc.getSysconfFiles();
@@ -376,7 +375,7 @@ public class DebPackager extends Packager
 		}
   }
 
-  private void createPackage(Log l, Packaging.Helper ph, File base) throws MojoExecutionException
+  private void createPackage(Log l, Helper ph, File base) throws MojoExecutionException
   {
     l.info("calling dpkg-deb to create binary package");
     

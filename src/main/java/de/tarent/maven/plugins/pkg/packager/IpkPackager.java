@@ -57,12 +57,11 @@ import java.util.Set;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
-import de.tarent.maven.plugins.pkg.IPackagingHelper;
-import de.tarent.maven.plugins.pkg.TargetConfiguration;
-import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.Path;
+import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
+import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 /**
@@ -73,15 +72,15 @@ public class IpkPackager extends Packager
 {
   
   public void execute(Log l,
-                      IPackagingHelper helper,
-                      TargetConfiguration distroConfig,
+                      Helper helper,
                       PackageMap packageMap) throws MojoExecutionException
   {
+	TargetConfiguration distroConfig = helper.getTargetConfiguration();
 		
-	if(!(helper instanceof Packaging.Helper)){
+	if(!(helper instanceof Helper)){
 		throw new IllegalArgumentException("Debian helper needed");
 	}
-	Packaging.Helper ph = (Packaging.Helper) helper;
+	Helper ph = (Helper) helper;
 	
     String packageName = ph.getPackageName();
     String packageVersion = ph.getPackageVersion();
@@ -156,20 +155,18 @@ public class IpkPackager extends Packager
    * @throws MojoExecutionException
    */
   public void checkEnvironment(Log l,
-                               IPackagingHelper helper,
-                               TargetConfiguration dc) throws MojoExecutionException
+                               Helper helper) throws MojoExecutionException
   {
 		
-	if(!(helper instanceof Packaging.Helper)){
+	if(!(helper instanceof Helper)){
 		throw new IllegalArgumentException("Debian helper needed");
 	}
-	Packaging.Helper ph = (Packaging.Helper) helper;
 	
     boolean error = false;
     
-    l.info("Maintainer               : " + dc.getMaintainer());
+    l.info("Maintainer               : " + helper.getTargetConfiguration().getMaintainer());
 
-    if(dc.getMaintainer() == null)
+    if(helper.getTargetConfiguration().getMaintainer() == null)
     {
       l.error("The maintainer field of the distro configuration is not set, however this is mandatory for IPK packaging!");
       error = true;
@@ -186,7 +183,7 @@ public class IpkPackager extends Packager
    * 
    */
   private void generateControlFile(Log l,
-                                   Packaging.Helper ph,
+                                   Helper ph,
                                    TargetConfiguration dc,
                                    File controlFile,
                                    String packageName,
@@ -236,7 +233,7 @@ public class IpkPackager extends Packager
 
   }
 
-  private void createPackage(Log l, Packaging.Helper ph, File base) throws MojoExecutionException
+  private void createPackage(Log l, Helper ph, File base) throws MojoExecutionException
   {
     l.info("calling ipkg-build to create binary package");
     
