@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+
 /**
  * A <code>TargetConfiguration</code> provides the properties to configure the
  * packaging for a particular target.
@@ -418,7 +419,7 @@ public class TargetConfiguration {
 	 * <p>
 	 * Default is <code>null</code>
 	 */
-	List provides;
+	List<String> provides;
 
 	/**
 	 * Denotes a list of strings which should be added to the "Conflicts"-field
@@ -434,7 +435,7 @@ public class TargetConfiguration {
 	 * <p>
 	 * Default is <code>null</code>
 	 */
-	List conflicts;
+	List<String> conflicts;
 
 	/**
 	 * Denotes a list of strings which should be added to the "Replaces"-field
@@ -449,7 +450,7 @@ public class TargetConfiguration {
 	 * <p>
 	 * Default is <code>null</code>
 	 */
-	List replaces;
+	List<String> replaces;
 
 	/**
 	 * Denotes the value of the "-Xmx" argument.
@@ -805,6 +806,8 @@ public class TargetConfiguration {
 	 * 
 	 */
 	String source;
+	
+	UploadParameters uploadParameters;
 
 	public TargetConfiguration() {
 		// For instantiation.
@@ -886,27 +889,27 @@ public class TargetConfiguration {
 		return target;
 	}
 
-	public List getManualDependencies() {
+	public List<String> getManualDependencies() {
 		return manualDependencies;
 	}
 
-	public List getRecommends() {
+	public List<String> getRecommends() {
 		return recommends;
 	}
 
-	public List getSuggests() {
+	public List<String> getSuggests() {
 		return recommends;
 	}
 
-	public List getProvides() {
+	public List<String> getProvides() {
 		return provides;
 	}
 
-	public List getConflicts() {
+	public List<String> getConflicts() {
 		return conflicts;
 	}
 
-	public List getReplaces() {
+	public List<String> getReplaces() {
 		return replaces;
 	}
 
@@ -1587,6 +1590,11 @@ public class TargetConfiguration {
 
 	public void setBundledJarDir(String bundledJarDir) {
 		this.bundledJarDir = bundledJarDir;
+	}
+
+
+	public UploadParameters getUploadParameters() {
+		return uploadParameters;
 	}
 
 }

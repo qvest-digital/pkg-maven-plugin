@@ -27,21 +27,18 @@
 
 package de.tarent.maven.plugins.pkg;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.MavenProject;
 
+import de.tarent.maven.plugins.pkg.AbstractPackagingMojo;
+import de.tarent.maven.plugins.pkg.AotCompileUtils;
+import de.tarent.maven.plugins.pkg.TargetConfiguration;
+import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.helper.DebHelper;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.helper.IpkHelper;
@@ -66,83 +63,7 @@ public class Packaging
 
   private static final String DEFAULT_SRC_AUXFILESDIR = "src/main/auxfiles";
 
-  protected TargetConfiguration dc;
-
   /**
-   * @parameter
-   * @required
-   */
-  protected TargetConfiguration defaults;
-
-  /**
-   * @parameter
-   */
-  protected List<TargetConfiguration> targetConfigurations;
-
-  protected PackageMap pm;  
-
-  public PackageMap getPm() {
-	return pm;
-  }
-	
-  public void setPm(PackageMap pm) {
-	this.pm = pm;
-  }
-
-  public MavenProject getProject() {
-	return project;
-  }
-  
-  public String getIgnorePackagingTypes(){
-	  return ignorePackagingTypes;
-  }
-  
-  public File getBuildDir(){
-	  return buildDir;
-  }
-  
-  public File getOutputDirectory(){
-	  return outputDirectory;
-  }
-  
-  public String get_7zipExec(){
-	  return _7zipExec;
-  }
-  
-  public String getJavaExec(){
-    return javaExec;
-  }
-  
-  public String getFinalName(){
-    return finalName;
-  }
-
-
-	public ArtifactMetadataSource getMetadataSource() {
-		return metadataSource;
-	}
-	
-	public ArtifactFactory getFactory() {
-		return factory;
-	}
-	
-	public ArtifactResolver getResolver() {
-		return resolver;
-	}
-	
-	public ArtifactRepository getLocalRepo() {
-		return local;
-	}
-	
-	public List getRemoteRepos() {
-		return remoteRepos;
-	}
-	
-	public List<TargetConfiguration> getTargetConfigurations() {
-		return targetConfigurations;
-	}
-  
-/**
    * Validates arguments and test tools.
    * 
    * @throws MojoExecutionException
@@ -227,6 +148,36 @@ public class Packaging
         AotCompileUtils.checkToolAvailability();
       }
   }
+  
+  /**
+   * Returns a Packager Object for a certain packaging type (deb, rpm, etc.) 
+   * @param packaging
+   * @return
+   */
+  public Packager getPackagerForPackaging(String packaging) {
+	    Map<String, Packager> extPackagerMap = new HashMap<String,Packager>();
+	    extPackagerMap.put("deb", new DebPackager());
+	    extPackagerMap.put("ipk", new IpkPackager());
+	    extPackagerMap.put("izpack", new IzPackPackager());
+	    extPackagerMap.put("rpm", new RPMPackager());
+	    return extPackagerMap.get(packaging);
+  }
+
+  /**
+   * Returns a PackagingHelper object that supports a caertain packaging type
+   * @param packaging
+   * @param dc
+   * @param pm
+   * @return
+   */
+  public Helper getPackagingHelperForPackaging(String packaging, TargetConfiguration dc, PackageMap pm){
+  		Map<String, Helper> extPackagerHelperMap = new HashMap<String,Helper>();
+	    extPackagerHelperMap.put("deb", new DebHelper(dc, (Packaging) this));
+	    extPackagerHelperMap.put("ipk", new IpkHelper(dc, (Packaging) this));
+	    extPackagerHelperMap.put("izpack", new IzPackHelper(dc, (Packaging) this));
+	    extPackagerHelperMap.put("rpm", new RpmHelper(dc, (Packaging) this));
+	    return extPackagerHelperMap.get(packaging);
+  }
 
   @SuppressWarnings("unchecked")
   public void execute() throws MojoExecutionException, MojoFailureException
@@ -238,7 +189,7 @@ public class Packaging
 	for(String t : targetArray){
     
 		// Generate merged distro configuration.		
-	    String d = (distro != null) ? distro : getDefaultDistroForConfiguration(t);	    
+	    String d = (distro != null) ? distro : Utils.getDefaultDistro(t,targetConfigurations, getLog());	    
 		dc = getMergedConfiguration(t, d, true);
 		dc.setChosenTarget(t);
 	    
@@ -272,36 +223,6 @@ public class Packaging
 	    
 	    packager.execute(getLog(), ph , pm);
 	}
-  }
-  
-  /**
-   * Returns a Packager Object for a certain packaging type (deb, rpm, etc.) 
-   * @param packaging
-   * @return
-   */
-  private Packager getPackagerForPackaging(String packaging) {
-	    Map<String, Packager> extPackagerMap = new HashMap<String,Packager>();
-	    extPackagerMap.put("deb", new DebPackager());
-	    extPackagerMap.put("ipk", new IpkPackager());
-	    extPackagerMap.put("izpack", new IzPackPackager());
-	    extPackagerMap.put("rpm", new RPMPackager());
-	    return extPackagerMap.get(packaging);
-  }
-
-  /**
-   * Returns a PackagingHelper object that supports a caertain packaging type
-   * @param packaging
-   * @param dc
-   * @param pm
-   * @return
-   */
-  public Helper getPackagingHelperForPackaging(String packaging, TargetConfiguration dc, PackageMap pm){
-  		Map<String, Helper> extPackagerHelperMap = new HashMap<String,Helper>();
-	    extPackagerHelperMap.put("deb", new DebHelper(dc, this));
-	    extPackagerHelperMap.put("ipk", new IpkHelper(dc, this));
-	    extPackagerHelperMap.put("izpack", new IzPackHelper(dc, this));
-	    extPackagerHelperMap.put("rpm", new RpmHelper(dc, this));
-	    return extPackagerHelperMap.get(packaging);
   }
   
   /**
@@ -354,59 +275,8 @@ public class Packaging
     
   }
 
-  /**
-   * Returns the default Distro to use for a certain TargetConfiguration.
-   * @param target
-   * @return
-   * @throws MojoExecutionException 
-   */
-  private String getDefaultDistroForConfiguration(String target) throws MojoExecutionException{
-	  String distro = new String();
-	  Log l = getLog();
-	    Iterator<TargetConfiguration> ite = targetConfigurations.iterator();
-	    while (ite.hasNext())
-	      {
-	        TargetConfiguration currentTargetConfiguration = ite.next();
-	        
-	        // The target configuration should be for the requested target.
-	        if (!currentTargetConfiguration.target.equals(target))
-	        	continue;
-
-	        // Checks whether this targetconfiguration supports
-	        // the wanted distro.
-	        if(currentTargetConfiguration.defaultDistro!=null){
-	        	distro = currentTargetConfiguration.defaultDistro;
-	        	l.info("Default distribution is set to \"" +distro + "\".");
-	        }else if(currentTargetConfiguration.distros!=null){
-			    if(currentTargetConfiguration.distros.size()==1){
-			    	distro = (String) currentTargetConfiguration.distros.iterator().next();		
-		        	l.info("Size of \"Distros\" list is one. Using \""+distro +"\" as default." );	    	
-			    }else if(currentTargetConfiguration.distros.size()>1){
-			    	String m = "No default configuration given for"+ currentTargetConfiguration.getTarget() 
-			    	+", and more than one distro is supported. Please provide one.";
-			    	l.error(m);
-			    	throw new MojoExecutionException(m);
-			    }
-		    }else{
-		    	throw new MojoExecutionException("No distros defined for configuration " + target);
-		    }
-	    	break;
-	      }
-	    return distro;	  
-  }
-
 public static String getDefaultSrcAuxfilesdir() {
 	return DEFAULT_SRC_AUXFILESDIR;
 }
-
-	
-  
-  /**
-   * Creates the temporary and package base directory.
-   * 
-   * @param l
-   * @param basePkgDir
-   * @throws MojoExecutionException
-   */
 
 }

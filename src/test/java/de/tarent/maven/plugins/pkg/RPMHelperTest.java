@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.tarent.maven.plugins.pkg.helper.RpmHelper;
+import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.testingstubs.PkgProjectStub;
 
 public class RPMHelperTest extends AbstractMvnPkgPluginTestCase{

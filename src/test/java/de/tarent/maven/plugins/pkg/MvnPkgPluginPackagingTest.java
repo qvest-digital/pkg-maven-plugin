@@ -13,6 +13,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.Test;
 
+import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.testingstubs.PkgArtifactStub;
 import de.tarent.maven.plugins.pkg.testingstubs.PkgProjectStub;
 

@@ -11,14 +11,14 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-
+import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.testingstubs.PkgArtifactStub;
 import de.tarent.maven.plugins.pkg.testingstubs.PkgProjectStub;
 
 public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase {
 
 	Packaging packagingPlugin;
-	Transport packagingTransportPlugin;
+	Upload packagingTransportPlugin;
 	protected static final File TARGETDIR = new File(getBasedir()+ "/src/test/resources/dummyproject/target/");
 	
 	/**{@inheritDoc} */

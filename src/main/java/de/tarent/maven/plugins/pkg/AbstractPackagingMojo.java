@@ -78,7 +78,9 @@ package de.tarent.maven.plugins.pkg;
 
 import java.io.File;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -89,196 +91,284 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
-import org.codehaus.plexus.archiver.manager.ArchiverManager;
+
+import de.tarent.maven.plugins.pkg.helper.DebHelper;
+import de.tarent.maven.plugins.pkg.helper.Helper;
+import de.tarent.maven.plugins.pkg.helper.IpkHelper;
+import de.tarent.maven.plugins.pkg.helper.IzPackHelper;
+import de.tarent.maven.plugins.pkg.helper.RpmHelper;
+import de.tarent.maven.plugins.pkg.map.PackageMap;
+import de.tarent.maven.plugins.pkg.packager.DebPackager;
+import de.tarent.maven.plugins.pkg.packager.IpkPackager;
+import de.tarent.maven.plugins.pkg.packager.IzPackPackager;
+import de.tarent.maven.plugins.pkg.packager.Packager;
+import de.tarent.maven.plugins.pkg.packager.RPMPackager;
 
 /**
  * Base Mojo for all packaging mojos. It provides convenient access to a mean to
  * resolve the project's complete dependencies.
  */
-public abstract class AbstractPackagingMojo extends AbstractMojo
-{
+public abstract class AbstractPackagingMojo extends AbstractMojo {
 
-  /**
-   * @parameter expression="${project}"
-   * @required
-   * @readonly
-   */
-  protected MavenProject project;
+	/**
+	 * @parameter expression="${project}"
+	 * @required
+	 * @readonly
+	 */
+	protected MavenProject project;
 
-  /**
-   * Artifact factory, needed to download source jars.
-   * @component role="org.apache.maven.project.MavenProjectBuilder"
-   * @required
-   * @readonly
-   */
-  protected MavenProjectBuilder mavenProjectBuilder;
+	/**
+	 * Artifact factory, needed to download source jars.
+	 * 
+	 * @component role="org.apache.maven.project.MavenProjectBuilder"
+	 * @required
+	 * @readonly
+	 */
+	protected MavenProjectBuilder mavenProjectBuilder;
 
-  /**
-   * Temporary directory that contains the files to be assembled.
-   * 
-   * @parameter expression="${project.build.directory}"
-   * @required
-   * @readonly
-   */
-  protected File buildDir;
-  
-  /**
-   * Used to look up Artifacts in the remote repository.
-   * @component role="org.apache.maven.artifact.factory.ArtifactFactory"
-   * @required
-   * @readonly
-   */
-  protected ArtifactFactory factory;
+	/**
+	 * Temporary directory that contains the files to be assembled.
+	 * 
+	 * @parameter expression="${project.build.directory}"
+	 * @required
+	 * @readonly
+	 */
+	protected File buildDir;
 
-  /**
-   * Used to look up Artifacts in the remote repository.
-   * @component role="org.apache.maven.artifact.resolver.ArtifactResolver"
-   * @required
-   * @readonly
-   */
-  protected ArtifactResolver resolver;
+	/**
+	 * Used to look up Artifacts in the remote repository.
+	 * 
+	 * @component role="org.apache.maven.artifact.factory.ArtifactFactory"
+	 * @required
+	 * @readonly
+	 */
+	protected ArtifactFactory factory;
 
-  /**
-   * Used to look up Artifacts in the remote repository.
-   * @component role="org.apache.maven.artifact.metadata.ArtifactMetadataSource"
-   * @required
-   * @readonly
-   */
-  protected ArtifactMetadataSource metadataSource;
+	/**
+	 * Used to look up Artifacts in the remote repository.
+	 * 
+	 * @component role="org.apache.maven.artifact.resolver.ArtifactResolver"
+	 * @required
+	 * @readonly
+	 */
+	protected ArtifactResolver resolver;
 
-  /**
-   * Location of the local repository.
-   * @parameter expression="${localRepository}"
-   * @readonly
-   * @required
-   */
-  protected ArtifactRepository local;
+	/**
+	 * Used to look up Artifacts in the remote repository.
+	 * 
+	 * @component 
+	 *            role="org.apache.maven.artifact.metadata.ArtifactMetadataSource"
+	 * @required
+	 * @readonly
+	 */
+	protected ArtifactMetadataSource metadataSource;
 
-  /**
-   * List of Remote Repositories used by the resolver
-   * @parameter expression="${project.remoteArtifactRepositories}"
-   * @readonly
-   * @required
-   */
-  protected List remoteRepos;
+	/**
+	 * Location of the local repository.
+	 * 
+	 * @parameter expression="${localRepository}"
+	 * @readonly
+	 * @required
+	 */
+	protected ArtifactRepository local;
 
-  /**
-   * @parameter expression="${project.artifact}"
-   * @required
-   * @readonly
-   */
-  protected Artifact artifact;
+	/**
+	 * List of Remote Repositories used by the resolver
+	 * 
+	 * @parameter expression="${project.remoteArtifactRepositories}"
+	 * @readonly
+	 * @required
+	 */
+	protected List<ArtifactRepository> remoteRepos;
 
-  /**
-   * @parameter expression="${project.artifactId}"
-   * @required
-   * @readonly
-   */
-  protected String artifactId;
-  
-  /**
-   * @parameter expression="${project.build.finalName}"
-   * @required
-   * @readonly
-   */
-  protected String finalName;
+	/**
+	 * @parameter expression="${project.artifact}"
+	 * @required
+	 * @readonly
+	 */
+	protected Artifact artifact;
 
-  /**
-   * @parameter expression="${project.build.directory}"
-   * @required
-   * @readonly
-   */
-  protected File outputDirectory;
+	/**
+	 * @parameter expression="${project.artifactId}"
+	 * @required
+	 * @readonly
+	 */
+	protected String artifactId;
 
-  /**
-   * @parameter expression="${project.version}"
-   * @required
-   * @readonly
-   */
-  protected String version;
+	/**
+	 * @parameter expression="${project.build.finalName}"
+	 * @required
+	 * @readonly
+	 */
+	protected String finalName;
 
-  /**
-   * JVM binary used to run Java programs from within the Mojo.
-   * 
-   * @parameter expression="${javaExec}" default-value="java"
-   * @required
-   * 
-   */
-  protected String javaExec;
+	/**
+	 * @parameter expression="${project.build.directory}"
+	 * @required
+	 * @readonly
+	 */
+	protected File outputDirectory;
 
-  /**
-   * 7Zip binary used to run Java programs from within the Mojo.
-   * 
-   * @parameter expression="${7zipExec}" default-value="7zr"
-   * @required
-   * 
-   */
-  protected String _7zipExec;
-  
-  /**
-   * Location of the custom package map file. When specifying this one
-   * the internal package map will be overridden completely. 
-   * 
-   * @parameter expression="${defPackageMapURL}"
-   */
-  protected URL defaultPackageMapURL;
+	/**
+	 * @parameter expression="${project.version}"
+	 * @required
+	 * @readonly
+	 */
+	protected String version;
 
-  /**
-   * Location of the auxiliary package map file. When this is specified
-   * the information in the document will be added to the default one.
-   * 
-   * @parameter expression="${auxPackageMapURL}"
-   */
-  protected URL auxPackageMapURL;
+	/**
+	 * JVM binary used to run Java programs from within the Mojo.
+	 * 
+	 * @parameter expression="${javaExec}" default-value="java"
+	 * @required
+	 * 
+	 */
+	protected String javaExec;
 
-  /**
-   * Overrides "defaultDistro" parameter. For use on the command-line. 
-   * 
-   * @parameter expression="${distro}"
-   */
-  protected String distro;
+	/**
+	 * 7Zip binary used to run Java programs from within the Mojo.
+	 * 
+	 * @parameter expression="${7zipExec}" default-value="7zr"
+	 * @required
+	 * 
+	 */
+	protected String _7zipExec;
 
-  /**
-   * Overrides "defaultIgnorePackagingTypes" defines a list of comma speparated packaging types that, when used, 
-   * will skip copying the main artifact for the project (if any) in the final package. For use on the command-line. 
-   * 
-   * @parameter expression="${ignorePackagingTypes}" default-value="pom"
-   * @required
-   */
-  protected String ignorePackagingTypes; 
-  
-  /**
-   * Set default target configuration to package for.
-   * 
-   * @parameter expression="${defaultTarget}"
-   * @required
-   */
-  protected String defaultTarget;
+	/**
+	 * Location of the custom package map file. When specifying this one the
+	 * internal package map will be overridden completely.
+	 * 
+	 * @parameter expression="${defPackageMapURL}"
+	 */
+	protected URL defaultPackageMapURL;
 
-  /**
-   * Overrides "defaultTarget" parameter with a comma separated list of targets. For use on the command-line. 
-   * 
-   * @parameter expression="${target}"
-   */
-  protected String target;
-  
-  /**
-   * Checks if the packaging type of the current Maven project belongs to the packaging types that, when used, 
-   * woint contain the main artifact for the project (if any) in the final package.    
-   * @return
-   */
-  
-  protected final boolean packagingTypeBelongsToIgnoreList(){
-	boolean inList = false;
-	Log l = getLog();
-		l.info("ignorePackagingTypes set. Contains: " + ignorePackagingTypes 
-				+ " . Project packaging is "+project.getPackaging());
-	  for(String s : ignorePackagingTypes.split(",")){
-		  if(project.getPackaging().compareToIgnoreCase(s)==0){
-			  	inList = true;
-			  }
-	  }
-	  return inList;
-  }
+	/**
+	 * Location of the auxiliary package map file. When this is specified the
+	 * information in the document will be added to the default one.
+	 * 
+	 * @parameter expression="${auxPackageMapURL}"
+	 */
+	protected URL auxPackageMapURL;
 
+	/**
+	 * Overrides "defaultDistro" parameter. For use on the command-line.
+	 * 
+	 * @parameter expression="${distro}"
+	 */
+	protected String distro;
+
+	/**
+	 * Overrides "defaultIgnorePackagingTypes" defines a list of comma
+	 * speparated packaging types that, when used, will skip copying the main
+	 * artifact for the project (if any) in the final package. For use on the
+	 * command-line.
+	 * 
+	 * @parameter expression="${ignorePackagingTypes}" default-value="pom"
+	 * @required
+	 */
+	protected String ignorePackagingTypes;
+
+	/**
+	 * Set default target configuration to package for.
+	 * 
+	 * @parameter expression="${defaultTarget}"
+	 * @required
+	 */
+	protected String defaultTarget;
+
+	/**
+	 * Overrides "defaultTarget" parameter with a comma separated list of
+	 * targets. For use on the command-line.
+	 * 
+	 * @parameter expression="${target}"
+	 */
+	protected String target;
+
+	protected TargetConfiguration dc;
+
+	/**
+	 * @parameter
+	 * @required
+	 */
+	protected TargetConfiguration defaults;
+
+	protected PackageMap pm;
+
+	/**
+	 * @parameter
+	 */
+	protected List<TargetConfiguration> targetConfigurations;
+
+	public String get_7zipExec() {
+		return _7zipExec;
+	}
+
+	public File getBuildDir() {
+		return buildDir;
+	}
+
+	public ArtifactFactory getFactory() {
+		return factory;
+	}
+
+	public String getFinalName() {
+		return finalName;
+	}
+
+	public String getIgnorePackagingTypes() {
+		return ignorePackagingTypes;
+	}
+
+	public String getJavaExec() {
+		return javaExec;
+	}
+
+	public ArtifactRepository getLocalRepo() {
+		return local;
+	}
+
+	public ArtifactMetadataSource getMetadataSource() {
+		return metadataSource;
+	}
+
+	public File getOutputDirectory() {
+		return outputDirectory;
+	}
+
+	public PackageMap getPm() {
+		return pm;
+	}
+
+	public MavenProject getProject() {
+		return project;
+	}
+
+	public List<ArtifactRepository> getRemoteRepos() {
+		return remoteRepos;
+	}
+
+	public ArtifactResolver getResolver() {
+		return resolver;
+	}
+
+	public List<TargetConfiguration> getTargetConfigurations() {
+		return targetConfigurations;
+	}
+
+	public void setPm(PackageMap pm) {
+		this.pm = pm;
+	}
+
+	protected final boolean packagingTypeBelongsToIgnoreList() {
+		boolean inList = false;
+		Log l = getLog();
+		l.info("ignorePackagingTypes set. Contains: " + ignorePackagingTypes + " . Project packaging is "
+				+ project.getPackaging());
+		for (String s : ignorePackagingTypes.split(",")) {
+			if (project.getPackaging().compareToIgnoreCase(s) == 0) {
+				inList = true;
+			}
+		}
+		return inList;
+	}
 }

@@ -503,7 +503,7 @@ public class Utils {
 	 * @throws InvalidDependencyVersionException
 	 */
 	protected final Set findArtifacts(ArtifactFactory factory,ArtifactResolver resolver, 
-			MavenProject project, Artifact artifact,ArtifactRepository local, List remoteRepos,
+			MavenProject project, Artifact artifact,ArtifactRepository local, List<ArtifactRepository> remoteRepos,
 			ArtifactMetadataSource metadataSource) throws ArtifactResolutionException, ArtifactNotFoundException,
 			ProjectBuildingException, InvalidDependencyVersionException {
 		return findArtifacts(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE), factory, resolver, 
@@ -570,7 +570,7 @@ public class Utils {
 										  MavenProject project, 
 										  Artifact artifact,
 										  ArtifactRepository local, 
-										  List remoteRepos,
+										  List<ArtifactRepository> remoteRepos,
 										  ArtifactMetadataSource metadataSource)
 					throws ArtifactResolutionException,ArtifactNotFoundException, 
 					ProjectBuildingException,InvalidDependencyVersionException {
@@ -581,6 +581,52 @@ public class Utils {
 				metadataSource, filter);
 
 		return result.getArtifacts();
+	}
+	
+	/**
+	 * Returns a TargetConfiguration object that matches the desired target String.
+	 * @param target
+	 * @param targetConfigurations
+	 * @return
+	 */
+	public final static TargetConfiguration getTargetConfigurationFromString(String target, 
+											List<TargetConfiguration> targetConfigurations){
+		
+		for (TargetConfiguration currentTargetConfiguration : targetConfigurations) {
+			if (currentTargetConfiguration.target.equals(target)) {
+				return currentTargetConfiguration;
+			}
+		}
+		return null;
+	}
+	
+	  /**
+	   * Returns the default Distro to use for a certain TargetConfiguration.
+	   * @param configuration
+	   * @return
+	   * @throws MojoExecutionException 
+	   */
+	public static String getDefaultDistro(String targetString, List<TargetConfiguration> targetConfigurations, Log l) throws MojoExecutionException {
+		String distro = new String();
+		TargetConfiguration target = Utils.getTargetConfigurationFromString(targetString, targetConfigurations);
+
+		if (target.defaultDistro != null) {
+			distro = target.defaultDistro;
+			l.info("Default distribution is set to \"" + distro + "\".");
+		} else if (target.distros != null) {
+			if (target.distros.size() == 1) {
+				distro = (String) target.distros.iterator().next();
+				l.info("Size of \"Distros\" list is one. Using \"" + distro + "\" as default.");
+			} else if (target.distros.size() > 1) {
+				String m = "No default configuration given for" + targetString
+						+ ", and more than one distro is supported. Please provide one.";
+				l.error(m);
+				throw new MojoExecutionException(m);
+			}
+		} else {
+			throw new MojoExecutionException("No distros defined for configuration " + targetString);
+		}
+		return distro;
 	}
 
 }
