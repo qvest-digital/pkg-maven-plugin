@@ -52,8 +52,6 @@ package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -62,12 +60,12 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
-import de.tarent.maven.plugins.pkg.helper.RpmHelper;
 import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.generator.SpecFileGenerator;
 import de.tarent.maven.plugins.pkg.helper.Helper;
+import de.tarent.maven.plugins.pkg.helper.RpmHelper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 /**
@@ -162,7 +160,7 @@ public class RPMPackager extends Packager {
 		rpmPackagePath.append(distroConfig.getArchitecture());
 		rpmPackagePath.append("/");
 		
-		String rpmPackageName = ph.generatePackageFileName(distroConfig);
+		String rpmPackageName = ph.generatePackageFileName();
 		
 		l.debug("Attempting to copy from "+ rpmPackagePath.toString() + rpmPackageName.toString()+
 				" to " + ph.getTempRoot().getParent()+"/"+rpmPackageName.toString());
@@ -281,31 +279,5 @@ public class RPMPackager extends Packager {
 
 		Utils.exec(command, "'rpmbuild -bb' failed.",
 				"Error creating rpm file.");
-	}
-	/**
-	 * Creates commands for the %clean section of the
-	 * spec file, that moves the rpm to the target directory
-	 * and removes other unneeded artifacts 
-	 *
-	 * @param ph
-	 * @param dc
-	 * @return
-	 */
-	private List<String> generateCleanCommands(RpmHelper ph, TargetConfiguration dc){
-		
-		List<String> cleancommands = new ArrayList<String>();
-		StringBuilder sb = new StringBuilder();
-		sb.append("cp ");
-		sb.append(ph.getBasePkgDir().toString());
-		sb.append("/RPMS/");
-		sb.append(dc.getArchitecture());
-		sb.append("/*.rpm ");
-		sb.append(ph.getTempRoot().getParent());
-		
-		cleancommands.add(sb.toString());
-		cleancommands.add("rm -rf " + ph.getTempRoot());
-		return cleancommands;
-
-		
 	}
 }
