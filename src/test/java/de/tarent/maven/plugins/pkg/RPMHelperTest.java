@@ -11,15 +11,11 @@ import junit.framework.Assert;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.MavenProject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.tarent.maven.plugins.pkg.helper.RpmHelper;
-import de.tarent.maven.plugins.pkg.Packaging;
-import de.tarent.maven.plugins.pkg.testingstubs.PkgProjectStub;
 
 public class RPMHelperTest extends AbstractMvnPkgPluginTestCase{
 	Packaging packaging;

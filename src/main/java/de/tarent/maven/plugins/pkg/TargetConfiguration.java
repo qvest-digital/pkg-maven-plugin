@@ -166,7 +166,7 @@ public class TargetConfiguration {
 	/**
 	 * List of files which are installed into the directory for executable.
 	 */
-	List<DataFile> binFiles;
+	List<BinFile> binFiles;
 
 	/**
 	 * Denotes whether the packager should bundle every dependency regardless of
@@ -817,7 +817,7 @@ public class TargetConfiguration {
 		return architecture;
 	}
 
-	public List getAuxFiles() {
+	public List<? extends AuxFile> getAuxFiles() {
 		return auxFiles;
 	}
 
@@ -837,7 +837,7 @@ public class TargetConfiguration {
 		return dataFiles;
 	}
 	
-	public List<? extends DataFile> getBinFiles() {
+	public List<? extends BinFile> getBinFiles() {
 		return binFiles;
 	}
 
@@ -1192,11 +1192,11 @@ public class TargetConfiguration {
 		this.datadir = datadir;
 	}
 
-	public void setDataFiles(List dataFiles) {
+	public void setDataFiles(List<DataFile> dataFiles) {
 		this.dataFiles = dataFiles;
 	}
 	
-	public void setBinFiles(List binFiles) {
+	public void setBinFiles(List<BinFile> binFiles) {
 		this.binFiles = binFiles;
 	}
 
@@ -1204,7 +1204,7 @@ public class TargetConfiguration {
 		this.datarootdir = datarootdir;
 	}
 
-	public void setDatarootFiles(List datarootFiles) {
+	public void setDatarootFiles(List<DatarootFile> datarootFiles) {
 		this.datarootFiles = datarootFiles;
 	}
 
@@ -1248,27 +1248,27 @@ public class TargetConfiguration {
 		this.maintainer = maintainer;
 	}
 
-	public void setManualDependencies(List manualDependencies) {
+	public void setManualDependencies(List<String> manualDependencies) {
 		this.manualDependencies = manualDependencies;
 	}
 
-	public void setRecommends(List recommends) {
+	public void setRecommends(List<String> recommends) {
 		this.recommends = recommends;
 	}
 
-	public void setSuggests(List suggests) {
+	public void setSuggests(List<String> suggests) {
 		this.suggests = suggests;
 	}
 
-	public void setProvides(List provides) {
+	public void setProvides(List<String> provides) {
 		this.provides = provides;
 	}
 
-	public void setConflicts(List conflicts) {
+	public void setConflicts(List<String> conflicts) {
 		this.conflicts = conflicts;
 	}
 
-	public void setReplaces(List replaces) {
+	public void setReplaces(List<String> replaces) {
 		this.replaces = replaces;
 	}
 

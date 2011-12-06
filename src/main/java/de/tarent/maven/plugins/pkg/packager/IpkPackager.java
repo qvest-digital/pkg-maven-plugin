@@ -54,6 +54,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
@@ -91,7 +92,7 @@ public class IpkPackager extends Packager
 
     // A set which will be filled with the artifacts which need to be bundled with the
     // application.
-    Set bundledArtifacts = null;
+    Set<Artifact> bundledArtifacts = null;
     Path bcp = new Path();
     Path cp = new Path();
     

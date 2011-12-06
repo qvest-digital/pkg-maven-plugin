@@ -51,7 +51,7 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
         File pom = getTestFile( getBasedir(), "src/test/resources/dummyproject/" + pomFilename );
 		// Create plugin based on the external pom file
         AbstractPackagingMojo packagingPlugin = (AbstractPackagingMojo) lookupMojo(goal, pom);
-        packagingPlugin.setPluginContext(new HashMap());       
+        packagingPlugin.setPluginContext(new HashMap<String,String>());       
         
         // Create a project contained by the plugin based on the external pom file 
         packagingPlugin.project = new PkgProjectStub(pom);

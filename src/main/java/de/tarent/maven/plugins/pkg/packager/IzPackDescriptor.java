@@ -433,11 +433,6 @@ class IzPackDescriptor
     return attr;
   }
   
-  private boolean nodeExists(String nodeName)
-  {
-    return doc.getElementsByTagName(nodeName).getLength() > 0;
-  }
-  
   private boolean childExists(Node parent, String childName)
   {
     NodeList list = parent.getChildNodes();

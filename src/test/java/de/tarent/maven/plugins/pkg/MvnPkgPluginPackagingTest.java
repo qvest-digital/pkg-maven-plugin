@@ -1,21 +1,7 @@
 package de.tarent.maven.plugins.pkg;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.regex.Pattern;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.Test;
-
-import de.tarent.maven.plugins.pkg.Packaging;
-import de.tarent.maven.plugins.pkg.testingstubs.PkgArtifactStub;
-import de.tarent.maven.plugins.pkg.testingstubs.PkgProjectStub;
 
 public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 

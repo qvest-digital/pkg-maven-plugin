@@ -325,7 +325,7 @@ public class Helper {
 	 * @param windows
 	 * @throws MojoExecutionException
 	 */
-	public void generateWrapperScript(Set bundledArtifacts, Path bcp, Path classpath, boolean windows)
+	public void generateWrapperScript(Set<Artifact> bundledArtifacts, Path bcp, Path classpath, boolean windows)
 			throws MojoExecutionException {
 		WrapperScriptGenerator gen = new WrapperScriptGenerator();
 		gen.setMaxJavaMemory(targetConfiguration.getMaxJavaMemory());
@@ -540,7 +540,7 @@ public class Helper {
 	}
 
 	public File getSrcAuxFilesDir() {
-		return (targetConfiguration.getSrcAuxFilesDir().length() == 0) ? new File(packaging.getProject().getBasedir(), packaging.getDefaultSrcAuxfilesdir()) : new File(
+		return (targetConfiguration.getSrcAuxFilesDir().length() == 0) ? new File(packaging.getProject().getBasedir(), Packaging.getDefaultSrcAuxfilesdir()) : new File(
 				packaging.getProject().getBasedir(), targetConfiguration.getSrcAuxFilesDir());
 	}
 
@@ -1176,16 +1176,16 @@ public class Helper {
 	    return Utils.joinDependencyLines(line.toString(), manualDeps.toString());
 	  }
 
-	protected final String createPackageLine(List packageDescriptors)
+	protected final String createPackageLine(List<String> packageDescriptors)
 	  {
 		  if(packageDescriptors == null || packageDescriptors.isEmpty())
 			  return null;
 		  
 		  StringBuffer packageLine = new StringBuffer();
-		  Iterator ite = packageDescriptors.iterator();
+		  Iterator<String> ite = packageDescriptors.iterator();
 		  while (ite.hasNext())
 		  {
-			  String packageDescriptor = (String) ite.next();
+			  String packageDescriptor = ite.next();
 	
 			  packageLine.append(packageDescriptor);
 			  packageLine.append(", ");
