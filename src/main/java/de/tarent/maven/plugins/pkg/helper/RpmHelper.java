@@ -10,13 +10,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.MavenProject;
 
 import de.tarent.maven.plugins.pkg.AuxFile;
 import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
-import de.tarent.maven.plugins.pkg.helper.Helper;
-import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 
 public class RpmHelper extends Helper {
@@ -153,7 +150,7 @@ public class RpmHelper extends Helper {
 
 		}
 
-		public String generatePackageFileName(TargetConfiguration targetConfiguration) {
+		public String generatePackageFileName() {
 			StringBuilder rpmPackageName = new StringBuilder();			
 			rpmPackageName.append(getPackageName());
 			rpmPackageName.append("-");
