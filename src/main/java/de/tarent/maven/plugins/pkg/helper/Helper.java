@@ -830,9 +830,8 @@ public class Helper {
 		this.tempRoot = tempRoot;
 	}
 
-	public String generatePackageFileName(TargetConfiguration targetConfiguration) {
+	public String generatePackageFileName() {
 
-		//"dummyproject_1.0.020111201093807-0ubuntulucidtargetmanualdependencies-r0_all"
 		StringBuilder packageName = new StringBuilder();
 		packageName.append(getPackageName().toLowerCase());
 		packageName.append("_");
@@ -1076,10 +1075,10 @@ public class Helper {
 	  {
 	    String defaults = packaging.getPm().getDefaultDependencyLine();
 	    StringBuffer manualDeps = new StringBuffer();
-	    Iterator ite = targetConfiguration.getManualDependencies().iterator();
+	    Iterator<String> ite = targetConfiguration.getManualDependencies().iterator();
 	    while (ite.hasNext())
 	      {
-	        String dep = (String) ite.next();
+	        String dep = ite.next();
 	
 	        manualDeps.append(dep);
 	        manualDeps.append(", ");
