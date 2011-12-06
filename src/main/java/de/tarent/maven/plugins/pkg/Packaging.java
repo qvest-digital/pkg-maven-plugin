@@ -130,8 +130,12 @@ public class Packaging
 		return resolver;
 	}
 	
-	public ArtifactRepository getLocal() {
+	public ArtifactRepository getLocalRepo() {
 		return local;
+	}
+	
+	public List getRemoteRepos() {
+		return remoteRepos;
 	}
 	
 	public List<TargetConfiguration> getTargetConfigurations() {

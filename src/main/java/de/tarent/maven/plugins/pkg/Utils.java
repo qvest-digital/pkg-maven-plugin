@@ -564,12 +564,17 @@ public class Utils {
 	 * @throws ProjectBuildingException
 	 * @throws InvalidDependencyVersionException
 	 */
-	public final static Set findArtifacts(ArtifactFilter filter, ArtifactFactory factory,ArtifactResolver resolver, 
-			MavenProject project, Artifact artifact,ArtifactRepository local, List remoteRepos,
-			ArtifactMetadataSource metadataSource)
-					throws 
-					ArtifactResolutionException,ArtifactNotFoundException, ProjectBuildingException, 
-					InvalidDependencyVersionException {
+	public final static Set findArtifacts(ArtifactFilter filter, 
+										  ArtifactFactory factory,
+										  ArtifactResolver resolver,
+										  MavenProject project, 
+										  Artifact artifact,
+										  ArtifactRepository local, 
+										  List remoteRepos,
+										  ArtifactMetadataSource metadataSource)
+					throws ArtifactResolutionException,ArtifactNotFoundException, 
+					ProjectBuildingException,InvalidDependencyVersionException {
+		
 		Set deps = project.createArtifacts(factory, Artifact.SCOPE_COMPILE, filter);
 
 		ArtifactResolutionResult result = resolver.resolveTransitively(deps, artifact, local, remoteRepos,

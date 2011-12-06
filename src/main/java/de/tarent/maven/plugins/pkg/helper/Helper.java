@@ -78,6 +78,9 @@ import de.tarent.maven.plugins.pkg.map.Visitor;
  * @author Robert Schuster (robert.schuster@tarent.de)
  */
 public class Helper {
+	
+	//TODO: Extract interface and reorganize Helper Classes
+	
 	String aotPackageName;
 
 	/**
@@ -829,7 +832,13 @@ public class Helper {
 
 	public String generatePackageFileName(TargetConfiguration targetConfiguration) {
 
-		return null;
+		//"dummyproject_1.0.020111201093807-0ubuntulucidtargetmanualdependencies-r0_all"
+		StringBuilder packageName = new StringBuilder();
+		packageName.append(getPackageName().toLowerCase());
+		packageName.append("_");
+		packageName.append(getPackageVersion());
+		packageName.append("_all.deb");
+		return packageName.toString();
 
 	}
 
@@ -947,8 +956,8 @@ public class Helper {
 	        andFilter.add(new TypeArtifactFilter("jar"));
 	
 	        dependencies = Utils.findArtifacts(andFilter, packaging.getFactory(), packaging.getResolver(), 
-	        		packaging.getProject(), packaging.getProject().getArtifact(), 
-	        		packaging.getLocal(), packaging.getTargetConfigurations(), packaging.getMetadataSource());
+	        		packaging.getProject(), packaging.getProject().getArtifact(), packaging.getLocalRepo(), 
+	        		packaging.getRemoteRepos(), packaging.getMetadataSource());
 	      }
 	    catch (ArtifactNotFoundException anfe)
 	      {
@@ -1095,7 +1104,7 @@ public class Helper {
 	
 	        runtimeDeps = Utils.findArtifacts(andFilter, packaging.getFactory(), packaging.getResolver(), 
 	        		packaging.getProject(), packaging.getProject().getArtifact(), 
-	        		packaging.getLocal(), packaging.getTargetConfigurations(), packaging.getMetadataSource());
+	        		packaging.getLocalRepo(), packaging.getRemoteRepos(), packaging.getMetadataSource());
 	
 	        andFilter = new AndArtifactFilter();
 	        andFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME));
@@ -1103,7 +1112,7 @@ public class Helper {
 	
 	        runtimeDeps.addAll(Utils.findArtifacts(andFilter, packaging.getFactory(), packaging.getResolver(), 
 	        		packaging.getProject(), packaging.getProject().getArtifact(), 
-	        		packaging.getLocal(), packaging.getTargetConfigurations(), packaging.getMetadataSource()));
+	        		packaging.getLocalRepo(), packaging.getRemoteRepos(), packaging.getMetadataSource()));
 	      }
 	    catch (ArtifactNotFoundException anfe)
 	      {
