@@ -55,18 +55,19 @@ public class Upload extends Packaging {
 	}
 
 	private void initiateUpload(String targetString) throws MojoExecutionException {
-
+		UploadParameters param;
 		TargetConfiguration currentTarget = Utils.getTargetConfigurationFromString(target, targetConfigurations);
-		if (currentTarget.getUploadParameters() == null) {
-			l.error("No upload paramenters found for configuration " + targetString);
-		} else {
-			
+		
+		try{
+			param = currentTarget.getUploadParameters();
+		}catch (Exception ex){
+			throw new MojoExecutionException("No upload paramenters found for configuration " + targetString, ex);			
+		}			
 			String distro = Utils.getDefaultDistro(targetString,targetConfigurations,l);
 			PackageMap packageMap = new PackageMap(defaultPackageMapURL, defaultPackageMapURL, distro, null);
 			File packageFile = getPackageFile(currentTarget, packageMap, targetString);
 
 			l.info("Name of package is: " + packageFile.getAbsolutePath());
-			UploadParameters param = currentTarget.getUploadParameters();
 			if (param != null) {
 				for (String url : param.getUrls()) {
 					l.info("Starting upload routine to " + url);
@@ -82,9 +83,8 @@ public class Upload extends Packaging {
 					
 				}
 			} else {
-				throw new MojoExecutionException("No upload urls set for " + targetString);
-			}
-		}
+				throw new MojoExecutionException("No upload url(s) set for " + targetString);
+			}		
 	}
 
 	public File getPackageFile(TargetConfiguration currentTargetConfiguration, PackageMap packageMap,
