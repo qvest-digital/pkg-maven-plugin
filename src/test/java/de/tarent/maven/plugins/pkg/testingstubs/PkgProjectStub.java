@@ -2,6 +2,7 @@ package de.tarent.maven.plugins.pkg.testingstubs;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.maven.model.Build;
@@ -50,7 +51,7 @@ public class PkgProjectStub
         build.setTestSourceDirectory( getBasedir() + "/src/test/java" );
         build.setTestOutputDirectory( getBasedir() + "/target/test-classes" );
         setBuild( build );
-
+        this.setDependencyArtifacts(new HashSet());
         List compileSourceRoots = new ArrayList();
         compileSourceRoots.add( getBasedir() + "/src/main/java" );
         setCompileSourceRoots( compileSourceRoots );
