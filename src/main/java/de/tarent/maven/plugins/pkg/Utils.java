@@ -497,25 +497,6 @@ public class Utils {
 	}
 
 	/**
-	 * Gathers the project's artifacts and the artifacts of all its (transitive)
-	 * compilation (and implicitly runtime) dependencies.
-	 * 
-	 * @param filter
-	 * @return
-	 * @throws ArtifactResolutionException
-	 * @throws ArtifactNotFoundException
-	 * @throws ProjectBuildingException
-	 * @throws InvalidDependencyVersionException
-	 */
-	protected final Set findArtifacts(ArtifactFactory factory,ArtifactResolver resolver, 
-			MavenProject project, Artifact artifact,ArtifactRepository local, List<ArtifactRepository> remoteRepos,
-			ArtifactMetadataSource metadataSource) throws ArtifactResolutionException, ArtifactNotFoundException,
-			ProjectBuildingException, InvalidDependencyVersionException {
-		return findArtifacts(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE), factory, resolver, 
-				 project,  artifact, local,  remoteRepos, metadataSource);
-	}
-
-	/**
 	 * Makes the version string compatible to the system's requirements.
 	 * 
 	 * @param v
