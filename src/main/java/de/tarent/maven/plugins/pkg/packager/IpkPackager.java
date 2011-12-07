@@ -112,7 +112,7 @@ public class IpkPackager extends Packager
         
         byteAmount += ph.copyFiles();
         
-        ph.copyScripts();
+        byteAmount += ph.copyScripts();
 
         // Create classpath line, copy bundled jars and generate wrapper
         // start script only if the project is an application.

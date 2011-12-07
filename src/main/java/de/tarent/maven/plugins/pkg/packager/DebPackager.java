@@ -153,7 +153,7 @@ public class DebPackager extends Packager
         
         generateConffilesFile(l, conffilesFile, ph, distroConfig);
         
-        ph.copyScripts();
+        byteAmount += ph.copyScripts();
 
         // Create classpath line, copy bundled jars and generate wrapper
         // start script only if the project is an application.

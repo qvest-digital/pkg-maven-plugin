@@ -27,7 +27,6 @@ package de.tarent.maven.plugins.pkg;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,6 +42,7 @@ import java.util.TimeZone;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.maven.artifact.Artifact;
@@ -86,7 +86,7 @@ public class Utils {
 	 * File filter that ignores files ending with "~", ".cvsignore" and CVS and
 	 * SVN files.
 	 */
-	public static final FileFilter FILTER = FileFilterUtils.makeSVNAware(FileFilterUtils
+	public static final IOFileFilter FILTER = FileFilterUtils.makeSVNAware(FileFilterUtils
 			.makeCVSAware(new NotFileFilter(new SuffixFileFilter(new String[] { "~", ".cvsignore" }))));
 
 	public static void createParentDirs(File f, String item) throws MojoExecutionException {
@@ -247,7 +247,7 @@ public class Utils {
 
 	}
 
-	public static final void copyProjectArtifact(Log l, File src, File dst) throws MojoExecutionException {
+	public static final long copyProjectArtifact(Log l, File src, File dst) throws MojoExecutionException {
 		
 		if (l!=null){
 			l.info("copying artifact: " + src.getAbsolutePath());
@@ -257,6 +257,7 @@ public class Utils {
 
 		try {
 			FileUtils.copyFile(src, dst);
+	        return src.length();
 		} catch (IOException ioe) {
 			throw new MojoExecutionException("IOException while copying artifact file.", ioe);
 		}
@@ -336,6 +337,10 @@ public class Utils {
 				if (from.isDirectory()) {
 					to = new File(to, from.getName());
 					FileUtils.copyDirectory(from, to, FILTER);
+	                for (final Iterator<File> files = FileUtils.iterateFiles(from, FILTER, FILTER); files.hasNext(); ) {
+	                	final File nextFile = files.next();
+	                    size += nextFile.length();
+	                }
 				} else if (af.isRename()) {
 					FileUtils.copyFile(from, to);
 					size += from.length();
