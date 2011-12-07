@@ -960,19 +960,29 @@ public class Helper {
 	
 	    l.info("resolving dependency artifacts");
 	
-	    Set dependencies = null;
+	    Set dependencies = new HashSet();
 	    try
 	      {
 	        // Notice only compilation dependencies which are Jars.
 	        // Shared Libraries ("so") are filtered out because the
 	        // JNI dependency is solved by the system already.
-	        AndArtifactFilter andFilter = new AndArtifactFilter();
-	        andFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE));
-	        andFilter.add(new TypeArtifactFilter("jar"));
+	        AndArtifactFilter compileFilter = new AndArtifactFilter();
+	        compileFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE));
+	        compileFilter.add(new TypeArtifactFilter("jar"));
 	
-	        dependencies = Utils.findArtifacts(andFilter, packaging.getFactory(), packaging.getResolver(), 
+	        dependencies.addAll(Utils.findArtifacts(compileFilter, packaging.getFactory(), packaging.getResolver(), 
 	        		packaging.getProject(), packaging.getProject().getArtifact(), packaging.getLocalRepo(), 
-	        		packaging.getRemoteRepos(), packaging.getMetadataSource());
+	        		packaging.getRemoteRepos(), packaging.getMetadataSource()));
+
+
+	        AndArtifactFilter runtimeFilter = new AndArtifactFilter();
+	        runtimeFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME));
+	        runtimeFilter.add(new TypeArtifactFilter("jar"));
+	        
+	        dependencies.addAll(Utils.findArtifacts(runtimeFilter, packaging.getFactory(), packaging.getResolver(), 
+	        		packaging.getProject(), packaging.getProject().getArtifact(), packaging.getLocalRepo(), 
+	        		packaging.getRemoteRepos(), packaging.getMetadataSource()));	        
+	        
 	      }
 	    catch (ArtifactNotFoundException anfe)
 	      {
