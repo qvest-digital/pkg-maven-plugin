@@ -934,7 +934,11 @@ public class TargetConfiguration {
 	}
 
 	public String getRevision() {
-		return revision;
+		if(revision == null){
+			return "";
+		}else{
+			return revision;
+		}
 	}
 
 	public void setRevision(String revision) {
