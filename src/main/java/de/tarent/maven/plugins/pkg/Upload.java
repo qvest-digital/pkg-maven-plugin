@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.PluginManager;
 import org.apache.maven.plugin.logging.Log;
 import org.twdata.maven.mojoexecutor.MojoExecutor;
@@ -99,7 +98,7 @@ public class Upload extends Packaging {
 		currentTargetConfiguration.setChosenTarget(targetString);
 		dc = currentTargetConfiguration;
 		pm = packageMap;
-		Helper helper = getPackagingHelperForPackaging(packageMap.getPackaging(), dc);
+		Helper helper = Utils.getPackagingHelperForPackaging(packageMap.getPackaging(), dc, this);
 		return new File(helper.getTempRoot().getParent(), helper.generatePackageFileName());
 
 	}

@@ -36,8 +36,10 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -67,6 +69,17 @@ import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
+
+import de.tarent.maven.plugins.pkg.helper.DebHelper;
+import de.tarent.maven.plugins.pkg.helper.Helper;
+import de.tarent.maven.plugins.pkg.helper.IpkHelper;
+import de.tarent.maven.plugins.pkg.helper.IzPackHelper;
+import de.tarent.maven.plugins.pkg.helper.RpmHelper;
+import de.tarent.maven.plugins.pkg.packager.DebPackager;
+import de.tarent.maven.plugins.pkg.packager.IpkPackager;
+import de.tarent.maven.plugins.pkg.packager.IzPackPackager;
+import de.tarent.maven.plugins.pkg.packager.Packager;
+import de.tarent.maven.plugins.pkg.packager.RPMPackager;
 
 /**
  * A bunch of method with often used functionality. There is nothing special
@@ -662,4 +675,45 @@ public class Utils {
 		return sb.toString();
 	}
 
+	/**
+	 * Converts a byte amount to the unit used by the Debian control file
+	 * (usually KiB). That value can then be used in a ControlFileGenerator
+	 * instance.
+	 * 
+	 * @param byteAmount
+	 * @return
+	 */
+	public static long getInstalledSize(long byteAmount) {
+		return byteAmount / 1024L;
+	}
+
+	  /**
+	   * Returns a Packager Object for a certain packaging type (deb, rpm, etc.) 
+	   * @param packaging
+	   * @return
+	   */
+	  public static Packager getPackagerForPackaging(String packaging) {
+		    Map<String, Packager> extPackagerMap = new HashMap<String,Packager>();
+		    extPackagerMap.put("deb", new DebPackager());
+		    extPackagerMap.put("ipk", new IpkPackager());
+		    extPackagerMap.put("izpack", new IzPackPackager());
+		    extPackagerMap.put("rpm", new RPMPackager());
+		    return extPackagerMap.get(packaging);
+	  }
+
+	  /**
+	   * Returns a PackagingHelper object that supports a caertain packaging type
+	   * @param packaging
+	   * @param dc
+	   * @param pm
+	   * @return
+	   */
+	  public static Helper getPackagingHelperForPackaging(String packaging, TargetConfiguration dc, Packaging p){
+	  		Map<String, Helper> extPackagerHelperMap = new HashMap<String,Helper>();
+		    extPackagerHelperMap.put("deb", new DebHelper(dc, (Packaging) p));
+		    extPackagerHelperMap.put("ipk", new IpkHelper(dc, (Packaging) p));
+		    extPackagerHelperMap.put("izpack", new IzPackHelper(dc, (Packaging) p));
+		    extPackagerHelperMap.put("rpm", new RpmHelper(dc, (Packaging) p));
+		    return extPackagerHelperMap.get(packaging);
+	  }
 }

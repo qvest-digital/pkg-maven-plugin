@@ -27,29 +27,14 @@
 
 package de.tarent.maven.plugins.pkg;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
 
-import de.tarent.maven.plugins.pkg.AbstractPackagingMojo;
-import de.tarent.maven.plugins.pkg.AotCompileUtils;
-import de.tarent.maven.plugins.pkg.TargetConfiguration;
-import de.tarent.maven.plugins.pkg.Utils;
-import de.tarent.maven.plugins.pkg.helper.DebHelper;
 import de.tarent.maven.plugins.pkg.helper.Helper;
-import de.tarent.maven.plugins.pkg.helper.IpkHelper;
-import de.tarent.maven.plugins.pkg.helper.IzPackHelper;
-import de.tarent.maven.plugins.pkg.helper.RpmHelper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
-import de.tarent.maven.plugins.pkg.packager.DebPackager;
-import de.tarent.maven.plugins.pkg.packager.IpkPackager;
-import de.tarent.maven.plugins.pkg.packager.IzPackPackager;
 import de.tarent.maven.plugins.pkg.packager.Packager;
-import de.tarent.maven.plugins.pkg.packager.RPMPackager;
 
 /**
  * Creates a package file for the project and the given distribution.
@@ -61,123 +46,6 @@ public class Packaging
     extends AbstractPackagingMojo
 {
 
-  private static final String DEFAULT_SRC_AUXFILESDIR = "src/main/auxfiles";
-
-  /**
-   * Validates arguments and test tools.
-   * 
-   * @throws MojoExecutionException
-   */
-  void checkEnvironment(Log l) throws MojoExecutionException
-  {
-    l.info("distribution             : " + dc.chosenDistro);
-    l.info("package system           : " + pm.getPackaging());
-    l.info("default package map      : "
-           + (defaultPackageMapURL == null ? "built-in"
-                                          : defaultPackageMapURL.toString()));
-    l.info("auxiliary package map    : "
-           + (auxPackageMapURL == null ? "no" : auxPackageMapURL.toString()));
-    l.info("type of project          : "
-           + ((dc.getMainClass() != null) ? "application" : "library"));
-    l.info("section                  : " + dc.getSection());
-    l.info("bundle all dependencies  : " + ((dc.isBundleAll()) ? "yes" : "no"));
-    l.info("ahead of time compilation: " + ((dc.isAotCompile()) ? "yes" : "no"));
-    l.info("custom jar libraries     : "
-            + ((dc.jarFiles.isEmpty()) ? "<none>"
-                                      : String.valueOf(dc.jarFiles.size())));
-    l.info("JNI libraries            : "
-           + ((dc.jniFiles.isEmpty()) ? "<none>"
-                                     : String.valueOf(dc.jniFiles.size())));
-    l.info("auxiliary file source dir: "
-           + (dc.srcAuxFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-                                             : dc.srcAuxFilesDir));
-    l.info("auxiliary files          : "
-           + ((dc.auxFiles.isEmpty()) ? "<none>"
-                                     : String.valueOf(dc.auxFiles.size())));
-    l.info("prefix                   : "
-           + (dc.prefix.length() == 1 ? "/ (default)" : dc.prefix));
-    l.info("sysconf files source dir : "
-           + (dc.srcSysconfFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-                                                 : dc.srcSysconfFilesDir));
-    l.info("sysconfdir               : "
-           + (dc.sysconfdir.length() == 0 ? "(default)" : dc.sysconfdir));
-    l.info("dataroot files source dir: "
-           + (dc.srcDatarootFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-                                                  : dc.srcDatarootFilesDir));
-    l.info("dataroot                 : "
-           + (dc.datarootdir.length() == 0 ? "(default)" : dc.datarootdir));
-    l.info("data files source dir    : "
-           + (dc.srcDataFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-                                              : dc.srcDataFilesDir));
-    l.info("datadir                  : "
-           + (dc.datadir.length() == 0 ? "(default)" : dc.datadir));
-    l.info("bindir                   : "
-           + (dc.bindir.length() == 0 ? "(default)" : dc.bindir));
-
-    if (dc.chosenDistro == null)
-      throw new MojoExecutionException("No distribution configured!");
-
-    if (dc.isAotCompile())
-      {
-        l.info("aot compiler             : " + dc.getGcjExec());
-        l.info("aot classmap generator   : " + dc.getGcjDbToolExec());
-      }
-
-    if (dc.getMainClass() == null)
-      {
-        if (! "libs".equals(dc.getSection()))
-          throw new MojoExecutionException(
-                                           "section has to be 'libs' if no main class is given.");
-
-        if (dc.isBundleAll())
-          throw new MojoExecutionException(
-                                           "Bundling dependencies to a library makes no sense.");
-      }
-    else
-      {
-        if ("libs".equals(dc.getSection()))
-          throw new MojoExecutionException(
-                                           "Set a proper section if main class parameter is set.");
-      }
-
-    if (dc.isAotCompile())
-      {
-        AotCompileUtils.setGcjExecutable(dc.getGcjExec());
-        AotCompileUtils.setGcjDbToolExecutable(dc.getGcjDbToolExec());
-
-        AotCompileUtils.checkToolAvailability();
-      }
-  }
-  
-  /**
-   * Returns a Packager Object for a certain packaging type (deb, rpm, etc.) 
-   * @param packaging
-   * @return
-   */
-  public Packager getPackagerForPackaging(String packaging) {
-	    Map<String, Packager> extPackagerMap = new HashMap<String,Packager>();
-	    extPackagerMap.put("deb", new DebPackager());
-	    extPackagerMap.put("ipk", new IpkPackager());
-	    extPackagerMap.put("izpack", new IzPackPackager());
-	    extPackagerMap.put("rpm", new RPMPackager());
-	    return extPackagerMap.get(packaging);
-  }
-
-  /**
-   * Returns a PackagingHelper object that supports a caertain packaging type
-   * @param packaging
-   * @param dc
-   * @param pm
-   * @return
-   */
-  public Helper getPackagingHelperForPackaging(String packaging, TargetConfiguration dc){
-  		Map<String, Helper> extPackagerHelperMap = new HashMap<String,Helper>();
-	    extPackagerHelperMap.put("deb", new DebHelper(dc, (Packaging) this));
-	    extPackagerHelperMap.put("ipk", new IpkHelper(dc, (Packaging) this));
-	    extPackagerHelperMap.put("izpack", new IzPackHelper(dc, (Packaging) this));
-	    extPackagerHelperMap.put("rpm", new RpmHelper(dc, (Packaging) this));
-	    return extPackagerHelperMap.get(packaging);
-  }
 
   @SuppressWarnings("unchecked")
   public void execute() throws MojoExecutionException, MojoFailureException
@@ -206,8 +74,8 @@ public class Packaging
 	    }
 	
 	    // Create packager and packaging helper according to the chosen packaging type.	      
-	    Helper ph = getPackagingHelperForPackaging(packaging, dc);
-	    Packager packager = getPackagerForPackaging(packaging);
+	    Helper ph = Utils.getPackagingHelperForPackaging(packaging, dc, this);
+	    Packager packager = Utils.getPackagerForPackaging(packaging);
 	    
 	    if (packager == null){
 	      throw new MojoExecutionException("Unsupported packaging type: "+ packaging);
@@ -274,9 +142,5 @@ public class Packaging
     }
     
   }
-
-public static String getDefaultSrcAuxfilesdir() {
-	return DEFAULT_SRC_AUXFILESDIR;
-}
 
 }

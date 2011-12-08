@@ -78,9 +78,7 @@ package de.tarent.maven.plugins.pkg;
 
 import java.io.File;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -88,27 +86,24 @@ import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 
-import de.tarent.maven.plugins.pkg.helper.DebHelper;
-import de.tarent.maven.plugins.pkg.helper.Helper;
-import de.tarent.maven.plugins.pkg.helper.IpkHelper;
-import de.tarent.maven.plugins.pkg.helper.IzPackHelper;
-import de.tarent.maven.plugins.pkg.helper.RpmHelper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
-import de.tarent.maven.plugins.pkg.packager.DebPackager;
-import de.tarent.maven.plugins.pkg.packager.IpkPackager;
-import de.tarent.maven.plugins.pkg.packager.IzPackPackager;
-import de.tarent.maven.plugins.pkg.packager.Packager;
-import de.tarent.maven.plugins.pkg.packager.RPMPackager;
 
 /**
  * Base Mojo for all packaging mojos. It provides convenient access to a mean to
  * resolve the project's complete dependencies.
  */
 public abstract class AbstractPackagingMojo extends AbstractMojo {
+
+	private static final String DEFAULT_SRC_AUXFILESDIR = "src/main/auxfiles";
+
+	public static String getDefaultSrcAuxfilesdir() {
+		return DEFAULT_SRC_AUXFILESDIR;
+	}
 
 	/**
 	 * @parameter expression="${project}"
@@ -371,4 +366,92 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 		}
 		return inList;
 	}
+	
+
+	  /**
+	   * Validates arguments and test tools.
+	   * 
+	   * @throws MojoExecutionException
+	   */
+	  void checkEnvironment(Log l) throws MojoExecutionException
+	  {
+	    l.info("distribution             : " + dc.chosenDistro);
+	    l.info("package system           : " + pm.getPackaging());
+	    l.info("default package map      : "
+	           + (defaultPackageMapURL == null ? "built-in"
+	                                          : defaultPackageMapURL.toString()));
+	    l.info("auxiliary package map    : "
+	           + (auxPackageMapURL == null ? "no" : auxPackageMapURL.toString()));
+	    l.info("type of project          : "
+	           + ((dc.getMainClass() != null) ? "application" : "library"));
+	    l.info("section                  : " + dc.getSection());
+	    l.info("bundle all dependencies  : " + ((dc.isBundleAll()) ? "yes" : "no"));
+	    l.info("ahead of time compilation: " + ((dc.isAotCompile()) ? "yes" : "no"));
+	    l.info("custom jar libraries     : "
+	            + ((dc.jarFiles.isEmpty()) ? "<none>"
+	                                      : String.valueOf(dc.jarFiles.size())));
+	    l.info("JNI libraries            : "
+	           + ((dc.jniFiles.isEmpty()) ? "<none>"
+	                                     : String.valueOf(dc.jniFiles.size())));
+	    l.info("auxiliary file source dir: "
+	           + (dc.srcAuxFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+	                                             : dc.srcAuxFilesDir));
+	    l.info("auxiliary files          : "
+	           + ((dc.auxFiles.isEmpty()) ? "<none>"
+	                                     : String.valueOf(dc.auxFiles.size())));
+	    l.info("prefix                   : "
+	           + (dc.prefix.length() == 1 ? "/ (default)" : dc.prefix));
+	    l.info("sysconf files source dir : "
+	           + (dc.srcSysconfFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+	                                                 : dc.srcSysconfFilesDir));
+	    l.info("sysconfdir               : "
+	           + (dc.sysconfdir.length() == 0 ? "(default)" : dc.sysconfdir));
+	    l.info("dataroot files source dir: "
+	           + (dc.srcDatarootFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+	                                                  : dc.srcDatarootFilesDir));
+	    l.info("dataroot                 : "
+	           + (dc.datarootdir.length() == 0 ? "(default)" : dc.datarootdir));
+	    l.info("data files source dir    : "
+	           + (dc.srcDataFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+	                                              : dc.srcDataFilesDir));
+	    l.info("datadir                  : "
+	           + (dc.datadir.length() == 0 ? "(default)" : dc.datadir));
+	    l.info("bindir                   : "
+	           + (dc.bindir.length() == 0 ? "(default)" : dc.bindir));
+
+	    if (dc.chosenDistro == null)
+	      throw new MojoExecutionException("No distribution configured!");
+
+	    if (dc.isAotCompile())
+	      {
+	        l.info("aot compiler             : " + dc.getGcjExec());
+	        l.info("aot classmap generator   : " + dc.getGcjDbToolExec());
+	      }
+
+	    if (dc.getMainClass() == null)
+	      {
+	        if (! "libs".equals(dc.getSection()))
+	          throw new MojoExecutionException(
+	                                           "section has to be 'libs' if no main class is given.");
+
+	        if (dc.isBundleAll())
+	          throw new MojoExecutionException(
+	                                           "Bundling dependencies to a library makes no sense.");
+	      }
+	    else
+	      {
+	        if ("libs".equals(dc.getSection()))
+	          throw new MojoExecutionException(
+	                                           "Set a proper section if main class parameter is set.");
+	      }
+
+	    if (dc.isAotCompile())
+	      {
+	        AotCompileUtils.setGcjExecutable(dc.getGcjExec());
+	        AotCompileUtils.setGcjDbToolExecutable(dc.getGcjDbToolExec());
+
+	        AotCompileUtils.checkToolAvailability();
+	      }
+	  }
+
 }

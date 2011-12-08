@@ -300,7 +300,7 @@ public class DebPackager extends Packager
 	cgen.setShortDescription(ph.getProjectDescription());
 	cgen.setDescription(ph.getProjectDescription());
 	cgen.setArchitecture(ph.getTargetConfiguration().getArchitecture());
-	cgen.setInstalledSize(getInstalledSize(byteAmount));
+	cgen.setInstalledSize(Utils.getInstalledSize(byteAmount));
 	    
     l.info("creating control file: " + controlFile.getAbsolutePath());
     Utils.createFile(controlFile, "control");
@@ -390,18 +390,7 @@ public class DebPackager extends Packager
                 "'fakeroot dpkg --build' failed.",
                 "Error creating the .deb file.");
   }
- 
-  /** Converts a byte amount to the unit used by the Debian control file
-   * (usually KiB). That value can then be used in a ControlFileGenerator
-   * instance.
-   * 
-   * @param byteAmount
-   * @return
-   */
-  private long getInstalledSize(long byteAmount)
-  {
-    return byteAmount / 1024L;
-  }
+
 
 
 }
