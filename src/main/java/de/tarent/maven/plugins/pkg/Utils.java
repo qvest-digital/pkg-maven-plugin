@@ -627,7 +627,7 @@ public class Utils {
 	 * @return
 	 * @throws MojoExecutionException
 	 */
-	public static String getConsolidatedLicense(MavenProject project) throws MojoExecutionException {
+	public static String getConsolidatedLicenseString(MavenProject project) throws MojoExecutionException {
 		StringBuilder license = new StringBuilder();
 		Iterator<License> ite = null;
 		try {

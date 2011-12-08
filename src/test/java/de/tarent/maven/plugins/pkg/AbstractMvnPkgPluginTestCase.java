@@ -27,6 +27,7 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	/**{@inheritDoc} */
 	protected void setUp() throws Exception{
 		super.setUp();
+		FileUtils.forceMkdir(TARGETDIR);
 		FileUtils.cleanDirectory(TARGETDIR);
 		
 	}

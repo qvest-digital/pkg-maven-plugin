@@ -183,6 +183,6 @@ public class RpmHelper extends Helper {
 		 */
 		public String getLicense() throws MojoExecutionException {
 			
-			return Utils.getConsolidatedLicense(packaging.getProject());
+			return Utils.getConsolidatedLicenseString(packaging.getProject());
 		}
 	}

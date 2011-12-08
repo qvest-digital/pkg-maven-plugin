@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -190,7 +191,7 @@ public class Helper {
 	
 	Log l;
 	
-	private Packaging packaging;
+	protected Packaging packaging;
 	
 	public File getTargetAuxDir() {
 		return targetAuxDir;
@@ -1309,6 +1310,32 @@ public class Helper {
 				return 0;
 			}
 		}
-	  
+		
+		/**
+		 * Creates a copyright file under the DEBIAN directory of the package.</br>
+		 * 
+		 * The approach followed here is simplistic.
+		 *  
+		 * @return
+		 * @throws MojoExecutionException
+		 * @throws IOException 
+		 */
+		public long createCopyrightFile() throws MojoExecutionException{
+			File copyright = new File(dstScriptDir,"copyright");
+			PrintWriter w = null;
+			try{
+				w = new PrintWriter(new BufferedWriter(new FileWriter(copyright)));
+				w.write("This Pachage was debianized by" + targetConfiguration.getMaintainer()+"\n");			
+				w.write(Calendar.YEAR + Calendar.DAY_OF_MONTH + Calendar.MONTH + "\n");
+			}catch(IOException ex){
+				throw new MojoExecutionException("Error writing to copyright file",ex);
+			}finally{
+				if (w!=null){
+					w.close();
+				}
+			}
+			
+			return copyright.length();
+		}
 	  
 }
