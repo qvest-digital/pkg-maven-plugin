@@ -782,14 +782,6 @@ public class TargetConfiguration {
 	Boolean sign;
 	
 	/**
-	 * Denothes the license of the package to build. As of now, this value is
-	 * only taken in consideration when building RPM packages.
-	 * 
-	 * <p>Default value is <code>unknown</code>.</p>
-	 * 
-	 */
-	String license;
-	/**
 	 * Denothes the release of the package to build. As of now, this value is
 	 * only taken in consideration when building RPM packages.
 	 * 
@@ -1152,9 +1144,6 @@ public class TargetConfiguration {
 		sign = (Boolean)merge(sign, parent.sign, Boolean.FALSE);
 		
 		// RPM License configuration (it must always contain a value)
-		license = (String) merge(license, parent.license,"unknown");
-		
-		// RPM License configuration (it must always contain a value)
 		defaultDistro = (String) merge(defaultDistro, parent.defaultDistro,"unknown");
 
 		return this;
@@ -1385,8 +1374,7 @@ public class TargetConfiguration {
 		appendBoolean(sb, "bundleAll", bundleAll);
 		appendBoolean(sb, "advancedStarter", advancedStarter);
 		appendBoolean(sb, "sign", sign);
-		appendStringDefault(sb, "license", license);
-		appendStringDefault(sb, "release", license);
+		appendStringDefault(sb, "release", release);
 		appendStringDefault(sb, "source", source);
 		// TODO rschuster: To my knowledge this is not implemented yet.
 //		sb.append("createWindowsExecutable: " + createWindowsExecutable + "\n");
@@ -1546,17 +1534,6 @@ public class TargetConfiguration {
 	public void setSign(boolean sign) {
 		this.sign = Boolean.valueOf(sign);
 	}
-
-
-	public String getLicense() {
-		return license;
-	}
-
-
-	public void setLicense(String license) {
-		this.license = license;
-	}
-
 
 	public String getRelease() {
 		return release;
