@@ -657,6 +657,7 @@ public class Utils {
 	    BufferedReader r = new BufferedReader(new InputStreamReader(new URL(url).openStream()));
 	    while ((s = r.readLine()) != null) {
 	        sb.append(s);
+	        sb.append("\n");
 	    }
 		return sb.toString();
 	}

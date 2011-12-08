@@ -151,9 +151,12 @@ public class DebPackager extends Packager
         
         byteAmount += ph.copyFiles();
         
-        generateConffilesFile(l, conffilesFile, ph, distroConfig);
+        generateConffilesFile(l, conffilesFile, ph);
         
         byteAmount += ph.copyScripts();
+        
+		byteAmount += ph.createCopyrightFile();
+
 
         // Create classpath line, copy bundled jars and generate wrapper
         // start script only if the project is an application.
@@ -169,7 +172,6 @@ public class DebPackager extends Packager
         
         generateControlFile(l,
                             ph,
-                            distroConfig,
         		            controlFile,
         		            packageName,
         		            packageVersion,
@@ -220,7 +222,6 @@ public class DebPackager extends Packager
             distroConfig.setArchitecture(System.getProperty("os.arch"));
             generateControlFile(l,
                                 ph,
-                                distroConfig,
                                 aotControlFile,
             		            gcjPackageName,
             		            packageVersion,
@@ -273,7 +274,6 @@ public class DebPackager extends Packager
    */
   private void generateControlFile(Log l,
                                    Helper ph,
-                                   TargetConfiguration dc,
                                    File controlFile,
                                    String packageName,
                                    String packageVersion,
@@ -289,17 +289,17 @@ public class DebPackager extends Packager
 	ControlFileGenerator cgen = new ControlFileGenerator();
 	cgen.setPackageName(packageName);
 	cgen.setVersion(packageVersion);
-	cgen.setSection(dc.getSection());
+	cgen.setSection(ph.getTargetConfiguration().getSection());
 	cgen.setDependencies(dependencyLine);
 	cgen.setRecommends(recommendsLine);
 	cgen.setSuggests(suggestsLine);
 	cgen.setProvides(providesLine);
 	cgen.setConflicts(conflictsLine);
 	cgen.setReplaces(replacesLine);
-	cgen.setMaintainer(dc.getMaintainer());
+	cgen.setMaintainer(ph.getTargetConfiguration().getMaintainer());
 	cgen.setShortDescription(ph.getProjectDescription());
 	cgen.setDescription(ph.getProjectDescription());
-	cgen.setArchitecture(dc.getArchitecture());
+	cgen.setArchitecture(ph.getTargetConfiguration().getArchitecture());
 	cgen.setInstalledSize(getInstalledSize(byteAmount));
 	    
     l.info("creating control file: " + controlFile.getAbsolutePath());
@@ -328,10 +328,10 @@ public class DebPackager extends Packager
    * @param tc
    * @throws MojoExecutionException
    */
-  private void generateConffilesFile(Log l, File conffilesFile, Helper ph, TargetConfiguration tc)
+  private void generateConffilesFile(Log l, File conffilesFile, Helper ph)
   	throws MojoExecutionException
   	{
-	  List<SysconfFile> sysconffiles = (List<SysconfFile>) tc.getSysconfFiles();
+	  List<SysconfFile> sysconffiles = (List<SysconfFile>) ph.getTargetConfiguration().getSysconfFiles();
 	  if (sysconffiles.isEmpty())
 	  {
 		  l.info("No sysconf files defined - not creating file.");

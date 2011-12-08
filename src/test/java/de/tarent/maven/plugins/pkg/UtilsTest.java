@@ -47,13 +47,13 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		List<License>licenses = createLicenseList("License 1", "License 2");
 		
 		p.project.setLicenses(licenses);
-		String result = Utils.getConsolidatedLicense(p.project);
+		String result = Utils.getConsolidatedLicenseString(p.project);
 		Assert.assertEquals("License 1, License 2",result);
 		
 		List<License> l = p.project.getLicenses();
 		l.remove(0);
 		p.project.setLicenses(l);
-		result = Utils.getConsolidatedLicense(p.project);
+		result = Utils.getConsolidatedLicenseString(p.project);
 		Assert.assertEquals("License 2",result);
 		
 	}
@@ -64,7 +64,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		Packaging p = (Packaging)mockEnvironment("simplepom.xml", "pkg");
 		p.project.setLicenses(null);
 		try{
-			Utils.getConsolidatedLicense(p.project);
+			Utils.getConsolidatedLicenseString(p.project);
 		}catch(MojoExecutionException ex){
         	assertTrue(ex.toString().contains("Please provide at least one license in your POM."));           	
         }		

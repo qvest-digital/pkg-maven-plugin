@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,6 +22,7 @@ import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.TypeArtifactFilter;
+import org.apache.maven.model.License;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.ProjectBuildingException;
@@ -1322,11 +1325,38 @@ public class Helper {
 		 */
 		public long createCopyrightFile() throws MojoExecutionException{
 			File copyright = new File(dstScriptDir,"copyright");
+			
 			PrintWriter w = null;
+			Iterator<License> ite = null;
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+					
 			try{
+				ite = ((List<License>)packaging.getProject().getLicenses()).iterator();
+			}catch(Exception ex){
+				/*
+				 * If an error occurs, it is most probably because no licences are found.
+				 * If this is the case we just return 0 (file is 0 bytes in size)
+				 */
+				return 0;
+			}
+			
+			try{
+				FileUtils.forceMkdir(copyright.getParentFile());
+				copyright.createNewFile();
 				w = new PrintWriter(new BufferedWriter(new FileWriter(copyright)));
-				w.write("This Pachage was debianized by" + targetConfiguration.getMaintainer()+"\n");			
-				w.write(Calendar.YEAR + Calendar.DAY_OF_MONTH + Calendar.MONTH + "\n");
+				w.println("Maintainer: " + targetConfiguration.getMaintainer());				
+				w.println("Date: " + formatter.format(Calendar.getInstance().getTime()));
+				
+				while(ite.hasNext()){
+					License l = ite.next();
+					w.println("License:" +l.getName());
+					try{
+						w.print(Utils.getTextFromUrl(l.getUrl()));
+					}catch (MalformedURLException ex) {
+						// Nothing to worry about
+					}
+					w.println();
+				}				
 			}catch(IOException ex){
 				throw new MojoExecutionException("Error writing to copyright file",ex);
 			}finally{

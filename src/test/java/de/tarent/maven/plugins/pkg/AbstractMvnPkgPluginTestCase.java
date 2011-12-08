@@ -177,9 +177,15 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		for(int i=0;i<strings.length;i++){
 			License l = new License();
 			l.setName(strings[i]);
+			l.setUrl("http://www.gnu.org/licenses/lgpl.txt");
 			licenses.add(l);			
 		}		
 		return licenses;
+	}
+
+	protected boolean debContainsCopyrightFile() throws MojoExecutionException, IOException {
+		final Pattern p = Pattern.compile("lines.*copyright");
+		return debContains(p, "--info");
 	}
 	
 
