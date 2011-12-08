@@ -4,11 +4,14 @@ package de.tarent.maven.plugins.pkg;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.maven.model.License;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import de.tarent.maven.plugins.pkg.Packaging;
@@ -64,6 +67,7 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
         packagingPlugin.project.setDescription("DummyDescription");
         packagingPlugin.project.setUrl("http://DummyURL.com");
         packagingPlugin.project.setVersion("1.0.0");
+        packagingPlugin.project.setLicenses(createLicenseList("License 1","License 2"));
         packagingPlugin.version =    packagingPlugin.project.getVersion();
         packagingPlugin.artifactId = packagingPlugin.project.getArtifactId();
         packagingPlugin.finalName =	 packagingPlugin.project.getArtifactId();
@@ -164,6 +168,17 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	protected boolean debDependsOn(String s) throws MojoExecutionException, IOException {
 		final Pattern p = Pattern.compile("Depends:.*"+Pattern.quote(s)+".*");
 		return debContains(p, "--info");
+	}
+	
+	protected List<License> createLicenseList(String ... strings)
+	{
+		List<License> licenses = new ArrayList<License>();
+		for(int i=0;i<strings.length;i++){
+			License l = new License();
+			l.setName(strings[i]);
+			licenses.add(l);			
+		}		
+		return licenses;
 	}
 	
 

@@ -216,7 +216,7 @@ public class RPMPackager extends Packager {
 			sgen.setVersion(ph.getVersion());
 			sgen.setSummary(ph.getProjectDescription());
 			sgen.setDescription(ph.getProjectDescription());
-			sgen.setLicense(dc.getLicense());
+			sgen.setLicense(ph.getLicense());
 			sgen.setRelease(dc.getRelease());
 			sgen.setSource(dc.getSource());
 			sgen.setUrl(ph.getProjectUrl());

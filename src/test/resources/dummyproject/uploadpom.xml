@@ -17,9 +17,10 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
+	
 	<description>Dummy</description>
 	<url>http://dummy.com</url>
+	
 	<build>
 		<plugins>
 			<plugin>

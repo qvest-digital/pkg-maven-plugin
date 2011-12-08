@@ -49,6 +49,29 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	/**
 	 * This test attempts the following:
 	 * 
+	 * Execute a target configuration for RPM without license
+	 * 
+	 * This test should fail. 
+	 * 
+	*/
+	@Test
+    public void testCreateRpmForCentOS_5_6WithoutLicense()
+            throws Exception
+        {	
+
+			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg","centos_5_6_target_simple");
+			packagingPlugin.project.setLicenses(null);
+			
+            try{
+            	packagingPlugin.execute();
+            }catch(MojoExecutionException ex){
+            	assertTrue(ex.toString().contains("Please provide at least one license in your POM."));           	
+            }
+        }
+	
+	/**
+	 * This test attempts the following:
+	 * 
 	 * Execute a target configuration without parent
 	 * Use the only distribution defined for this target
 	 * Create a RPM file 

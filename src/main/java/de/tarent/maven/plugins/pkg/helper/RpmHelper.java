@@ -14,6 +14,7 @@ import org.apache.maven.plugin.logging.Log;
 import de.tarent.maven.plugins.pkg.AuxFile;
 import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
+import de.tarent.maven.plugins.pkg.Utils;
 
 
 public class RpmHelper extends Helper {
@@ -174,4 +175,14 @@ public class RpmHelper extends Helper {
 		    }	  
 			return list;
 	    }
+
+		/**
+		 * Returns a comma separated list of License names based on the licenses provided in the POM
+		 * @return
+		 * @throws MojoExecutionException 
+		 */
+		public String getLicense() throws MojoExecutionException {
+			
+			return Utils.getConsolidatedLicense(packaging.getProject());
+		}
 	}

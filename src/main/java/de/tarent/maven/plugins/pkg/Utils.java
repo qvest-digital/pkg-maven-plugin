@@ -32,7 +32,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -55,6 +57,7 @@ import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
+import org.apache.maven.model.License;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -615,6 +618,47 @@ public class Utils {
 			throw new MojoExecutionException("No distros defined for configuration " + targetString);
 		}
 		return distro;
+	}
+	
+	/**
+	 * Returns a string with the license(s) of a MavenProject.
+	 * 
+	 * @param project
+	 * @return
+	 * @throws MojoExecutionException
+	 */
+	public static String getConsolidatedLicense(MavenProject project) throws MojoExecutionException {
+		StringBuilder license = new StringBuilder();
+		Iterator<License> ite = null;
+		try {
+			ite = (Iterator<License>) project.getLicenses().iterator();
+		} catch (Exception ex) {
+			throw new MojoExecutionException("Please provide at least one license in your POM.");
+		}
+		license.append(((License) ite.next()).getName());
+		while (ite.hasNext()) {
+			license.append(", ");
+			license.append(((License) ite.next()).getName());
+		}
+		return license.toString();
+
+	}
+	
+	/**
+	 * Simple function to grab information from an URL
+	 * @param url
+	 * @return
+	 * @throws IOException 
+	 */
+	public static String getTextFromUrl(String url) throws IOException{
+		
+	    String s;
+	    StringBuilder sb = new StringBuilder();
+	    BufferedReader r = new BufferedReader(new InputStreamReader(new URL(url).openStream()));
+	    while ((s = r.readLine()) != null) {
+	        sb.append(s);
+	    }
+		return sb.toString();
 	}
 
 }
