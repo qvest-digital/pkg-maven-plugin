@@ -46,7 +46,7 @@ public class Upload extends Packaging {
 	protected PluginManager pluginManager;
 
 	@Override
-	public void execute() throws MojoExecutionException, MojoFailureException {
+	public void execute() throws MojoExecutionException {
 
 		String[] targetArray = (target != null) ? target.split(",") : new String[] { defaultTarget };
 		for (String currentTarget : targetArray) {
@@ -56,7 +56,7 @@ public class Upload extends Packaging {
 
 	private void initiateUpload(String targetString) throws MojoExecutionException {
 		UploadParameters param;
-		TargetConfiguration currentTarget = Utils.getTargetConfigurationFromString(target, targetConfigurations);
+		TargetConfiguration currentTarget = Utils.getTargetConfigurationFromString(targetString, targetConfigurations);
 		
 		try{
 			param = currentTarget.getUploadParameters();
@@ -68,6 +68,11 @@ public class Upload extends Packaging {
 			File packageFile = getPackageFile(currentTarget, packageMap, targetString);
 
 			l.info("Name of package is: " + packageFile.getAbsolutePath());
+			if(packageFile.exists()){
+				l.info("Package file exists");
+			}else{
+				throw new MojoExecutionException("Package file does not exist.");
+			}
 			if (param != null) {
 				for (String url : param.getUrls()) {
 					l.info("Starting upload routine to " + url);
@@ -78,7 +83,7 @@ public class Upload extends Packaging {
 								new ExecutionEnvironmentM2(project, session, pluginManager));
 						l.info("Upload successful to " + url);
 					}catch(Exception ex){
-						
+						throw new MojoExecutionException("Error while uploading file: " +ex.getMessage(),ex);
 					}
 					
 				}
@@ -94,7 +99,7 @@ public class Upload extends Packaging {
 		currentTargetConfiguration.setChosenTarget(targetString);
 		dc = currentTargetConfiguration;
 		pm = packageMap;
-		Helper helper = getPackagingHelperForPackaging(packageMap.getPackaging(), dc, pm);
+		Helper helper = getPackagingHelperForPackaging(packageMap.getPackaging(), dc);
 		return new File(helper.getTempRoot().getParent(), helper.generatePackageFileName());
 
 	}
@@ -108,7 +113,7 @@ public class Upload extends Packaging {
 	 * @return
 	 * @throws MojoExecutionException
 	 */
-	private Element[] generateUploadElements(File file, String url, UploadParameters param) throws MojoExecutionException {
+	public Element[] generateUploadElements(File file, String url, UploadParameters param) throws MojoExecutionException {
 		
 		List<Element> elements = new ArrayList<Element>();
 		elements.add(new Element("fromFile", file.getAbsolutePath()));

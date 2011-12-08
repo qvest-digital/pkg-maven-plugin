@@ -38,7 +38,7 @@
 				<version>4.0</version>
 				<configuration>
 
-					<defaultTarget>ubuntu_lucid_target_simple</defaultTarget>
+					<defaultTarget>ubuntu_lucid_upload</defaultTarget>
 
 					<defaults>
 						<distros>
@@ -70,12 +70,10 @@
 							</distros>
 							<uploadParameters>
 								<urls>
-									<url>scpexe://dummyserver/home/%USERNAME%</url>
-									<url>file:///{project.build.directory}/target</url>
+									<url>file:///temp/</url>
+									<url>file:///temp/2/</url>
 								</urls>
-								<username>test</username>
 							</uploadParameters>
-							<revision>r0</revision>
 						</targetConfiguration>
 
 						<targetConfiguration>

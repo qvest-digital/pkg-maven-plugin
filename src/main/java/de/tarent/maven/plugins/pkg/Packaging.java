@@ -170,7 +170,7 @@ public class Packaging
    * @param pm
    * @return
    */
-  public Helper getPackagingHelperForPackaging(String packaging, TargetConfiguration dc, PackageMap pm){
+  public Helper getPackagingHelperForPackaging(String packaging, TargetConfiguration dc){
   		Map<String, Helper> extPackagerHelperMap = new HashMap<String,Helper>();
 	    extPackagerHelperMap.put("deb", new DebHelper(dc, (Packaging) this));
 	    extPackagerHelperMap.put("ipk", new IpkHelper(dc, (Packaging) this));
@@ -206,7 +206,7 @@ public class Packaging
 	    }
 	
 	    // Create packager and packaging helper according to the chosen packaging type.	      
-	    Helper ph = getPackagingHelperForPackaging(packaging, dc, pm);
+	    Helper ph = getPackagingHelperForPackaging(packaging, dc);
 	    Packager packager = getPackagerForPackaging(packaging);
 	    
 	    if (packager == null){
