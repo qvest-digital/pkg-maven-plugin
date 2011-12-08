@@ -89,7 +89,6 @@
 							<revision>r0</revision>
 							<source>dummysource</source>
 							<release>dummyrelease</release>
-							<license>GPL</license>
 							<architecture>x86_64</architecture>
 						</targetConfiguration>
 
@@ -116,7 +115,6 @@
 							<revision>r0</revision>
 							<source>dummysource</source>
 							<release>dummyrelease</release>
-							<license>GPL</license>
 							<architecture>x86_64</architecture>
 							<manualDependencies>
 								<string>kdm</string>
@@ -134,7 +132,6 @@
 							<revision>r0</revision>
 							<source>dummysource</source>
 							<release>dummyrelease</release>
-							<license>GPL</license>
 							<architecture>x86_64</architecture>
 							<manualDependencies>
 								<string>kdm</string>
@@ -159,7 +156,6 @@
 							<revision>r0</revision>
 							<source>dummysource</source>
 							<release>dummyrelease</release>
-							<license>GPL</license>
 							<architecture>x86_64</architecture>
 							<manualDependencies>
 								<string>kdm</string>
