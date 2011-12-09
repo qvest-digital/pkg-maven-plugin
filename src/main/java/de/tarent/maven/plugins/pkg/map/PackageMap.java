@@ -27,17 +27,13 @@ package de.tarent.maven.plugins.pkg.map;
 
 import java.net.URL;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.OverConstrainedVersionException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-
-import de.tarent.maven.plugins.pkg.Utils;
 
 /**
  * A <code>PackageMap</code> instance denotes the mapping between a Maven2

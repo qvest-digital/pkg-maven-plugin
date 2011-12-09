@@ -70,7 +70,7 @@ public class Packaging
 	    if (packaging == null){
 	      throw new MojoExecutionException(
 	                                       "Package maps document set no packaging for distro: "
-	                                           + dc.chosenDistro);
+	                                           + dc.getChosenDistro());
 	    }
 	
 	    // Create packager and packaging helper according to the chosen packaging type.	      
@@ -111,17 +111,17 @@ public class Packaging
         TargetConfiguration currentTargetConfiguration = ite.next();
         
         // The target configuration should be for the requested target.
-        if (!currentTargetConfiguration.target.equals(target))
+        if (!currentTargetConfiguration.getTarget().equals(target))
         	continue;
         
         TargetConfiguration merged = getMergedConfiguration(currentTargetConfiguration.parent, distro, false);
 
         // Checks whether this targetconfiguration supports
         // the wanted distro.
-        if (currentTargetConfiguration.distros.contains(distro) || merged.distros.contains(distro))
+        if (currentTargetConfiguration.getDistros().contains(distro) || merged.getDistros().contains(distro))
           {
             // Stores the chosen distro in the configuration for later use.
-            currentTargetConfiguration.chosenDistro = distro;
+            currentTargetConfiguration.setChosenDistro(distro);
 
             // Returns a configuration that is merged with
             // the default configuration-

@@ -71,7 +71,7 @@ public class MvnPkgPluginUploadTest extends AbstractMvnPkgPluginTestCase{
 	private Upload mockUploadEnvironment() throws Exception {
 		Upload u = (Upload)mockEnvironment("uploadpom.xml", "upload");
 		u.dc = Utils.getTargetConfigurationFromString("ubuntu_lucid_upload", u.targetConfigurations);
-		u.target = u.dc.target;
+		u.target = u.dc.getTarget();
 		u.pm = new PackageMap(null, null, "ubuntu_lucid", null);
 		return u;
 	}

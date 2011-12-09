@@ -157,7 +157,6 @@ public class DebPackager extends Packager
         
 		byteAmount += ph.createCopyrightFile();
 
-
         // Create classpath line, copy bundled jars and generate wrapper
         // start script only if the project is an application.
         if (distroConfig.getMainClass() != null)

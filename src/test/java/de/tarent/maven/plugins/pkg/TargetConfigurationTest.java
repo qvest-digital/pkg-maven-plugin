@@ -72,7 +72,7 @@ public class TargetConfigurationTest extends TestCase {
 		tc2.setDistros(l2);
 		
 		TargetConfiguration merged = tc2.merge(tc1);
-		assertEquals(expected, merged.distros);
+		assertEquals(expected, merged.getDistros());
 	}
 
 	/**

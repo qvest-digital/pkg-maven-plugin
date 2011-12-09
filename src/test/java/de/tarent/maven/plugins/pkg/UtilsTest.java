@@ -37,14 +37,14 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		l.add(t3);
 		l.add(t4);
 		
-		t1.target = "unwantedConfig";
-		t2.target = "unwantedConfig";
-		t4.target = "unwantedConfig";	
+		t1.setTarget("unwantedConfig");
+		t2.setTarget("unwantedConfig");
+		t4.setTarget("unwantedConfig");	
 		
-		t3.target = "wantedConfig";
-		t3.chosenDistro = "wantedDistro";
+		t3.setTarget("wantedConfig");
+		t3.setChosenDistro("wantedDistro");
 		
-		Assert.assertEquals("wantedDistro",Utils.getTargetConfigurationFromString("wantedConfig", l).chosenDistro);
+		Assert.assertEquals("wantedDistro",Utils.getTargetConfigurationFromString("wantedConfig", l).getChosenDistro());
 		
 		
 	}

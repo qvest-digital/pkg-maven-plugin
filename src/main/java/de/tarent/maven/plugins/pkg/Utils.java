@@ -597,7 +597,7 @@ public class Utils {
 											List<TargetConfiguration> targetConfigurations){
 		
 		for (TargetConfiguration currentTargetConfiguration : targetConfigurations) {
-			if (currentTargetConfiguration.target.equals(target)) {
+			if (currentTargetConfiguration.getTarget().equals(target)) {
 				return currentTargetConfiguration;
 			}
 		}
@@ -614,14 +614,14 @@ public class Utils {
 		String distro = new String();
 		TargetConfiguration target = Utils.getTargetConfigurationFromString(targetString, targetConfigurations);
 
-		if (target.defaultDistro != null) {
-			distro = target.defaultDistro;
+		if (target.getDefaultDistro() != null) {
+			distro = target.getDefaultDistro();
 			l.info("Default distribution is set to \"" + distro + "\".");
-		} else if (target.distros != null) {
-			if (target.distros.size() == 1) {
-				distro = (String) target.distros.iterator().next();
+		} else if (target.getDistros() != null) {
+			if (target.getDistros().size() == 1) {
+				distro = (String) target.getDistros().iterator().next();
 				l.info("Size of \"Distros\" list is one. Using \"" + distro + "\" as default.");
-			} else if (target.distros.size() > 1) {
+			} else if (target.getDistros().size() > 1) {
 				String m = "No default configuration given for" + targetString
 						+ ", and more than one distro is supported. Please provide one.";
 				l.error(m);

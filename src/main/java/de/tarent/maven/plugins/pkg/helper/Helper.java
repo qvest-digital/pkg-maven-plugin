@@ -83,8 +83,6 @@ import de.tarent.maven.plugins.pkg.map.Visitor;
  */
 public class Helper {
 	
-	//TODO: Extract interface and reorganize Helper Classes
-	
 	String aotPackageName;
 
 	/**

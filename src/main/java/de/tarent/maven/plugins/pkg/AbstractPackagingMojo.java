@@ -373,9 +373,9 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	   * 
 	   * @throws MojoExecutionException
 	   */
-	  void checkEnvironment(Log l) throws MojoExecutionException
+	  protected void checkEnvironment(Log l) throws MojoExecutionException
 	  {
-	    l.info("distribution             : " + dc.chosenDistro);
+	    l.info("distribution             : " + dc.getChosenDistro());
 	    l.info("package system           : " + pm.getPackaging());
 	    l.info("default package map      : "
 	           + (defaultPackageMapURL == null ? "built-in"
@@ -419,7 +419,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	    l.info("bindir                   : "
 	           + (dc.bindir.length() == 0 ? "(default)" : dc.bindir));
 
-	    if (dc.chosenDistro == null)
+	    if (dc.getChosenDistro() == null)
 	      throw new MojoExecutionException("No distribution configured!");
 
 	    if (dc.isAotCompile())

@@ -99,7 +99,7 @@ public class TargetConfiguration {
 	/**
 	 * Denotes the target this configuration is for.
 	 */
-	public String target;
+	private String target;
 	
 	Boolean createWindowsExecutable;
 
@@ -213,7 +213,7 @@ public class TargetConfiguration {
 	 * The distribution which is chosen to be built. This is not handled by
 	 * Maven2 but only by the Packaging class.
 	 */
-	String chosenDistro;
+	private String chosenDistro;
 
 	/**
 	 * Denotes the directory in the target system where application specific
@@ -259,14 +259,14 @@ public class TargetConfiguration {
 	/**
 	 * Denotes the distributions this configuration is used for.
 	 */
-	public Set distros = new HashSet();
+	private Set<String> distros = new HashSet<String>();
 
 
 	/**
 	 * Set default distribution to package for.
 	 * 
 	 */
-	public String defaultDistro;
+	private String defaultDistro;
 	
 	/**
 	 * Denotes the name of the gcj-dbtool executable. This allows the use of
@@ -1478,11 +1478,11 @@ public class TargetConfiguration {
 			sb.append("\t(not set)\n");
 	}
 	
-	private void appendAuxFileList(StringBuilder sb, String name, List list)
+	private void appendAuxFileList(StringBuilder sb, String name, List<? extends AuxFile> list)
 	{
 		sb.append(name + ":\n");
 		if (list != null && !list.isEmpty()) {
-			Iterator ite = list.iterator();
+			Iterator<? extends AuxFile> ite = list.iterator();
 			while (ite.hasNext()) {
 				AuxFile af = (AuxFile) ite.next();
 				sb.append("\t");
@@ -1576,6 +1576,26 @@ public class TargetConfiguration {
 
 	public UploadParameters getUploadParameters() {
 		return uploadParameters;
+	}
+
+
+	public void setChosenDistro(String distro) {
+		this.chosenDistro=distro;
+		
+	}
+
+
+	public void setTarget(String target) {
+		this.target=target;		
+	}
+
+
+	public String getDefaultDistro() {
+		return defaultDistro;
+	}
+	
+	public void setDefaultDistro(String distro) {
+		this.defaultDistro = distro;
 	}
 
 }
