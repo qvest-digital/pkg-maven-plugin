@@ -4,19 +4,28 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-import de.tarent.maven.plugins.pkg.testingstubs.PkgProjectStub;
-
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
 public class UtilsTest extends AbstractMvnPkgPluginTestCase{
+	
+	@Before
+	public void setUp() throws Exception{
+		super.setUp();
+	}
+	
+	@After
+	public void tearDown() throws Exception{
+		super.tearDown();
+	}
+	
 	@Test
-	public void testGetTargetConfigurationFromString(){
+	public void getTargetConfigurationFromString(){
 		
 		List<TargetConfiguration> l = new ArrayList<TargetConfiguration>();
 		TargetConfiguration t1 = new TargetConfiguration();
@@ -40,8 +49,9 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		
 	}
 	
-	@Test
-	public void testGetLicenseForProject() throws Exception{
+	@Test	
+	@SuppressWarnings("unchecked")
+	public void getLicenseForProject() throws Exception{
 		
 		Packaging p = (Packaging)mockEnvironment("simplepom.xml", "pkg");
 		List<License>licenses = createLicenseList("License 1", "License 2");
@@ -58,20 +68,16 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		
 	}
 	
-	@Test
-	public void testGetLicenseForProjectWIthoutLicenses() throws Exception{
+	@Test(expected=MojoExecutionException.class)
+	public void getLicenseForProjectWIthoutLicenses() throws Exception{
 		
 		Packaging p = (Packaging)mockEnvironment("simplepom.xml", "pkg");
 		p.project.setLicenses(null);
-		try{
-			Utils.getConsolidatedLicenseString(p.project);
-		}catch(MojoExecutionException ex){
-        	assertTrue(ex.toString().contains("Please provide at least one license in your POM."));           	
-        }		
+		Utils.getConsolidatedLicenseString(p.project);
 	}
 	
 	@Test
-	public void testGetLicenseFromUlr() throws IOException{
+	public void getLicenseFromUlr() throws IOException{
 		Assert.assertTrue(Utils.getTextFromUrl("http://www.gnu.org/licenses/lgpl.txt").
 				contains("GNU LESSER GENERAL PUBLIC LICENSE"));
 		

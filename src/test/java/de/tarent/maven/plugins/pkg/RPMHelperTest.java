@@ -1,15 +1,11 @@
 package de.tarent.maven.plugins.pkg;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.After;
 import org.junit.Before;
@@ -53,7 +49,7 @@ public class RPMHelperTest extends AbstractMvnPkgPluginTestCase{
 	}
 	
 	@Test
-	public void testCreatingRpmmacrosfileWithoutMaintainerAndRemovingSuccessfully() throws IOException, MojoExecutionException{
+	public void creatingRpmmacrosfileWithoutMaintainerAndRemovingSuccessfully() throws IOException, MojoExecutionException{
 		
 		rpmPackageHelper.setBasePkgDir(new File("/"));		
 		rpmPackageHelper.createRpmMacrosFile();
@@ -62,7 +58,7 @@ public class RPMHelperTest extends AbstractMvnPkgPluginTestCase{
 	}
 	
 	@Test
-	public void testCreatingRpmmacrosfileWitMaintainerAndRemovingSuccessfully() throws IOException, MojoExecutionException{
+	public void creatingRpmmacrosfileWitMaintainerAndRemovingSuccessfully() throws IOException, MojoExecutionException{
 		targetConfiguration.setMaintainer("Dummy maintainer");		
 		rpmPackageHelper.setBasePkgDir(new File("/"));		
 		rpmPackageHelper.createRpmMacrosFile();
@@ -73,13 +69,11 @@ public class RPMHelperTest extends AbstractMvnPkgPluginTestCase{
 	
 	@Test(expected=NullPointerException.class)
 	public void testCreatingRpmmacrosfileWithoutBaseDirThrowsException() throws IOException, MojoExecutionException{
-
-		try{rpmPackageHelper.createRpmMacrosFile();}catch(Exception e){Assert.assertTrue(true);}		
-		
+		rpmPackageHelper.createRpmMacrosFile();
 	}
 	
 	@Test
-	public void testPrepareInitialDirectoriesScuccesfully() throws MojoExecutionException{
+	public void prepareInitialDirectoriesScuccesfully() throws MojoExecutionException{
 		File tempRoot = new File("/tmp/BaseTestTemp");
 		File base = new File("/tmp/BaseTestTemp/Base");
 		rpmPackageHelper.setBasePkgDir(base);
@@ -93,11 +87,11 @@ public class RPMHelperTest extends AbstractMvnPkgPluginTestCase{
 	}
 	
 	@Test(expected=NullPointerException.class)
-	public void testPrepareInitialDirectoriesWithoutBaseOrTempRootThrowsException() throws MojoExecutionException{
-		try{rpmPackageHelper.prepareInitialDirectories();}catch(Exception e){Assert.assertTrue(true);}
+	public void prepareInitialDirectoriesWithoutBaseOrTempRootThrowsException() throws MojoExecutionException{
+		rpmPackageHelper.prepareInitialDirectories();
 	}
 	@Test
-	public void testGenerateFilelist() throws MojoExecutionException, IOException{
+	public void generateFilelist() throws MojoExecutionException, IOException{
 		File tempdir = File.createTempFile("temp", "file");
 		rpmPackageHelper.setBaseBuildDir(tempdir.getParentFile());
 		Assert.assertTrue(rpmPackageHelper.generateFilelist().size()>0);
@@ -105,37 +99,17 @@ public class RPMHelperTest extends AbstractMvnPkgPluginTestCase{
 	}
 	
 	@Test
-	public void testGetVersionReturnsPackagingVersion(){
+	public void getVersionReturnsPackagingVersion(){
 		Assert.assertTrue(rpmPackageHelper.getVersion().contains(packaging.project.getVersion()));
 	}
 	
 	@Test
-	public void testGetDstArtifactFileReturnsgetBaseBuildDirAndgetTargetArtifactFiletoStringIfNotSet(){
+	public void getDstArtifactFileReturnsgetBaseBuildDirAndgetTargetArtifactFiletoStringIfNotSet(){
 		File testTempdir = new File("/tmp/BaseTestTemp");
 		File testArtifactfile = new File("file1");
 		rpmPackageHelper.setBaseBuildDir(testTempdir);
 		rpmPackageHelper.setTargetArtifactFile(testArtifactfile);
 		Assert.assertEquals(rpmPackageHelper.getBaseBuildDir()+"/"+rpmPackageHelper.getTargetArtifactFile().toString(),rpmPackageHelper.getDstArtifactFile().toString());
 		
-	}
-	
-	private boolean filecontains(File file, String lookup) throws IOException {
-		FileInputStream fis = new FileInputStream(file);
-
-		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
-			try{
-				String currentLine = "";
-				while ((currentLine = in.readLine()) != null) {
-					if (currentLine.indexOf(lookup) != -1)
-						return true;
-				}
-			}finally{
-				IOUtils.closeQuietly(in);
-			}
-		} finally {
-			IOUtils.closeQuietly(fis);		
-		}
-		return false;
 	}
 }

@@ -1,10 +1,21 @@
 package de.tarent.maven.plugins.pkg;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
-
+	
+	@Before
+	public void setUp() throws Exception{
+		super.setUp();
+	}
+	
+	@After
+	public void tearDown() throws Exception{
+		super.tearDown();
+	}
 	
 	/**
 	 * This test attempts the following:
@@ -17,7 +28,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * @throws Exception
 	 */
 	@Test
-    public void testRunDefaultTarget()
+    public void runDefaultTarget()
             throws Exception
         {	
     		packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg", "ubuntu_lucid_target_simple");
@@ -38,7 +49,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * @throws Exception
 	 */
 	@Test
-    public void testCreateDebForUbuntuLucidWithoutDependenciesContainingJar()
+    public void createDebForUbuntuLucidWithoutDependenciesContainingJar()
             throws Exception
         {	
 			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg", "ubuntu_lucid_target_simple");
@@ -55,19 +66,14 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * This test should fail. 
 	 * 
 	*/
-	@Test
-    public void testCreateRpmForCentOS_5_6WithoutLicense()
+	@Test (expected=MojoExecutionException.class)
+    public void createRpmForCentOS_5_6WithoutLicense()
             throws Exception
         {	
 
 			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg","centos_5_6_target_simple");
 			packagingPlugin.project.setLicenses(null);
-			
-            try{
-            	packagingPlugin.execute();
-            }catch(MojoExecutionException ex){
-            	assertTrue(ex.toString().contains("Please provide at least one license in your POM."));           	
-            }
+			packagingPlugin.execute();
         }
 	
 	/**
@@ -80,7 +86,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * 
 	*/
 	@Test
-    public void testCreateRpmForCentOS_5_6WithoutDependenciesContainingJar()
+    public void createRpmForCentOS_5_6WithoutDependenciesContainingJar()
             throws Exception
         {	
 
@@ -103,7 +109,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * @throws Exception
 	 */
 	@Test
-    public void testCreateDebForUbuntuLucidWithManualDependenciesContainingJar()
+    public void createDebForUbuntuLucidWithManualDependenciesContainingJar()
             throws Exception
         {
 			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg","ubuntu_lucid_target_manual_dependencies");
@@ -126,7 +132,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * @throws Exception
 	 */	
 	@Test
-    public void testCreateRpmForCentOS_5_6WithManualDependenciesContainingJar()
+    public void createRpmForCentOS_5_6WithManualDependenciesContainingJar()
             throws Exception
         {
 			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg","centos_5_6_target_manual_dependencies");
@@ -150,19 +156,11 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * 
 	 * @throws Exception
 	 */
-	@Test(expected=MojoExecutionException.class)
-    public void testCreateDebForUbuntuKarmicOverridingDistroWithoutDependenciesContainingJarShouldFail()
-            throws Exception, MojoExecutionException
+	@Test (expected=MojoExecutionException.class)
+    public void createDebForUbuntuKarmicOverridingDistroWithoutDependenciesContainingJarShouldFail() throws Exception
         {
 			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg", "ubuntu_lucid_target_double");
-    		assertNotNull( packagingPlugin );            
-            try{
-            	packagingPlugin.execute();
-            }catch(MojoExecutionException ex){
-            	/* This is just silly: AbstractMojoTestCase extends TestCase, which wont allow
-            	 * expected=MojoExecutionException.class to work, so we will just catch the error */
-            	assertTrue(ex.toString().contains("more than one distro is supported"));
-            }
+            packagingPlugin.execute();
         }
 
 	/**
@@ -175,8 +173,8 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * 
 	 * @throws Exception
 	 */
-	@Test(expected=MojoExecutionException.class)
-    public void testExecutingMultipleTargetsWithoutDependenciesContainingJar()
+	@Test
+    public void executingMultipleTargetsWithoutDependenciesContainingJar()
             throws Exception, MojoExecutionException
         {
 			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg",
@@ -198,8 +196,8 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * 
 	 * @throws Exception
 	 */
-	@Test(expected=MojoExecutionException.class)
-    public void testRPMWithAuxFileDependenciesContainingJar()
+	@Test
+    public void createRPMWithAuxFileDependenciesContainingJar()
             throws Exception, MojoExecutionException
         {
 			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg","centos_5_6_target_external_artifact");
@@ -219,8 +217,8 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * 
 	 * @throws Exception
 	 */
-	@Test(expected=MojoExecutionException.class)
-    public void testDEBWithAuxFileDependenciesContainingJar()
+	@Test
+    public void createDEBWithAuxFileDependenciesContainingJar()
             throws Exception, MojoExecutionException
         {
 			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","ubuntu_lucid_target_external_artifact");

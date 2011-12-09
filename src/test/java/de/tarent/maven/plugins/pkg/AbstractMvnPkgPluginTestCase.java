@@ -2,8 +2,12 @@ package de.tarent.maven.plugins.pkg;
 
 
 import java.io.File;
+
+import java.io.BufferedReader;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,10 +18,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.junit.internal.runners.JUnit4ClassRunner;
+import org.junit.runner.RunWith;
+
 import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.testingstubs.PkgArtifactStub;
 import de.tarent.maven.plugins.pkg.testingstubs.PkgProjectStub;
 
+@RunWith(JUnit4ClassRunner.class)
 public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase {
 
 	Packaging packagingPlugin;
@@ -186,6 +194,28 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	protected boolean debContainsCopyrightFile() throws MojoExecutionException, IOException {
 		final Pattern p = Pattern.compile("lines.*copyright");
 		return debContains(p, "--info");
+	}
+	
+
+	
+	protected boolean filecontains(File file, String lookup) throws IOException {
+		FileInputStream fis = new FileInputStream(file);
+
+		try {
+			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
+			try{
+				String currentLine = "";
+				while ((currentLine = in.readLine()) != null) {
+					if (currentLine.indexOf(lookup) != -1)
+						return true;
+				}
+			}finally{
+				IOUtils.closeQuietly(in);
+			}
+		} finally {
+			IOUtils.closeQuietly(fis);		
+		}
+		return false;
 	}
 	
 
