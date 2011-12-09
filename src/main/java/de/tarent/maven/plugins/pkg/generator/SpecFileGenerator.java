@@ -652,7 +652,7 @@ public class SpecFileGenerator {
 			w.println("%defattr(755,root,root)");
 			
 			for (AuxFile f : files) {
-				if(f.getOctalPermission()>=0 && f.getOwner()!=null && f.getOwner()!=null){
+				if(f.getOctalPermission()>=0){
 					w.print("%attr(");
 					w.print(f.getOctalPermission());
 					w.print(",");

@@ -154,7 +154,8 @@ public class AuxFile {
 		return total;
 	}
 	public String getOwner() {
-		return owner;
+		
+		return owner==null? "root":owner;
 	}
 
 
@@ -164,7 +165,7 @@ public class AuxFile {
 
 
 	public String getGroup() {
-		return group;
+		return group==null? "root":group;
 	}
 
 
