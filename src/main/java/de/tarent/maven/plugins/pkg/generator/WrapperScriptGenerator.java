@@ -122,9 +122,27 @@ public class WrapperScriptGenerator
    w.println();
    w.println("# You can provide additional VM arguments by setting the VMARGS environment variable.");
    w.println();
-   
-   w.println("# Comment in the DEBUGARGS variable to have a TCP based debugging environment.");
-   w.println("#DEBUGARGS=\"-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=0.0.0.0:8000\"");
+   w.println("# You can also call this script with the modifiers -d and -p PORTNUMBER. -d Will enable");
+   w.println("#	debugging and -p will set a specific port for the debugging session.");
+   w.println();
+   w.println("DEFAULTDEBUGPORT=\"8000\"");
+   w.println("while getopts  \"dp:\" flag");
+   w.println("do");
+   w.println("	if [ $flag  == d ] ; then");
+   w.println("		DEBUGARGS=\"-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=0.0.0.0:\"");
+   w.println("	fi");
+   w.println("	if [ $flag  == p ] & [ -n \"$OPTARG\" ]; then");
+   w.println("		DEBUGPORT=$OPTARG");
+   w.println("	fi");
+   w.println("done");
+   w.println();
+   w.println("if [ \"$DEBUGARGS\" ] ; then");
+   w.println("	if [ -z \"$DEBUGPORT\" ]; then");
+   w.println("		DEBUGARGS=$DEBUGARGS$DEFAULTDEBUGPORT");
+   w.println("	else");
+   w.println("		DEBUGARGS=$DEBUGARGS$DEBUGPORT");
+   w.println("	fi");
+   w.println("fi");
    w.println();
    
    // Note: The variables of the resulting script are created in a way that they will have
