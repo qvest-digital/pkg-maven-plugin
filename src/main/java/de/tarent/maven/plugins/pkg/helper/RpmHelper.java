@@ -74,17 +74,7 @@ public class RpmHelper extends Helper {
 		public void prepareInitialDirectories() throws MojoExecutionException{
 			super.prepareInitialDirectories();
 			setBaseBuildDir(new File(basePkgDir,"/BUILD"));
-			setBaseSpecsDir(new File(basePkgDir,"/SPECS"));
-			
-			//Setting all destination directories to /BUILD/ + target name
-			setDstBinDir(new File(getBaseBuildDir(),getTargetBinDir().toString()));
-		    setDstSysconfDir(new File(getBaseBuildDir(),getTargetSysconfDir().toString()));
-		    setDstDatarootDir(new File(getBaseBuildDir(),getTargetDatarootDir().toString()));
-		    setDstDataDir(new File(getBaseBuildDir(),getTargetDataDir().toString()));
-		    setDstJNIDir(new File(getBaseBuildDir(),getTargetJNIDir().toString()));	    
-		    setDstBundledJarDir(new File(getBaseBuildDir(),getTargetBundledJarDir().toString()));
-		    setDstStarterDir(new File(getBaseBuildDir(),getTargetStarterDir().toString()));
-		    setDstWrapperScriptFile(new File(getBaseBuildDir(),getTargetWrapperScriptFile().toString()));
+			setBaseSpecsDir(new File(basePkgDir,"/SPECS"));	
 			
 		}
 		
