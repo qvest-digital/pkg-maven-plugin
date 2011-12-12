@@ -85,20 +85,8 @@ public class RPMPackager extends Packager {
 			throw new IllegalArgumentException("RPMHelper needed");
 		}
 
-		RpmHelper ph = (RpmHelper) helper;
-		
-		ph.prepareInitialDirectories();
-		
-		//Setting all destination directories to /BUILD/ + target name
-		ph.setDstBinDir(new File(ph.getBaseBuildDir(),ph.getTargetBinDir().toString()));
-	    ph.setDstSysconfDir(new File(ph.getBaseBuildDir(),ph.getTargetSysconfDir().toString()));
-	    ph.setDstDatarootDir(new File(ph.getBaseBuildDir(),ph.getTargetDatarootDir().toString()));
-	    ph.setDstDataDir(new File(ph.getBaseBuildDir(),ph.getTargetDataDir().toString()));
-	    ph.setDstJNIDir(new File(ph.getBaseBuildDir(),ph.getTargetJNIDir().toString()));	    
-	    ph.setDstBundledJarDir(new File(ph.getBaseBuildDir(),ph.getTargetBundledJarDir().toString()));
-	    ph.setDstStarterDir(new File(ph.getBaseBuildDir(),ph.getTargetStarterDir().toString()));
-	    ph.setDstWrapperScriptFile(new File(ph.getBaseBuildDir(),ph.getTargetWrapperScriptFile().toString()));
-	    
+		RpmHelper ph = (RpmHelper) helper;		
+		ph.prepareInitialDirectories();	    
 	    ph.copyProjectArtifact();	    
 		ph.copyFiles();
 		
