@@ -983,7 +983,16 @@ public class Helper {
 	        
 	        dependencies.addAll(Utils.findArtifacts(runtimeFilter, packaging.getFactory(), packaging.getResolver(), 
 	        		packaging.getProject(), packaging.getProject().getArtifact(), packaging.getLocalRepo(), 
-	        		packaging.getRemoteRepos(), packaging.getMetadataSource()));	        
+	        		packaging.getRemoteRepos(), packaging.getMetadataSource()));
+
+
+	        AndArtifactFilter providedFilter = new AndArtifactFilter();
+	        providedFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_PROVIDED));
+	        providedFilter.add(new TypeArtifactFilter("jar"));
+	        
+	        dependencies.addAll(Utils.findArtifacts(providedFilter, packaging.getFactory(), packaging.getResolver(), 
+	        		packaging.getProject(), packaging.getProject().getArtifact(), packaging.getLocalRepo(), 
+	        		packaging.getRemoteRepos(), packaging.getMetadataSource()));	     
 	        
 	      }
 	    catch (ArtifactNotFoundException anfe)
