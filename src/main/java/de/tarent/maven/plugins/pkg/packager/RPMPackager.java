@@ -220,6 +220,7 @@ public class RPMPackager extends Packager {
 			sgen.setRelease(dc.getRelease());
 			sgen.setSource(dc.getSource());
 			sgen.setUrl(ph.getProjectUrl());
+			sgen.setGroup(ph.getTargetConfiguration().getSection());
 			sgen.setDependencies(ph.createDependencyLine());
 			
 			// Following parameters are not mandatory
