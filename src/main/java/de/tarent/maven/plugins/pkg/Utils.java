@@ -87,7 +87,7 @@ import de.tarent.maven.plugins.pkg.packager.RPMPackager;
  * 
  * @author Robert Schuster (robert.schuster@tarent.de)
  */
-public class Utils {
+public final class Utils {
 	private static final String STARTER_CLASS = "_Starter.class";
 
 	  /**
