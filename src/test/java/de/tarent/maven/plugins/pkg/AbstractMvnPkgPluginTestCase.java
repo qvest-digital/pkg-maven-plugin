@@ -121,11 +121,16 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		return returnFilesFoundBasedOnSuffix("deb").length==i;
 	}
 	
-	private boolean debContains(Pattern p, String debArgs) throws MojoExecutionException, IOException{
+	private boolean debContains(Pattern p, String debArgs) throws MojoExecutionException{
 		boolean result = false;
-		String out = IOUtils.toString(Utils.exec(new String[]{"dpkg",debArgs,
+		String out = new String(); 
+		try{
+			out = IOUtils.toString(Utils.exec(new String[]{"dpkg",debArgs,
 				returnFilesFoundBasedOnSuffix("deb")[0].getAbsolutePath()},TARGETDIR,
 				"Failure checking contents", "Failure opening rpm file"));
+		}catch (IOException e) {
+			throw new MojoExecutionException(e.getMessage(),e);
+		}
 		//Log l = packagingPlugin.getLog();
 		//l.info("Matching" + out + "/// to "+p);
 		if (p.matcher(out).find()){
@@ -134,11 +139,17 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		return result;
 	}
 	
-	private boolean rpmContains(Pattern p, String rpmArgs) throws MojoExecutionException, IOException{
+	private boolean rpmContains(Pattern p, String rpmArgs) throws MojoExecutionException{
 		boolean result = false;
-		String out = IOUtils.toString(Utils.exec(new String[]{"rpm","-pq",rpmArgs,
+		String out = new String();
+		try{
+			out = IOUtils.toString(Utils.exec(new String[]{"rpm","-pq",rpmArgs,
 				returnFilesFoundBasedOnSuffix("rpm")[0].getAbsolutePath()},TARGETDIR,
 				"Failure checking contents", "Failure opening rpm file"));
+		}catch (IOException e) {
+			throw new MojoExecutionException(e.getMessage(),e);
+		}
+		
 		if (p.matcher(out).find()){
 			result = true;
 		}		
