@@ -199,11 +199,18 @@ public class Utils {
 		 * neccessary. for(int i=0;i<args.length;i++) { System.err.print(args[i]
 		 * + " "); } System.err.println();
 		 */
+		
+		// Creates process with the defined language setting of LC_ALL=C
+		// That way the textual output of certain commands is predictable.
+		ProcessBuilder pb = new ProcessBuilder(args);
+		pb.directory(workingDir);
+		Map<String, String> env = pb.environment();
+		env.put("LC_ALL", "C");
 
 		Process p = null;
-
+		
 		try {
-			p = Runtime.getRuntime().exec(args, null, workingDir);
+			p = pb.start();
 
 			if (p.waitFor() != 0) {
 				print(p);
