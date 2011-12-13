@@ -74,7 +74,17 @@ public class RpmHelper extends Helper {
 		public void prepareInitialDirectories() throws MojoExecutionException{
 			super.prepareInitialDirectories();
 			setBaseBuildDir(new File(basePkgDir,"/BUILD"));
-			setBaseSpecsDir(new File(basePkgDir,"/SPECS"));	
+			setBaseSpecsDir(new File(basePkgDir,"/SPECS"));
+			// Creating folder structure for RPM creation. Older versions of rpmbuild
+			// do not automatically create the directories as needed
+			try {
+				FileUtils.forceMkdir(new File(basePkgDir,"/RPMS"));
+				FileUtils.forceMkdir(new File(basePkgDir,"/RPMS/x86_64"));
+				FileUtils.forceMkdir(new File(basePkgDir,"/RPMS/i386"));
+				
+			} catch (IOException e) {
+				throw new MojoExecutionException("Error creating needed folder structure",e);
+			}
 			
 		}
 		
