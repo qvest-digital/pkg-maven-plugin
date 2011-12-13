@@ -182,6 +182,8 @@ public class RPMPackager extends Packager {
 		RpmHelper ph = (RpmHelper)helper;
 		try {
 			Utils.checkProgramAvailability("rpmbuild");
+			l.info(IOUtils.toString(Utils.exec(new String[] {"rpm", "--version"},
+					null,"Calling rpm --version failed","ioError")).trim());
 			ph.createRpmMacrosFile();
 			
 		} catch (IOException e) {
