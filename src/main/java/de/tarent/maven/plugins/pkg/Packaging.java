@@ -159,6 +159,8 @@ public class Packaging
         if (!currentTargetConfiguration.getTarget().equals(target))
         	continue;
         
+        // Recursively creates the merged configuration of the parent. By doing so we
+        // traverse the chain of configurations from the bottom to the top.
         TargetConfiguration merged = getMergedConfiguration(currentTargetConfiguration.parent, distro, false);
 
         // Checks whether this targetconfiguration supports
