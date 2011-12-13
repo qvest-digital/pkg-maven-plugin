@@ -210,7 +210,7 @@ public class Utils {
 				throw new MojoExecutionException(failureMsg);
 			}
 		} catch (IOException ioe) {
-			throw new MojoExecutionException(ioExceptionMsg, ioe);
+			throw new MojoExecutionException(ioExceptionMsg + " :" + ioe.getMessage(), ioe);
 		} catch (InterruptedException ie) {
 			// Cannot happen.
 			throw new MojoExecutionException("InterruptedException", ie);
