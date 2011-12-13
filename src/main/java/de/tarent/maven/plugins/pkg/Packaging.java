@@ -28,7 +28,6 @@
 package de.tarent.maven.plugins.pkg;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -65,7 +64,7 @@ public class Packaging
 	    String d = (distro != null) ? distro : Utils.getDefaultDistro(t,targetConfigurations, getLog());
 	    
 	    // Retrieve all target configurations that need to be build for /t/
-		List<TargetConfiguration> targetConfigurations = getMergedConfigurations(t, d);
+		List<TargetConfiguration> targetConfigurations = createBuildChain(t, d);
 
 		for (TargetConfiguration tc : targetConfigurations) {
 			if (!finishedTargets.contains(tc.getTarget()))
@@ -122,72 +121,36 @@ public class Packaging
 	    packager.execute(getLog(), ph , pm);
   }
   
-  private List<TargetConfiguration> getMergedConfigurations(String target, String distro)
+  /**
+   * A <code>TargetConfiguration</code> can depend on another and so multiple
+   * build processes might need to be run for a single <code>TargetConfiguration</code>.
+   * 
+   * <p>The list of <code>TargetConfiguration</code> instance that need to be built is
+   * called a build chain. A build chain with <code>n</code> entries contains <code>n-1</code>
+   * instances that need to be built before. The last element in the build chain is the
+   * one that was initially requested and must be build last.</p>
+   * 
+   * @param target
+   * @param distro
+   * @return
+   * @throws MojoExecutionException
+   */
+  private List<TargetConfiguration> createBuildChain(String target, String distro)
   	  throws MojoExecutionException
   {
 	  LinkedList<TargetConfiguration> tcs = new LinkedList<TargetConfiguration>();
 	  
-	  TargetConfiguration tc = getMergedConfiguration(target, distro, true);
+	  TargetConfiguration tc = 
+			  Utils.getMergedConfiguration(target, distro, true, targetConfigurations, defaults);
+
 	  tcs.addFirst(tc);
 	  
 	  List<String> relations = tc.getRelations();
 	  for (String relation : relations) {
-		  tcs.addAll(0, getMergedConfigurations(relation, distro));
+		  tcs.addAll(0, createBuildChain(relation, distro));
 	  }
 	  
 	  return tcs;
-  }
-  
-  /**
-   * Takes the default configuration and the custom one into account and creates
-   * a merged one.
-   * 
-   * @param target Chosen target configuration
-   * @param distro Chosen distro
-   * @param mustMatch Whether a result must be found or whether it is OK to rely on defaults.
-   * @return
-   */
-  private TargetConfiguration getMergedConfiguration(String target, String distro, boolean mustMatch)
-      throws MojoExecutionException
-  {
-    Iterator<TargetConfiguration> ite = targetConfigurations.iterator();
-    while (ite.hasNext())
-      {
-        TargetConfiguration currentTargetConfiguration = ite.next();
-        
-        // The target configuration should be for the requested target.
-        if (!currentTargetConfiguration.getTarget().equals(target))
-        	continue;
-        
-        // Recursively creates the merged configuration of the parent. By doing so we
-        // traverse the chain of configurations from the bottom to the top.
-        TargetConfiguration merged = getMergedConfiguration(currentTargetConfiguration.parent, distro, false);
-
-        // Checks whether this targetconfiguration supports
-        // the wanted distro.
-        if (currentTargetConfiguration.getDistros().contains(distro) || merged.getDistros().contains(distro))
-          {
-            // Stores the chosen distro in the configuration for later use.
-            currentTargetConfiguration.setChosenDistro(distro);
-
-            // Returns a configuration that is merged with
-            // the default configuration-
-            return currentTargetConfiguration.merge(merged);
-          }
-      }
-    
-    // For the target the user requested a result must be found (first case) but when the
-    // plugin looks up parent configuration it will finally reach the default configuration
-    // and for this it is necessary to derive from it without a match.
-    if (mustMatch)
-    {
-    	throw new MojoExecutionException("Requested target " + target + " does not exist. Check spelling or configuration.");
-    }
-    else
-    {
-    	return new TargetConfiguration(target).merge(defaults);
-    }
-    
   }
 
 }

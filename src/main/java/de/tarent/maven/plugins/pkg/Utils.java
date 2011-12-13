@@ -693,6 +693,65 @@ public final class Utils {
 	public static long getInstalledSize(long byteAmount) {
 		return byteAmount / 1024L;
 	}
+	
+	  /**
+	   * Takes the default configuration and the custom one into account and creates
+	   * a merged one.
+	   * 
+	   * @param target Chosen target configuration
+	   * @param distro Chosen distro
+	   * @param mustMatch Whether a result must be found or whether it is OK to rely on defaults.
+	   * @param targetConfigurations A list of available TargetConfigurations.
+	   * @param defaults A TargetConfiguration that is considered to be the default for each. 
+	   * @return
+	   */
+	  public static TargetConfiguration getMergedConfiguration(
+			  String target,
+			  String distro,
+			  boolean mustMatch,
+			  List<TargetConfiguration> targetConfigurations,
+			  TargetConfiguration defaults)
+	      throws MojoExecutionException
+	  {
+	    Iterator<TargetConfiguration> ite = targetConfigurations.iterator();
+	    while (ite.hasNext())
+	      {
+	        TargetConfiguration currentTargetConfiguration = ite.next();
+	        
+	        // The target configuration should be for the requested target.
+	        if (!currentTargetConfiguration.getTarget().equals(target))
+	        	continue;
+	        
+	        // Recursively creates the merged configuration of the parent. By doing so we
+	        // traverse the chain of configurations from the bottom to the top.
+	        TargetConfiguration merged = getMergedConfiguration(currentTargetConfiguration.parent, distro, false, targetConfigurations, defaults);
+
+	        // Checks whether this targetconfiguration supports
+	        // the wanted distro.
+	        if (currentTargetConfiguration.getDistros().contains(distro) || merged.getDistros().contains(distro))
+	          {
+	            // Stores the chosen distro in the configuration for later use.
+	            currentTargetConfiguration.setChosenDistro(distro);
+
+	            // Returns a configuration that is merged with
+	            // the default configuration-
+	            return currentTargetConfiguration.merge(merged);
+	          }
+	      }
+	    
+	    // For the target the user requested a result must be found (first case) but when the
+	    // plugin looks up parent configuration it will finally reach the default configuration
+	    // and for this it is necessary to derive from it without a match.
+	    if (mustMatch)
+	    {
+	    	throw new MojoExecutionException("Requested target " + target + " does not exist. Check spelling or configuration.");
+	    }
+	    else
+	    {
+	    	return new TargetConfiguration(target).merge(defaults);
+	    }
+	    
+	  }
 
 	  /**
 	   * Returns a Packager Object for a certain packaging type (deb, rpm, etc.) 
