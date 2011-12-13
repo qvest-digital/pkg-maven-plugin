@@ -61,12 +61,12 @@ public class Packaging
 	for(String t : targetArray){
 		// A single target (and all its dependent target configurations are supposed to use the same
 		// distro value).
-	    String d = (distro != null) ? distro : Utils.getDefaultDistro(t,targetConfigurations, getLog());
+	    String d = (distro != null) ? distro : Utils.getDefaultDistro(t, targetConfigurations, getLog());
 	    
 	    // Retrieve all target configurations that need to be build for /t/
-		List<TargetConfiguration> targetConfigurations = createBuildChain(t, d);
+		List<TargetConfiguration> buildChain = Utils.createBuildChain(t, d, targetConfigurations, defaults);
 
-		for (TargetConfiguration tc : targetConfigurations) {
+		for (TargetConfiguration tc : buildChain) {
 			if (!finishedTargets.contains(tc.getTarget()))
 			{
 				executeTargetConfiguration(tc, d);
@@ -121,36 +121,6 @@ public class Packaging
 	    packager.execute(getLog(), ph , pm);
   }
   
-  /**
-   * A <code>TargetConfiguration</code> can depend on another and so multiple
-   * build processes might need to be run for a single <code>TargetConfiguration</code>.
-   * 
-   * <p>The list of <code>TargetConfiguration</code> instance that need to be built is
-   * called a build chain. A build chain with <code>n</code> entries contains <code>n-1</code>
-   * instances that need to be built before. The last element in the build chain is the
-   * one that was initially requested and must be build last.</p>
-   * 
-   * @param target
-   * @param distro
-   * @return
-   * @throws MojoExecutionException
-   */
-  private List<TargetConfiguration> createBuildChain(String target, String distro)
-  	  throws MojoExecutionException
-  {
-	  LinkedList<TargetConfiguration> tcs = new LinkedList<TargetConfiguration>();
-	  
-	  TargetConfiguration tc = 
-			  Utils.getMergedConfiguration(target, distro, true, targetConfigurations, defaults);
-
-	  tcs.addFirst(tc);
-	  
-	  List<String> relations = tc.getRelations();
-	  for (String relation : relations) {
-		  tcs.addAll(0, createBuildChain(relation, distro));
-	  }
-	  
-	  return tcs;
-  }
+ 
 
 }

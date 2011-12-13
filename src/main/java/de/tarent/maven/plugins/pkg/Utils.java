@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -751,6 +752,42 @@ public final class Utils {
 	    	return new TargetConfiguration(target).merge(defaults);
 	    }
 	    
+	  }
+	  
+	  /**
+	   * A <code>TargetConfiguration</code> can depend on another and so multiple
+	   * build processes might need to be run for a single <code>TargetConfiguration</code>.
+	   * 
+	   * <p>The list of <code>TargetConfiguration</code> instance that need to be built is
+	   * called a build chain. A build chain with <code>n</code> entries contains <code>n-1</code>
+	   * instances that need to be built before. The last element in the build chain is the
+	   * one that was initially requested and must be build last.</p>
+	   * 
+	   * @param target
+	   * @param distro
+	   * @return
+	   * @throws MojoExecutionException
+	   */
+	  public static List<TargetConfiguration> createBuildChain(
+			  String target,
+			  String distro,
+			  List<TargetConfiguration> targetConfigurations,
+			  TargetConfiguration defaults)
+	  	  throws MojoExecutionException
+	  {
+		  LinkedList<TargetConfiguration> tcs = new LinkedList<TargetConfiguration>();
+		  
+		  TargetConfiguration tc = 
+				  Utils.getMergedConfiguration(target, distro, true, targetConfigurations, defaults);
+
+		  tcs.addFirst(tc);
+		  
+		  List<String> relations = tc.getRelations();
+		  for (String relation : relations) {
+			  tcs.addAll(0, createBuildChain(relation, distro, targetConfigurations, defaults));
+		  }
+		  
+		  return tcs;
 	  }
 
 	  /**
