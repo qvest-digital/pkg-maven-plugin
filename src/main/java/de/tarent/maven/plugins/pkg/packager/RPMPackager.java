@@ -278,7 +278,11 @@ public class RPMPackager extends Packager {
 					specFile.toString() };
 		}
 
-		Utils.exec(command, "'rpmbuild -bb' failed.",
+		try{
+			Utils.exec(command, "'rpmbuild -bb' failed.",
 				"Error creating rpm file.");
+		}catch(MojoExecutionException ex){
+			throw ex;
+		}
 	}
 }
