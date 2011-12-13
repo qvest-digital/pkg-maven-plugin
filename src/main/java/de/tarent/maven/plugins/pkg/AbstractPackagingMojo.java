@@ -279,8 +279,6 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	 */
 	protected String target;
 
-	protected TargetConfiguration dc;
-
 	/**
 	 * @parameter
 	 * @required
@@ -373,9 +371,9 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	   * 
 	   * @throws MojoExecutionException
 	   */
-	  protected void checkEnvironment(Log l) throws MojoExecutionException
+	  protected void checkEnvironment(Log l, TargetConfiguration tc) throws MojoExecutionException
 	  {
-	    l.info("distribution             : " + dc.getChosenDistro());
+	    l.info("distribution             : " + tc.getChosenDistro());
 	    l.info("package system           : " + pm.getPackaging());
 	    l.info("default package map      : "
 	           + (defaultPackageMapURL == null ? "built-in"
@@ -383,72 +381,72 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	    l.info("auxiliary package map    : "
 	           + (auxPackageMapURL == null ? "no" : auxPackageMapURL.toString()));
 	    l.info("type of project          : "
-	           + ((dc.getMainClass() != null) ? "application" : "library"));
-	    l.info("section                  : " + dc.getSection());
-	    l.info("bundle all dependencies  : " + ((dc.isBundleAll()) ? "yes" : "no"));
-	    l.info("ahead of time compilation: " + ((dc.isAotCompile()) ? "yes" : "no"));
+	           + ((tc.getMainClass() != null) ? "application" : "library"));
+	    l.info("section                  : " + tc.getSection());
+	    l.info("bundle all dependencies  : " + ((tc.isBundleAll()) ? "yes" : "no"));
+	    l.info("ahead of time compilation: " + ((tc.isAotCompile()) ? "yes" : "no"));
 	    l.info("custom jar libraries     : "
-	            + ((dc.jarFiles.isEmpty()) ? "<none>"
-	                                      : String.valueOf(dc.jarFiles.size())));
+	            + ((tc.jarFiles.isEmpty()) ? "<none>"
+	                                      : String.valueOf(tc.jarFiles.size())));
 	    l.info("JNI libraries            : "
-	           + ((dc.jniFiles.isEmpty()) ? "<none>"
-	                                     : String.valueOf(dc.jniFiles.size())));
+	           + ((tc.jniFiles.isEmpty()) ? "<none>"
+	                                     : String.valueOf(tc.jniFiles.size())));
 	    l.info("auxiliary file source dir: "
-	           + (dc.srcAuxFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-	                                             : dc.srcAuxFilesDir));
+	           + (tc.srcAuxFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+	                                             : tc.srcAuxFilesDir));
 	    l.info("auxiliary files          : "
-	           + ((dc.auxFiles.isEmpty()) ? "<none>"
-	                                     : String.valueOf(dc.auxFiles.size())));
+	           + ((tc.auxFiles.isEmpty()) ? "<none>"
+	                                     : String.valueOf(tc.auxFiles.size())));
 	    l.info("prefix                   : "
-	           + (dc.prefix.length() == 1 ? "/ (default)" : dc.prefix));
+	           + (tc.prefix.length() == 1 ? "/ (default)" : tc.prefix));
 	    l.info("sysconf files source dir : "
-	           + (dc.srcSysconfFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-	                                                 : dc.srcSysconfFilesDir));
+	           + (tc.srcSysconfFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+	                                                 : tc.srcSysconfFilesDir));
 	    l.info("sysconfdir               : "
-	           + (dc.sysconfdir.length() == 0 ? "(default)" : dc.sysconfdir));
+	           + (tc.sysconfdir.length() == 0 ? "(default)" : tc.sysconfdir));
 	    l.info("dataroot files source dir: "
-	           + (dc.srcDatarootFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-	                                                  : dc.srcDatarootFilesDir));
+	           + (tc.srcDatarootFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+	                                                  : tc.srcDatarootFilesDir));
 	    l.info("dataroot                 : "
-	           + (dc.datarootdir.length() == 0 ? "(default)" : dc.datarootdir));
+	           + (tc.datarootdir.length() == 0 ? "(default)" : tc.datarootdir));
 	    l.info("data files source dir    : "
-	           + (dc.srcDataFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-	                                              : dc.srcDataFilesDir));
+	           + (tc.srcDataFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+	                                              : tc.srcDataFilesDir));
 	    l.info("datadir                  : "
-	           + (dc.datadir.length() == 0 ? "(default)" : dc.datadir));
+	           + (tc.datadir.length() == 0 ? "(default)" : tc.datadir));
 	    l.info("bindir                   : "
-	           + (dc.bindir.length() == 0 ? "(default)" : dc.bindir));
+	           + (tc.bindir.length() == 0 ? "(default)" : tc.bindir));
 
-	    if (dc.getChosenDistro() == null)
+	    if (tc.getChosenDistro() == null)
 	      throw new MojoExecutionException("No distribution configured!");
 
-	    if (dc.isAotCompile())
+	    if (tc.isAotCompile())
 	      {
-	        l.info("aot compiler             : " + dc.getGcjExec());
-	        l.info("aot classmap generator   : " + dc.getGcjDbToolExec());
+	        l.info("aot compiler             : " + tc.getGcjExec());
+	        l.info("aot classmap generator   : " + tc.getGcjDbToolExec());
 	      }
 
-	    if (dc.getMainClass() == null)
+	    if (tc.getMainClass() == null)
 	      {
-	        if (! "libs".equals(dc.getSection()))
+	        if (! "libs".equals(tc.getSection()))
 	          throw new MojoExecutionException(
 	                                           "section has to be 'libs' if no main class is given.");
 
-	        if (dc.isBundleAll())
+	        if (tc.isBundleAll())
 	          throw new MojoExecutionException(
 	                                           "Bundling dependencies to a library makes no sense.");
 	      }
 	    else
 	      {
-	        if ("libs".equals(dc.getSection()))
+	        if ("libs".equals(tc.getSection()))
 	          throw new MojoExecutionException(
 	                                           "Set a proper section if main class parameter is set.");
 	      }
 
-	    if (dc.isAotCompile())
+	    if (tc.isAotCompile())
 	      {
-	        AotCompileUtils.setGcjExecutable(dc.getGcjExec());
-	        AotCompileUtils.setGcjDbToolExecutable(dc.getGcjDbToolExec());
+	        AotCompileUtils.setGcjExecutable(tc.getGcjExec());
+	        AotCompileUtils.setGcjDbToolExecutable(tc.getGcjDbToolExec());
 
 	        AotCompileUtils.checkToolAvailability();
 	      }

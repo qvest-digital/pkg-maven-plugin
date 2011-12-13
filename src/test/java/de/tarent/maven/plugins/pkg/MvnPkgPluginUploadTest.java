@@ -15,6 +15,12 @@ import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 public class MvnPkgPluginUploadTest extends AbstractMvnPkgPluginTestCase{
 	
+	private static class TestStruct {
+		private Upload upload;
+		private TargetConfiguration targetConfiguration;
+		private String target; 
+	}
+	
 	@Before
 	public void setUp() throws Exception{
 		super.setUp();
@@ -38,8 +44,9 @@ public class MvnPkgPluginUploadTest extends AbstractMvnPkgPluginTestCase{
 	
 	@Test
 	public void getPackageFile() throws Exception{
-		Upload u = mockUploadEnvironment();
-		File f = u.getPackageFile(u.dc, u.pm, "ubuntu_lucid_upload");
+		TestStruct ts = mockUploadEnvironment();
+		Upload u = ts.upload;
+		File f = u.getPackageFile(ts.targetConfiguration, u.pm, "ubuntu_lucid_upload");
 		Assert.assertNotNull(f);
 		Assert.assertEquals("dummyproject_1.0.0-0ubuntulucidupload_all.deb",f.getName());		
 	}
@@ -68,11 +75,17 @@ public class MvnPkgPluginUploadTest extends AbstractMvnPkgPluginTestCase{
 				
 	}
 	
-	private Upload mockUploadEnvironment() throws Exception {
+	private TestStruct mockUploadEnvironment() throws Exception {
+		TestStruct ts = new TestStruct();
 		Upload u = (Upload)mockEnvironment("uploadpom.xml", "upload");
-		u.dc = Utils.getTargetConfigurationFromString("ubuntu_lucid_upload", u.targetConfigurations);
-		u.target = u.dc.getTarget();
+		TargetConfiguration tc = Utils.getTargetConfigurationFromString("ubuntu_lucid_upload", u.targetConfigurations);
+		String t = tc.getTarget();
 		u.pm = new PackageMap(null, null, "ubuntu_lucid", null);
-		return u;
+		
+		ts.upload = u;
+		ts.targetConfiguration = tc;
+		ts.target = t;
+		
+		return ts;
 	}
 }

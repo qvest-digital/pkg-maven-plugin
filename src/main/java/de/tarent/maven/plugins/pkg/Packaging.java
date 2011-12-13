@@ -27,7 +27,10 @@
 
 package de.tarent.maven.plugins.pkg;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -46,35 +49,61 @@ public class Packaging
     extends AbstractPackagingMojo
 {
 
-
-  @SuppressWarnings("unchecked")
   public void execute() throws MojoExecutionException, MojoFailureException
   {
+	// Container for collecting target configurations that have been built. This
+	// is used to make sure that TCs are not build repeatedly when the given target
+	// configuration have a dependency to a common target configuration.
+	HashSet<String> finishedTargets = new HashSet<String>();
 
     // Maven < 3.0.3 does not accept comma separated values as String[] so we need to split the values ourselves    
     String[] targetArray =  (target != null) ? target.split(",") : new String[]{defaultTarget};	
 	
 	for(String t : targetArray){
-    
-		// Generate merged distro configuration.		
-	    String d = (distro != null) ? distro : Utils.getDefaultDistro(t,targetConfigurations, getLog());	    
-		dc = getMergedConfiguration(t, d, true);
-		dc.setChosenTarget(t);
+		// A single target (and all its dependent target configurations are supposed to use the same
+		// distro value).
+	    String d = (distro != null) ? distro : Utils.getDefaultDistro(t,targetConfigurations, getLog());
+	    
+	    // Retrieve all target configurations that need to be build for /t/
+		List<TargetConfiguration> targetConfigurations = getMergedConfigurations(t, d);
+
+		for (TargetConfiguration tc : targetConfigurations) {
+			if (!finishedTargets.contains(tc.getTarget()))
+			{
+				executeTargetConfiguration(tc, d);
+
+				// Mark as done.
+			    finishedTargets.add(tc.getTarget());
+			}
+
+		}
+	}
+  }
+  
+  /**
+   * Creates the package for a single given target configuration.
+   * 
+   * @param tc
+   * @param d
+   * @throws MojoExecutionException
+   * @throws MojoFailureException
+   */
+  private void executeTargetConfiguration(TargetConfiguration tc, String d) throws MojoExecutionException, MojoFailureException {
 	    
 	    // Retrieve package map for chosen distro.
 	    pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL, d,
-	                        dc.bundleDependencies);
+	                        tc.bundleDependencies);
 
 	    String packaging = pm.getPackaging();
 	    
 	    if (packaging == null){
 	      throw new MojoExecutionException(
 	                                       "Package maps document set no packaging for distro: "
-	                                           + dc.getChosenDistro());
+	                                           + tc.getChosenDistro());
 	    }
 	
 	    // Create packager and packaging helper according to the chosen packaging type.	      
-	    Helper ph = Utils.getPackagingHelperForPackaging(packaging, dc, this);
+	    Helper ph = Utils.getPackagingHelperForPackaging(packaging, tc, this);
 	    Packager packager = Utils.getPackagerForPackaging(packaging);
 	    
 	    if (packager == null){
@@ -82,15 +111,31 @@ public class Packaging
 	    }
 	  
 	    // Store configuration in plugin-context for later use by signer- and deploy-goal
-	    getPluginContext().put("dc", dc);
+	    // TODO: This is completely broken now because a single run of the plugin can
+	    // create multiple binary packages and these variables assume that there is just one.
+	    getPluginContext().put("dc", tc);
 	    getPluginContext().put("pm", pm);
 	    getPluginContext().put("packageVersion", ph.getPackageVersion());
 	    
-	    checkEnvironment(getLog());	
 	    packager.checkEnvironment(getLog(), ph);
 	    
 	    packager.execute(getLog(), ph , pm);
-	}
+  }
+  
+  private List<TargetConfiguration> getMergedConfigurations(String target, String distro)
+  	  throws MojoExecutionException
+  {
+	  LinkedList<TargetConfiguration> tcs = new LinkedList<TargetConfiguration>();
+	  
+	  TargetConfiguration tc = getMergedConfiguration(target, distro, true);
+	  tcs.addFirst(tc);
+	  
+	  List<String> relations = tc.getRelations();
+	  for (String relation : relations) {
+		  tcs.addAll(0, getMergedConfigurations(relation, distro));
+	  }
+	  
+	  return tcs;
   }
   
   /**
@@ -138,7 +183,7 @@ public class Packaging
     }
     else
     {
-    	return new TargetConfiguration().merge(defaults);
+    	return new TargetConfiguration(target).merge(defaults);
     }
     
   }

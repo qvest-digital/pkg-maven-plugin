@@ -51,6 +51,11 @@ import java.util.Set;
  * 
  */
 public class TargetConfiguration {
+	
+	public TargetConfiguration(String target) {
+		this.target = target;
+	}
+	
 	/**
 	 * Merges the <code>Collection</code>-based instances as follows:
 	 * <ul>
@@ -62,9 +67,9 @@ public class TargetConfiguration {
 	 * plus child
 	 * </p>
 	 */
-	private static Collection merge(Collection child, Collection parent,
-			Collection def) {
-		Collection c = (parent != null ? parent : def);
+	private static <T> Collection<T> merge(Collection<T> child, Collection<T> parent,
+			Collection<T> def) {
+		Collection<T> c = (parent != null ? parent : def);
 
 		if (child != null)
 			c.addAll(child);
@@ -84,8 +89,8 @@ public class TargetConfiguration {
 	}
 
 	/**
-	 * If child != null, take child (overriden parent), else if parent != null,
-	 * take parent (overriden default), else take default.
+	 * If child != null, take child (overridden parent), else if parent != null,
+	 * take parent (overridden default), else take default.
 	 * 
 	 * @param child
 	 * @param parent
@@ -202,12 +207,6 @@ public class TargetConfiguration {
 	 * (meaning the default bundled jar dir is used) or the parent's value.
 	 */
 	private String bundledJarDir;
-
-	/**
-	 * The target which is chosen to be built. This is not handled by
-	 * Maven2 but only by the Packaging class.
-	 */
-	private String chosenTarget;
 
 	/**
 	 * The distribution which is chosen to be built. This is not handled by
@@ -800,6 +799,11 @@ public class TargetConfiguration {
 	String source;
 	
 	UploadParameters uploadParameters;
+	
+	/**
+	 * Denotes dependencies to other target configurations.
+	 */
+	List<String> relations;
 
 	public TargetConfiguration() {
 		// For instantiation.
@@ -948,10 +952,6 @@ public class TargetConfiguration {
 	public String getChosenDistro() {
 		return chosenDistro;
 	}
-	
-	public String getChosenTarget() {
-		return chosenTarget;
-	}
 
 	public String getSrcAuxFilesDir() {
 		return srcAuxFilesDir;
@@ -1033,7 +1033,7 @@ public class TargetConfiguration {
 		 * its data.
 		 */
 		target = (String) merge(target, parent.target, "default");
-		distros = (Set) merge(distros, parent.distros, new HashSet<String>());
+		distros = (Set<String>) merge(distros, parent.distros, new HashSet<String>());
 
 		aotCompile = (Boolean) merge(aotCompile, parent.aotCompile,
 				Boolean.FALSE);
@@ -1143,6 +1143,8 @@ public class TargetConfiguration {
 
 		systemProperties = merge(systemProperties,
 				parent.systemProperties, new Properties());
+
+		relations = (List) merge(relations, parent.relations, new ArrayList<String>());
 
 		// RPM sign configuration
 		sign = (Boolean)merge(sign, parent.sign, Boolean.FALSE);
@@ -1558,12 +1560,6 @@ public class TargetConfiguration {
 		this.source = source;
 	}
 
-
-	public void setChosenTarget(String chosenTarget) {
-		this.chosenTarget = chosenTarget;
-	}
-
-
 	public String getBundledJarDir() {
 		return bundledJarDir;
 	}
@@ -1578,6 +1574,14 @@ public class TargetConfiguration {
 		return uploadParameters;
 	}
 
+	public List<String> getRelations() {
+		return relations;
+	}
+
+
+	public void setRelations(List<String> relations) {
+		this.relations = relations;
+	}
 
 	public void setChosenDistro(String distro) {
 		this.chosenDistro=distro;

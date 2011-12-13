@@ -532,7 +532,7 @@ public class Helper {
 
 	public String getPackageVersion() {
 		if (packageVersion == null)
-			packageVersion = Utils.fixVersion(packaging.getProject().getVersion()) + "-0" + Utils.sanitizePackageVersion(targetConfiguration.getChosenTarget())
+			packageVersion = Utils.fixVersion(packaging.getProject().getVersion()) + "-0" + Utils.sanitizePackageVersion(targetConfiguration.getTarget())
 					+ (targetConfiguration.getRevision().length() == 0 ? "" : "-" + targetConfiguration.getRevision());
 
 		return packageVersion;

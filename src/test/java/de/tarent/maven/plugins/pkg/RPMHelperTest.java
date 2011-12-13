@@ -28,7 +28,6 @@ public class RPMHelperTest extends AbstractMvnPkgPluginTestCase{
 		super.setUp();
 		packaging = (Packaging) mockEnvironment("simplepom.xml","pkg");		
 		targetConfiguration = new TargetConfiguration();
-		targetConfiguration.setChosenTarget("");
 		rpmPackageHelper = new RpmHelper(targetConfiguration, packaging);
 		previousfilefound = false;
 		if(f.exists()){

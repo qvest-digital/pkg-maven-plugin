@@ -95,12 +95,10 @@ public class Upload extends Packaging {
 			String targetString) {
 
 		currentTargetConfiguration.setSection("misc");
-		currentTargetConfiguration.setChosenTarget(targetString);
-		dc = currentTargetConfiguration;
 		pm = packageMap;
-		Helper helper = Utils.getPackagingHelperForPackaging(packageMap.getPackaging(), dc, this);
-		return new File(helper.getTempRoot().getParent(), helper.generatePackageFileName());
+		Helper helper = Utils.getPackagingHelperForPackaging(packageMap.getPackaging(), currentTargetConfiguration, this);
 
+		return new File(helper.getTempRoot().getParent(), helper.generatePackageFileName());
 	}
 
 	/**
