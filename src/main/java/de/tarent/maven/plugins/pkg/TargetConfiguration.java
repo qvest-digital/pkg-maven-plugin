@@ -807,6 +807,7 @@ public class TargetConfiguration {
 
 	public TargetConfiguration() {
 		// For instantiation.
+		this("default");
 	}
 
 	public String getArchitecture() {
