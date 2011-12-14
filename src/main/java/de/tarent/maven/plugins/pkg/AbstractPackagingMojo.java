@@ -262,15 +262,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	 * @required
 	 */
 	protected String ignorePackagingTypes;
-
-	/**
-	 * Set default target configuration to package for.
-	 * 
-	 * @parameter expression="${defaultTarget}"
-	 * @required
-	 */
-	protected String defaultTarget;
-
+	
 	/**
 	 * Overrides "defaultTarget" parameter with a comma separated list of
 	 * targets. For use on the command-line.
@@ -364,6 +356,30 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 		}
 		return inList;
 	}
+	  
+	  /**
+	   * 
+	   * Returns the 
+	   * 
+	   * Maven < 3.0.3 does not accept comma separated values as String[] so in order to allow multiple targets
+	   * to be called through the command line, we will allo
+	   * 
+	   * @param target
+	   * @return
+	   */
+	  protected String[] getTargets()throws MojoExecutionException{
+	  
+		String[] targetArray = null;
+		
+		if (target!=null){
+			targetArray =  target.split(",");
+		}else{
+			throw new MojoExecutionException("No target(s) specified for execution.");
+		}
+		
+		return targetArray;
+		
+	  }
 	
 
 	  /**

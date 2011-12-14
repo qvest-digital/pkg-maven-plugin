@@ -46,9 +46,7 @@ public class Upload extends Packaging {
 
 	@Override
 	public void execute() throws MojoExecutionException {
-
-		String[] targetArray = (target != null) ? target.split(",") : new String[] { defaultTarget };
-		for (String currentTarget : targetArray) {
+		for (String currentTarget : getTargets()) {
 			initiateUpload(currentTarget);
 		}
 	}

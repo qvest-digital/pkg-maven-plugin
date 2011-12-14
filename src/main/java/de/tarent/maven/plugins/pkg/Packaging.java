@@ -54,11 +54,8 @@ public class Packaging
 	// is used to make sure that TCs are not build repeatedly when the given target
 	// configuration have a dependency to a common target configuration.
 	HashSet<String> finishedTargets = new HashSet<String>();
-
-    // Maven < 3.0.3 does not accept comma separated values as String[] so we need to split the values ourselves    
-    String[] targetArray =  (target != null) ? target.split(",") : new String[]{defaultTarget};	
 	
-	for(String t : targetArray){
+	for(String t : getTargets()){
 		// A single target (and all its dependent target configurations are supposed to use the same
 		// distro value).
 	    String d = (distro != null) ? distro : Utils.getDefaultDistro(t, targetConfigurations, getLog());
