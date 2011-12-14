@@ -264,8 +264,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	protected String ignorePackagingTypes;
 	
 	/**
-	 * Overrides "defaultTarget" parameter with a comma separated list of
-	 * targets. For use on the command-line.
+	 * Parameter with a comma separated list of targets. For use on the command-line.
 	 * 
 	 * @parameter expression="${target}"
 	 */
@@ -359,10 +358,11 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	  
 	  /**
 	   * 
-	   * Returns the 
+	   * Returns the comma separated target list as String[].</br></br> 
 	   * 
-	   * Maven < 3.0.3 does not accept comma separated values as String[] so in order to allow multiple targets
-	   * to be called through the command line, we will allo
+	   * In order to allow multiple target to be called through the command line we allow the user to provide
+	   * a comma separated list (Maven < 3.0.3 does not transform comma separated values 
+	   * from the command line to String[]). 
 	   * 
 	   * @param target
 	   * @return
