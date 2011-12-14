@@ -47,6 +47,9 @@ import java.util.LinkedList;
  * char. Occurances of the real separator char in the filename causes no
  * harm.</p>
  * 
+ * <p>The starter class can be used on Windows systems when the maximum length
+ * of a command-line is a problem for an application.</p>
+ * 
  * @author Robert Schuster
  * 
  */
@@ -70,11 +73,11 @@ public class _Starter {
 		    		mainClassName = line; // The first non-dashed line is evaluated here.
 		    	else
 		    	  {
-		    		// Afterwards every other line is interpreted as a classpath entry.
+		    		// Afterwards every other line is interpreted as a class path entry.
 					String fixedFilename = line.replace('/', File.separatorChar);
 					try
 					  {
-					    urls.add(new File(fixedFilename).toURL());
+					    urls.add(new File(fixedFilename).toURI().toURL());
 					  }
 					catch (MalformedURLException mue)
 					  {
