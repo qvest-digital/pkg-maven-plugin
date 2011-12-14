@@ -39,12 +39,12 @@ import java.util.LinkedList;
  * and is therefore licensed under the GPL plus linking exception (see
  * disclaimer).
  * 
- * <p>The class' main method read a "_classpath" file from the
+ * <p>The class' main method reads a "_classpath" file from the
  * resources, gathers the real main classname from it and constructs
  * a complex classpath.</p>
  * 
  * <p>Slashes in filenames are replaced with the platform-specific separator
- * char. Occurance of the real separator char in the filename causes no
+ * char. Occurances of the real separator char in the filename causes no
  * harm.</p>
  * 
  * @author Robert Schuster
@@ -53,7 +53,7 @@ import java.util.LinkedList;
 public class _Starter {
 
 	public static void main(String[] args) {
-		LinkedList urls = new LinkedList();
+		LinkedList<URL> urls = new LinkedList<URL>();
 		String mainClassName = null;
 		try
 		  {
@@ -63,7 +63,7 @@ public class _Starter {
 		    String line = null;
 		    while ((line = reader.readLine()) != null)
 		      {
-		    	// Lines starting with a dash a comments
+		    	// Lines starting with a dash are comments
 		    	if (line.startsWith("#"))
 		    	  continue;
 		    	else if (mainClassName == null)
@@ -92,7 +92,7 @@ public class _Starter {
 		Method m = null;
 		try
 		  {
-		    Class klazz = ucl.loadClass(mainClassName);
+		    Class<?> klazz = ucl.loadClass(mainClassName);
 		    
 		    m = klazz.getMethod("main", new Class[] { String[].class });
 		  }
