@@ -34,7 +34,6 @@
 				<artifactId>maven-pkg-plugin</artifactId>
 				<version>4.0</version>
 				<configuration>
-					<defaultTarget>ubuntu_lucid_target_simple</defaultTarget>
 					<defaults>
 						<distros>
 							<distro>ubuntu_lucid</distro>
