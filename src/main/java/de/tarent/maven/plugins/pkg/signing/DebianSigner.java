@@ -350,7 +350,7 @@ public class DebianSigner extends AbstractPackagingMojo {
 
 	public String getPackageName() {
 		if (packageName == null)
-			packageName = Utils.createPackageName(artifactId, getDistroConfiguration().getSection(),
+			packageName = Utils.createPackageName(artifactId, getDistroConfiguration().getSection(), getDistroConfiguration().getPackageNameSuffix(), 
 					getPackageMap().isDebianNaming());
 
 		return packageName;

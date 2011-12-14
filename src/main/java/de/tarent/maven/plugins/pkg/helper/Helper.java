@@ -525,7 +525,11 @@ public class Helper {
 
 	public String getPackageName() {
 		if (packageName == null)
-			packageName = Utils.createPackageName(packaging.getProject().getArtifactId(), targetConfiguration.getSection(), packaging.getPm().isDebianNaming());
+			packageName = Utils.createPackageName(
+					packaging.getProject().getArtifactId(),
+					targetConfiguration.getPackageNameSuffix(),
+					targetConfiguration.getSection(),
+					packaging.getPm().isDebianNaming());
 
 		return packageName;
 	}

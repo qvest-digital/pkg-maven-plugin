@@ -462,12 +462,12 @@ public class TargetConfiguration {
 	String maxJavaMemory;
 
 	/**
-	 * Specifies the distroconfiguration from which this one inherits all
+	 * Specifies the {@link TargetConfiguration} from which this one inherits all
 	 * non-set values or from which collections are merged.
 	 * 
 	 * <p>
-	 * If unset it is <code>null</code> meaning the default distro configuration
-	 * is the sole parent.
+	 * If unset it is <code>null</code> then it is is not merged with any other
+	 * instance.
 	 * </p>
 	 */
 	String parent;
@@ -576,6 +576,12 @@ public class TargetConfiguration {
 	 * </p>
 	 */
 	String revision;
+	
+	/**
+	 * Denotes a suffix which is added to the package name.
+	 * 
+	 */
+	String packageNameSuffix;
 
 	/**
 	 * Denotes the value of the section property supported by packaging systems.
@@ -1103,6 +1109,9 @@ public class TargetConfiguration {
 		srcIzPackFilesDir = (String) merge(srcIzPackFilesDir,
 				parent.srcIzPackFilesDir, "");
 
+		packageNameSuffix = (String) merge(packageNameSuffix,
+				parent.packageNameSuffix, null);
+
 		customCodeUnix = (String) merge(customCodeUnix,
 				parent.customCodeUnix, null);
 
@@ -1358,6 +1367,7 @@ public class TargetConfiguration {
 		sb.append("basic packaging options:\n");
 		appendStringDefault(sb, "maintainer", maintainer);
 		appendStringDefault(sb, "section", section);
+		appendStringDefault(sb, "packageNameSuffix", packageNameSuffix);
 		appendStringDefault(sb, "architecture", architecture);
 		appendStringDefault(sb, "prefix", prefix);
 		appendStringDefault(sb, "bindir", bindir);
@@ -1601,6 +1611,14 @@ public class TargetConfiguration {
 	
 	public void setDefaultDistro(String distro) {
 		this.defaultDistro = distro;
+	}
+
+	public String getPackageNameSuffix() {
+		return packageNameSuffix;
+	}
+
+	public void setPackageNameSuffix(String packageNameSuffix) {
+		this.packageNameSuffix = packageNameSuffix;
 	}
 
 }

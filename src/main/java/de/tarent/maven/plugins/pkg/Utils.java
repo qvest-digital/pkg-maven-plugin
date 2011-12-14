@@ -387,14 +387,18 @@ public final class Utils {
 	}
 
 	/**
-	 * Convert the artifactId into a Debian package name. Currently this only
+	 * Converts the artifactId into a package name. Currently this only
 	 * applies to libraries which get a "lib" prefix and a "-java" suffix.
+	 * 
+	 * <p>An optional packageNameSuffix can be specified which is appended
+	 * to the artifact id.</p>
 	 * 
 	 * @param artifactId
 	 * @return
 	 */
-	public static String createPackageName(String artifactId, String section, boolean debianise) {
-		return debianise && section.equals("libs") ? "lib" + artifactId + "-java" : artifactId;
+	public static String createPackageName(String artifactId, String packageNameSuffix, String section, boolean debianise) {
+		String baseName = (packageNameSuffix != null) ? (artifactId + "-" + packageNameSuffix) : artifactId;
+		return debianise && section.equals("libs") ? "lib" + baseName + "-java" : baseName;
 	}
 
 	/**
