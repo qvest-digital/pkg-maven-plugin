@@ -35,8 +35,10 @@
 				<version>4.0</version>
 				<configuration>
 					<defaults>
+						<defaultDistro>ubuntu_lucid</defaultDistro>
 						<distros>
 							<distro>ubuntu_lucid</distro>
+							<distro>centos_5_6</distro>
 						</distros>
 						<section>misc</section>
 						<mainClass>de.tarent.maven.plugins.dummytest</mainClass>

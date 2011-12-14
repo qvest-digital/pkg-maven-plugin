@@ -2,6 +2,7 @@ package de.tarent.maven.plugins.pkg;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	 * @throws Exception
 	 */
 	@Test
-	public void getMergedConfiguration() throws Exception {
+	public void getMergedConfiguration_valid() throws Exception {
 		// Sets up 2 configuration where one inherits from the other.
 		// When the method is called we expect a new instance which has
 		// properties of both.
@@ -130,18 +131,53 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		Assert.assertEquals(overridden_in_t2, result.getMainClass());
 	}
 
+	@Test(expected=MojoExecutionException.class)
+	public void getMergedConfiguration_invalid() throws Exception {
+		// Sets up 2 configuration where one inherits from the other.
+		// When the method is called we expect a new instance which has
+		// properties of both.
+		
+		// Just some random values that can be accessed by their
+		// reference later (IOW the value is not important and has
+		// no meaning).
+		String set_in_t1 = "set_in_t1";
+		String overridden_in_t2 = "overridden_in_t2";
+		
+		// Default configuration must exist for now to please
+		// the method signature.
+		TargetConfiguration defaultConfig = new TargetConfiguration();
+		HashSet<String> ds = new HashSet<String>();
+		ds.add("foo");
+		ds.add("baz");
+		defaultConfig.setDistros(ds);
+		
+		TargetConfiguration t1 = new TargetConfiguration("t1");
+		t1.setDistro("foo");
+		t1.setPrefix(set_in_t1);
+		t1.setMainClass(set_in_t1);
+		
+		TargetConfiguration t2 = new TargetConfiguration("t2");
+		t2.parent = "t1";
+		t2.setDistro("baz");
+		t2.setMainClass(overridden_in_t2);
+		
+		List<TargetConfiguration> tcs = new LinkedList<TargetConfiguration>();
+		tcs.add(t1);
+		tcs.add(t2);
+		
+		Utils.getMergedConfiguration("t2", "foo", true, tcs, defaultConfig);
+	}
+
 	/**
 	 * A test for the {@link Utils#createBuildChain} method.
 	 * 
 	 * <p>It checks whether the relation between the target configurations
 	 * are properly found and the correct build chain is created.</p>
 	 * 
-	 * TODO: Test more stuff (e.g. wrong distro in between, ...)
-	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void createBuildChain() throws Exception {
+	public void createBuildChain_valid() throws Exception {
 		TargetConfiguration defaultConfig = new TargetConfiguration();
 		defaultConfig.setDistro("foo");
 
@@ -191,6 +227,53 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	}
 	
 	/**
+	 * A test for the {@link Utils#createBuildChain} method.
+	 * 
+	 * @throws Exception
+	 */
+	@Test(expected=MojoExecutionException.class)
+	public void createBuildChain_invalid() throws Exception {
+		TargetConfiguration defaultConfig = new TargetConfiguration();
+		defaultConfig.setDistro("foo");
+
+		TargetConfiguration t1 = new TargetConfiguration("t1");
+		t1.setDistro("foo");
+		TargetConfiguration t2 = new TargetConfiguration("t2");
+		t2.setDistro("foo");
+		TargetConfiguration t3 = new TargetConfiguration("t3");
+		t3.setDistro("bar");
+		TargetConfiguration t4 = new TargetConfiguration("t4");
+		t4.setDistro("baz");
+		TargetConfiguration t5 = new TargetConfiguration("t5");
+		t5.setDistro("blub");
+		
+		// Just some random target configurations that have no relation to the
+		// others.
+		TargetConfiguration t1_unrelated = new TargetConfiguration("t1_unrelated");
+		TargetConfiguration t2_unrelated = new TargetConfiguration("t2_unrelated");
+		TargetConfiguration t3_unrelated = new TargetConfiguration("t3_unrelated");
+		TargetConfiguration t4_unrelated = new TargetConfiguration("t4_unrelated");
+		
+		List<TargetConfiguration> tcs = new LinkedList<TargetConfiguration>();
+		tcs.add(t1);
+		tcs.add(t1_unrelated);
+		tcs.add(t2);
+		tcs.add(t2_unrelated);
+		tcs.add(t3);
+		tcs.add(t3_unrelated);
+		tcs.add(t4);
+		tcs.add(t4_unrelated);
+		tcs.add(t5);
+		
+		createRelation(t1, t2);
+		createRelation(t2, t3);
+		createRelation(t3, t4);
+		createRelation(t4, t5);
+		
+		Utils.createBuildChain("t1", "foo", tcs, defaultConfig);
+	}
+
+	/**
 	 * Helper that makes y depend on x.
 	 * 
 	 * @param x
@@ -201,5 +284,19 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		l.add(y.getTarget());
 		
 		x.setRelations(l);
+	}
+	
+	@Test
+	public void createPackageName() {
+		Assert.assertEquals("app100", Utils.createPackageName("app100", null, "foo", false));
+		Assert.assertEquals("app100", Utils.createPackageName("app100", null, "foo", true));
+		Assert.assertEquals("app100", Utils.createPackageName("app100", null, "libs", false));
+		Assert.assertEquals("libapp100-java", Utils.createPackageName("app100", null, "libs", true));
+
+		Assert.assertEquals("app100-suffix", Utils.createPackageName("app100", "suffix", "foo", false));
+		Assert.assertEquals("app100-suffix", Utils.createPackageName("app100", "suffix", "foo", true));
+		Assert.assertEquals("app100-suffix", Utils.createPackageName("app100", "suffix", "libs", false));
+		Assert.assertEquals("libapp100-suffix-java", Utils.createPackageName("app100", "suffix", "libs", true));
+		
 	}
 }

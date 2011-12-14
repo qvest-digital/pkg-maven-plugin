@@ -733,15 +733,24 @@ public final class Utils {
 
 	        // Checks whether this targetconfiguration supports
 	        // the wanted distro.
-	        if (currentTargetConfiguration.getDistros().contains(distro) || merged.getDistros().contains(distro))
-	          {
-	            // Stores the chosen distro in the configuration for later use.
-	            currentTargetConfiguration.setChosenDistro(distro);
-
-	            // Returns a configuration that is merged with
-	            // the default configuration-
-	            return currentTargetConfiguration.merge(merged);
-	          }
+	        if (currentTargetConfiguration.getDistros().contains(distro))
+	        {
+		        if (merged.getDistros().contains(distro))
+		          {
+		            // Stores the chosen distro in the configuration for later use.
+		            currentTargetConfiguration.setChosenDistro(distro);
+	
+		            // Returns a configuration that is merged with
+		            // the default configuration-
+		            return currentTargetConfiguration.merge(merged);
+		          }
+		        else {
+		        	throw new MojoExecutionException("TargetConfiguration '" + merged.getTarget() + "' does not support distro: " + distro);
+		        }
+	        } else
+	        {
+	        	throw new MojoExecutionException("TargetConfiguration '" + currentTargetConfiguration.getTarget() + "' does not support distro: " + distro);
+	        }
 	      }
 	    
 	    // For the target the user requested a result must be found (first case) but when the
