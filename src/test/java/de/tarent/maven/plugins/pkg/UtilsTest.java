@@ -88,6 +88,8 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	 * Checks the core functionality of the {@link Utils#getMergedConfiguration()}
 	 * method.
 	 * 
+	 * <p>Uses a valid dataset.</p>
+	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -131,7 +133,15 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		Assert.assertEquals(overridden_in_t2, result.getMainClass());
 	}
 
-	@Test(expected=MojoExecutionException.class)
+	/**
+	 * Checks the core functionality of the {@link Utils#getMergedConfiguration()}
+	 * method.
+	 * 
+	 * <p>Uses an invalid dataset where the affected target configurations do
+	 * not share a common distro value.</p>
+	 * 
+	 * @throws Exception
+	 */	@Test(expected=MojoExecutionException.class)
 	public void getMergedConfiguration_invalid() throws Exception {
 		// Sets up 2 configuration where one inherits from the other.
 		// When the method is called we expect a new instance which has
@@ -151,11 +161,13 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		ds.add("baz");
 		defaultConfig.setDistros(ds);
 		
+		// T1 supports foo
 		TargetConfiguration t1 = new TargetConfiguration("t1");
 		t1.setDistro("foo");
 		t1.setPrefix(set_in_t1);
 		t1.setMainClass(set_in_t1);
 		
+		// T2 supports baz (
 		TargetConfiguration t2 = new TargetConfiguration("t2");
 		t2.parent = "t1";
 		t2.setDistro("baz");
@@ -165,7 +177,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		tcs.add(t1);
 		tcs.add(t2);
 		
-		Utils.getMergedConfiguration("t2", "foo", true, tcs, defaultConfig);
+		Utils.getMergedConfiguration("t2", "baz", true, tcs, defaultConfig);
 	}
 
 	/**
@@ -228,6 +240,13 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	
 	/**
 	 * A test for the {@link Utils#createBuildChain} method.
+	 * 
+	 * <p>It sets up a few target configurations which are connected through
+	 * so called 'relations'. However the linked configurations do not share
+	 * a common distro which is considered a mistake in the configuration.</p>
+	 * 
+	 * <p>The test checks whether this mistake is detected by means of a
+	 * {@link MojoExecutionException}.</p>
 	 * 
 	 * @throws Exception
 	 */
