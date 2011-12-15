@@ -63,10 +63,10 @@ import org.apache.maven.plugin.logging.Log;
 import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
+import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.SpecFileGenerator;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.helper.RpmHelper;
-import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 /**
  * Creates a RPM package file
@@ -76,11 +76,10 @@ import de.tarent.maven.plugins.pkg.map.PackageMap;
 public class RPMPackager extends Packager {
 
 	@Override
-	public void execute(Log l, Helper helper, PackageMap packageMap)
-			throws MojoExecutionException {	
-
-		TargetConfiguration distroConfig = helper.getTargetConfiguration();
-		RpmHelper ph = (RpmHelper) helper;
+	public void execute(Log l, WorkspaceSession workspaceSession)
+			throws MojoExecutionException {
+		TargetConfiguration distroConfig = workspaceSession.getTargetConfiguration();
+		RpmHelper ph = (RpmHelper) workspaceSession.getHelper();
 		
 		ph.prepareInitialDirectories();
 		
@@ -173,8 +172,8 @@ public class RPMPackager extends Packager {
 	 * and will check for rpmbuild to exist.
 	 */
 	@Override
-	public void checkEnvironment(Log l, Helper helper) throws MojoExecutionException {
-		RpmHelper ph = (RpmHelper)helper;
+	public void checkEnvironment(Log l, WorkspaceSession workspaceSession) throws MojoExecutionException {
+		RpmHelper ph = (RpmHelper) workspaceSession.getHelper();
 		try {
 			Utils.checkProgramAvailability("rpmbuild");
 			l.info(IOUtils.toString(Utils.exec(new String[] {"rpm", "--version"},
@@ -217,7 +216,7 @@ public class RPMPackager extends Packager {
 			sgen.setRelease(dc.getRelease());
 			sgen.setSource(dc.getSource());
 			sgen.setUrl(ph.getProjectUrl());
-			sgen.setGroup(ph.getTargetConfiguration().getSection());
+			sgen.setGroup(dc.getSection());
 			sgen.setDependencies(ph.createDependencyLine());
 			
 			// Following parameters are not mandatory

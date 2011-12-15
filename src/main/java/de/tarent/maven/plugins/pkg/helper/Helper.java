@@ -226,10 +226,6 @@ public class Helper {
 		
 	}
 
-	public TargetConfiguration getTargetConfiguration() {
-		return targetConfiguration;
-	}
-
 	/**
 	 * Copies the given set of artifacts to the location specified by
 	 * {@link #getDstBundledJarDir()}.

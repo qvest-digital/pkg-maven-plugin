@@ -65,6 +65,7 @@ import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.SysconfFile;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
+import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
@@ -78,12 +79,13 @@ public class DebPackager extends Packager
 {
 
   public void execute(Log l,
-                      Helper helper,
-                      PackageMap packageMap) throws MojoExecutionException
+                      WorkspaceSession workspaceSession)
+                    		  throws MojoExecutionException
   {
 	
-	TargetConfiguration distroConfig = helper.getTargetConfiguration();
-	Helper ph = (Helper) helper;
+	TargetConfiguration targetConfiguration = workspaceSession.getTargetConfiguration();
+	Helper ph = workspaceSession.getHelper();
+	PackageMap packageMap = workspaceSession.getPackageMap();
 	
     String packageName = ph.getPackageName();
     String packageVersion = ph.getPackageVersion();
@@ -148,7 +150,7 @@ public class DebPackager extends Packager
         
         byteAmount += ph.copyFiles();
         
-        generateConffilesFile(l, conffilesFile, ph);
+        generateConffilesFile(l, conffilesFile, targetConfiguration, ph);
         
         byteAmount += ph.copyScripts();
         
@@ -156,7 +158,7 @@ public class DebPackager extends Packager
 
         // Create classpath line, copy bundled jars and generate wrapper
         // start script only if the project is an application.
-        if (distroConfig.getMainClass() != null)
+        if (targetConfiguration.getMainClass() != null)
           {
             // TODO: Handle native library artifacts properly.
             bundledArtifacts = ph.createClasspathLine(bcp, cp);
@@ -167,6 +169,7 @@ public class DebPackager extends Packager
           }
         
         generateControlFile(l,
+        					targetConfiguration,
                             ph,
         		            controlFile,
         		            packageName,
@@ -181,7 +184,7 @@ public class DebPackager extends Packager
         
         createPackage(l, ph, basePkgDir);
         
-        if (distroConfig.isAotCompile())
+        if (targetConfiguration.isAotCompile())
           {
             ph.prepareAotDirectories();
             // At this point anything created in the basePkgDir cannot be used
@@ -199,7 +202,7 @@ public class DebPackager extends Packager
 
             // AOT-compile and classmap generation for bundled Jar libraries
             // are only needed for applications.
-            if (distroConfig.getMainClass() != null)
+            if (targetConfiguration.getMainClass() != null)
               byteAmount += AotCompileUtils.compileAndMap(l,
             		                bundledArtifacts,
             		                aotDstDir,
@@ -215,8 +218,9 @@ public class DebPackager extends Packager
             // The dependencies of a "-gcj" package are always java-gcj-compat
             // and the corresponding 'bytecode' version of the package.
             // GCJ can only compile for one architecture.
-            distroConfig.setArchitecture(System.getProperty("os.arch"));
+            targetConfiguration.setArchitecture(System.getProperty("os.arch"));
             generateControlFile(l,
+            					targetConfiguration,
                                 ph,
                                 aotControlFile,
             		            gcjPackageName,
@@ -250,10 +254,10 @@ public class DebPackager extends Packager
   /** Validates arguments and test tools.
    * 
    * @throws MojoExecutionException
-   * @override
    */
+  @Override
   public void checkEnvironment(Log l,
-                               Helper ph) throws MojoExecutionException
+                               WorkspaceSession workspaceSession) throws MojoExecutionException
   {
     // No specifics to show or test.
   }
@@ -269,6 +273,7 @@ public class DebPackager extends Packager
    * @throws MojoExecutionException
    */
   private void generateControlFile(Log l,
+		  						   TargetConfiguration targetConfiguration,
                                    Helper ph,
                                    File controlFile,
                                    String packageName,
@@ -285,17 +290,17 @@ public class DebPackager extends Packager
 	ControlFileGenerator cgen = new ControlFileGenerator();
 	cgen.setPackageName(packageName);
 	cgen.setVersion(packageVersion);
-	cgen.setSection(ph.getTargetConfiguration().getSection());
+	cgen.setSection(targetConfiguration.getSection());
 	cgen.setDependencies(dependencyLine);
 	cgen.setRecommends(recommendsLine);
 	cgen.setSuggests(suggestsLine);
 	cgen.setProvides(providesLine);
 	cgen.setConflicts(conflictsLine);
 	cgen.setReplaces(replacesLine);
-	cgen.setMaintainer(ph.getTargetConfiguration().getMaintainer());
+	cgen.setMaintainer(targetConfiguration.getMaintainer());
 	cgen.setShortDescription(ph.getProjectDescription());
 	cgen.setDescription(ph.getProjectDescription());
-	cgen.setArchitecture(ph.getTargetConfiguration().getArchitecture());
+	cgen.setArchitecture(targetConfiguration.getArchitecture());
 	cgen.setInstalledSize(Utils.getInstalledSize(byteAmount));
 	    
     l.info("creating control file: " + controlFile.getAbsolutePath());
@@ -324,10 +329,10 @@ public class DebPackager extends Packager
    * @param tc
    * @throws MojoExecutionException
    */
-  private void generateConffilesFile(Log l, File conffilesFile, Helper ph)
+  private void generateConffilesFile(Log l, File conffilesFile, TargetConfiguration targetConfiguration, Helper ph)
   	throws MojoExecutionException
   	{
-	  List<SysconfFile> sysconffiles = (List<SysconfFile>) ph.getTargetConfiguration().getSysconfFiles();
+	  List<SysconfFile> sysconffiles = (List<SysconfFile>) targetConfiguration.getSysconfFiles();
 	  if (sysconffiles.isEmpty())
 	  {
 		  l.info("No sysconf files defined - not creating file.");

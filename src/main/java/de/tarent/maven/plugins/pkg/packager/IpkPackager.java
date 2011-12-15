@@ -61,6 +61,7 @@ import org.apache.maven.plugin.logging.Log;
 import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
+import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
@@ -73,11 +74,12 @@ public class IpkPackager extends Packager
 {
   
   public void execute(Log l,
-                      Helper helper,
-                      PackageMap packageMap) throws MojoExecutionException
+                      WorkspaceSession workspaceSession
+                      ) throws MojoExecutionException
   {
-	TargetConfiguration distroConfig = helper.getTargetConfiguration();
-	Helper ph = (Helper) helper;
+	TargetConfiguration distroConfig = workspaceSession.getTargetConfiguration();
+	PackageMap packageMap = workspaceSession.getPackageMap();
+	Helper ph = workspaceSession.getHelper();
 	
     String packageName = ph.getPackageName();
     String packageVersion = ph.getPackageVersion();
@@ -153,18 +155,15 @@ public class IpkPackager extends Packager
    * @throws MojoExecutionException
    */
   public void checkEnvironment(Log l,
-                               Helper helper) throws MojoExecutionException
+                               WorkspaceSession workspaceSession) throws MojoExecutionException
   {
+	  TargetConfiguration targetConfiguration = workspaceSession.getTargetConfiguration();
 		
-	if(!(helper instanceof Helper)){
-		throw new IllegalArgumentException("Debian helper needed");
-	}
-	
     boolean error = false;
     
-    l.info("Maintainer               : " + helper.getTargetConfiguration().getMaintainer());
+    l.info("Maintainer               : " + targetConfiguration.getMaintainer());
 
-    if(helper.getTargetConfiguration().getMaintainer() == null)
+    if (targetConfiguration.getMaintainer() == null)
     {
       l.error("The maintainer field of the distro configuration is not set, however this is mandatory for IPK packaging!");
       error = true;

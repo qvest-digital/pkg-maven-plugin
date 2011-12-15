@@ -65,6 +65,7 @@ import org.apache.maven.plugin.logging.Log;
 import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
+import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
@@ -73,12 +74,13 @@ public class IzPackPackager extends Packager
   private static final String IZPACK_EMBEDDED_JAR = "izpack-embedded.jar";
   
   public void execute(Log l,
-                      Helper helper,
-                      PackageMap packageMap) throws MojoExecutionException
+                      WorkspaceSession workspaceSession
+                      ) throws MojoExecutionException
   {
 
-	TargetConfiguration distroConfig = helper.getTargetConfiguration();
-	Helper ph = (Helper) helper;
+	PackageMap packageMap = workspaceSession.getPackageMap();
+	TargetConfiguration distroConfig = workspaceSession.getTargetConfiguration();
+	Helper ph = workspaceSession.getHelper();
 	
     // The root directory into which everything from srcRoot is copied
     // into (inside the outputDirectory).
@@ -218,22 +220,19 @@ public class IzPackPackager extends Packager
    * @throws MojoExecutionException
    */
   public void checkEnvironment(Log l,
-                               Helper helper) throws MojoExecutionException
+		  					   WorkspaceSession workspaceSession) throws MojoExecutionException
   {
-		
-	if(!(helper instanceof Helper)){
-		throw new IllegalArgumentException("Debian helper needed");
-	}
-	Helper ph = (Helper) helper;
+	Helper ph = workspaceSession.getHelper();
+	TargetConfiguration targetConfiguration = workspaceSession.getTargetConfiguration();
 	
     l.info("java executable          : " + ph.getJavaExec());
     l.info("7zip executable          : " + ph.get7ZipExec());
-    l.info("create OS X app          : " + (helper.getTargetConfiguration().isCreateOSXApp() ? "yes" : "no"));
-    l.info("create Windows setup file: " + (helper.getTargetConfiguration().isCreateWindowsExecutable() ? "yes" : "no"));
+    l.info("create OS X app          : " + (targetConfiguration.isCreateOSXApp() ? "yes" : "no"));
+    l.info("create Windows setup file: " + (targetConfiguration.isCreateWindowsExecutable() ? "yes" : "no"));
 
     Utils.checkProgramAvailability(ph.getJavaExec());
     
-    if (helper.getTargetConfiguration().isCreateWindowsExecutable())
+    if (targetConfiguration.isCreateWindowsExecutable())
       Utils.checkProgramAvailability(ph.get7ZipExec());
   }
 

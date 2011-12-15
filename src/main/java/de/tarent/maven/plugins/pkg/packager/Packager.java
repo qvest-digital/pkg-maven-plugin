@@ -28,17 +28,16 @@ package de.tarent.maven.plugins.pkg.packager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
+import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.helper.Helper;
-import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 public abstract class Packager
 {
   
   public abstract void execute(Log l,
-		  					   Helper ph,
-                               PackageMap packageMap) throws MojoExecutionException;
+		  					   WorkspaceSession workspaceSession) throws MojoExecutionException;
   
   public abstract void checkEnvironment(Log l,
-		  								Helper ph) throws MojoExecutionException;
+		  								WorkspaceSession workspaceSession) throws MojoExecutionException;
                       
 }

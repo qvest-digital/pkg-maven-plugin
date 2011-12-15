@@ -117,15 +117,15 @@ public class Packaging
 	    getPluginContext().put("pm", pm);
 	    getPluginContext().put("packageVersion", ph.getPackageVersion());
 	    
-	    packager.checkEnvironment(getLog(), ph);
-	    
 	    // Puts the recently created work objects into the workspace
 	    // session to allow later access to them.
-	    
 	    ws.setPackageMap(pm);
 	    ws.setHelper(ph);
 	    ws.setPackager(packager);
-	    packager.execute(getLog(), ph , pm);
+	    
+	    packager.checkEnvironment(getLog(), ws);
+	    
+	    packager.execute(getLog(), ws);
   }
   
  
