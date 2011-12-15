@@ -1168,6 +1168,8 @@ public class TargetConfiguration {
 
 		relations = (List) merge(relations, parent.relations, new ArrayList<String>());
 
+		release = (String) merge(release, parent.release, null);
+		
 		// RPM sign configuration
 		sign = (Boolean)merge(sign, parent.sign, Boolean.FALSE);
 		
