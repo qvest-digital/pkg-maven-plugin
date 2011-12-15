@@ -34,6 +34,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -392,18 +393,42 @@ public final class Utils {
 	 * <p>An optional packageNameSuffix can be specified which is appended
 	 * to the artifact id.</p>
 	 * 
+	 * <p>When <code>debianise</code> is set the name will be lowercased.</p>
+	 * 
 	 * @param artifactId
 	 * @return
 	 */
 	public static String createPackageName(String artifactId, String packageNameSuffix, String section, boolean debianise) {
 		String baseName = (packageNameSuffix != null) ? (artifactId + "-" + packageNameSuffix) : artifactId;
-		if (debianise && section.equals("libs")){
-			baseName = "lib" + baseName + "-java";
+		if (debianise) {
+			// Debian naming does not allow any uppercase characters.
 			baseName = baseName.toLowerCase();
-		}else if (debianise){
-			baseName.toLowerCase();
+			
+			// Debian java libraries are called lib${FOO}-java
+			if (section.equals("libs")) {
+				baseName = "lib" + baseName + "-java";
+			}
 		}
+		
 		return baseName;
+	}
+	
+	/**
+	 * Batch creates the package names for the given {@link TargetConfiguration} instances using the method {@link #createPackageName}.
+	 * 
+	 * @param artifactId
+	 * @param tcs
+	 * @param debianise
+	 * @return
+	 */
+	public static List<String> createPackageNames(String artifactId, List<TargetConfiguration> tcs, boolean debianise) {
+		ArrayList<String> pns = new ArrayList<String>(tcs.size());
+		
+		for (TargetConfiguration tc : tcs) {
+			pns.add(createPackageName(artifactId, tc.getPackageNameSuffix(), tc.getSection(), debianise));
+		}
+		
+		return pns;
 	}
 
 	/**
@@ -791,9 +816,9 @@ public final class Utils {
 	  {
 		  LinkedList<TargetConfiguration> tcs = new LinkedList<TargetConfiguration>();
 		  
+		  // Merges vertically, that means through the 'parent' property.
 		  TargetConfiguration tc = 
 				  Utils.getMergedConfiguration(target, distro, targetConfigurations);
-
 		  
 		  // In getMergedConfiguraion we check if targets that are hierarchically related
 		  // support the same distro. Here we will have to check again, as there may not
@@ -843,5 +868,28 @@ public final class Utils {
 		    extPackagerHelperMap.put("izpack", new IzPackHelper(mojo, packageMap, tc));
 		    extPackagerHelperMap.put("rpm", new RpmHelper(mojo, packageMap, tc));
 		    return extPackagerHelperMap.get(packaging);
+	  }
+	  
+	  /**
+	   * Conveniently converts a list of target configurations into a map where
+	   * each instance can be accessed by its name (ie. the target property).
+	   * 
+	   * <p>Super conveniently this method throws an exception if during the
+	   * conversion it is found out that there is more than one entry with the
+	   * same target.</p>
+	   * 
+	   * @param tcs
+	   */
+	  public static Map<String, TargetConfiguration> toMap(List<TargetConfiguration> tcs)
+		  throws MojoExecutionException {
+		  HashMap<String, TargetConfiguration> m = new HashMap<String, TargetConfiguration>();
+		  
+		  for (TargetConfiguration tc : tcs) {
+			  if (m.put(tc.getTarget(), tc) != null) {
+				  throw new MojoExecutionException("Target with name '" + tc.getTarget() + " exists more than once. Fix the plugin configuration!");
+			  }
+		  }
+		  
+		  return m;
 	  }
 }

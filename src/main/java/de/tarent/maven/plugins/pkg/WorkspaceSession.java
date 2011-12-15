@@ -1,6 +1,7 @@
 package de.tarent.maven.plugins.pkg;
 
 import java.util.List;
+import java.util.Map;
 
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
@@ -29,6 +30,8 @@ public class WorkspaceSession {
 	AbstractPackagingMojo mojo;
 
 	TargetConfiguration targetConfiguration;
+	
+	Map<String, TargetConfiguration> targetConfigurationMap;
 
 	List<TargetConfiguration> buildChain;
 
@@ -84,6 +87,15 @@ public class WorkspaceSession {
 
 	public void setPackager(Packager packager) {
 		this.packager = packager;
+	}
+
+	public Map<String, TargetConfiguration> getTargetConfigurationMap() {
+		return targetConfigurationMap;
+	}
+
+	public void setTargetConfigurationMap(
+			Map<String, TargetConfiguration> targetConfigurationMap) {
+		this.targetConfigurationMap = targetConfigurationMap;
 	}
 
 }

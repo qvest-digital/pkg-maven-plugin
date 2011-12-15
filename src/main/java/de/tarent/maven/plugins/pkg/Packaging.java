@@ -29,6 +29,7 @@ package de.tarent.maven.plugins.pkg;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -49,6 +50,10 @@ public class Packaging
 
   public void execute() throws MojoExecutionException, MojoFailureException
   {
+	// For some tasks it is practical to have the TargetConfiguration instances as a
+	// map. This transformation step also serves as check for double entries.
+    Map<String, TargetConfiguration> targetConfigurationMap = Utils.toMap(targetConfigurations);
+	  
 	// Container for collecting target configurations that have been built. This
 	// is used to make sure that TCs are not build repeatedly when the given target
 	// configuration have a dependency to a common target configuration.
@@ -67,6 +72,7 @@ public class Packaging
 			{
 				WorkspaceSession ws = new WorkspaceSession();
 				ws.setMojo(this); // its us
+				ws.setTargetConfigurationMap(targetConfigurationMap);
 				ws.setTargetConfiguration(tc);
 				ws.setBuildChain(buildChain);
 				

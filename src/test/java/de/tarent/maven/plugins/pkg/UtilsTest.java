@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.Assert;
 
@@ -306,17 +307,121 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		x.setRelations(l);
 	}
 	
+	/**
+	 * Tests of the {@link Utils#createPackageName} method without suffix and normal
+	 * lower case names.
+	 */
 	@Test
-	public void createPackageName() {
+	public void createPackageName_basic() {
 		Assert.assertEquals("app100", Utils.createPackageName("app100", null, "foo", false));
 		Assert.assertEquals("app100", Utils.createPackageName("app100", null, "foo", true));
 		Assert.assertEquals("app100", Utils.createPackageName("app100", null, "libs", false));
 		Assert.assertEquals("libapp100-java", Utils.createPackageName("app100", null, "libs", true));
-
+	}
+	
+	/**
+	 * Tests of the {@link Utils#createPackageName} method <em>with</em> suffix and normal
+	 * lower case names.
+	 */
+	@Test
+	public void createPackageName_suffix() {
 		Assert.assertEquals("app100-suffix", Utils.createPackageName("app100", "suffix", "foo", false));
 		Assert.assertEquals("app100-suffix", Utils.createPackageName("app100", "suffix", "foo", true));
 		Assert.assertEquals("app100-suffix", Utils.createPackageName("app100", "suffix", "libs", false));
 		Assert.assertEquals("libapp100-suffix-java", Utils.createPackageName("app100", "suffix", "libs", true));
+	}
 		
+	/**
+	 * Tests of the {@link Utils#createPackageName} method without suffix and mixed-case names.
+	 */
+	@Test
+	public void createPackageName_basic_mixed() {
+		Assert.assertEquals("APP100", Utils.createPackageName("APP100", null, "foo", false));
+		Assert.assertEquals("app100", Utils.createPackageName("APP100", null, "foo", true));
+		Assert.assertEquals("APP100", Utils.createPackageName("APP100", null, "libs", false));
+		Assert.assertEquals("libapp100-java", Utils.createPackageName("APP100", null, "libs", true));
+	}
+	
+	/**
+	 * Tests of the {@link Utils#createPackageName} method <em>with</em> suffix and mixed-case names.
+	 */
+	@Test
+	public void createPackageName_suffix_mixed() {
+		Assert.assertEquals("APP100-SUFFIX", Utils.createPackageName("APP100", "SUFFIX", "foo", false));
+		Assert.assertEquals("app100-suffix", Utils.createPackageName("APP100", "SUFFIX", "foo", true));
+		Assert.assertEquals("APP100-SUFFIX", Utils.createPackageName("APP100", "SUFFIX", "libs", false));
+		Assert.assertEquals("libapp100-suffix-java", Utils.createPackageName("APP100", "SUFFIX", "libs", true));
+	}
+	
+	/**
+	 * Checks the {@link Utils#createPackageNames} method.
+	 */
+	@Test
+	public void createPackageNames() {
+		TargetConfiguration tc1 = new TargetConfiguration("tc1");
+		tc1.setPackageNameSuffix("GUI");
+		tc1.setSection("office");
+
+		TargetConfiguration tc2 = new TargetConfiguration("tc2");
+		tc2.setPackageNameSuffix("CORE");
+		tc2.setSection("libs");
+		
+		ArrayList<TargetConfiguration> tcs = new ArrayList<TargetConfiguration>();
+		tcs.add(tc1);
+		tcs.add(tc2);
+		
+		List<String> result = Utils.createPackageNames("base", tcs, false);
+		Assert.assertEquals(2, result.size());
+		Assert.assertEquals("base-GUI", result.get(0));
+		Assert.assertEquals("base-CORE", result.get(1));
+
+		result = Utils.createPackageNames("base", tcs, true);
+		Assert.assertEquals(2, result.size());
+		Assert.assertEquals("base-gui", result.get(0));
+		Assert.assertEquals("libbase-core-java", result.get(1));
+	}
+	
+	/**
+	 * Tests {@link Utils#toMap} with valid parameters.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void toMap_valid() throws Exception {
+		TargetConfiguration tc1 = new TargetConfiguration("tc1");
+		TargetConfiguration tc2 = new TargetConfiguration("tc2");
+		TargetConfiguration tc3 = new TargetConfiguration("tc3");
+		List<TargetConfiguration> tcs = new ArrayList<TargetConfiguration>();
+		tcs.add(tc1);
+		tcs.add(tc2);
+		tcs.add(tc3);
+		
+		Map<String, TargetConfiguration> map = Utils.toMap(tcs);
+		
+		Assert.assertEquals(tc1, map.get("tc1"));
+		Assert.assertEquals(tc2, map.get("tc2"));
+		Assert.assertEquals(tc3, map.get("tc3"));
+	}
+
+	/**
+	 * Tests {@link Utils#toMap} with invalid parameters, ie. a list that
+	 * contains two {@link TargetConfiguration} instances with same name.
+	 * 
+	 * @throws Exception
+	 */
+	@Test(expected=MojoExecutionException.class)
+	public void toMap_invalid() throws Exception {
+		TargetConfiguration tc1 = new TargetConfiguration("tc1");
+		TargetConfiguration tc2 = new TargetConfiguration("tc2");
+		TargetConfiguration tc3 = new TargetConfiguration("tc3");
+		TargetConfiguration tc1_copy = new TargetConfiguration("tc1");
+
+		List<TargetConfiguration> tcs = new ArrayList<TargetConfiguration>();
+		tcs.add(tc1);
+		tcs.add(tc2);
+		tcs.add(tc3);
+		tcs.add(tc1_copy);
+		
+		Utils.toMap(tcs);
 	}
 }
