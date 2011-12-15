@@ -66,6 +66,7 @@ import de.tarent.maven.plugins.pkg.SysconfFile;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
+import de.tarent.maven.plugins.pkg.helper.DebHelper;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
@@ -83,7 +84,7 @@ public class DebPackager extends Packager
   {
 	
 	TargetConfiguration distroConfig = helper.getTargetConfiguration();
-	if(!(helper instanceof Helper)){
+	if(!(helper instanceof DebHelper)){
 		throw new IllegalArgumentException("Debian helper needed");
 	}
 	Helper ph = (Helper) helper;
