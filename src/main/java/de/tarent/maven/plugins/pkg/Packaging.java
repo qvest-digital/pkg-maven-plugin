@@ -28,7 +28,6 @@
 package de.tarent.maven.plugins.pkg;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -61,7 +60,7 @@ public class Packaging
 	    String d = (distro != null) ? distro : Utils.getDefaultDistro(t, targetConfigurations, getLog());
 	    
 	    // Retrieve all target configurations that need to be build for /t/
-		List<TargetConfiguration> buildChain = Utils.createBuildChain(t, d, targetConfigurations, defaults);
+		List<TargetConfiguration> buildChain = Utils.createBuildChain(t, d, targetConfigurations);
 
 		for (TargetConfiguration tc : buildChain) {
 			if (!finishedTargets.contains(tc.getTarget()))

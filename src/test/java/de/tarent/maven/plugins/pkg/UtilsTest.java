@@ -124,7 +124,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		tcs.add(t2);
 		
 		TargetConfiguration result =
-				Utils.getMergedConfiguration("t2", "foo", true, tcs, defaultConfig);
+				Utils.getMergedConfiguration("t2", "foo", tcs);
 		
 		Assert.assertEquals("t2", result.getTarget());
 		Assert.assertEquals("t1", result.parent);
@@ -177,7 +177,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		tcs.add(t1);
 		tcs.add(t2);
 		
-		Utils.getMergedConfiguration("t2", "baz", true, tcs, defaultConfig);
+		Utils.getMergedConfiguration("t2", "baz", tcs);
 	}
 
 	/**
@@ -227,7 +227,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		createRelation(t3, t4);
 		createRelation(t4, t5);
 		
-		List<TargetConfiguration> result = Utils.createBuildChain("t1", "foo", tcs, defaultConfig);
+		List<TargetConfiguration> result = Utils.createBuildChain("t1", "foo", tcs);
 		
 		// Now check whether the algorithm really found the right build order
 		// (t5 -> t4 -> t3 -> t2 -> t1)
@@ -289,7 +289,8 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		createRelation(t3, t4);
 		createRelation(t4, t5);
 		
-		Utils.createBuildChain("t1", "foo", tcs, defaultConfig);
+		List<TargetConfiguration> l = Utils.createBuildChain("t1", "foo", tcs);
+		System.out.println(l);
 	}
 
 	/**

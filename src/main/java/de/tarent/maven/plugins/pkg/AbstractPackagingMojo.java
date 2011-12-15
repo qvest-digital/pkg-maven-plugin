@@ -270,12 +270,6 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	 */
 	protected String target;
 
-	/**
-	 * @parameter
-	 * @required
-	 */
-	protected TargetConfiguration defaults;
-
 	protected PackageMap pm;
 
 	/**

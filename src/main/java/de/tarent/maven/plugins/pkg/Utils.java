@@ -34,7 +34,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -59,7 +58,6 @@ import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
-import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -398,7 +396,13 @@ public final class Utils {
 	 */
 	public static String createPackageName(String artifactId, String packageNameSuffix, String section, boolean debianise) {
 		String baseName = (packageNameSuffix != null) ? (artifactId + "-" + packageNameSuffix) : artifactId;
-		return debianise && section.equals("libs") ? "lib" + baseName + "-java" : baseName;
+		if (debianise && section.equals("libs")){
+			baseName = "lib" + baseName + "-java";
+			baseName = baseName.toLowerCase();
+		}else if (debianise){
+			baseName.toLowerCase();
+		}
+		return baseName;
 	}
 
 	/**
@@ -713,9 +717,7 @@ public final class Utils {
 	  public static TargetConfiguration getMergedConfiguration(
 			  String target,
 			  String distro,
-			  boolean mustMatch,
-			  List<TargetConfiguration> targetConfigurations,
-			  TargetConfiguration defaults)
+			  List<TargetConfiguration> targetConfigurations)
 	      throws MojoExecutionException
 	  {
 	    Iterator<TargetConfiguration> ite = targetConfigurations.iterator();
@@ -729,41 +731,39 @@ public final class Utils {
 	        
 	        // Recursively creates the merged configuration of the parent. By doing so we
 	        // traverse the chain of configurations from the bottom to the top.
-	        TargetConfiguration merged = getMergedConfiguration(currentTargetConfiguration.parent, distro, false, targetConfigurations, defaults);
-
-	        // Checks whether this targetconfiguration supports
-	        // the wanted distro.
-	        if (currentTargetConfiguration.getDistros().contains(distro))
-	        {
-		        if (merged.getDistros().contains(distro))
-		          {
-		            // Stores the chosen distro in the configuration for later use.
-		            currentTargetConfiguration.setChosenDistro(distro);
-	
-		            // Returns a configuration that is merged with
-		            // the default configuration-
-		            return currentTargetConfiguration.merge(merged);
-		          }
-		        else {
-		        	throw new MojoExecutionException("TargetConfiguration '" + merged.getTarget() + "' does not support distro: " + distro);
+	        
+	        // If the parent == null, then we know we are at the very 
+	        // bottom and there is no need to continue merging
+	        if (currentTargetConfiguration.parent!=null){
+	        	TargetConfiguration merged = getMergedConfiguration(currentTargetConfiguration.parent, 
+	        														distro, targetConfigurations);
+		        // Checks whether this targetconfiguration supports
+		        // the wanted distro.
+		        if (currentTargetConfiguration.getDistros().contains(distro))
+		        {
+			        if (merged.getDistros().contains(distro))
+			          {
+			            // Stores the chosen distro in the configuration for later use.
+			            currentTargetConfiguration.setChosenDistro(distro);
+		
+			            // Returns a configuration that is merged with
+			            // the default configuration-
+			            return currentTargetConfiguration.merge(merged);
+			          }
+			        else {
+			        	throw new MojoExecutionException("TargetConfiguration '" + merged.getTarget() + "' does not support distro: " + distro);
+			        }
+		        } else
+		        {
+		        	throw new MojoExecutionException("TargetConfiguration '" + currentTargetConfiguration.getTarget() + "' does not support distro: " + distro);
 		        }
-	        } else
-	        {
-	        	throw new MojoExecutionException("TargetConfiguration '" + currentTargetConfiguration.getTarget() + "' does not support distro: " + distro);
+	        }else{
+	        	return currentTargetConfiguration.merge(new TargetConfiguration(target));
 	        }
 	      }
 	    
-	    // For the target the user requested a result must be found (first case) but when the
-	    // plugin looks up parent configuration it will finally reach the default configuration
-	    // and for this it is necessary to derive from it without a match.
-	    if (mustMatch)
-	    {
-	    	throw new MojoExecutionException("Requested target " + target + " does not exist. Check spelling or configuration.");
-	    }
-	    else
-	    {
-	    	return new TargetConfiguration(target).merge(defaults);
-	    }
+	    throw new MojoExecutionException("Requested target " + target + " does not exist. Check spelling or configuration.");
+	  
 	    
 	  }
 	  
@@ -784,23 +784,31 @@ public final class Utils {
 	  public static List<TargetConfiguration> createBuildChain(
 			  String target,
 			  String distro,
-			  List<TargetConfiguration> targetConfigurations,
-			  TargetConfiguration defaults)
+			  List<TargetConfiguration> targetConfigurations)
 	  	  throws MojoExecutionException
 	  {
 		  LinkedList<TargetConfiguration> tcs = new LinkedList<TargetConfiguration>();
 		  
 		  TargetConfiguration tc = 
-				  Utils.getMergedConfiguration(target, distro, true, targetConfigurations, defaults);
+				  Utils.getMergedConfiguration(target, distro, targetConfigurations);
 
-		  tcs.addFirst(tc);
 		  
-		  List<String> relations = tc.getRelations();
-		  for (String relation : relations) {
-			  tcs.addAll(0, createBuildChain(relation, distro, targetConfigurations, defaults));
+		  // In getMergedConfiguraion we check if targets that are hierarchically related
+		  // support the same distro. Here we will have to check again, as there may not
+		  // be parent-child relationship between them.
+		  
+		  if(tc.getDistros().contains(distro)){
+			  tcs.addFirst(tc);
+			  
+			  List<String> relations = tc.getRelations();
+			  for (String relation : relations) {
+				  tcs.addAll(0, createBuildChain(relation, distro, targetConfigurations));
+			  }		  
+		  	  return tcs;
+		  }else{
+			  throw new MojoExecutionException("TargetConfiguration '" + tc.getTarget() + 
+					                           "' does not support distro: " + distro);
 		  }
-		  
-		  return tcs;
 	  }
 
 	  /**

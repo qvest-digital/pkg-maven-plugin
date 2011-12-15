@@ -38,15 +38,6 @@
 				<version>4.0</version>
 				<configuration>
 
-					<defaults>
-						<distros>
-							<distro>ubuntu_lucid</distro>
-						</distros>
-						<section>misc</section>
-						<mainClass>de.tarent.maven.plugins.dummytest</mainClass>
-						<maintainer>Robert Schuster &lt;r.schuster@tarent.de&gt;</maintainer>
-					</defaults>
-
 					<targetConfigurations>
 						<targetConfiguration>
 							<target>ubuntu_lucid_target</target>

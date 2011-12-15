@@ -44,9 +44,6 @@ public class ShowConfig extends Packaging
     if (targetConfigurations == null)
       targetConfigurations = new ArrayList<TargetConfiguration>();
     
-    getLog().info("default configuration: ");
-    
-    getLog().info(defaults.toString());
     getLog().info("specific configurations: ");
     
     Iterator<TargetConfiguration> ite = targetConfigurations.iterator();

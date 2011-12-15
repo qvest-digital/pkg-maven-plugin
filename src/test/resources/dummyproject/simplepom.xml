@@ -34,21 +34,11 @@
 				<artifactId>maven-pkg-plugin</artifactId>
 				<version>4.0</version>
 				<configuration>
-					<defaults>
-						<defaultDistro>ubuntu_lucid</defaultDistro>
-						<distros>
-							<distro>ubuntu_lucid</distro>
-							<distro>centos_5_6</distro>
-						</distros>
-						<section>misc</section>
-						<mainClass>de.tarent.maven.plugins.dummytest</mainClass>
-						<maintainer>Robert Schuster &lt;r.schuster@tarent.de&gt;</maintainer>
-					</defaults>
-
 					<targetConfigurations>
 						<targetConfiguration> <!-- simple ubuntu lucid target -->
-							<target>ubuntu_lucid_target</target>
-
+							<target>ubuntu_lucid_target</target>							
+						<mainClass>de.tarent.maven.plugins.dummytest</mainClass>
+						<maintainer>Robert Schuster &lt;r.schuster@tarent.de&gt;</maintainer>
 							<manualDependencies>
 								<string>kdm</string>
 								<string>usbmount</string>
@@ -73,6 +63,16 @@
 						</targetConfiguration>
 
 						<targetConfiguration>
+							<target>ubuntu_lucid_target_sign</target>
+							<maintainer>Pedro Lafuente (tarent GmbH) &lt;p.lafuente@tarent.de&gt;</maintainer>
+							<parent>ubuntu_lucid_target</parent>
+							<sign>true</sign>
+							<distros>
+								<distro>ubuntu_lucid</distro>
+							</distros>
+						</targetConfiguration>
+
+						<targetConfiguration>
 							<target>ubuntu_lucid_target_double</target>
 							<parent>ubuntu_lucid_target</parent>
 							<distros>
@@ -86,7 +86,7 @@
 							<distros>
 								<distro>centos_5_6</distro>
 							</distros>
-
+							<section>misc</section>
 							<revision>r0</revision>
 							<source>dummysource</source>
 							<release>dummyrelease</release>
@@ -107,8 +107,9 @@
 						</targetConfiguration>
 
 						<targetConfiguration>
-							<target>centos_5_6_target_manual_dependencies</target>
-
+							<target>centos_5_6_target_manual_dependencies</target>							
+						<mainClass>de.tarent.maven.plugins.dummytest</mainClass>
+						<maintainer>Robert Schuster &lt;r.schuster@tarent.de&gt;</maintainer>
 							<distros>
 								<distro>centos_5_6</distro>
 							</distros>
