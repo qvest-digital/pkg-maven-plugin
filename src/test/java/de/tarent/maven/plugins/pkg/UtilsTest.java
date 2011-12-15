@@ -424,4 +424,71 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		
 		Utils.toMap(tcs);
 	}
+
+	/**
+	 * Test the {@link Utils#resolveConfigurations} method with valid arguments which
+	 * means that all requested target names exist in the map.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void resolveConfigurations_valid() throws Exception {
+		TargetConfiguration tc1 = new TargetConfiguration("tc1");
+		TargetConfiguration tc2 = new TargetConfiguration("tc2");
+		TargetConfiguration tc3 = new TargetConfiguration("tc3");
+		TargetConfiguration tc4 = new TargetConfiguration("tc4");
+		TargetConfiguration tc5 = new TargetConfiguration("tc5");
+		List<TargetConfiguration> tcs = new ArrayList<TargetConfiguration>();
+		tcs.add(tc1);
+		tcs.add(tc2);
+		tcs.add(tc3);
+		tcs.add(tc4);
+		tcs.add(tc5);
+		
+		Map<String, TargetConfiguration> map = Utils.toMap(tcs);
+		
+		ArrayList<String> list = new ArrayList<String>();
+		list.add("tc1");
+		list.add("tc3");
+		list.add("tc5");
+		
+		List<TargetConfiguration> result = Utils.resolveConfigurations(list, map);
+		
+		Assert.assertEquals(3, result.size());
+		Assert.assertEquals(tc1, result.get(0));
+		Assert.assertEquals(tc3, result.get(1));
+		Assert.assertEquals(tc5, result.get(2));
+	}
+
+	/**
+	 * Test the {@link Utils#resolveConfigurations} method with invalid arguments which
+	 * means that at least one requested target names does not exist in the map.
+	 * 
+	 * @throws Exception
+	 */
+	@Test(expected=MojoExecutionException.class)
+	public void resolveConfigurations_invalid() throws Exception {
+		TargetConfiguration tc1 = new TargetConfiguration("tc1");
+		TargetConfiguration tc2 = new TargetConfiguration("tc2");
+		TargetConfiguration tc3 = new TargetConfiguration("tc3");
+		TargetConfiguration tc4 = new TargetConfiguration("tc4");
+		TargetConfiguration tc5 = new TargetConfiguration("tc5");
+		List<TargetConfiguration> tcs = new ArrayList<TargetConfiguration>();
+		tcs.add(tc1);
+		tcs.add(tc2);
+		tcs.add(tc3);
+		tcs.add(tc4);
+		tcs.add(tc5);
+		
+		Map<String, TargetConfiguration> map = Utils.toMap(tcs);
+		
+		ArrayList<String> list = new ArrayList<String>();
+		list.add("tc1");
+		list.add("tc3");
+		list.add("tc-doesnotexist");
+		list.add("tc5");
+		
+		Utils.resolveConfigurations(list, map);
+	}
+
 }

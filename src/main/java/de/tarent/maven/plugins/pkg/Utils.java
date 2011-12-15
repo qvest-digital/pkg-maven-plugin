@@ -70,12 +70,8 @@ import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 
-import de.tarent.maven.plugins.pkg.helper.DebHelper;
 import de.tarent.maven.plugins.pkg.helper.Helper;
-import de.tarent.maven.plugins.pkg.helper.IpkHelper;
-import de.tarent.maven.plugins.pkg.helper.IzPackHelper;
 import de.tarent.maven.plugins.pkg.helper.RpmHelper;
-import de.tarent.maven.plugins.pkg.map.PackageMap;
 import de.tarent.maven.plugins.pkg.packager.DebPackager;
 import de.tarent.maven.plugins.pkg.packager.IpkPackager;
 import de.tarent.maven.plugins.pkg.packager.IzPackPackager;
@@ -859,14 +855,12 @@ public final class Utils {
 	   * @param pm
 	   * @return
 	   */
-	  public static Helper getPackagingHelperForPackaging(AbstractPackagingMojo mojo, PackageMap packageMap, TargetConfiguration tc){
-		    String packaging = packageMap.getPackaging();
-		    
+	  public static Helper getPackagingHelperForPackaging(String packaging){
 	  		Map<String, Helper> extPackagerHelperMap = new HashMap<String,Helper>();
-		    extPackagerHelperMap.put("deb", new DebHelper(mojo, packageMap, tc));
-		    extPackagerHelperMap.put("ipk", new IpkHelper(mojo, packageMap, tc));
-		    extPackagerHelperMap.put("izpack", new IzPackHelper(mojo, packageMap, tc));
-		    extPackagerHelperMap.put("rpm", new RpmHelper(mojo, packageMap, tc));
+		    extPackagerHelperMap.put("deb", new Helper());
+		    extPackagerHelperMap.put("ipk", new Helper());
+		    extPackagerHelperMap.put("izpack", new Helper());
+		    extPackagerHelperMap.put("rpm", new RpmHelper());
 		    return extPackagerHelperMap.get(packaging);
 	  }
 	  
@@ -891,5 +885,32 @@ public final class Utils {
 		  }
 		  
 		  return m;
+	  }
+	  
+	  /**
+	   * Given a list of target names resolves them into their actual {@link TargetConfiguration}
+	   * instances. The resolution is done using the given map.
+	   * 
+	   * <p>Additionally this method throws an exception if an entry could not be found in the map
+	   * as this means something is configured wrongly.</p>
+	   * 
+	   * @param targetNames
+	   * @param map
+	   * @return
+	   * @throws MojoExecutionException
+	   */
+	  public static List<TargetConfiguration> resolveConfigurations(List<String> targetNames, Map<String, TargetConfiguration> map) 
+	  	throws MojoExecutionException {
+		  ArrayList<TargetConfiguration> tcs = new ArrayList<TargetConfiguration>(targetNames.size());
+		  
+		  for (String s : targetNames) {
+			  TargetConfiguration tc = map.get(s);
+			  if (tc == null) {
+				  throw new MojoExecutionException("Target configuration '" + tc + "' is requested as a related target configuration but does not exist. Fix the plugin configuration!");
+			  }
+			  tcs.add(tc);
+		  }
+		  
+		  return tcs;
 	  }
 }
