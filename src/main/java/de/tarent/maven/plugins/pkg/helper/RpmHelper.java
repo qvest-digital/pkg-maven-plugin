@@ -11,16 +11,16 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
+import de.tarent.maven.plugins.pkg.AbstractPackagingMojo;
 import de.tarent.maven.plugins.pkg.AuxFile;
-import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 
 
 public class RpmHelper extends Helper {
 
-		public RpmHelper(TargetConfiguration dc, Packaging packaging) {
-			super(dc,packaging);
+		public RpmHelper(TargetConfiguration dc, AbstractPackagingMojo mojo) {
+			super(dc, mojo);
 		}
 		/**
 	  	 * Convenience field that denotes the BUILD directory
@@ -193,6 +193,6 @@ public class RpmHelper extends Helper {
 		 */
 		public String getLicense() throws MojoExecutionException {
 			
-			return Utils.getConsolidatedLicenseString(packaging.getProject());
+			return Utils.getConsolidatedLicenseString(apm.getProject());
 		}
 	}

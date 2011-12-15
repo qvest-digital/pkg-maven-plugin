@@ -23,10 +23,13 @@ import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.TypeArtifactFilter;
 import org.apache.maven.model.License;
+import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.artifact.InvalidDependencyVersionException;
+
+import de.tarent.maven.plugins.pkg.AbstractPackagingMojo;
 import de.tarent.maven.plugins.pkg.AuxFile;
 import de.tarent.maven.plugins.pkg.JarFile;
 import de.tarent.maven.plugins.pkg.Packaging;
@@ -192,7 +195,7 @@ public class Helper {
 	
 	Log l;
 	
-	protected Packaging packaging;
+	protected AbstractPackagingMojo apm;
 	
 	public File getTargetAuxDir() {
 		return targetAuxDir;
@@ -202,11 +205,11 @@ public class Helper {
 		this.targetAuxDir = targetAuxDir;
 	}
 	
-	public Helper(TargetConfiguration targetConfiguration, Packaging packaging) {
+	public Helper(TargetConfiguration targetConfiguration, AbstractPackagingMojo mojo) {
 		
 		this.targetConfiguration = targetConfiguration;
-		this.packaging = packaging;
-		this.l = packaging.getLog();
+		this.apm = mojo;
+		this.l = apm.getLog();
 		
 	}
 
@@ -398,7 +401,7 @@ public class Helper {
 
 	public String getAotPackageName() {
 		if (aotPackageName == null)
-			aotPackageName = Utils.gcjise(getArtifactId(), targetConfiguration.getSection(), packaging.getPm().isDebianNaming());
+			aotPackageName = Utils.gcjise(getArtifactId(), targetConfiguration.getSection(), apm.getPm().isDebianNaming());
 
 		return aotPackageName;
 	}
@@ -411,7 +414,7 @@ public class Helper {
 	}
 
 	public String getArtifactId() {
-		return packaging.getProject().getArtifactId();
+		return apm.getProject().getArtifactId();
 	}
 
 	public File getBasePkgDir() {
@@ -512,63 +515,63 @@ public class Helper {
 	}
 
 	public String getJavaExec() {
-		return packaging.getJavaExec();
+		return apm.getJavaExec();
 	}
 
 	public String get7ZipExec() {
-		return packaging.get_7zipExec();
+		return apm.get_7zipExec();
 	}
 
 	public File getOutputDirectory() {
-		return packaging.getOutputDirectory();
+		return apm.getOutputDirectory();
 	}
 
 	public String getPackageName() {
 		if (packageName == null)
 			packageName = Utils.createPackageName(
-					packaging.getProject().getArtifactId(),
+					apm.getProject().getArtifactId(),
 					targetConfiguration.getPackageNameSuffix(),
 					targetConfiguration.getSection(),
-					packaging.getPm().isDebianNaming());
+					apm.getPm().isDebianNaming());
 
 		return packageName;
 	}
 
 	public String getPackageVersion() {
 		if (packageVersion == null)
-			packageVersion = Utils.fixVersion(packaging.getProject().getVersion()) + "-0" + Utils.sanitizePackageVersion(targetConfiguration.getTarget())
+			packageVersion = Utils.fixVersion(apm.getProject().getVersion()) + "-0" + Utils.sanitizePackageVersion(targetConfiguration.getTarget())
 					+ (targetConfiguration.getRevision().length() == 0 ? "" : "-" + targetConfiguration.getRevision());
 
 		return packageVersion;
 	}
 
 	public String getProjectDescription() {
-		return packaging.getProject().getDescription();
+		return apm.getProject().getDescription();
 	}
 
 	public String getProjectUrl() {
-		return packaging.getProject().getUrl();
+		return apm.getProject().getUrl();
 	}
 
 	public File getSrcArtifactFile() {
 		if (srcArtifactFile == null)
-			srcArtifactFile = new File(packaging.getOutputDirectory().getPath(), packaging.getFinalName() + "." + packaging.getProject().getPackaging());
+			srcArtifactFile = new File(apm.getOutputDirectory().getPath(), apm.getFinalName() + "." + apm.getProject().getPackaging());
 
 		return srcArtifactFile;
 	}
 
 	public File getSrcAuxFilesDir() {
-		return (targetConfiguration.getSrcAuxFilesDir().length() == 0) ? new File(packaging.getProject().getBasedir(), Packaging.getDefaultSrcAuxfilesdir()) : new File(
-				packaging.getProject().getBasedir(), targetConfiguration.getSrcAuxFilesDir());
+		return (targetConfiguration.getSrcAuxFilesDir().length() == 0) ? new File(apm.getProject().getBasedir(), Packaging.getDefaultSrcAuxfilesdir()) : new File(
+				apm.getProject().getBasedir(), targetConfiguration.getSrcAuxFilesDir());
 	}
 
 	public File getSrcDataFilesDir() {
-		return (targetConfiguration.getSrcDataFilesDir().length() == 0) ? getSrcAuxFilesDir() : new File(packaging.getProject().getBasedir(),
+		return (targetConfiguration.getSrcDataFilesDir().length() == 0) ? getSrcAuxFilesDir() : new File(apm.getProject().getBasedir(),
 				targetConfiguration.getSrcDataFilesDir());
 	}
 
 	public File getSrcDatarootFilesDir() {
-		return (targetConfiguration.getSrcDatarootFilesDir().length() == 0) ? getSrcAuxFilesDir() : new File(packaging.getProject().getBasedir(),
+		return (targetConfiguration.getSrcDatarootFilesDir().length() == 0) ? getSrcAuxFilesDir() : new File(apm.getProject().getBasedir(),
 				targetConfiguration.getSrcDatarootFilesDir());
 	}
 
@@ -580,34 +583,34 @@ public class Helper {
 	 * @return
 	 */
 	public File getSrcIzPackFilesDir() {
-		return (targetConfiguration.getSrcIzPackFilesDir().length() == 0 ? getSrcAuxFilesDir() : new File(packaging.getProject().getBasedir(),
+		return (targetConfiguration.getSrcIzPackFilesDir().length() == 0 ? getSrcAuxFilesDir() : new File(apm.getProject().getBasedir(),
 				targetConfiguration.getSrcIzPackFilesDir()));
 	}
 
 	public File getSrcJarFilesDir() {
-		return (targetConfiguration.getSrcJarFilesDir().length() == 0) ? getSrcAuxFilesDir() : new File(packaging.getProject().getBasedir(),
+		return (targetConfiguration.getSrcJarFilesDir().length() == 0) ? getSrcAuxFilesDir() : new File(apm.getProject().getBasedir(),
 				targetConfiguration.getSrcJarFilesDir());
 	}
 
 	public File getSrcJNIFilesDir() {
-		return (targetConfiguration.getSrcJNIFilesDir().length() == 0) ? getSrcAuxFilesDir() : new File(packaging.getProject().getBasedir(),
+		return (targetConfiguration.getSrcJNIFilesDir().length() == 0) ? getSrcAuxFilesDir() : new File(apm.getProject().getBasedir(),
 				targetConfiguration.getSrcJNIFilesDir());
 	}
 
 	public File getSrcSysconfFilesDir() {
-		return (targetConfiguration.getSrcSysconfFilesDir().length() == 0) ? getSrcAuxFilesDir() : new File(packaging.getProject().getBasedir(),
+		return (targetConfiguration.getSrcSysconfFilesDir().length() == 0) ? getSrcAuxFilesDir() : new File(apm.getProject().getBasedir(),
 				targetConfiguration.getSrcSysconfFilesDir());
 	}
 
 	public File getSrcBinFilesDir() {
-		return (targetConfiguration.getSrcBinFilesDir().length() == 0) ? getSrcAuxFilesDir() : new File(packaging.getProject().getBasedir(),
+		return (targetConfiguration.getSrcBinFilesDir().length() == 0) ? getSrcAuxFilesDir() : new File(apm.getProject().getBasedir(),
 				targetConfiguration.getSrcBinFilesDir());
 	}
 
 	public File getTargetArtifactFile() {
 		if (targetArtifactFile == null)
-			targetArtifactFile = new File((targetConfiguration.isBundleAll() || packaging.getPm().hasNoPackages() ? getTargetBundledJarDir()
-					: new File(packaging.getPm().getDefaultJarPath())), packaging.getProject().getArtifactId() + "." + packaging.getProject().getPackaging());
+			targetArtifactFile = new File((targetConfiguration.isBundleAll() || apm.getPm().hasNoPackages() ? getTargetBundledJarDir()
+					: new File(apm.getPm().getDefaultJarPath())), apm.getProject().getArtifactId() + "." + apm.getProject().getPackaging());
 
 		return targetArtifactFile;
 	}
@@ -634,7 +637,7 @@ public class Helper {
 	 */
 	public File getTargetBinDir() {
 		if (targetBinDir == null)
-			targetBinDir = (targetConfiguration.getBindir().length() == 0 ? new File(getTargetRoot(), packaging.getPm().getDefaultBinPath()) : new File(
+			targetBinDir = (targetConfiguration.getBindir().length() == 0 ? new File(getTargetRoot(), apm.getPm().getDefaultBinPath()) : new File(
 					targetConfiguration.getBindir()));
 
 		return targetBinDir;
@@ -643,14 +646,14 @@ public class Helper {
 	public File getTargetBundledJarDir() {
 		if (targetBundledJarDir == null)
 			targetBundledJarDir = (targetConfiguration.getBundledJarDir().length() == 0 ? new File(getTargetRoot(), new File(
-					packaging.getPm().getDefaultJarPath(), packaging.getProject().getArtifactId()).toString()) : new File(targetConfiguration.getBundledJarDir()));
+					apm.getPm().getDefaultJarPath(), apm.getProject().getArtifactId()).toString()) : new File(targetConfiguration.getBundledJarDir()));
 
 		return targetBundledJarDir;
 	}
 
 	public File getTargetDataDir() {
 		if (targetDataDir == null)
-			targetDataDir = (targetConfiguration.getDatadir().length() == 0 ? new File(getTargetDatarootDir(), packaging.getProject().getName()) : new File(
+			targetDataDir = (targetConfiguration.getDatadir().length() == 0 ? new File(getTargetDatarootDir(), apm.getProject().getName()) : new File(
 					targetConfiguration.getDatadir()));
 
 		return targetDataDir;
@@ -674,14 +677,14 @@ public class Helper {
 	 */
 	public File getTargetJNIDir() {
 		if (targetJNIDir == null)
-			targetJNIDir = new File(getTargetRoot(), packaging.getPm().getDefaultJNIPath().split(":")[0]);
+			targetJNIDir = new File(getTargetRoot(), apm.getPm().getDefaultJNIPath().split(":")[0]);
 
 		return targetJNIDir;
 	}
 
 	public File getTargetLibraryPath() {
 		if (targetLibraryPath == null)
-			targetLibraryPath = new File(getTargetRoot(), packaging.getPm().getDefaultJNIPath());
+			targetLibraryPath = new File(getTargetRoot(), apm.getPm().getDefaultJNIPath());
 
 		return targetLibraryPath;
 	}
@@ -711,14 +714,14 @@ public class Helper {
 	public File getTargetWrapperScriptFile() {
 		if (targetWrapperScriptFile == null)
 			targetWrapperScriptFile = new File(getTargetBinDir(), (targetConfiguration.getWrapperScriptName() != null ? targetConfiguration.getWrapperScriptName()
-					: packaging.getProject().getArtifactId()));
+					: apm.getProject().getArtifactId()));
 
 		return targetWrapperScriptFile;
 	}
 
 	public File getTempRoot() {
 		if (tempRoot == null)
-			tempRoot = new File(packaging.getBuildDir(), packaging.getPm().getPackaging() + "-tmp");
+			tempRoot = new File(apm.getBuildDir(), apm.getPm().getPackaging() + "-tmp");
 
 		return tempRoot;
 	}
@@ -920,8 +923,8 @@ public class Helper {
 	      writer.println("scriptType=\"" + item + "\"");
 	      writer.println();
 	      writer.println("distro=\"" + targetConfiguration.getChosenDistro() + "\"");
-	      writer.println("distroLabel=\"" + packaging.getPm().getDistroLabel() + "\"");
-	      writer.println("packaging=\"" + packaging.getPm().getPackaging() + "\"");
+	      writer.println("distroLabel=\"" + apm.getPm().getDistroLabel() + "\"");
+	      writer.println("packaging=\"" + apm.getPm().getPackaging() + "\"");
 	      writer.println();
 	      writer.println("# What follows is the content script file " + srcScriptFile.getName());
 	      writer.println();
@@ -976,27 +979,27 @@ public class Helper {
 	        compileFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE));
 	        compileFilter.add(new TypeArtifactFilter("jar"));
 	
-	        dependencies.addAll(Utils.findArtifacts(compileFilter, packaging.getFactory(), packaging.getResolver(), 
-	        		packaging.getProject(), packaging.getProject().getArtifact(), packaging.getLocalRepo(), 
-	        		packaging.getRemoteRepos(), packaging.getMetadataSource()));
+	        dependencies.addAll(Utils.findArtifacts(compileFilter, apm.getFactory(), apm.getResolver(), 
+	        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
+	        		apm.getRemoteRepos(), apm.getMetadataSource()));
 
 
 	        AndArtifactFilter runtimeFilter = new AndArtifactFilter();
 	        runtimeFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME));
 	        runtimeFilter.add(new TypeArtifactFilter("jar"));
 	        
-	        dependencies.addAll(Utils.findArtifacts(runtimeFilter, packaging.getFactory(), packaging.getResolver(), 
-	        		packaging.getProject(), packaging.getProject().getArtifact(), packaging.getLocalRepo(), 
-	        		packaging.getRemoteRepos(), packaging.getMetadataSource()));
+	        dependencies.addAll(Utils.findArtifacts(runtimeFilter, apm.getFactory(), apm.getResolver(), 
+	        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
+	        		apm.getRemoteRepos(), apm.getMetadataSource()));
 
 
 	        AndArtifactFilter providedFilter = new AndArtifactFilter();
 	        providedFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_PROVIDED));
 	        providedFilter.add(new TypeArtifactFilter("jar"));
 	        
-	        dependencies.addAll(Utils.findArtifacts(providedFilter, packaging.getFactory(), packaging.getResolver(), 
-	        		packaging.getProject(), packaging.getProject().getArtifact(), packaging.getLocalRepo(), 
-	        		packaging.getRemoteRepos(), packaging.getMetadataSource()));	     
+	        dependencies.addAll(Utils.findArtifacts(providedFilter, apm.getFactory(), apm.getResolver(), 
+	        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
+	        		apm.getRemoteRepos(), apm.getMetadataSource()));	     
 	        
 	      }
 	    catch (ArtifactNotFoundException anfe)
@@ -1065,7 +1068,7 @@ public class Helper {
 	            // Prepend default Jar path if file is not absolute.
 	            if (fileName.charAt(0) != '/')
 	              {
-	                sb.append(packaging.getPm().getDefaultJarPath());
+	                sb.append(apm.getPm().getDefaultJarPath());
 	                sb.append("/");
 	              }
 	
@@ -1077,7 +1080,7 @@ public class Helper {
 	
 	    };
 	
-	    packaging.getPm().iterateDependencyArtifacts(l, dependencies, v, true);
+	    apm.getPm().iterateDependencyArtifacts(l, dependencies, v, true);
 	    
 	    // Add the custom jar files to the classpath
 	    for (Iterator<JarFile> ite = targetConfiguration.getJarFiles().iterator(); ite.hasNext();)
@@ -1114,7 +1117,7 @@ public class Helper {
 	   */
 	  public final String createDependencyLine() throws MojoExecutionException
 	  {
-	    String defaults = packaging.getPm().getDefaultDependencyLine();
+	    String defaults = apm.getPm().getDefaultDependencyLine();
 	    StringBuffer manualDeps = new StringBuffer();
 	    Iterator<String> ite = targetConfiguration.getManualDependencies().iterator();
 	    while (ite.hasNext())
@@ -1124,16 +1127,31 @@ public class Helper {
 	        manualDeps.append(dep);
 	        manualDeps.append(", ");
 	      }
+		
+	    // Handle dependencies to other targetconfigurations which create binary
+	    // packages.
+	    ite = targetConfiguration.getRelations().iterator();
+	    while (ite.hasNext())
+	      {
+	        String tcName = ite.next();
+	        
+	        // TODO: Transform target names into package names and
+	        // append them to the dependency line.
+	        String packageName = tcName; // IMPLEMENT ME.
+	
+	        manualDeps.append(packageName);
+	        manualDeps.append(", ");
+	      }
 	
 	    if (manualDeps.length() >= 2)
 	      manualDeps.delete(manualDeps.length() - 2, manualDeps.length());
-	
+
 	    // If all dependencies should be bundled the package will only
 	    // need the default Java dependencies of the system and the remainder
 	    // of the method can be skipped.
 	    if (targetConfiguration.isBundleAll())
 	      return Utils.joinDependencyLines(defaults, manualDeps.toString());
-	
+
 	    Set runtimeDeps = null;
 	
 	    try
@@ -1142,17 +1160,17 @@ public class Helper {
 	        andFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE));
 	        andFilter.add(new TypeArtifactFilter("jar"));
 	
-	        runtimeDeps = Utils.findArtifacts(andFilter, packaging.getFactory(), packaging.getResolver(), 
-	        		packaging.getProject(), packaging.getProject().getArtifact(), 
-	        		packaging.getLocalRepo(), packaging.getRemoteRepos(), packaging.getMetadataSource());
+	        runtimeDeps = Utils.findArtifacts(andFilter, apm.getFactory(), apm.getResolver(), 
+	        		apm.getProject(), apm.getProject().getArtifact(), 
+	        		apm.getLocalRepo(), apm.getRemoteRepos(), apm.getMetadataSource());
 	
 	        andFilter = new AndArtifactFilter();
 	        andFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME));
 	        andFilter.add(new TypeArtifactFilter("jar"));
 	
-	        runtimeDeps.addAll(Utils.findArtifacts(andFilter, packaging.getFactory(), packaging.getResolver(), 
-	        		packaging.getProject(), packaging.getProject().getArtifact(), 
-	        		packaging.getLocalRepo(), packaging.getRemoteRepos(), packaging.getMetadataSource()));
+	        runtimeDeps.addAll(Utils.findArtifacts(andFilter, apm.getFactory(), apm.getResolver(), 
+	        		apm.getProject(), apm.getProject().getArtifact(), 
+	        		apm.getLocalRepo(), apm.getRemoteRepos(), apm.getMetadataSource()));
 	      }
 	    catch (ArtifactNotFoundException anfe)
 	      {
@@ -1212,7 +1230,7 @@ public class Helper {
 	      }
 	    };
 	
-	    packaging.getPm().iterateDependencyArtifacts(l, runtimeDeps, v, true);
+	    apm.getPm().iterateDependencyArtifacts(l, runtimeDeps, v, true);
 	
 	    return Utils.joinDependencyLines(line.toString(), manualDeps.toString());
 	  }
@@ -1294,11 +1312,11 @@ public class Helper {
 		boolean inList = false;
 		
 		  if (l!=null)
-			  l.info("ignorePackagingTypes set. Contains: " + packaging.getIgnorePackagingTypes() 
-					+ " . Project packaging is "+packaging.getProject().getPackaging());
+			  l.info("ignorePackagingTypes set. Contains: " + apm.getIgnorePackagingTypes() 
+					+ " . Project packaging is "+apm.getProject().getPackaging());
 		  
-		  for(String s : packaging.getIgnorePackagingTypes().split(",")){
-			  if(packaging.getProject().getPackaging().compareToIgnoreCase(s)==0){
+		  for(String s : apm.getIgnorePackagingTypes().split(",")){
+			  if(apm.getProject().getPackaging().compareToIgnoreCase(s)==0){
 				  	inList = true;
 				  }
 		  }
@@ -1342,7 +1360,7 @@ public class Helper {
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 					
 			try{
-				ite = ((List<License>)packaging.getProject().getLicenses()).iterator();
+				ite = ((List<License>)apm.getProject().getLicenses()).iterator();
 			}catch(Exception ex){
 				/*
 				 * If an error occurs, it is most probably because no licences are found.
