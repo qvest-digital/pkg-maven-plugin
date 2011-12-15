@@ -31,15 +31,15 @@ public class WorkspaceSession {
 
 	TargetConfiguration targetConfiguration;
 	
-	Map<String, TargetConfiguration> targetConfigurationMap;
-
-	List<TargetConfiguration> buildChain;
-
 	PackageMap packageMap;
 	
 	Helper helper;
 	
 	Packager packager;
+
+	Map<String, TargetConfiguration> targetConfigurationMap;
+	
+	List<TargetConfiguration> resolvedRelations;
 
 	public AbstractPackagingMojo getMojo() {
 		return mojo;
@@ -55,14 +55,6 @@ public class WorkspaceSession {
 
 	public void setTargetConfiguration(TargetConfiguration targetConfiguration) {
 		this.targetConfiguration = targetConfiguration;
-	}
-
-	public List<TargetConfiguration> getBuildChain() {
-		return buildChain;
-	}
-
-	public void setBuildChain(List<TargetConfiguration> buildChain) {
-		this.buildChain = buildChain;
 	}
 
 	public PackageMap getPackageMap() {
@@ -96,6 +88,14 @@ public class WorkspaceSession {
 	public void setTargetConfigurationMap(
 			Map<String, TargetConfiguration> targetConfigurationMap) {
 		this.targetConfigurationMap = targetConfigurationMap;
+	}
+
+	public List<TargetConfiguration> getResolvedRelations() {
+		return resolvedRelations;
+	}
+
+	public void setResolvedRelations(List<TargetConfiguration> resolvedRelations) {
+		this.resolvedRelations = resolvedRelations;
 	}
 
 }
