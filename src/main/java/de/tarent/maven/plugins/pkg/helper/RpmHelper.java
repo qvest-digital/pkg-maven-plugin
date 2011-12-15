@@ -11,19 +11,12 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
-import de.tarent.maven.plugins.pkg.AbstractPackagingMojo;
 import de.tarent.maven.plugins.pkg.AuxFile;
-import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
-import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 
 public class RpmHelper extends Helper {
 
-		public RpmHelper(AbstractPackagingMojo mojo, PackageMap packageMap, TargetConfiguration tc) {
-			super(mojo, packageMap, tc);
-		}
-		
 		/**
 	  	 * Convenience field that denotes the BUILD directory
 	  	 */

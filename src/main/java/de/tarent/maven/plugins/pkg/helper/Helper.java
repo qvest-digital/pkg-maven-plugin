@@ -210,6 +210,12 @@ public class Helper {
 	 */
 	protected TargetConfiguration targetConfiguration;
 	
+	/**
+	 * Reference to the {@link TargetConfiguration} instances which are denoted by
+	 * the relations property of the main target configuration.
+	 */
+	protected List<TargetConfiguration> resolvedRelations;
+	
 	public File getTargetAuxDir() {
 		return targetAuxDir;
 	}
@@ -218,10 +224,18 @@ public class Helper {
 		this.targetAuxDir = targetAuxDir;
 	}
 	
-	public Helper(AbstractPackagingMojo mojo, PackageMap packageMap, TargetConfiguration targetConfiguration) {
+	public Helper() {
+		// Intentionally empty.
+	}
+	
+	public final void init(AbstractPackagingMojo mojo, PackageMap packageMap, TargetConfiguration targetConfiguration, List<TargetConfiguration> resolvedRelations) {
+		if (apm != null) 
+			throw new IllegalStateException("Helper instance is already initialized.");
+		
 		this.apm = mojo;
 		this.packageMap = packageMap;
 		this.targetConfiguration = targetConfiguration;
+		this.resolvedRelations = resolvedRelations;
 		this.l = apm.getLog();
 		
 	}
@@ -1117,7 +1131,7 @@ public class Helper {
 	  {
 		  return createPackageLine(targetConfiguration.getConflicts());
 	  }
-
+	  
 	/**
 	   * Investigates the project's runtime dependencies and creates a dependency
 	   * line suitable for the control file from them.
@@ -1139,16 +1153,16 @@ public class Helper {
 		
 	    // Handle dependencies to other targetconfigurations which create binary
 	    // packages.
-	    ite = targetConfiguration.getRelations().iterator();
+		List<String> relatedPackageNames = Utils.createPackageNames(
+				apm.getProject().getArtifactId(),
+				resolvedRelations,
+				packageMap.isDebianNaming());
+		
+	    ite = relatedPackageNames.iterator();
 	    while (ite.hasNext())
 	      {
 	        String tcName = ite.next();
-	        
-	        // TODO: Transform target names into package names and
-	        // append them to the dependency line.
-	        String packageName = tcName; // IMPLEMENT ME.
-	
-	        manualDeps.append(packageName);
+	        manualDeps.append(tcName);
 	        manualDeps.append(", ");
 	      }
 	
