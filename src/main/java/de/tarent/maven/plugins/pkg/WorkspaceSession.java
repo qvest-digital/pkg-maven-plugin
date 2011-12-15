@@ -18,13 +18,15 @@ import de.tarent.maven.plugins.pkg.packager.Packager;
  * </p>
  * 
  * <p>This class is supposed to contain mid level work objects. Do not put low
- * level stuff like a path or individual string properties here.
+ * level stuff like a path or individual string properties here. Conversely if
+ * you somewhere get a work object instance from anything else than either a
+ * method's arguments or a {@link WorkspaceSession} instance it is breaking the
  * </p>
  * 
  */
 public class WorkspaceSession {
 
-	Packaging packaging;
+	AbstractPackagingMojo mojo;
 
 	TargetConfiguration targetConfiguration;
 
@@ -36,14 +38,14 @@ public class WorkspaceSession {
 	
 	Packager packager;
 
-	public Packaging getPackaging() {
-		return packaging;
+	public AbstractPackagingMojo getMojo() {
+		return mojo;
 	}
 
-	public void setPackaging(Packaging packaging) {
-		this.packaging = packaging;
+	public void setMojo(AbstractPackagingMojo mojo) {
+		this.mojo = mojo;
 	}
-
+	
 	public TargetConfiguration getTargetConfiguration() {
 		return targetConfiguration;
 	}

@@ -66,6 +66,7 @@ public class Packaging
 			if (!finishedTargets.contains(tc.getTarget()) && tc.isReady())
 			{
 				WorkspaceSession ws = new WorkspaceSession();
+				ws.setMojo(this); // its us
 				ws.setTargetConfiguration(tc);
 				ws.setBuildChain(buildChain);
 				
@@ -88,7 +89,11 @@ public class Packaging
    * @throws MojoFailureException
    */
   private void executeTargetConfiguration(WorkspaceSession ws, String d) throws MojoExecutionException, MojoFailureException {
+	    AbstractPackagingMojo mojo = ws.getMojo();
 	    TargetConfiguration tc = ws.getTargetConfiguration();
+	    
+	    // At first we create the various work objects that we need to process the
+	    // request to package what is specified in 'tc' and test their validity.
 	    
 	    // Retrieve package map for chosen distro.
 	    PackageMap pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL, d,
@@ -102,8 +107,13 @@ public class Packaging
 	                                           + tc.getChosenDistro());
 	    }
 	
-	    // Create packager and packaging helper according to the chosen packaging type.	      
-	    Helper ph = Utils.getPackagingHelperForPackaging(this, pm, tc);
+	    // Create packager and packaging helper according to the chosen packaging type.
+	    // Note: Helper is historically strongly dependent on the mojo, the package and
+	    // the targetconfiguration because this makes method calls to the helper so neatly
+	    // short and uniform among all Packager implementations, ie. there're almost no
+	    // arguments needed and all packagers call the same stuff while in reality they're
+	    // subtle differences between them.
+	    Helper ph = Utils.getPackagingHelperForPackaging(mojo, pm, tc);
 	    Packager packager = Utils.getPackagerForPackaging(packaging);
 	    
 	    if (packager == null){
@@ -113,12 +123,14 @@ public class Packaging
 	    // Store configuration in plugin-context for later use by signer- and deploy-goal
 	    // TODO: This is completely broken now because a single run of the plugin can
 	    // create multiple binary packages and these variables assume that there is just one.
+	    // TODO: This stuff makes my eyes bleed.
 	    getPluginContext().put("dc", tc);
 	    getPluginContext().put("pm", pm);
 	    getPluginContext().put("packageVersion", ph.getPackageVersion());
 	    
-	    // Puts the recently created work objects into the workspace
-	    // session to allow later access to them.
+	    // Finally now that we know that our cool newly created work objects are
+	    // prepared and can be used (none of them is null) we stuff them 
+	    // into the session and run the actual packaging steps.
 	    ws.setPackageMap(pm);
 	    ws.setHelper(ph);
 	    ws.setPackager(packager);
