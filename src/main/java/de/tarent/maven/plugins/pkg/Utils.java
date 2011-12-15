@@ -732,8 +732,9 @@ public final class Utils {
 	        // Recursively creates the merged configuration of the parent. By doing so we
 	        // traverse the chain of configurations from the bottom to the top.
 	        
-	        // If the parent == null, then we know we are at the very 
-	        // bottom and there is no need to continue merging
+	        // If the parent != null, merge with the parent
+	        // If the parent == null, then we know we are at the very
+	        // top and there is no need to continue merging
 	        if (currentTargetConfiguration.parent!=null){
 	        	TargetConfiguration merged = getMergedConfiguration(currentTargetConfiguration.parent, 
 	        														distro, targetConfigurations);
