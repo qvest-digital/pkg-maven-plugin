@@ -65,7 +65,11 @@ public class Packaging
 		for (TargetConfiguration tc : buildChain) {
 			if (!finishedTargets.contains(tc.getTarget()) && tc.isReady())
 			{
-				executeTargetConfiguration(tc, d);
+				WorkspaceSession ws = new WorkspaceSession();
+				ws.setTargetConfiguration(tc);
+				ws.setBuildChain(buildChain);
+				
+				executeTargetConfiguration(ws, d);
 
 				// Mark as done.
 			    finishedTargets.add(tc.getTarget());
@@ -83,10 +87,11 @@ public class Packaging
    * @throws MojoExecutionException
    * @throws MojoFailureException
    */
-  private void executeTargetConfiguration(TargetConfiguration tc, String d) throws MojoExecutionException, MojoFailureException {
+  private void executeTargetConfiguration(WorkspaceSession ws, String d) throws MojoExecutionException, MojoFailureException {
+	    TargetConfiguration tc = ws.getTargetConfiguration();
 	    
 	    // Retrieve package map for chosen distro.
-	    pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL, d,
+	    PackageMap pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL, d,
 	                        tc.bundleDependencies);
 
 	    String packaging = pm.getPackaging();
@@ -98,7 +103,7 @@ public class Packaging
 	    }
 	
 	    // Create packager and packaging helper according to the chosen packaging type.	      
-	    Helper ph = Utils.getPackagingHelperForPackaging(packaging, tc, this);
+	    Helper ph = Utils.getPackagingHelperForPackaging(this, pm, tc);
 	    Packager packager = Utils.getPackagerForPackaging(packaging);
 	    
 	    if (packager == null){
@@ -114,6 +119,12 @@ public class Packaging
 	    
 	    packager.checkEnvironment(getLog(), ph);
 	    
+	    // Puts the recently created work objects into the workspace
+	    // session to allow later access to them.
+	    
+	    ws.setPackageMap(pm);
+	    ws.setHelper(ph);
+	    ws.setPackager(packager);
 	    packager.execute(getLog(), ph , pm);
   }
   

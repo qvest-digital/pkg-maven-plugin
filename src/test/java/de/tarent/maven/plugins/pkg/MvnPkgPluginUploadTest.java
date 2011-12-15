@@ -17,6 +17,7 @@ public class MvnPkgPluginUploadTest extends AbstractMvnPkgPluginTestCase{
 	
 	private static class TestStruct {
 		private Upload upload;
+		private PackageMap packageMap;
 		private TargetConfiguration targetConfiguration;
 		private String target; 
 	}
@@ -46,7 +47,7 @@ public class MvnPkgPluginUploadTest extends AbstractMvnPkgPluginTestCase{
 	public void getPackageFile() throws Exception{
 		TestStruct ts = mockUploadEnvironment();
 		Upload u = ts.upload;
-		File f = u.getPackageFile(ts.targetConfiguration, u.pm, "ubuntu_lucid_upload");
+		File f = u.getPackageFile(ts.targetConfiguration, ts.packageMap, "ubuntu_lucid_upload");
 		Assert.assertNotNull(f);
 		Assert.assertEquals("dummyproject_1.0.0-0ubuntulucidupload_all.deb",f.getName());		
 	}
@@ -80,11 +81,12 @@ public class MvnPkgPluginUploadTest extends AbstractMvnPkgPluginTestCase{
 		Upload u = (Upload)mockEnvironment("uploadpom.xml", "upload");
 		TargetConfiguration tc = Utils.getTargetConfigurationFromString("ubuntu_lucid_upload", u.targetConfigurations);
 		String t = tc.getTarget();
-		u.pm = new PackageMap(null, null, "ubuntu_lucid", null);
+		PackageMap pm = new PackageMap(null, null, "ubuntu_lucid", null);
 		
 		ts.upload = u;
 		ts.targetConfiguration = tc;
 		ts.target = t;
+		ts.packageMap = pm;
 		
 		return ts;
 	}

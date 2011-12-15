@@ -28,7 +28,11 @@ public class RPMHelperTest extends AbstractMvnPkgPluginTestCase{
 		super.setUp();
 		packaging = (Packaging) mockEnvironment("simplepom.xml","pkg");		
 		targetConfiguration = new TargetConfiguration();
-		rpmPackageHelper = new RpmHelper(targetConfiguration, packaging);
+		
+		// NOTE: We *violently* create a RpmHelper instance *without* a PackageMap
+		// instance because we're not going to call methods which need one. If a test
+		// is written that needs a proper PackageMap instance fix it here.
+		rpmPackageHelper = new RpmHelper(packaging, null, targetConfiguration);
 		previousfilefound = false;
 		if(f.exists()){
 			FileUtils.moveFile(f, new File(homedir + "/.rpmmacros_Test_backup"));

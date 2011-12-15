@@ -93,8 +93,7 @@ public class Upload extends AbstractPackagingMojo {
 			String targetString) {
 
 		currentTargetConfiguration.setSection("misc");
-		pm = packageMap;
-		Helper helper = Utils.getPackagingHelperForPackaging(packageMap.getPackaging(), currentTargetConfiguration, this);
+		Helper helper = Utils.getPackagingHelperForPackaging(this, packageMap, currentTargetConfiguration);
 
 		return new File(helper.getTempRoot().getParent(), helper.generatePackageFileName());
 	}

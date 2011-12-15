@@ -91,8 +91,6 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 
-import de.tarent.maven.plugins.pkg.map.PackageMap;
-
 /**
  * Base Mojo for all packaging mojos. It provides convenient access to a mean to
  * resolve the project's complete dependencies.
@@ -270,8 +268,6 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	 */
 	protected String target;
 
-	protected PackageMap pm;
-
 	/**
 	 * @parameter
 	 */
@@ -313,10 +309,6 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 		return outputDirectory;
 	}
 
-	public PackageMap getPm() {
-		return pm;
-	}
-
 	public MavenProject getProject() {
 		return project;
 	}
@@ -331,10 +323,6 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 
 	public List<TargetConfiguration> getTargetConfigurations() {
 		return targetConfigurations;
-	}
-
-	public void setPm(PackageMap pm) {
-		this.pm = pm;
 	}
 
 	protected final boolean packagingTypeBelongsToIgnoreList() {
@@ -384,7 +372,6 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	  protected void checkEnvironment(Log l, TargetConfiguration tc) throws MojoExecutionException
 	  {
 	    l.info("distribution             : " + tc.getChosenDistro());
-	    l.info("package system           : " + pm.getPackaging());
 	    l.info("default package map      : "
 	           + (defaultPackageMapURL == null ? "built-in"
 	                                          : defaultPackageMapURL.toString()));

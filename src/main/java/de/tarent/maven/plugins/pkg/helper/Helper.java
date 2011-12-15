@@ -23,7 +23,6 @@ import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.TypeArtifactFilter;
 import org.apache.maven.model.License;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.ProjectBuildingException;
@@ -38,6 +37,7 @@ import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.generator.WrapperScriptGenerator;
 import de.tarent.maven.plugins.pkg.map.Entry;
+import de.tarent.maven.plugins.pkg.map.PackageMap;
 import de.tarent.maven.plugins.pkg.map.Visitor;
 
 /**
@@ -144,9 +144,6 @@ public class Helper {
 
 	File targetAuxDir;
 
-	TargetConfiguration targetConfiguration;
-
-
 	/**
 	 * Location of the project's artifact on the target system (needed for the
 	 * classpath construction). (e.g. /usr/share/java/app-2.0-SNAPSHOT.jar)
@@ -195,7 +192,23 @@ public class Helper {
 	
 	Log l;
 	
+	/**
+	 * Reference to the {@link AbstractPackagingMojo}. This gives access to Maven objects
+	 * but also general configuration parameters of this plugin.
+	 * 
+	 */
 	protected AbstractPackagingMojo apm;
+	
+	/**
+	 * Reference to the package map of the distro configured in the target configuration.
+	 */
+	protected PackageMap packageMap;
+
+	/**
+	 * Reference to the {@link TargetConfiguration} this helper instance is working
+	 * for.
+	 */
+	protected TargetConfiguration targetConfiguration;
 	
 	public File getTargetAuxDir() {
 		return targetAuxDir;
@@ -205,10 +218,10 @@ public class Helper {
 		this.targetAuxDir = targetAuxDir;
 	}
 	
-	public Helper(TargetConfiguration targetConfiguration, AbstractPackagingMojo mojo) {
-		
-		this.targetConfiguration = targetConfiguration;
+	public Helper(AbstractPackagingMojo mojo, PackageMap packageMap, TargetConfiguration targetConfiguration) {
 		this.apm = mojo;
+		this.packageMap = packageMap;
+		this.targetConfiguration = targetConfiguration;
 		this.l = apm.getLog();
 		
 	}
@@ -401,7 +414,7 @@ public class Helper {
 
 	public String getAotPackageName() {
 		if (aotPackageName == null)
-			aotPackageName = Utils.gcjise(getArtifactId(), targetConfiguration.getSection(), apm.getPm().isDebianNaming());
+			aotPackageName = Utils.gcjise(getArtifactId(), targetConfiguration.getSection(), packageMap.isDebianNaming());
 
 		return aotPackageName;
 	}
@@ -532,7 +545,7 @@ public class Helper {
 					apm.getProject().getArtifactId(),
 					targetConfiguration.getPackageNameSuffix(),
 					targetConfiguration.getSection(),
-					apm.getPm().isDebianNaming());
+					packageMap.isDebianNaming());
 
 		return packageName;
 	}
@@ -609,8 +622,8 @@ public class Helper {
 
 	public File getTargetArtifactFile() {
 		if (targetArtifactFile == null)
-			targetArtifactFile = new File((targetConfiguration.isBundleAll() || apm.getPm().hasNoPackages() ? getTargetBundledJarDir()
-					: new File(apm.getPm().getDefaultJarPath())), apm.getProject().getArtifactId() + "." + apm.getProject().getPackaging());
+			targetArtifactFile = new File((targetConfiguration.isBundleAll() || packageMap.hasNoPackages() ? getTargetBundledJarDir()
+					: new File(packageMap.getDefaultJarPath())), apm.getProject().getArtifactId() + "." + apm.getProject().getPackaging());
 
 		return targetArtifactFile;
 	}
@@ -637,7 +650,7 @@ public class Helper {
 	 */
 	public File getTargetBinDir() {
 		if (targetBinDir == null)
-			targetBinDir = (targetConfiguration.getBindir().length() == 0 ? new File(getTargetRoot(), apm.getPm().getDefaultBinPath()) : new File(
+			targetBinDir = (targetConfiguration.getBindir().length() == 0 ? new File(getTargetRoot(), packageMap.getDefaultBinPath()) : new File(
 					targetConfiguration.getBindir()));
 
 		return targetBinDir;
@@ -646,7 +659,7 @@ public class Helper {
 	public File getTargetBundledJarDir() {
 		if (targetBundledJarDir == null)
 			targetBundledJarDir = (targetConfiguration.getBundledJarDir().length() == 0 ? new File(getTargetRoot(), new File(
-					apm.getPm().getDefaultJarPath(), apm.getProject().getArtifactId()).toString()) : new File(targetConfiguration.getBundledJarDir()));
+					packageMap.getDefaultJarPath(), apm.getProject().getArtifactId()).toString()) : new File(targetConfiguration.getBundledJarDir()));
 
 		return targetBundledJarDir;
 	}
@@ -677,14 +690,14 @@ public class Helper {
 	 */
 	public File getTargetJNIDir() {
 		if (targetJNIDir == null)
-			targetJNIDir = new File(getTargetRoot(), apm.getPm().getDefaultJNIPath().split(":")[0]);
+			targetJNIDir = new File(getTargetRoot(), packageMap.getDefaultJNIPath().split(":")[0]);
 
 		return targetJNIDir;
 	}
 
 	public File getTargetLibraryPath() {
 		if (targetLibraryPath == null)
-			targetLibraryPath = new File(getTargetRoot(), apm.getPm().getDefaultJNIPath());
+			targetLibraryPath = new File(getTargetRoot(), packageMap.getDefaultJNIPath());
 
 		return targetLibraryPath;
 	}
@@ -721,7 +734,7 @@ public class Helper {
 
 	public File getTempRoot() {
 		if (tempRoot == null)
-			tempRoot = new File(apm.getBuildDir(), apm.getPm().getPackaging() + "-tmp");
+			tempRoot = new File(apm.getBuildDir(), packageMap.getPackaging() + "-tmp");
 
 		return tempRoot;
 	}
@@ -923,8 +936,8 @@ public class Helper {
 	      writer.println("scriptType=\"" + item + "\"");
 	      writer.println();
 	      writer.println("distro=\"" + targetConfiguration.getChosenDistro() + "\"");
-	      writer.println("distroLabel=\"" + apm.getPm().getDistroLabel() + "\"");
-	      writer.println("packaging=\"" + apm.getPm().getPackaging() + "\"");
+	      writer.println("distroLabel=\"" + packageMap.getDistroLabel() + "\"");
+	      writer.println("packaging=\"" + packageMap.getPackaging() + "\"");
 	      writer.println();
 	      writer.println("# What follows is the content script file " + srcScriptFile.getName());
 	      writer.println();
@@ -1068,7 +1081,7 @@ public class Helper {
 	            // Prepend default Jar path if file is not absolute.
 	            if (fileName.charAt(0) != '/')
 	              {
-	                sb.append(apm.getPm().getDefaultJarPath());
+	                sb.append(packageMap.getDefaultJarPath());
 	                sb.append("/");
 	              }
 	
@@ -1080,7 +1093,7 @@ public class Helper {
 	
 	    };
 	
-	    apm.getPm().iterateDependencyArtifacts(l, dependencies, v, true);
+	    packageMap.iterateDependencyArtifacts(l, dependencies, v, true);
 	    
 	    // Add the custom jar files to the classpath
 	    for (Iterator<JarFile> ite = targetConfiguration.getJarFiles().iterator(); ite.hasNext();)
@@ -1117,7 +1130,7 @@ public class Helper {
 	   */
 	  public final String createDependencyLine() throws MojoExecutionException
 	  {
-	    String defaults = apm.getPm().getDefaultDependencyLine();
+	    String defaults = packageMap.getDefaultDependencyLine();
 	    StringBuffer manualDeps = new StringBuffer();
 	    Iterator<String> ite = targetConfiguration.getManualDependencies().iterator();
 	    while (ite.hasNext())
@@ -1230,7 +1243,7 @@ public class Helper {
 	      }
 	    };
 	
-	    apm.getPm().iterateDependencyArtifacts(l, runtimeDeps, v, true);
+	    packageMap.iterateDependencyArtifacts(l, runtimeDeps, v, true);
 	
 	    return Utils.joinDependencyLines(line.toString(), manualDeps.toString());
 	  }

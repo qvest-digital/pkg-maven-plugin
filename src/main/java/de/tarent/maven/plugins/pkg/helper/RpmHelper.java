@@ -15,13 +15,15 @@ import de.tarent.maven.plugins.pkg.AbstractPackagingMojo;
 import de.tarent.maven.plugins.pkg.AuxFile;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
+import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 
 public class RpmHelper extends Helper {
 
-		public RpmHelper(TargetConfiguration dc, AbstractPackagingMojo mojo) {
-			super(dc, mojo);
+		public RpmHelper(AbstractPackagingMojo mojo, PackageMap packageMap, TargetConfiguration tc) {
+			super(mojo, packageMap, tc);
 		}
+		
 		/**
 	  	 * Convenience field that denotes the BUILD directory
 	  	 */

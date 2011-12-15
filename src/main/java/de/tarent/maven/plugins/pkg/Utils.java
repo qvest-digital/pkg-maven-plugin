@@ -74,6 +74,7 @@ import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.helper.IpkHelper;
 import de.tarent.maven.plugins.pkg.helper.IzPackHelper;
 import de.tarent.maven.plugins.pkg.helper.RpmHelper;
+import de.tarent.maven.plugins.pkg.map.PackageMap;
 import de.tarent.maven.plugins.pkg.packager.DebPackager;
 import de.tarent.maven.plugins.pkg.packager.IpkPackager;
 import de.tarent.maven.plugins.pkg.packager.IzPackPackager;
@@ -833,12 +834,14 @@ public final class Utils {
 	   * @param pm
 	   * @return
 	   */
-	  public static Helper getPackagingHelperForPackaging(String packaging, TargetConfiguration tc, AbstractPackagingMojo mojo){
+	  public static Helper getPackagingHelperForPackaging(AbstractPackagingMojo mojo, PackageMap packageMap, TargetConfiguration tc){
+		    String packaging = packageMap.getPackaging();
+		    
 	  		Map<String, Helper> extPackagerHelperMap = new HashMap<String,Helper>();
-		    extPackagerHelperMap.put("deb", new DebHelper(tc, mojo));
-		    extPackagerHelperMap.put("ipk", new IpkHelper(tc, mojo));
-		    extPackagerHelperMap.put("izpack", new IzPackHelper(tc, mojo));
-		    extPackagerHelperMap.put("rpm", new RpmHelper(tc, mojo));
+		    extPackagerHelperMap.put("deb", new DebHelper(mojo, packageMap, tc));
+		    extPackagerHelperMap.put("ipk", new IpkHelper(mojo, packageMap, tc));
+		    extPackagerHelperMap.put("izpack", new IzPackHelper(mojo, packageMap, tc));
+		    extPackagerHelperMap.put("rpm", new RpmHelper(mojo, packageMap, tc));
 		    return extPackagerHelperMap.get(packaging);
 	  }
 }
