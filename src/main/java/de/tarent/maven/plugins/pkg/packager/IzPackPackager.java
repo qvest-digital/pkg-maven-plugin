@@ -62,8 +62,8 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
-import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Path;
+import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
@@ -78,10 +78,6 @@ public class IzPackPackager extends Packager
   {
 
 	TargetConfiguration distroConfig = helper.getTargetConfiguration();
-	
-	if(!(helper instanceof Helper)){
-		throw new IllegalArgumentException("Debian helper needed");
-	}
 	Helper ph = (Helper) helper;
 	
     // The root directory into which everything from srcRoot is copied

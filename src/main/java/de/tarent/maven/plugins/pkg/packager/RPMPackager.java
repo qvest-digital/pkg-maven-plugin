@@ -80,11 +80,6 @@ public class RPMPackager extends Packager {
 			throws MojoExecutionException {	
 
 		TargetConfiguration distroConfig = helper.getTargetConfiguration();
-		
-		if(!(helper instanceof RpmHelper)){
-			throw new IllegalArgumentException("RPMHelper needed");
-		}
-
 		RpmHelper ph = (RpmHelper) helper;
 		
 		ph.prepareInitialDirectories();

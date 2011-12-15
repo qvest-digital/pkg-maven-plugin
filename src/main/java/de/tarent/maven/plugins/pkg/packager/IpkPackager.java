@@ -77,10 +77,6 @@ public class IpkPackager extends Packager
                       PackageMap packageMap) throws MojoExecutionException
   {
 	TargetConfiguration distroConfig = helper.getTargetConfiguration();
-		
-	if(!(helper instanceof Helper)){
-		throw new IllegalArgumentException("Debian helper needed");
-	}
 	Helper ph = (Helper) helper;
 	
     String packageName = ph.getPackageName();
