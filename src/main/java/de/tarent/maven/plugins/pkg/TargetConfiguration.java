@@ -45,7 +45,11 @@ import java.util.Set;
  * Except for the boolean properties every field can be accessed directly. The
  * boolean properties are using <code>Boolean</code> to allow them to be
  * <code>null</code> which means 'not set' and is an important state for the
- * merging of two <code>DistroConfiguration</code> instances.
+ * merging of two <code>DistroConfiguration</code> instances.</p>
+ * 
+ * <p>
+ * A TargetConfiguration may only be used once it has been merged or fixated. 
+ * Otherwise unwanted behaviour may occur.</p>
  * 
  * @author Robert Schuster (robert.schuster@tarent.de)
  * 
@@ -810,7 +814,15 @@ public class TargetConfiguration {
 	 * Denotes dependencies to other target configurations.
 	 */
 	List<String> relations;
-
+	
+	/**
+	 *  Denotes of this configuration is ready to be used. This flag is only set
+	 *  if this configuration has been merged at least once or "fixated". Otherwise
+	 *  some members needed for the configuration to be used may not have been 
+	 *  initialized properly.
+	 */
+	private boolean ready;
+	
 	public TargetConfiguration() {
 		// For instantiation.
 		this("default");
@@ -1161,7 +1173,7 @@ public class TargetConfiguration {
 		
 		// RPM License configuration (it must always contain a value)
 		defaultDistro = (String) merge(defaultDistro, parent.defaultDistro,"unknown");
-
+		setReady(true);
 		return this;
 	}
 
@@ -1619,6 +1631,28 @@ public class TargetConfiguration {
 
 	public void setPackageNameSuffix(String packageNameSuffix) {
 		this.packageNameSuffix = packageNameSuffix;
+	}
+
+	/**
+	 * Returns the configuration with all needed members initialized.
+	 * @return
+	 */
+	public TargetConfiguration fixate() {
+		return this.merge(new TargetConfiguration());
+	}
+	
+	/**
+	 * Denotes if this configuration is ready to be used 
+	 * (i.e. all members have been initialized).<br/>
+	 * If false is returned unexpected behaviour may occur. 
+	 * @return
+	 */
+	public boolean isReady() {
+		return ready;
+	}
+
+	public void setReady(boolean ready) {
+		this.ready = ready;
 	}
 
 }

@@ -63,7 +63,7 @@ public class Packaging
 		List<TargetConfiguration> buildChain = Utils.createBuildChain(t, d, targetConfigurations);
 
 		for (TargetConfiguration tc : buildChain) {
-			if (!finishedTargets.contains(tc.getTarget()))
+			if (!finishedTargets.contains(tc.getTarget()) && tc.isReady())
 			{
 				executeTargetConfiguration(tc, d);
 

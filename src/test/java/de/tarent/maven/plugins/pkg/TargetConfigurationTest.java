@@ -131,4 +131,20 @@ public class TargetConfigurationTest extends TestCase {
 		TargetConfiguration merged = tc2.merge(tc1);
 		assertEquals(expected, merged.manualDependencies);
 	}
+	
+	/**
+	 * Tests if a target configuration is ready to be used.
+	 * It should only be ready when it has been fixated or merged at least once.
+	 */
+	public void testTargetConfigurationIsReady(){
+		TargetConfiguration tc = new TargetConfiguration();
+		assertFalse(tc.isReady());
+		tc.fixate();
+		assertTrue(tc.isReady());
+		tc = new TargetConfiguration();
+		assertFalse(tc.isReady());
+		tc.merge(new TargetConfiguration());
+		assertTrue(tc.isReady());
+		
+	}
 }
