@@ -24,7 +24,7 @@ import de.tarent.maven.plugins.pkg.map.PackageMap;
  * @phase "deploy"
  * @goal upload
  */
-public class Upload extends Packaging {
+public class Upload extends AbstractPackagingMojo {
 
 	Log l = getLog();
 	

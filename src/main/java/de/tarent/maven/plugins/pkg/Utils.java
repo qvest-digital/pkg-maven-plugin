@@ -829,16 +829,16 @@ public final class Utils {
 	  /**
 	   * Returns a PackagingHelper object that supports a caertain packaging type
 	   * @param packaging
-	   * @param dc
+	   * @param tc
 	   * @param pm
 	   * @return
 	   */
-	  public static Helper getPackagingHelperForPackaging(String packaging, TargetConfiguration dc, Packaging p){
+	  public static Helper getPackagingHelperForPackaging(String packaging, TargetConfiguration tc, AbstractPackagingMojo mojo){
 	  		Map<String, Helper> extPackagerHelperMap = new HashMap<String,Helper>();
-		    extPackagerHelperMap.put("deb", new DebHelper(dc, (Packaging) p));
-		    extPackagerHelperMap.put("ipk", new IpkHelper(dc, (Packaging) p));
-		    extPackagerHelperMap.put("izpack", new IzPackHelper(dc, (Packaging) p));
-		    extPackagerHelperMap.put("rpm", new RpmHelper(dc, (Packaging) p));
+		    extPackagerHelperMap.put("deb", new DebHelper(tc, mojo));
+		    extPackagerHelperMap.put("ipk", new IpkHelper(tc, mojo));
+		    extPackagerHelperMap.put("izpack", new IzPackHelper(tc, mojo));
+		    extPackagerHelperMap.put("rpm", new RpmHelper(tc, mojo));
 		    return extPackagerHelperMap.get(packaging);
 	  }
 }
