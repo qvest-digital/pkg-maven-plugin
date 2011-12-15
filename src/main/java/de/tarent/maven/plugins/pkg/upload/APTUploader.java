@@ -36,6 +36,7 @@ import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.AbstractPackagingMojo;
 import de.tarent.maven.plugins.pkg.Utils;
+import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 /**
@@ -129,5 +130,13 @@ public class APTUploader extends AbstractPackagingMojo {
 			packagingType = getPackageMap().getPackaging();
 
 		return packagingType;
+	}
+
+	@Override
+	protected void executeTargetConfiguration(
+			WorkspaceSession workspaceSession, String distro)
+			throws MojoExecutionException, MojoFailureException {
+		// TODO: Sign- and Upload is being unser rework!
+		throw new UnsupportedOperationException("does not work!");
 	}
 }

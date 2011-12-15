@@ -43,6 +43,7 @@ import org.apache.maven.plugin.logging.Log;
 import de.tarent.maven.plugins.pkg.AbstractPackagingMojo;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
+import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.ChangelogFileGenerator;
 import de.tarent.maven.plugins.pkg.generator.SourceControlFileGenerator;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
@@ -370,4 +371,13 @@ public class DebianSigner extends AbstractPackagingMojo {
 	public String getDebFileName() {
 		return getPackageFileNameBase() + ".deb";
 	}
+
+	@Override
+	protected void executeTargetConfiguration(
+			WorkspaceSession workspaceSession, String distro)
+			throws MojoExecutionException, MojoFailureException {
+		// TODO: Sign- and Upload is being unser rework!
+		throw new UnsupportedOperationException("does not work!");
+	}
+	
 }

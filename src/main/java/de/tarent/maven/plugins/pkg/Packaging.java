@@ -47,44 +47,6 @@ import de.tarent.maven.plugins.pkg.packager.Packager;
 public class Packaging
     extends AbstractPackagingMojo
 {
-
-  public void execute() throws MojoExecutionException, MojoFailureException
-  {
-	// For some tasks it is practical to have the TargetConfiguration instances as a
-	// map. This transformation step also serves as check for double entries.
-    Map<String, TargetConfiguration> targetConfigurationMap = Utils.toMap(targetConfigurations);
-	  
-	// Container for collecting target configurations that have been built. This
-	// is used to make sure that TCs are not build repeatedly when the given target
-	// configuration have a dependency to a common target configuration.
-	HashSet<String> finishedTargets = new HashSet<String>();
-	
-	for(String t : getTargets()){
-		// A single target (and all its dependent target configurations are supposed to use the same
-		// distro value).
-	    String d = (distro != null) ? distro : Utils.getDefaultDistro(t, targetConfigurations, getLog());
-	    
-	    // Retrieve all target configurations that need to be build for /t/
-		List<TargetConfiguration> buildChain = Utils.createBuildChain(t, d, targetConfigurations);
-
-		for (TargetConfiguration tc : buildChain) {
-			if (!finishedTargets.contains(tc.getTarget()) && tc.isReady())
-			{
-				WorkspaceSession ws = new WorkspaceSession();
-				ws.setMojo(this); // its us
-				ws.setTargetConfigurationMap(targetConfigurationMap);
-				ws.setTargetConfiguration(tc);
-				ws.setBuildChain(buildChain);
-				
-				executeTargetConfiguration(ws, d);
-
-				// Mark as done.
-			    finishedTargets.add(tc.getTarget());
-			}
-
-		}
-	}
-  }
   
   /**
    * Creates the package for a single given target configuration.
@@ -94,13 +56,21 @@ public class Packaging
    * @throws MojoExecutionException
    * @throws MojoFailureException
    */
-  private void executeTargetConfiguration(WorkspaceSession ws, String d) throws MojoExecutionException, MojoFailureException {
+	@Override
+	protected void executeTargetConfiguration(WorkspaceSession ws, String d)
+			throws MojoExecutionException, MojoFailureException {
 	    AbstractPackagingMojo mojo = ws.getMojo();
 	    TargetConfiguration tc = ws.getTargetConfiguration();
+	    Map<String, TargetConfiguration> tcMap = ws.getTargetConfigurationMap();
 	    
 	    // At first we create the various work objects that we need to process the
 	    // request to package what is specified in 'tc' and test their validity.
-	    
+
+	    // Resolve all the relations of the given target configuration. This can fail
+	    // with an exception if there is a configuration mistake.
+	    List<TargetConfiguration> resolvedRelations = Utils.resolveConfigurations(
+	    		tc.getRelations(), tcMap);
+		
 	    // Retrieve package map for chosen distro.
 	    PackageMap pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL, d,
 	                        tc.bundleDependencies);
@@ -119,7 +89,9 @@ public class Packaging
 	    // short and uniform among all Packager implementations, ie. there're almost no
 	    // arguments needed and all packagers call the same stuff while in reality they're
 	    // subtle differences between them.
-	    Helper ph = Utils.getPackagingHelperForPackaging(mojo, pm, tc);
+	    Helper ph = Utils.getPackagingHelperForPackaging(packaging);
+	    ph.init(mojo, pm, tc, resolvedRelations);
+	    
 	    Packager packager = Utils.getPackagerForPackaging(packaging);
 	    
 	    if (packager == null){
@@ -137,6 +109,7 @@ public class Packaging
 	    // Finally now that we know that our cool newly created work objects are
 	    // prepared and can be used (none of them is null) we stuff them 
 	    // into the session and run the actual packaging steps.
+	    ws.setResolvedRelations(resolvedRelations);
 	    ws.setPackageMap(pm);
 	    ws.setHelper(ph);
 	    ws.setPackager(packager);

@@ -78,7 +78,9 @@ package de.tarent.maven.plugins.pkg;
 
 import java.io.File;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -87,6 +89,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
@@ -449,4 +452,43 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	      }
 	  }
 
+	  public void execute() throws MojoExecutionException, MojoFailureException
+	  {
+		// For some tasks it is practical to have the TargetConfiguration instances as a
+		// map. This transformation step also serves as check for double entries.
+	    Map<String, TargetConfiguration> targetConfigurationMap = Utils.toMap(targetConfigurations);
+		  
+		// Container for collecting target configurations that have been built. This
+		// is used to make sure that TCs are not build repeatedly when the given target
+		// configuration have a dependency to a common target configuration.
+		HashSet<String> finishedTargets = new HashSet<String>();
+		
+		for(String t : getTargets()){
+			// A single target (and all its dependent target configurations are supposed to use the same
+			// distro value).
+		    String d = (distro != null) ? distro : Utils.getDefaultDistro(t, targetConfigurations, getLog());
+		    
+		    // Retrieve all target configurations that need to be build for /t/
+			List<TargetConfiguration> buildChain = Utils.createBuildChain(t, d, targetConfigurations);
+
+			for (TargetConfiguration tc : buildChain) {
+				if (!finishedTargets.contains(tc.getTarget()) && tc.isReady())
+				{
+					WorkspaceSession ws = new WorkspaceSession();
+					ws.setMojo(this); // its us
+					ws.setTargetConfigurationMap(targetConfigurationMap);
+					ws.setTargetConfiguration(tc);
+					
+					executeTargetConfiguration(ws, d);
+
+					// Mark as done.
+				    finishedTargets.add(tc.getTarget());
+				}
+
+			}
+		}
+	  }
+	  
+	  protected abstract void executeTargetConfiguration(WorkspaceSession workspaceSession, String distro)
+			  throws MojoExecutionException, MojoFailureException;
 }
