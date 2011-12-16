@@ -386,36 +386,36 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	    l.info("bundle all dependencies  : " + ((tc.isBundleAll()) ? "yes" : "no"));
 	    l.info("ahead of time compilation: " + ((tc.isAotCompile()) ? "yes" : "no"));
 	    l.info("custom jar libraries     : "
-	            + ((tc.jarFiles.isEmpty()) ? "<none>"
-	                                      : String.valueOf(tc.jarFiles.size())));
+	            + ((tc.getJarFiles().isEmpty()) ? "<none>"
+	                                      : String.valueOf(tc.getJarFiles().size())));
 	    l.info("JNI libraries            : "
-	           + ((tc.jniFiles.isEmpty()) ? "<none>"
-	                                     : String.valueOf(tc.jniFiles.size())));
+	           + ((tc.getJniFiles().isEmpty()) ? "<none>"
+	                                     : String.valueOf(tc.getJniFiles().size())));
 	    l.info("auxiliary file source dir: "
-	           + (tc.srcAuxFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-	                                             : tc.srcAuxFilesDir));
+	           + (tc.getSrcAuxFilesDir().length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+	                                             : tc.getSrcAuxFilesDir()));
 	    l.info("auxiliary files          : "
-	           + ((tc.auxFiles.isEmpty()) ? "<none>"
-	                                     : String.valueOf(tc.auxFiles.size())));
+	           + ((tc.getAuxFiles().isEmpty()) ? "<none>"
+	                                     : String.valueOf(tc.getAuxFiles().size())));
 	    l.info("prefix                   : "
-	           + (tc.prefix.length() == 1 ? "/ (default)" : tc.prefix));
+	           + (tc.getPrefix().length() == 1 ? "/ (default)" : tc.getPrefix()));
 	    l.info("sysconf files source dir : "
-	           + (tc.srcSysconfFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-	                                                 : tc.srcSysconfFilesDir));
+	           + (tc.getSrcSysconfFilesDir().length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+	                                                 : tc.getSrcSysconfFilesDir()));
 	    l.info("sysconfdir               : "
-	           + (tc.sysconfdir.length() == 0 ? "(default)" : tc.sysconfdir));
+	           + (tc.getSysconfdir().length() == 0 ? "(default)" : tc.getSysconfdir()));
 	    l.info("dataroot files source dir: "
-	           + (tc.srcDatarootFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-	                                                  : tc.srcDatarootFilesDir));
+	           + (tc.getSrcDatarootFilesDir().length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+	                                                  : tc.getSrcDatarootFilesDir()));
 	    l.info("dataroot                 : "
-	           + (tc.datarootdir.length() == 0 ? "(default)" : tc.datarootdir));
+	           + (tc.getDatarootdir().length() == 0 ? "(default)" : tc.getDatarootdir()));
 	    l.info("data files source dir    : "
-	           + (tc.srcDataFilesDir.length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-	                                              : tc.srcDataFilesDir));
+	           + (tc.getSrcDataFilesDir().length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+	                                              : tc.getSrcDataFilesDir()));
 	    l.info("datadir                  : "
-	           + (tc.datadir.length() == 0 ? "(default)" : tc.datadir));
+	           + (tc.getDatadir().length() == 0 ? "(default)" : tc.getDatadir()));
 	    l.info("bindir                   : "
-	           + (tc.bindir.length() == 0 ? "(default)" : tc.bindir));
+	           + (tc.getBindir().length() == 0 ? "(default)" : tc.getBindir()));
 
 	    if (tc.getChosenDistro() == null)
 	      throw new MojoExecutionException("No distribution configured!");

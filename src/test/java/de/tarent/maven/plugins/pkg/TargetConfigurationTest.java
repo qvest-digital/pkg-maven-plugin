@@ -6,14 +6,17 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.maven.plugin.MojoExecutionException;
+
 import junit.framework.TestCase;
 
 public class TargetConfigurationTest extends TestCase {
 
 	/**
 	 * Tests whether the JNI file sets are really merged.
+	 * @throws MojoExecutionException 
 	 */
-	public void testJNIFileMerge()
+	public void testJNIFileMerge() throws MojoExecutionException
 	{
 		JniFile f;
 		List<JniFile> expected = new ArrayList<JniFile>();
@@ -41,14 +44,15 @@ public class TargetConfigurationTest extends TestCase {
 		l2.add(f);
 		tc2.setJniFiles(l2);
 		
-		TargetConfiguration merged = tc2.merge(tc1);
-		assertEquals(expected, merged.jniFiles);
+		TargetConfiguration merged = Utils.mergeConfigurations(tc2,tc1);
+		assertEquals(expected, merged.getJniFiles());
 	}
 	
 	/**
 	 * Tests whether the distros property is really and properly merged.
+	 * @throws MojoExecutionException 
 	 */
-	public void testDistrosMerge()
+	public void testDistrosMerge() throws MojoExecutionException
 	{
 		String d;
 		Set<String> expected = new HashSet<String>();
@@ -71,14 +75,15 @@ public class TargetConfigurationTest extends TestCase {
 		
 		tc2.setDistros(l2);
 		
-		TargetConfiguration merged = tc2.merge(tc1);
+		TargetConfiguration merged = Utils.mergeConfigurations(tc2,tc1);
 		assertEquals(expected, merged.getDistros());
 	}
 
 	/**
 	 * Tests whether the distros property is really and properly merged.
+	 * @throws MojoExecutionException 
 	 */
-	public void testSystemPropertiesMerge()
+	public void testSystemPropertiesMerge() throws MojoExecutionException
 	{
 		Properties expected = new Properties();
 		
@@ -97,15 +102,16 @@ public class TargetConfigurationTest extends TestCase {
 		
 		tc2.setSystemProperties(l2);
 		
-		TargetConfiguration merged = tc2.merge(tc1);
-		assertEquals(expected, merged.systemProperties);
+		TargetConfiguration merged = Utils.mergeConfigurations(tc2,tc1);
+		assertEquals(expected, merged.getSystemProperties());
 	}
 
 	/**
 	 * Tests whether the manual dependencies property is really
 	 * and properly merged.
+	 * @throws MojoExecutionException 
 	 */
-	public void testManualDependenciesMerge()
+	public void testManualDependenciesMerge() throws MojoExecutionException
 	{
 		String d;
 		List<String> expected = new ArrayList<String>();
@@ -128,22 +134,23 @@ public class TargetConfigurationTest extends TestCase {
 		
 		tc2.setManualDependencies(l2);
 		
-		TargetConfiguration merged = tc2.merge(tc1);
-		assertEquals(expected, merged.manualDependencies);
+		TargetConfiguration merged = Utils.mergeConfigurations(tc2,tc1);
+		assertEquals(expected, merged.getManualDependencies());
 	}
 	
 	/**
 	 * Tests if a target configuration is ready to be used.
 	 * It should only be ready when it has been fixated or merged at least once.
+	 * @throws MojoExecutionException 
 	 */
-	public void testTargetConfigurationIsReady(){
+	public void testTargetConfigurationIsReady() throws MojoExecutionException{
 		TargetConfiguration tc = new TargetConfiguration();
 		assertFalse(tc.isReady());
 		tc.fixate();
 		assertTrue(tc.isReady());
 		tc = new TargetConfiguration();
 		assertFalse(tc.isReady());
-		tc.merge(new TargetConfiguration());
+		Utils.mergeConfigurations(tc,new TargetConfiguration());
 		assertTrue(tc.isReady());
 		
 	}

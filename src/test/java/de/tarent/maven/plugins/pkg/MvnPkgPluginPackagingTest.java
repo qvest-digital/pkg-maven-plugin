@@ -30,7 +30,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	@Test
     public void runDefaultTarget()
             throws Exception
-        {	
+        {
     		packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg", "ubuntu_lucid_target_simple");
             packagingPlugin.execute();
             assertTrue(numberOfDEBsIs(1));
@@ -227,6 +227,44 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertTrue(debContainsMainArtifact());
             assertTrue(debContainsArtifact("dummy.properties"));
         }	
+	
+	/**
+	 * This test attempts the following:
+	 * 
+	 * Execute a single target
+	 * Create a signed DEB file
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+    public void createSignedDEB()
+            throws Exception, MojoExecutionException
+        {
+			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","ubuntu_lucid_target_sign");
+            packagingPlugin.execute();
+            assertTrue(numberOfDEBsIs(1));
+            assertTrue(debContainsMainArtifact());
+        }		
+	
+	/**
+	 * This test attempts the following:
+	 * 
+	 * Execute a single target
+	 * Create a signed DEB file
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+    public void createSignedRPM()
+            throws Exception, MojoExecutionException
+        {/*
+			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","centos_5_6_target_sign");
+            packagingPlugin.execute();
+            assertTrue(numberOfRPMsIs(1));
+            assertTrue(debContainsMainArtifact());*/
+            
+        }	
+
 
 		
 	public Packaging mockPackagingEnvironment(String pomFilename, String goal) throws Exception{		

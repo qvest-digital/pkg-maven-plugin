@@ -32,15 +32,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -70,8 +73,13 @@ import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 
+import de.tarent.maven.plugins.pkg.annotations.MergeMe;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.helper.RpmHelper;
+import de.tarent.maven.plugins.pkg.merger.CollectionMerger;
+import de.tarent.maven.plugins.pkg.merger.IMerge;
+import de.tarent.maven.plugins.pkg.merger.ObjectMerger;
+import de.tarent.maven.plugins.pkg.merger.PropertiesMerger;
 import de.tarent.maven.plugins.pkg.packager.DebPackager;
 import de.tarent.maven.plugins.pkg.packager.IpkPackager;
 import de.tarent.maven.plugins.pkg.packager.IzPackPackager;
@@ -771,7 +779,7 @@ public final class Utils {
 		
 			            // Returns a configuration that is merged with
 			            // the default configuration-
-			            return currentTargetConfiguration.merge(merged);
+			            return Utils.mergeConfigurations(currentTargetConfiguration,merged);
 			          }
 			        else {
 			        	throw new MojoExecutionException("TargetConfiguration '" + merged.getTarget() + "' does not support distro: " + distro);
@@ -781,7 +789,7 @@ public final class Utils {
 		        	throw new MojoExecutionException("TargetConfiguration '" + currentTargetConfiguration.getTarget() + "' does not support distro: " + distro);
 		        }
 	        }else{
-	        	return currentTargetConfiguration.merge(new TargetConfiguration(target));
+	        	return currentTargetConfiguration.fixate();
 	        }
 	      }
 	    
@@ -912,5 +920,86 @@ public final class Utils {
 		  }
 		  
 		  return tcs;
+	  }
+	  
+	  /**
+		* Sets all unset properties, either to the values of the parent or to a
+		* (hard-coded) default value if the property is not set in the parent.
+		* 
+		* <p>
+		* Using this method the packaging plugin can generate a merge of the
+		* default and a distro-specific configuration.
+		* </p>
+		*	   
+		* @param child
+		* @param parent
+		* @return
+		* @throws MojoExecutionException
+		*/
+	  public static TargetConfiguration mergeConfigurations(TargetConfiguration child, 
+			  TargetConfiguration parent) throws MojoExecutionException{
+	  
+			
+			Field[] allFields = TargetConfiguration.class.getDeclaredFields();
+			for (Field field : allFields){
+				field.setAccessible(true);
+				if(field.getAnnotation(MergeMe.class) != null){
+					try {
+						Object defaultValue = new Object();						
+						IMerge merger;
+
+						if(field.getAnnotation(MergeMe.class).defaultValueIsNull()){
+							defaultValue=null;
+						}
+						
+						if(field.getType()==Properties.class){
+							if(defaultValue!=null){
+								defaultValue = new Properties();								
+							}
+							merger = new PropertiesMerger();
+							
+						}else if(field.getType()==List.class){
+							if(defaultValue!=null){
+								defaultValue = new ArrayList();
+							}
+							merger = new CollectionMerger();
+							
+						}else if(field.getType()==Set.class){
+							if(defaultValue!=null){								
+								defaultValue = new HashSet();								
+							}
+							merger = new CollectionMerger();
+							
+						}else if(field.getType()==String.class){
+							if(defaultValue!=null){
+								defaultValue =field.getAnnotation(MergeMe.class).defaultString();								
+							}
+							merger = new ObjectMerger();
+							
+						}else if(field.getType()==Boolean.class){							
+							defaultValue = field.getAnnotation(MergeMe.class).defaultBoolean();
+							merger = new ObjectMerger();
+							
+						}else{
+							merger = new ObjectMerger();
+						}
+						Object currentValue = field.get(child);
+						Object parentValue =  field.get(parent);
+						field.set(child, merger.merge(currentValue,
+										       		  parentValue,
+										       		  defaultValue));
+				
+					}catch (SecurityException e){
+						throw new MojoExecutionException(e.getMessage(),e);
+					}catch (IllegalArgumentException e){
+						throw new MojoExecutionException(e.getMessage(),e);
+					}catch (IllegalAccessException e){
+						throw new MojoExecutionException(e.getMessage(),e);
+					}
+						
+				}
+			}
+			child.setReady(true);
+			return child;
 	  }
 }

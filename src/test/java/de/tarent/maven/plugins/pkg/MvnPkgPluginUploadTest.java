@@ -83,7 +83,7 @@ public class MvnPkgPluginUploadTest extends AbstractMvnPkgPluginTestCase{
 		Upload u = (Upload)mockEnvironment("uploadpom.xml", "upload");
 		TargetConfiguration tc = Utils.getTargetConfigurationFromString("ubuntu_lucid_upload", u.targetConfigurations);
 		// TODO: Self initialization.
-		tc.merge(new TargetConfiguration(tc.getTarget()));
+		Utils.mergeConfigurations(tc,new TargetConfiguration(tc.getTarget()));
 		String t = tc.getTarget();
 		PackageMap pm = new PackageMap(null, null, "ubuntu_lucid", null);
 		

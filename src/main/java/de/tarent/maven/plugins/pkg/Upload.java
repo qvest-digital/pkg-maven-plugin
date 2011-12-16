@@ -63,7 +63,7 @@ public class Upload extends AbstractPackagingMojo {
 		
 	    // Retrieve package map for chosen distro.
 	    PackageMap pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL, distro,
-	                        tc.bundleDependencies);
+	                        tc.getBundleDependencies());
 
 	    String packaging = pm.getPackaging();
 	    

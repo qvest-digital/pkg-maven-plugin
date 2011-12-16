@@ -37,8 +37,8 @@
 					<targetConfigurations>
 						<targetConfiguration> <!-- simple ubuntu lucid target -->
 							<target>ubuntu_lucid_target</target>							
-						<mainClass>de.tarent.maven.plugins.dummytest</mainClass>
-						<maintainer>Robert Schuster &lt;r.schuster@tarent.de&gt;</maintainer>
+							<mainClass>de.tarent.maven.plugins.dummytest</mainClass>
+							<maintainer>Test User &lt;no@address.com&gt;</maintainer>
 							<manualDependencies>
 								<string>kdm</string>
 								<string>usbmount</string>
@@ -64,11 +64,19 @@
 
 						<targetConfiguration>
 							<target>ubuntu_lucid_target_sign</target>
-							<maintainer>Pedro Lafuente (tarent GmbH) &lt;p.lafuente@tarent.de&gt;</maintainer>
 							<parent>ubuntu_lucid_target</parent>
 							<sign>true</sign>
 							<distros>
 								<distro>ubuntu_lucid</distro>
+							</distros>
+						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>centos_5_6_target_sign</target>
+							<parent>centos_5_6_target_simple</parent>
+							<sign>true</sign>
+							<distros>
+								<distro>centos_5_6</distro>
 							</distros>
 						</targetConfiguration>
 
@@ -83,6 +91,7 @@
 
 						<targetConfiguration>
 							<target>centos_5_6_target_simple</target>
+							<maintainer>Test User &lt;no@address.com&gt;</maintainer>
 							<distros>
 								<distro>centos_5_6</distro>
 							</distros>
@@ -108,8 +117,8 @@
 
 						<targetConfiguration>
 							<target>centos_5_6_target_manual_dependencies</target>							
-						<mainClass>de.tarent.maven.plugins.dummytest</mainClass>
-						<maintainer>Robert Schuster &lt;r.schuster@tarent.de&gt;</maintainer>
+							<mainClass>de.tarent.maven.plugins.dummytest</mainClass>
+							<maintainer>Test User &lt;no@address.com&gt;</maintainer>
 							<distros>
 								<distro>centos_5_6</distro>
 							</distros>
@@ -127,7 +136,7 @@
 
 						<targetConfiguration>
 							<target>centos_5_6_target_external_artifact</target>
-
+							<parent>centos_5_6_target_simple</parent>
 							<distros>
 								<distro>centos_5_6</distro>
 							</distros>
@@ -151,7 +160,6 @@
 
 						<targetConfiguration>
 							<target>ubuntu_lucid_target_external_artifact</target>
-
 							<distros>
 								<distro>ubuntu_lucid</distro>
 							</distros>
@@ -175,14 +183,6 @@
 
 					</targetConfigurations>
 				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>pkg</goal>
-							<goal>transport</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

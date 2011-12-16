@@ -73,7 +73,7 @@ public class Packaging
 		
 	    // Retrieve package map for chosen distro.
 	    PackageMap pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL, d,
-	                        tc.bundleDependencies);
+	                        tc.getBundleDependencies());
 
 	    String packaging = pm.getPackaging();
 	    
