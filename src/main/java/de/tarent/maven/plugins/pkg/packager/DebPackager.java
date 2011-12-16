@@ -58,6 +58,7 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.AotCompileUtils;
@@ -69,6 +70,7 @@ import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
+import de.tarent.maven.plugins.pkg.signing.DebianSigner;
 
 /**
  * Creates a Debian package file (.deb)
@@ -182,7 +184,7 @@ public class DebPackager extends Packager
         		            ph.createReplacesLine(),
         		            byteAmount);
         
-        createPackage(l, ph, basePkgDir);
+        createPackage(l, ph, basePkgDir, targetConfiguration);
         
         if (targetConfiguration.isAotCompile())
           {
@@ -235,7 +237,7 @@ public class DebPackager extends Packager
             
             AotCompileUtils.depositPostinstFile(l, aotPostinstFile);
             
-            createPackage(l, ph, aotPkgDir);
+            createPackage(l, ph, aotPkgDir, targetConfiguration);
           }
         
       }
@@ -376,7 +378,7 @@ public class DebPackager extends Packager
 		}
   }
 
-  private void createPackage(Log l, Helper ph, File base) throws MojoExecutionException
+  private void createPackage(Log l, Helper ph, File base, TargetConfiguration targetConfiguration) throws MojoExecutionException
   {
     l.info("calling dpkg-deb to create binary package");
     
@@ -390,8 +392,17 @@ public class DebPackager extends Packager
                 ph.getTempRoot(),
                 "'fakeroot dpkg --build' failed.",
                 "Error creating the .deb file.");
+    /**
+     * If the package is marked to be signed we will proceed to sign it
+     * DISCLAIMER: At the moment only signing of the external changes file is supported.
+     * Included the signed changes file in the package is WIP.
+     */
+    if(targetConfiguration.isSign()){
+    	File buildDir = ph.getDstScriptDir();
+    	DebianSigner signer = new DebianSigner(targetConfiguration,ph,false);
+    	signer.start(l, buildDir);
+    }
+
   }
-
-
 
 }
