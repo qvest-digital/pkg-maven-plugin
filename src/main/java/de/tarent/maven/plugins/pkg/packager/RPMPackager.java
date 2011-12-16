@@ -60,6 +60,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
+import de.tarent.maven.plugins.pkg.AbstractPackagingMojo;
 import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
@@ -118,7 +119,7 @@ public class RPMPackager extends Packager {
 	        
 			generateSPECFile(l, (RpmHelper) ph, distroConfig, specFile);
 			l.info("SPEC file generated.");
-			createPackage(l, ph, specFile, distroConfig);
+			createPackage(l, workspaceSession, specFile);
 			l.info("Package created.");
 			l.info("Output of rpm -pqi :");
 			String out = IOUtils.toString(Utils.exec(new String[] {"rpm", "-pqi", 
@@ -177,7 +178,7 @@ public class RPMPackager extends Packager {
 		try {
 			Utils.checkProgramAvailability("rpmbuild");
 			l.info(IOUtils.toString(Utils.exec(new String[] {"rpm", "--version"},
-					null,"Calling rpm --version failed","ioError")).trim());
+					null,"Calling rpm --version failed","ioError",null)).trim());
 			ph.createRpmMacrosFile();
 			
 		} catch (IOException e) {
@@ -258,15 +259,19 @@ public class RPMPackager extends Packager {
 	 * @param specFile
 	 * @throws MojoExecutionException
 	 */
-	private void createPackage(Log l, RpmHelper ph, File specFile,
-			TargetConfiguration dc) throws MojoExecutionException {
+	private void createPackage(Log l, WorkspaceSession workspaceSession, File specFile) 
+			throws MojoExecutionException {
+		
+		RpmHelper ph = (RpmHelper) workspaceSession.getHelper();
+		TargetConfiguration dc = workspaceSession.getTargetConfiguration();
+		AbstractPackagingMojo apm = workspaceSession.getMojo();
 		l.info("Calling rpmbuild to create binary package");
 		l.info("Builddir is "+ph.getBaseBuildDir().toString());
-		String[] command;
+		String[] command;		
 		if (dc.isSign()) {
-			command = new String[] { "rpmbuild", "-bb", "--sign",
-					"--buildroot", ph.getBaseBuildDir().toString(),
-					specFile.toString() };
+			command = new String[] { "rpmbuild", "-bb", "--sign",					
+						"--buildroot", ph.getBaseBuildDir().toString(),
+						specFile.toString() };
 
 		} else {
 			command = new String[] { "rpmbuild", "-bb", "--buildroot",
@@ -275,8 +280,13 @@ public class RPMPackager extends Packager {
 		}
 
 		try{
-			Utils.exec(command, "'rpmbuild -bb' failed.",
-				"Error creating rpm file.");
+			if(apm.getSignPassPhrase()!=null && dc.isSign()){
+				Utils.exec(command, "'rpmbuild -bb' failed.",
+					"Error creating rpm file.",apm.getSignPassPhrase());
+			}else{
+				Utils.exec(command, "'rpmbuild -bb' failed.",
+						"Error creating rpm file.");				
+			}
 		}catch(MojoExecutionException ex){
 			throw ex;
 		}

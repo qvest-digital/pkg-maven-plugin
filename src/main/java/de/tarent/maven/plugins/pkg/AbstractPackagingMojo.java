@@ -275,7 +275,15 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	 * @parameter
 	 */
 	protected List<TargetConfiguration> targetConfigurations;
-
+	
+	public void setSignPassPhrase(String phrase){
+		this.signPassPhrase = phrase;
+	}
+	public String getSignPassPhrase(){
+		return signPassPhrase;
+	}
+	private String signPassPhrase;
+	
 	public String get_7zipExec() {
 		return _7zipExec;
 	}

@@ -31,6 +31,18 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	Packaging packagingPlugin;
 	Upload packagingTransportPlugin;
 	protected static final File TARGETDIR = new File(getBasedir()+ "/src/test/resources/dummyproject/target/");
+
+	
+	/**
+	 * This is the key fingerprint for Test User <no@address.com></br>
+	 * It is needed for test purposes
+	 */
+	static final String keyFingerprint = "FE68C8E434E475CC516472D67DB93B6461E99DD5";
+	/**
+	 * This is the keyID for Test User <no@address.com></br>
+	 * It is needed for test purposes
+	 */
+	static final String keyID = "7db93b6461e99dd5";
 	
 	/**{@inheritDoc} */
 	protected void setUp() throws Exception{
@@ -69,7 +81,8 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
         packagingPlugin.project = new PkgProjectStub(pom);
 
         // Parameters that are not part of the mvn-pkg-plugin section are somehow loaded into the project
-        // TODO: Find why this problem exists and/or a more elegant way to do this        
+        // TODO: Find why this problem exists and/or a more elegant way to do this
+        
         packagingPlugin.project.setPackaging("jar");
         packagingPlugin.project.setName("DummyProject");
         packagingPlugin.project.setArtifactId("DummyProject");
@@ -165,9 +178,14 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	
 	protected boolean rpmContainsMainArtifact() throws MojoExecutionException, IOException {
 		final Pattern p = Pattern.compile(".*"+
-										  Pattern.quote(packagingPlugin.project.getArtifact().getFile().getName())+
-										  ".*");
+				  Pattern.quote(packagingPlugin.project.getArtifact().getFile().getName())+
+				  ".*");
 		return rpmContains(p,"--dump");
+	}
+	
+	protected boolean rpmIsSigned() throws MojoExecutionException, IOException {
+		final Pattern p = Pattern.compile(keyID);
+		return rpmContains(p,"-i");
 	}
 	
 	protected boolean rpmContainsArtifact(String s) throws MojoExecutionException, IOException {
@@ -206,7 +224,19 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		final Pattern p = Pattern.compile("lines.*copyright");
 		return debContains(p, "--info");
 	}
-	
+	protected boolean debIsSigned() throws MojoExecutionException{
+		Utils.exec(new String[]{"ar","x",returnFilesFoundBasedOnSuffix("deb")[0].getAbsolutePath()},
+				   TARGETDIR,
+			  	   "Error extracting package",
+			  	   "Error extracting package");
+
+		  File f = new File(TARGETDIR,"_pgporigin");
+		  if(f.exists()){
+			  return true;
+		  }else{
+			  return false;
+		  }
+	}
 
 	
 	protected boolean filecontains(File file, String lookup) throws IOException {

@@ -28,7 +28,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	}
 	
 	@Test
-	public void getTargetConfigurationFromString(){
+	public void getTargetConfigurationFromString() throws MojoExecutionException{
 		
 		List<TargetConfiguration> l = new ArrayList<TargetConfiguration>();
 		TargetConfiguration t1 = new TargetConfiguration();

@@ -51,16 +51,21 @@
 package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 
+import de.tarent.maven.plugins.pkg.AbstractPackagingMojo;
 import de.tarent.maven.plugins.pkg.AotCompileUtils;
 import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.SysconfFile;
@@ -184,7 +189,7 @@ public class DebPackager extends Packager
         		            ph.createReplacesLine(),
         		            byteAmount);
         
-        createPackage(l, ph, basePkgDir, targetConfiguration);
+        createPackage(l, workspaceSession, basePkgDir, targetConfiguration);
         
         if (targetConfiguration.isAotCompile())
           {
@@ -233,7 +238,7 @@ public class DebPackager extends Packager
             
             AotCompileUtils.depositPostinstFile(l, aotPostinstFile);
             
-            createPackage(l, ph, aotPkgDir, targetConfiguration);
+            createPackage(l, workspaceSession, aotPkgDir, targetConfiguration);
           }
         
       }
@@ -374,10 +379,10 @@ public class DebPackager extends Packager
 		}
   }
 
-  private void createPackage(Log l, Helper ph, File base, TargetConfiguration targetConfiguration) throws MojoExecutionException
+  private void createPackage(Log l, WorkspaceSession workspaceSession, File base, TargetConfiguration targetConfiguration) throws MojoExecutionException
   {
     l.info("calling dpkg-deb to create binary package");
-    
+    Helper ph = workspaceSession.getHelper();
     
     
     Utils.exec(new String[] {"fakeroot",
@@ -394,11 +399,88 @@ public class DebPackager extends Packager
      * Included the signed changes file in the package is WIP.
      */
     if(targetConfiguration.isSign()){
-    	File buildDir = ph.getDstScriptDir();
-    	DebianSigner signer = new DebianSigner(targetConfiguration,ph,false);
-    	signer.start(l, buildDir);
+    	bundleSignatureWithPackage(workspaceSession);    	
     }
 
+  }
+  /**
+   * Puts a pgp signature in the package based on the maintainer name
+   * <p>The signature for the maintainer name must have been importend in the gpg
+   * keyring and the name of the maintainer must match with the one set in the POM</p>
+   * <p>These are the steps followed by this method:<br/>
+   * <ul>
+   * 	  <li>Take an existing .deb and unpack it:<br/> 
+   * 	  $ ar x my_package_1_0_0.deb</li>
+   * 	  <li>Concatenate its contents (the order is important), and output to a temp file:<br/>
+   * 	  $ cat debian-binary control.tar.gz data.tar.gz > /tmp/combined-contents<br/>
+   * 	  <li>Create a GPG signature of the concatenated file, calling it _gpgorigin:</li>
+   * 	  $ gpg -abs -o _gpgorigin /tmp/combined-contents</li>
+   *	  <li>Finally, bundle the .deb up again, including the signature file:<br/>
+   *	  $ ar rc my_package_1_0_0.deb \<br/>
+   *	  _gpgorigin debian-binary control.tar.gz data.tar.gz</li>
+   * </ul>
+   * </p>
+   * @param workspaceSession
+   * @throws MojoExecutionException
+   */
+  private void bundleSignatureWithPackage(WorkspaceSession workspaceSession) throws MojoExecutionException{	  
+
+	  File tempRoot = workspaceSession.getHelper().getTempRoot();
+	  String packageFilename = workspaceSession.getHelper().generatePackageFileName();
+	  String maintainer = workspaceSession.getTargetConfiguration().getMaintainer();
+	  TargetConfiguration tc = workspaceSession.getTargetConfiguration();
+	  AbstractPackagingMojo apm = workspaceSession.getMojo();
+	  Utils.exec(new String[]{"ar","x",packageFilename},
+			  	 tempRoot.getParentFile(),
+			  	 "Error extracting package",
+			  	 "Error extracting package");
+	  try {
+		  File combinedContents = new File(tempRoot.getParentFile(),"combined-contents");
+		  FileWriter fw = new FileWriter(combinedContents);
+		  
+		  InputStream stream = Utils.exec(new String[]{"cat","debian-binary","control.tar.gz","data.tar.gz"},
+				  	 											 tempRoot.getParentFile(),
+				  	 											 "Error creating concatenated content",
+				  	 											 "Error creating concatenated content");
+		  IOUtils.copy(stream, fw);
+		  fw.close();
+	  } catch (IOException e) {
+		  throw new MojoExecutionException(e.getMessage(),e);
+	  }
+	  
+	  if(apm.getSignPassPhrase()!=null){
+		  Utils.exec(new String[]{"gpg","--default-key",maintainer,
+				  				  "-abs","-o","_pgporigin","combined-contents"},
+							  	  tempRoot.getParentFile(),
+							  	  "Error signing concatenated file",
+							  	  "Error signing concatenated file",
+							  	apm.getSignPassPhrase());
+		  
+	  }else{
+		  Utils.exec(new String[]{"gpg","--default-key",maintainer,
+				  				  "-abs","-o","_pgporigin","combined-contents"},
+				  	 tempRoot.getParentFile(),
+				  	 "Error signing concatenated file",
+				  	 "Error signing concatenated file");
+	  }
+	  Utils.exec(new String[]{"ar","rc",packageFilename,
+			  				  "_pgporigin","debian-binary",
+			  				  "control.tar.gz","data.tar.gz"},
+			  	 tempRoot.getParentFile(),
+			  	 "Error putting package back together",
+			  	 "Error putting package back together");
+	  
+	  // Here we clean the artifacts created while signing
+	  File f = new File(tempRoot.getParentFile(),"debian-binary");
+	  f.delete();
+	  f = new File(tempRoot.getParentFile(),"control.tar.gz");
+	  f.delete();
+	  f = new File(tempRoot.getParentFile(),"data.tar.gz");
+	  f.delete();
+	  f = new File(tempRoot.getParentFile(),"_pgporigin");
+	  f.delete();
+	  f = new File(tempRoot.getParentFile(),"combined-contents");
+	  f.delete();
   }
 
 }

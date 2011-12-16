@@ -25,6 +25,7 @@
 
 package de.tarent.maven.plugins.pkg;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -175,7 +176,7 @@ public final class Utils {
 	public static void checkProgramAvailability(String programName) throws MojoExecutionException {
 		exec(new String[] { "which", programName }, null, programName
 				+ " is not available on your system. Check your installation!", "Error executing " + programName
-				+ ". Aborting!");
+				+ ". Aborting!",null);
 	}
 
 	/**
@@ -187,9 +188,18 @@ public final class Utils {
 	 * @throws MojoExecutionException
 	 */
 	public static void exec(String[] args, String failureMsg, String ioExceptionMsg) throws MojoExecutionException {
-		exec(args, null, failureMsg, ioExceptionMsg);
+		exec(args, null, failureMsg, ioExceptionMsg, null);
 	}
-
+	
+	public static InputStream exec(String[] args, File workingDir, String failureMsg, 
+			   String ioExceptionMsg) throws MojoExecutionException {
+		return exec(args, workingDir, failureMsg, ioExceptionMsg, null);
+	}
+	
+	public static InputStream exec(String[] args, String failureMsg, 
+			   String ioExceptionMsg, String userInput) throws MojoExecutionException {
+		return exec(args, null, failureMsg, ioExceptionMsg, userInput);
+	}
 	/**
 	 * A method which makes executing programs easier.
 	 * 
@@ -198,7 +208,8 @@ public final class Utils {
 	 * @param ioExceptionMsg
 	 * @throws MojoExecutionException
 	 */
-	public static InputStream exec(String[] args, File workingDir, String failureMsg, String ioExceptionMsg)
+	public static InputStream exec(String[] args, File workingDir, String failureMsg, 
+								   String ioExceptionMsg, String userInput)
 			throws MojoExecutionException {
 		/*
 		 * debug code which prints out the execution command-line. Enable if
@@ -218,7 +229,12 @@ public final class Utils {
 		try {
 			p = pb.start();
 
-			if (p.waitFor() != 0) {
+			if(userInput!=null){
+				BufferedOutputStream bos = new BufferedOutputStream(p.getOutputStream());
+				bos.write(userInput.getBytes());
+				bos.close();
+			}			
+			if (p.waitFor() != 0) {				
 				print(p);
 				throw new MojoExecutionException(failureMsg);
 			}
@@ -642,16 +658,17 @@ public final class Utils {
 	 * @param target
 	 * @param targetConfigurations
 	 * @return
+	 * @throws MojoExecutionException 
 	 */
 	public final static TargetConfiguration getTargetConfigurationFromString(String target, 
-											List<TargetConfiguration> targetConfigurations){
+											List<TargetConfiguration> targetConfigurations) throws MojoExecutionException{
 		
 		for (TargetConfiguration currentTargetConfiguration : targetConfigurations) {
 			if (currentTargetConfiguration.getTarget().equals(target)) {
 				return currentTargetConfiguration;
 			}
 		}
-		return null;
+		throw new MojoExecutionException("Target " + target + " not found. Check your spelling or configuration");
 	}
 	
 	  /**

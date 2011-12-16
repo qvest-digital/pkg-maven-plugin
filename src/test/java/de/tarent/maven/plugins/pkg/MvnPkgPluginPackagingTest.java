@@ -9,6 +9,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	
 	@Before
 	public void setUp() throws Exception{
+
 		super.setUp();
 	}
 	
@@ -36,6 +37,25 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
             assertTrue(debContainsCopyrightFile());
+            assertFalse(debIsSigned());
+        }
+	
+	/**
+	 * This test attempts the following:
+	 * 
+	 * Execute the default target set on the configuration section of the pom file (ubuntu_lucid_target_simple)
+	 * Use the only distribution defined for this target
+	 * Create a DEB file 
+	 * Include a main artifact (JAR) in the DEB file 
+	 * 
+	 * @throws Exception
+	 */
+	@Test(expected=MojoExecutionException.class)
+    public void runAgainstUnkownTargetThrowsException()
+            throws Exception
+        {
+    		packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg", "non_existent_target");
+            packagingPlugin.execute();
         }
 
 	/**
@@ -56,6 +76,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             packagingPlugin.execute();
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
+            assertFalse(debIsSigned());
         }
 	
 	/**
@@ -94,6 +115,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             packagingPlugin.execute();
             assertTrue(numberOfRPMsIs(1));
             assertTrue(rpmContainsMainArtifact());
+            assertFalse(rpmIsSigned());
         }
 	
 	/**
@@ -117,6 +139,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
             assertTrue(debDependsOn("blackbox"));
+            assertFalse(debIsSigned());
         }
 
 	/**
@@ -140,6 +163,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertTrue(numberOfRPMsIs(1));
             assertTrue(rpmContainsMainArtifact());
             assertTrue(rpmDependsOn("blackbox"));
+            assertFalse(rpmIsSigned());
         }
 
 	/**
@@ -184,6 +208,8 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertTrue(numberOfRPMsIs(1));
             assertTrue(rpmContainsMainArtifact());
             assertTrue(debContainsMainArtifact());
+            assertFalse(rpmIsSigned());
+            assertFalse(debIsSigned());
         }	
 
 	/**
@@ -226,7 +252,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
             assertTrue(debContainsArtifact("dummy.properties"));
-        }	
+        }
 	
 	/**
 	 * This test attempts the following:
@@ -240,13 +266,35 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void createSignedDEB()
             throws Exception, MojoExecutionException
         {
-			/*
+			addTestGPGKey();
 			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","ubuntu_lucid_target_sign");
             packagingPlugin.execute();
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
-            */
-        }		
+            assertTrue(debIsSigned());
+            removeTestGPGKey();
+        }
+	
+	/**
+	 * This test attempts the following:
+	 * 
+	 * Execute a single target
+	 * Create a signed DEB file
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+    public void createNotSignedDEB()
+            throws Exception, MojoExecutionException
+        {
+			addTestGPGKey();
+			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","ubuntu_lucid_target_simple");
+            packagingPlugin.execute();
+            assertTrue(numberOfDEBsIs(1));
+            assertTrue(debContainsMainArtifact());
+            assertFalse(debIsSigned());
+            removeTestGPGKey();
+        }
 	
 	/**
 	 * This test attempts the following:
@@ -259,25 +307,89 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	@Test
     public void createSignedRPM()
             throws Exception, MojoExecutionException
-        {/*
+        {
+			addTestGPGKey();
 			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","centos_5_6_target_sign");
             packagingPlugin.execute();
             assertTrue(numberOfRPMsIs(1));
-            assertTrue(debContainsMainArtifact());*/
-            
+            assertTrue(rpmContainsMainArtifact());
+            assertTrue(rpmIsSigned());
+            removeTestGPGKey(); 
+        }
+	
+	/**
+	 * This test attempts the following:
+	 * 
+	 * Execute a single target
+	 * Create a signed DEB file
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+    public void createNotSignedRPM()
+            throws Exception, MojoExecutionException
+        {
+			addTestGPGKey();
+			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","centos_5_6_target_simple");
+            packagingPlugin.execute();
+            assertTrue(numberOfRPMsIs(1));
+            assertTrue(rpmContainsMainArtifact());
+            assertFalse(rpmIsSigned());
+            removeTestGPGKey(); 
+        }
+
+
+	/**
+	 * This test attempts the following:
+	 * 
+	 * Execute two different target configurations 
+	 * Create a DEB and a RPM file 
+	 * Include a main artifact (JAR) in the DEB file
+	 * Include a main artifact (JAR) in the RPM file
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+    public void executingMultipleSignedTargetsWithoutDependenciesContainingJar()
+            throws Exception, MojoExecutionException
+        {
+			addTestGPGKey();
+			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg",
+														"ubuntu_lucid_target_sign,centos_5_6_target_sign");
+            packagingPlugin.execute();
+            assertTrue(numberOfDEBsIs(1));
+            assertTrue(numberOfRPMsIs(1));
+            assertTrue(rpmContainsMainArtifact());
+            assertTrue(debContainsMainArtifact());
+            assertTrue(rpmIsSigned());
+            assertTrue(debIsSigned());
+            removeTestGPGKey(); 
         }	
 
 
 		
 	public Packaging mockPackagingEnvironment(String pomFilename, String goal) throws Exception{		
 		 return (Packaging)mockEnvironment(pomFilename,"pkg");		
-	}
-	
-	
+	}	
 	public Packaging mockPackagingEnvironment(String pomFilename, String goal, String target) throws Exception{		
 		Packaging p = (Packaging) mockEnvironment(pomFilename,"pkg");
 		p.target = target;
 		return p;		
-	}	
+	}
+	
+	private void addTestGPGKey() throws MojoExecutionException{
+		
+		Utils.exec(new String[]{"gpg","--batch","--import",
+				"src/test/resources/testuserkeys/testuserkey.txt",
+				"src/test/resources/testuserkeys/testuserpubkey.txt"}, "Error adding GPG key", 
+				"Error writing GPG key");
+		
+	}
+	
+	private void removeTestGPGKey() throws MojoExecutionException{
+		Utils.exec(new String[]{"gpg","--batch","--delete-secret-and-public-keys",keyFingerprint}, 
+								"Error removing GPG key", 
+								"Error removing GPG key");
+	}
 	
 }
