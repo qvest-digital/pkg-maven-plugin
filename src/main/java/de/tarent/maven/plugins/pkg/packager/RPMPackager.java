@@ -52,7 +52,6 @@ package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -67,7 +66,6 @@ import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.SpecFileGenerator;
-import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.helper.RpmHelper;
 
 /**
@@ -125,7 +123,7 @@ public class RPMPackager extends Packager {
 			File resultingPackage = copyRPMToTargetFolder(l, ph, distroConfig);
 			l.info("Output of rpm -pqi :");
 			String out = IOUtils.toString(Utils.exec(new String[] {"rpm", "-pqi", resultingPackage.getAbsolutePath()},
-													 resultingPackage.getParent(),
+													 resultingPackage.getParentFile(),
 													 "RPM not found",
 													 "RPM not found"));
 
@@ -154,7 +152,7 @@ public class RPMPackager extends Packager {
 	 */
 	private File copyRPMToTargetFolder(Log l, RpmHelper ph, TargetConfiguration distroConfig) throws IOException {
 		
-		StringBuilder rpmPackagePath= new StringBuilder(ph.getBaseBuildDir().getParent().toString());				
+		StringBuilder rpmPackagePath= new StringBuilder(ph.getBaseBuildDir().getParent());				
 		rpmPackagePath.append("/RPMS/");
 		rpmPackagePath.append(distroConfig.getArchitecture());
 		rpmPackagePath.append("/");		
@@ -162,12 +160,12 @@ public class RPMPackager extends Packager {
 		
 		File targetFile = new File(ph.getTempRoot().getParentFile(),rpmPackageName);
 		
-		l.debug("Attempting to copy from "+ rpmPackagePath.toString() + rpmPackageName.toString()+
-				" to " + ph.getTempRoot().getParent()+"/"+rpmPackageName.toString());
+		l.debug("Attempting to copy from "+ rpmPackagePath.toString() + rpmPackageName +
+				" to " + targetFile.getAbsolutePath());
 		
-		FileUtils.copyFile(new File(rpmPackagePath.toString(),rpmPackageName.toString()), targetFile);
+		FileUtils.copyFile(new File(rpmPackagePath.toString(),rpmPackageName), targetFile);
 		
-		l.info("RPM file copied to "+ph.getTempRoot().getParent()+"/"+rpmPackageName.toString());		
+		l.info("RPM file copied to " + targetFile.getAbsolutePath());		
 		return targetFile;
 	}
 
