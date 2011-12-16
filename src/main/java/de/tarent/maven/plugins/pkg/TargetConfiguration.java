@@ -168,7 +168,7 @@ public class TargetConfiguration {
 	 * </p>
 	 */
 	@MergeMe
-	private Set bundleDependencies;
+	private Set<String> bundleDependencies;
 
 	/**
 	 * Denotes the directory in the target system where the bundled jar files
@@ -459,10 +459,6 @@ public class TargetConfiguration {
 	 * Specifies the {@link TargetConfiguration} from which this one inherits all
 	 * non-set values or from which collections are merged.
 	 * 
-	 * <p>
-	 * If unset it is <code>null</code> then it is is not merged with any other
-	 * instance.
-	 * </p>
 	 */
 	String parent;
 
@@ -857,7 +853,7 @@ public class TargetConfiguration {
 		return bindir;
 	}
 
-	public Set getBundleDependencies() {
+	public Set<String> getBundleDependencies() {
 		return bundleDependencies;
 	}
 
@@ -881,7 +877,7 @@ public class TargetConfiguration {
 		return datarootFiles;
 	}
 
-	public Set getDistros() {
+	public Set<String> getDistros() {
 		return distros;
 	}
 
@@ -1061,7 +1057,7 @@ public class TargetConfiguration {
 		this.architecture = architecture;
 	}
 
-	public void setAuxFiles(List auxFiles) {
+	public void setAuxFiles(List<AuxFile> auxFiles) {
 		this.auxFiles = auxFiles;
 	}
 
@@ -1073,7 +1069,7 @@ public class TargetConfiguration {
 		this.bundleAll = Boolean.valueOf(bundleAll);
 	}
 
-	public void setBundleDependencies(Set bundleDependencies) {
+	public void setBundleDependencies(Set<String> bundleDependencies) {
 		this.bundleDependencies = bundleDependencies;
 	}
 
@@ -1101,7 +1097,7 @@ public class TargetConfiguration {
 		distros.add(distro);
 	}
 
-	public void setDistros(Set distros) {
+	public void setDistros(Set<String> distros) {
 		this.distros = distros;
 	}
 
@@ -1117,11 +1113,11 @@ public class TargetConfiguration {
 		this.izPackInstallerXml = izPackInstallerXml;
 	}
 
-	public void setJarFiles(List jarLibraries) {
+	public void setJarFiles(List<JarFile> jarLibraries) {
 		this.jarFiles = jarLibraries;
 	}
 
-	public void setJniFiles(List jniLibraries) {
+	public void setJniFiles(List<JniFile> jniLibraries) {
 		this.jniFiles = jniLibraries;
 	}
 
@@ -1225,7 +1221,7 @@ public class TargetConfiguration {
 		this.sysconfdir = sysconfdir;
 	}
 
-	public void setSysconfFiles(List sysconfFiles) {
+	public void setSysconfFiles(List<SysconfFile> sysconfFiles) {
 		this.sysconfFiles = sysconfFiles;
 	}
 
@@ -1309,7 +1305,7 @@ public class TargetConfiguration {
 		appendStringNotSet(sb, "customCodeWindows", customCodeWindows);
 		sb.append("systemProperties:\n");
 		if (systemProperties != null) {
-			Iterator ite = systemProperties.entrySet().iterator();
+			Iterator<?> ite = systemProperties.entrySet().iterator();
 			while (ite.hasNext())
 			{
 				sb.append("\t" + ite.next() + "\n");
@@ -1360,11 +1356,11 @@ public class TargetConfiguration {
 		sb.append("\n");
 	}
 	
-	private void appendStringCollection(StringBuilder sb, String label, Collection collection)
+	private void appendStringCollection(StringBuilder sb, String label, Collection<?> collection)
 	{
 		sb.append(label + ":\n");
 		if (collection != null && !collection.isEmpty()) {
-			Iterator ite = collection.iterator();
+			Iterator<?> ite = collection.iterator();
 			while (ite.hasNext())
 			{
 				sb.append("\t");
