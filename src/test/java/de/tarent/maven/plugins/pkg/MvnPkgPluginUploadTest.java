@@ -87,7 +87,7 @@ public class MvnPkgPluginUploadTest extends AbstractMvnPkgPluginTestCase{
 		String t = tc.getTarget();
 		PackageMap pm = new PackageMap(null, null, "ubuntu_lucid", null);
 		
-	    Helper ph = Utils.getPackagingHelperForPackaging(pm.getPackaging());
+	    Helper ph = new Helper();
 	    ph.init(u, pm, tc, null);
 	    
 		ts.upload = u;

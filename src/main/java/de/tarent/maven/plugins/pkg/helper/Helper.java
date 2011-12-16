@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
@@ -86,71 +88,71 @@ import de.tarent.maven.plugins.pkg.map.Visitor;
  */
 public class Helper {
 	
-	String aotPackageName;
+	private String aotPackageName;
 
 	/**
 	 * The base directory for the gcj package.
 	 */
-	File aotPkgDir;
+	private File aotPkgDir;
 
 	/**
 	 * All files belonging to the package are put into this directory. For deb
 	 * packaging the layout inside is done according to `man dpkg-deb`.
 	 */
-	File basePkgDir;
+	private File basePkgDir;
 
 	/**
 	 * The destination file for the project's artifact inside the the package at
 	 * construction time (equals ${basePkgDir}/${targetArtifactFile}).
 	 */
-	File dstArtifactFile;
+	private File dstArtifactFile;
 
-	File dstAuxDir;
+	private File dstAuxDir;
 
-	File dstBinDir;
+	private File dstBinDir;
 
-	File dstBundledJarDir;
+	private File dstBundledJarDir;
 
-	File dstDataDir;
+	private File dstDataDir;
 
-	File dstDatarootDir;
+	private File dstDatarootDir;
 
 	/**
 	 * The destination directory for JNI libraries at package building time
 	 * (e.g. starts with "${packaging.getProject().outputdir}/")
 	 */
-	File dstJNIDir;
+	private File dstJNIDir;
 
-	File dstRoot;
+	private File dstRoot;
 
-	File dstScriptDir;
+	private File dstScriptDir;
 
-	File dstStarterDir;
+	private File dstStarterDir;
 
-	File dstSysconfDir;
+	private File dstSysconfDir;
 
-	File dstWindowsWrapperScriptFile;
+	private File dstWindowsWrapperScriptFile;
 
-	File dstWrapperScriptFile;
+	private File dstWrapperScriptFile;
 
-	String packageName;
+	private String packageName;
 
-	String packageVersion;
+	private String packageVersion;
 
 	/**
 	 * A file pointing at the source jar (it *MUST* be a jar).
 	 */
-	File srcArtifactFile;
+	private File srcArtifactFile;
 
-	File targetAuxDir;
+	private File targetAuxDir;
 
 	/**
 	 * Location of the project's artifact on the target system (needed for the
 	 * classpath construction). (e.g. /usr/share/java/app-2.0-SNAPSHOT.jar)
 	 */
-	File targetArtifactFile;
+	private File targetArtifactFile;
 
-	File targetBinDir;
+	private File targetBinDir;
 
 	/**
 	 * Location of the project's dependency artifacts on the target system
@@ -163,35 +165,49 @@ public class Helper {
 	 * </p>
 	 * (e.g. ${INSTALL_DIR}/libs)
 	 */
-	File targetBundledJarDir;
+	private File targetBundledJarDir;
 
-	File targetDataDir;
+	private File targetDataDir;
 
-	File targetDatarootDir;
+	private File targetDatarootDir;
 
 	/**
 	 * Location of the JNI libraries on the target device (e.g. /usr/lib/jni).
 	 */
-	File targetJNIDir;
+	private File targetJNIDir;
 
 	/**
 	 * Location of the path which contains JNI libraries on the target device.
 	 * (e.g. /usr/lib/jni:/usr/lib).
 	 */
-	File targetLibraryPath;
+	private File targetLibraryPath;
 
-	File targetRoot;
+	private File targetRoot;
 
-	File targetStarterDir;
+	private File targetStarterDir;
 
-	File targetSysconfDir;
+	private File targetSysconfDir;
 
-	File targetWrapperScriptFile;
+	private File targetWrapperScriptFile;
 
-	File tempRoot;
+	private File tempRoot;
+
+	/**
+  	 * Convenience field that denotes the BUILD directory
+  	 */
+	private File baseBuildDir;
+	/**
+  	 * Convenience field that denotes the SPECS directory
+  	 */
+	private File baseSpecsDir;
+
+	private Log l;
 	
-	Log l;
-	
+	/**
+	 * Strategy implementation in use by the instance. By default it is the Debian one.
+	 */
+	private Strategy strategy = DEB_STRATEGY;
+
 	/**
 	 * Reference to the {@link AbstractPackagingMojo}. This gives access to Maven objects
 	 * but also general configuration parameters of this plugin.
@@ -215,6 +231,101 @@ public class Helper {
 	 * the relations property of the main target configuration.
 	 */
 	protected List<TargetConfiguration> resolvedRelations;
+	
+	/**
+	 * DEB-specific bits of the Helper.
+	 * 
+	 * <P>Set a {@link Helper} instance to use this {@link Strategy} implementation
+	 * if the helper is used for Debian packaging.</p>
+	 * 
+	 * <p>The Deb strategy is the default.</p>
+	 */
+	public static final Strategy DEB_STRATEGY = new Strategy() {
+		
+		@Override
+		protected File getDstArtifactFile(Helper instance) {
+			if (instance.dstArtifactFile == null){
+				instance.dstArtifactFile = new File(instance.getBasePkgDir(), instance.getTargetArtifactFile().toString());
+			}
+			return instance.dstArtifactFile;
+		}
+
+		@Override
+		protected void prepareInitialDirectories(Helper instance) throws MojoExecutionException {
+			instance.prepareDirectories(instance.l, instance.tempRoot, instance.basePkgDir, instance.dstJNIDir);
+		}
+
+		public String generatePackageFileName(Helper instance) {
+
+			StringBuilder packageName = new StringBuilder();
+			packageName.append(instance.getPackageName().toLowerCase());
+			packageName.append("_");
+			packageName.append(instance.getPackageVersion());
+			packageName.append("_all.deb");
+			return packageName.toString();
+
+		}
+	};
+	
+	/**
+	 * RPM specific bits of the Helper.
+	 * 
+	 * <P>Set a {@link Helper} instance to use this {@link Strategy} implementation
+	 * if the helper is used for RPM packaging.</p>
+	 */
+	public static final Strategy RPM_STRATEGY = new Strategy() {
+		
+		/**
+		 * Uses getBaseBuildDir to determine the file name. 
+		 */
+		@Override
+	    protected File getDstArtifactFile(Helper instance)
+	    {
+	      if (instance.dstArtifactFile == null) {
+	    	  instance.dstArtifactFile = new File(instance.getBaseBuildDir(),
+	        		instance.getTargetArtifactFile().toString());
+	      }
+	      return instance.dstArtifactFile;
+	    }
+
+		/**
+		 * Sets up directories for RPM compliance   
+		 */
+		@Override
+		protected void prepareInitialDirectories(Helper instance) throws MojoExecutionException{
+			// Basically what the DEB Strategy does is a common behavior between both.
+			DEB_STRATEGY.prepareInitialDirectories(instance);
+			
+			instance.setBaseBuildDir(new File(instance.basePkgDir,"/BUILD"));
+			instance.setBaseSpecsDir(new File(instance.basePkgDir,"/SPECS"));
+			// Creating folder structure for RPM creation. Older versions of rpmbuild
+			// do not automatically create the directories as needed
+			try {
+				FileUtils.forceMkdir(new File(instance.basePkgDir,"/RPMS"));
+				FileUtils.forceMkdir(new File(instance.basePkgDir,"/RPMS/x86_64"));
+				FileUtils.forceMkdir(new File(instance.basePkgDir,"/RPMS/i386"));
+				
+			} catch (IOException e) {
+				throw new MojoExecutionException("Error creating needed folder structure",e);
+			}
+			
+		}
+
+		@Override
+		protected String generatePackageFileName(Helper instance) {
+			StringBuilder rpmPackageName = new StringBuilder();			
+			rpmPackageName.append(instance.getPackageName());
+			rpmPackageName.append("-");
+			rpmPackageName.append(instance.getPackageVersion().replace("-", "_"));
+			rpmPackageName.append("-");
+			rpmPackageName.append(instance.targetConfiguration.getRelease());
+			rpmPackageName.append(".");
+			rpmPackageName.append(instance.targetConfiguration.getArchitecture());
+			rpmPackageName.append(".rpm");
+			return rpmPackageName.toString();
+		}
+		
+	};
 	
 	public File getTargetAuxDir() {
 		return targetAuxDir;
@@ -445,13 +556,6 @@ public class Helper {
 			basePkgDir = new File(getTempRoot(), getPackageName() + "-" + getPackageVersion());
 		}
 		return basePkgDir;
-	}
-
-	public File getDstArtifactFile() {
-		if (dstArtifactFile == null){
-			dstArtifactFile = new File(getBasePkgDir(), getTargetArtifactFile().toString());
-		}
-		return dstArtifactFile;
 	}
 
 	public File getDstAuxDir() {
@@ -753,10 +857,6 @@ public class Helper {
 		prepareDirectories(l, tempRoot, aotPkgDir, null);
 	}
 
-	public void prepareInitialDirectories() throws MojoExecutionException {
-		prepareDirectories(l, tempRoot, basePkgDir, dstJNIDir);
-	}
-
 	public void setAotPackageName(String aotPackageName) {
 		this.aotPackageName = aotPackageName;
 	}
@@ -872,17 +972,6 @@ public class Helper {
 
 	public void setTempRoot(File tempRoot) {
 		this.tempRoot = tempRoot;
-	}
-
-	public String generatePackageFileName() {
-
-		StringBuilder packageName = new StringBuilder();
-		packageName.append(getPackageName().toLowerCase());
-		packageName.append("_");
-		packageName.append(getPackageVersion());
-		packageName.append("_all.deb");
-		return packageName.toString();
-
 	}
 
 	final void prepareDirectories(Log l, File tempRoot, File basePkgDir, File jniDir) throws MojoExecutionException {
@@ -1421,4 +1510,165 @@ public class Helper {
 			return copyright.length();
 		}
 	  
+
+		public File getBaseBuildDir() {
+			return baseBuildDir;
+		}
+
+		public void setBaseBuildDir(File baseBuildDir) {
+			this.baseBuildDir = baseBuildDir;
+		}
+
+		public File getBaseSpecsDir() {
+			return baseSpecsDir;
+		}
+
+		public void setBaseSpecsDir(File baseSpecsDir) {
+			this.baseSpecsDir = baseSpecsDir;
+		}
+		
+		/**
+		 * Creates a .rpmmacros file in the users home directory in order to be able
+		 * to specify a Build Area other than the user's home.
+		 * 
+		 * If a .rpmmacros file already exists will be backed up. This file can be
+		 * restored using {@link #restorerpmmacrosfile}.
+		 * 
+		 * @param l
+		 * @param basedirectory
+		 * @throws IOException
+		 * @throws MojoExecutionException 
+		 */
+		public void createRpmMacrosFile() 
+				throws IOException, MojoExecutionException {
+			String userHome = System.getProperty("user.home");
+			File original = new File(userHome + "/.rpmmacros");
+			
+			if (original.exists()) {
+				if(l!=null){
+					l.info("File " + userHome + "/.rpmmacros found. Creating back-up.");
+				}
+				File backup = new File(userHome + "/.rpmmacros_bck");
+				FileUtils.copyFile(original, backup);
+			}
+			original.delete();
+			if (!original.exists()) {
+				if(l!=null){
+					l.info("Creating " + userHome + "/.rpmmacros file.");
+				}
+				PrintWriter p = new PrintWriter(original);
+				p.print("%_topdir       ");
+				p.println(getBasePkgDir().getAbsolutePath());
+				p.print("%tmppath       ");
+				p.println(getBasePkgDir().getAbsolutePath());
+
+				if (targetConfiguration.getMaintainer() != null) {
+					if(l!=null){
+						l.info("Maintainer found, its name could be used to sign the RPM.");
+					}
+					p.print("%_gpg_name       ");
+					p.println(targetConfiguration.getMaintainer());
+				}
+
+				p.close();
+			}
+		}
+
+		/**
+		 * 
+		 * Removes the new macros file and 
+		 * restores the backup created by
+		 * {@link #createrpmmacrosfile}
+		 * 
+		 * @param l
+		 * @throws IOException
+		 */
+		public void restoreRpmMacrosFileBackup(Log l) throws IOException {
+			String userHome = System.getProperty("user.home");
+			File original = new File(userHome + "/.rpmmacros");
+			File backup = new File(userHome + "/.rpmmacros_bck");
+			if (backup.exists()) {
+				if(l!=null){
+					l.info("Restoring .rpmmacros backup file.");
+				}
+				if (original.delete()) {
+					FileUtils.copyFile(backup, original);
+				}
+			} else {
+				original.delete();
+			}
+
+		}
+		
+		public List<AuxFile> generateFilelist() throws MojoExecutionException
+	    {
+			List<AuxFile> list = new ArrayList<AuxFile>();
+			
+			for (File file : FileUtils.listFiles(getBaseBuildDir(), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE))
+			{
+		    	  list.add(new AuxFile(file.getAbsolutePath().replace(getBaseBuildDir().toString(),"")));
+		    }	  
+			return list;
+	    }
+
+		/**
+		 * Returns a comma separated list of License names based on the licenses provided in the POM
+		 * @return
+		 * @throws MojoExecutionException 
+		 */
+		public String getLicense() throws MojoExecutionException {
+			
+			return Utils.getConsolidatedLicenseString(apm.getProject());
+		}
+		
+		/**
+		 * Sets the {@link Helper} instance's behavioral strategy. 
+		 * 
+		 * <p>Little functionality of this class is dependent on the packaging type (deb, rpm, whatnot). In order
+		 * to set up the correct one this method is to be used.</p>
+		 *  
+		 * @param strategy
+		 */
+		public void setStrategy(Strategy strategy) {
+			this.strategy = strategy;
+		}
+		
+		/**
+		 * Provides the same functionality as getDstArtifactFile 
+		 * in the superclass, but using getBaseBuildDir instead of getBasePkgDir 
+		 */
+	    public File getDstArtifactFile()
+	    {
+	    	// Implementation note: Subtle differences between DEB and RPM.
+	      return strategy.getDstArtifactFile(this);
+	    }
+
+		public String generatePackageFileName() {
+	    	// Implementation note: Subtle differences between DEB and RPM.
+			return strategy.generatePackageFileName(this);
+		}
+
+		public void prepareInitialDirectories() throws MojoExecutionException{
+	    	// Implementation note: Subtle differences between DEB and RPM.
+			strategy.prepareInitialDirectories(this);
+		}
+
+		/**
+		 * Abstracts all the functionality that is different between different
+		 * packaging types.
+		 * 
+		 * <p>Relates to subtle differences between RPM and DEB packaging.</p>
+		 * 
+		 * @author Robert Schuster <r.schuster@tarent.de>
+		 *
+		 */
+		static abstract class Strategy {
+			
+			protected abstract File getDstArtifactFile(Helper instance);
+			
+			protected abstract void prepareInitialDirectories(Helper instance) throws MojoExecutionException;
+
+			protected abstract String generatePackageFileName(Helper instance);
+		}
+		
 }

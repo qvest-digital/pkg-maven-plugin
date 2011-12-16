@@ -75,8 +75,6 @@ import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 
 import de.tarent.maven.plugins.pkg.annotations.MergeMe;
-import de.tarent.maven.plugins.pkg.helper.Helper;
-import de.tarent.maven.plugins.pkg.helper.RpmHelper;
 import de.tarent.maven.plugins.pkg.merger.CollectionMerger;
 import de.tarent.maven.plugins.pkg.merger.IMerge;
 import de.tarent.maven.plugins.pkg.merger.ObjectMerger;
@@ -875,22 +873,6 @@ public final class Utils {
 		    extPackagerMap.put("izpack", new IzPackPackager());
 		    extPackagerMap.put("rpm", new RPMPackager());
 		    return extPackagerMap.get(packaging);
-	  }
-
-	  /**
-	   * Returns a PackagingHelper object that supports a caertain packaging type
-	   * @param packaging
-	   * @param tc
-	   * @param pm
-	   * @return
-	   */
-	  public static Helper getPackagingHelperForPackaging(String packaging){
-	  		Map<String, Helper> extPackagerHelperMap = new HashMap<String,Helper>();
-		    extPackagerHelperMap.put("deb", new Helper());
-		    extPackagerHelperMap.put("ipk", new Helper());
-		    extPackagerHelperMap.put("izpack", new Helper());
-		    extPackagerHelperMap.put("rpm", new RpmHelper());
-		    return extPackagerHelperMap.get(packaging);
 	  }
 	  
 	  /**

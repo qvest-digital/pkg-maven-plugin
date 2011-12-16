@@ -89,7 +89,7 @@ public class Packaging
 	    // short and uniform among all Packager implementations, ie. there're almost no
 	    // arguments needed and all packagers call the same stuff while in reality they're
 	    // subtle differences between them.
-	    Helper ph = Utils.getPackagingHelperForPackaging(packaging);
+	    Helper ph = new Helper();
 	    ph.init(mojo, pm, tc, resolvedRelations);
 	    
 	    Packager packager = Utils.getPackagerForPackaging(packaging);

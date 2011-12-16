@@ -66,7 +66,7 @@ import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.SpecFileGenerator;
-import de.tarent.maven.plugins.pkg.helper.RpmHelper;
+import de.tarent.maven.plugins.pkg.helper.Helper;
 
 /**
  * Creates a RPM package file
@@ -79,7 +79,10 @@ public class RPMPackager extends Packager {
 	public void execute(Log l, WorkspaceSession workspaceSession)
 			throws MojoExecutionException {
 		TargetConfiguration distroConfig = workspaceSession.getTargetConfiguration();
-		RpmHelper ph = (RpmHelper) workspaceSession.getHelper();
+		Helper ph = workspaceSession.getHelper();
+		
+		// Configure the Helper for RPM use.
+		ph.setStrategy(Helper.RPM_STRATEGY);
 		
 		ph.prepareInitialDirectories();
 		
@@ -116,7 +119,7 @@ public class RPMPackager extends Packager {
 		try {
 	        
 	        
-			generateSPECFile(l, (RpmHelper) ph, distroConfig, specFile);
+			generateSPECFile(l, ph, distroConfig, specFile);
 			l.info("SPEC file generated.");
 			createPackage(l, workspaceSession, specFile);
 			l.info("Package created.");
@@ -150,7 +153,7 @@ public class RPMPackager extends Packager {
 	 * @return
 	 * @throws IOException
 	 */
-	private File copyRPMToTargetFolder(Log l, RpmHelper ph, TargetConfiguration distroConfig) throws IOException {
+	private File copyRPMToTargetFolder(Log l, Helper ph, TargetConfiguration distroConfig) throws IOException {
 		
 		StringBuilder rpmPackagePath= new StringBuilder(ph.getBaseBuildDir().getParent());				
 		rpmPackagePath.append("/RPMS/");
@@ -176,7 +179,7 @@ public class RPMPackager extends Packager {
 	 */
 	@Override
 	public void checkEnvironment(Log l, WorkspaceSession workspaceSession) throws MojoExecutionException {
-		RpmHelper ph = (RpmHelper) workspaceSession.getHelper();
+		Helper ph = workspaceSession.getHelper();
 		try {
 			Utils.checkProgramAvailability("rpmbuild");
 			l.info(IOUtils.toString(Utils.exec(new String[] {"rpm", "--version"},
@@ -199,7 +202,7 @@ public class RPMPackager extends Packager {
 	 * @throws MojoExecutionException
 	 * @throws IOException 
 	 */
-	private void generateSPECFile(Log l, RpmHelper ph, TargetConfiguration dc,
+	private void generateSPECFile(Log l, Helper ph, TargetConfiguration dc,
 			File specFile) throws MojoExecutionException, IOException {
 		l.info("Creating SPEC file: " + specFile.getAbsolutePath());
 		SpecFileGenerator sgen = new SpecFileGenerator();
@@ -212,7 +215,7 @@ public class RPMPackager extends Packager {
 			// Following parameters MUST be provided for rpmbuild to work:
 			l.info("Adding mandatory parameters to SPEC file.");
 			sgen.setPackageName(ph.getPackageName());
-			sgen.setVersion(ph.getVersion());
+			sgen.setVersion(ph.getPackageVersion());
 			sgen.setSummary(ph.getProjectDescription());
 			sgen.setDescription(ph.getProjectDescription());
 			sgen.setLicense(ph.getLicense());
@@ -264,7 +267,7 @@ public class RPMPackager extends Packager {
 	private void createPackage(Log l, WorkspaceSession workspaceSession, File specFile) 
 			throws MojoExecutionException {
 		
-		RpmHelper ph = (RpmHelper) workspaceSession.getHelper();
+		Helper ph = workspaceSession.getHelper();
 		TargetConfiguration dc = workspaceSession.getTargetConfiguration();
 		AbstractPackagingMojo apm = workspaceSession.getMojo();
 		l.info("Calling rpmbuild to create binary package");

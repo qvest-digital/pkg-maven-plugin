@@ -16,13 +16,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.tarent.maven.plugins.pkg.helper.Helper;
-import de.tarent.maven.plugins.pkg.helper.RpmHelper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 import de.tarent.maven.plugins.pkg.map.Visitor;
 
-public class RPMHelperTest extends AbstractMvnPkgPluginTestCase{
+public class HelperTest extends AbstractMvnPkgPluginTestCase{
 	Packaging packaging;
-	RpmHelper helper;
+	Helper helper;
 	TargetConfiguration targetConfiguration;
 	boolean previousfilefound;
 	String homedir = System.getProperty("user.home");
@@ -108,7 +107,7 @@ public class RPMHelperTest extends AbstractMvnPkgPluginTestCase{
 			
 		};
 		
-		helper = new RpmHelper();
+		helper = new Helper();
 		helper.init(packaging, delegatingPackageMap, targetConfiguration, resolvedConfigurations);
 		previousfilefound = false;
 		if(f.exists()){
@@ -153,7 +152,10 @@ public class RPMHelperTest extends AbstractMvnPkgPluginTestCase{
 	}
 	
 	@Test
-	public void prepareInitialDirectoriesScuccesfully() throws MojoExecutionException{
+	public void prepareInitialDirectoriesSuccesfully_RPM() throws MojoExecutionException{
+		// This method needs the Helper to be in RPM mode
+		helper.setStrategy(Helper.RPM_STRATEGY);
+		
 		File tempRoot = new File("/tmp/BaseTestTemp");
 		File base = new File("/tmp/BaseTestTemp/Base");
 		helper.setBasePkgDir(base);
@@ -179,12 +181,16 @@ public class RPMHelperTest extends AbstractMvnPkgPluginTestCase{
 	}
 	
 	@Test
-	public void getVersionReturnsPackagingVersion(){
-		Assert.assertTrue(helper.getVersion().contains(packaging.project.getVersion()));
+	public void getVersionReturnsPackagingVersion_RPM(){
+		helper.setStrategy(Helper.RPM_STRATEGY);
+		Assert.assertTrue(helper.getPackageVersion().contains(packaging.project.getVersion()));
 	}
 	
 	@Test
-	public void getDstArtifactFileReturnsgetBaseBuildDirAndgetTargetArtifactFiletoStringIfNotSet(){
+	public void getDstArtifactFileReturnsgetBaseBuildDirAndgetTargetArtifactFiletoStringIfNotSet_RPM(){
+		// This test needs the Helper to be in RPM mode
+		helper.setStrategy(Helper.RPM_STRATEGY);
+		
 		File testTempdir = new File("/tmp/BaseTestTemp");
 		File testArtifactfile = new File("file1");
 		helper.setBaseBuildDir(testTempdir);
@@ -202,7 +208,7 @@ public class RPMHelperTest extends AbstractMvnPkgPluginTestCase{
 	 */
 	@Test
 	public void testCreateDependencyLine_defaultDependencyLine() throws Exception {
-		final String elString = "PackagingSessionTargetDependenczRelationshipsArtifact";
+		final String elString = "PackagingSessionTargetDependencyRelationshipsArtifact";
 		
 		// Creates a PackageMap which has no influence on the 
 		packageMap = new PackageMap(null, null, "default", null) {
