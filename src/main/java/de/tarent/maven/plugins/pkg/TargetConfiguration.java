@@ -61,53 +61,7 @@ public class TargetConfiguration {
 	
 	public TargetConfiguration(String target) {
 		this.target = target;
-	}
-	
-	/**
-	 * Merges the <code>Collection</code>-based instances as follows:
-	 * <ul>
-	 * <li>if parent is non-null take parent else teh default collection</li>
-	 * <li>if child is non-null add all its contents</li>
-	 * </ul>
-	 * <p>
-	 * That way you get either parent, default, parent plus child or default
-	 * plus child
-	 * </p>
-	 */
-	private static <T> Collection<T> merge(Collection<T> child, Collection<T> parent,
-			Collection<T> def) {
-		Collection<T> c = (parent != null ? parent : def);
-
-		if (child != null)
-			c.addAll(child);
-
-		return c;
-	}
-	
-	
-	private static Properties merge(Properties child, Properties parent,
-			Properties def) {
-		Properties c = (parent != null ? parent : def);
-
-		if (child != null)
-			c.putAll(child);
-
-		return c;
-	}
-
-	/**
-	 * If child != null, take child (overridden parent), else if parent != null,
-	 * take parent (overridden default), else take default.
-	 * 
-	 * @param child
-	 * @param parent
-	 * @param def
-	 * @return
-	 */
-	private static Object merge(Object child, Object parent, Object def) {
-		return (child != null) ? child : (parent != null ? parent : def);
-	}
-	
+	}	
 	/**
 	 * Denotes the target this configuration is for.
 	 */
