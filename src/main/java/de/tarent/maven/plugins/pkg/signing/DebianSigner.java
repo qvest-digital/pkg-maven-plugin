@@ -89,6 +89,31 @@ public class DebianSigner extends AbstractPackagingMojo {
 	protected String packageVersion;
 	protected String packageName;
 	protected String architecture;
+	protected static final String NOCHANGES = "Package automatically generated with mvn-pkg-plugin. " +
+											  "No changes were provided when packaging.";
+	
+
+	/**
+	 * Constructor for use of this class within other classes and not just as a maven goal
+	 * @param tc
+	 * @param ph
+	 * @param awaitUserInput
+	 * @throws MojoExecutionException
+	 */
+	public DebianSigner(TargetConfiguration tc, Helper ph,boolean awaitUserInput) throws MojoExecutionException{
+		this.packageMap = new PackageMap(defaultPackageMapURL, 
+										 auxPackageMapURL, 
+										 tc.getChosenDistro(),
+										 tc.getBundleDependencies());
+		this.distroConfiguration = tc;
+		this.tempRoot = ph.getTempRoot();
+		this.basePkgDir = ph.getBasePkgDir();
+		this.packagingType = packageMap.getPackaging();
+		this.packageVersion = ph.getPackageVersion();
+		this.packageName = ph.getPackageName();
+		this.architecture = distroConfiguration.getArchitecture();
+		
+	}
 	
 	/**
 	 * This variable controls the behaviour of the signer. 
@@ -263,10 +288,10 @@ public class DebianSigner extends AbstractPackagingMojo {
 				throw new MojoExecutionException("Error getting user-input ", excp);
 			}
 			if(changes.size()==0){
-				changes.add("No changes");
+				changes.add(NOCHANGES);
 			}
 		}else{
-			changes.add("No changes");
+			changes.add(NOCHANGES);
 		}
 		return changes;
 	}
@@ -407,21 +432,6 @@ public class DebianSigner extends AbstractPackagingMojo {
 			throws MojoExecutionException, MojoFailureException {
 		// TODO: Sign- and Upload is being under rework!
 		throw new UnsupportedOperationException("does not work!");
-	}
-	
-	public DebianSigner(TargetConfiguration tc, Helper ph,boolean awaitUserInput) throws MojoExecutionException{
-		this.packageMap = new PackageMap(defaultPackageMapURL, 
-										 auxPackageMapURL, 
-										 tc.getChosenDistro(),
-										 tc.getBundleDependencies());
-		this.distroConfiguration = tc;
-		this.tempRoot = ph.getTempRoot();
-		this.basePkgDir = ph.getBasePkgDir();
-		this.packagingType = packageMap.getPackaging();
-		this.packageVersion = ph.getPackageVersion();
-		this.packageName = ph.getPackageName();
-		this.architecture = distroConfiguration.getArchitecture();
-		
 	}
 	
 }
