@@ -204,19 +204,15 @@ public class DebPackager extends Packager
 
             // AOT-compile and classmap generation for bundled Jar libraries
             // are only needed for applications.
-            if (targetConfiguration.getMainClass() != null)
+            if (targetConfiguration.getMainClass() != null){
               byteAmount += AotCompileUtils.compileAndMap(l,
             		                bundledArtifacts,
             		                aotDstDir,
             		                aotExtension,
             		                aotDstClassmapDir,
                                     packageMap.getDefaultJarPath());
+            }
             
-/*            gen.setShortDescription(gen.getShortDescription() + " (GCJ version)");
-            gen.setDescription("This is the ahead-of-time compiled version of "
-                               + "the package for use with GIJ.\n"
-                               + gen.getDescription());
- */          
             // The dependencies of a "-gcj" package are always java-gcj-compat
             // and the corresponding 'bytecode' version of the package.
             // GCJ can only compile for one architecture.
@@ -359,10 +355,10 @@ public class DebPackager extends Packager
 		  sb.append("\n");
 	  }
 
-	  	if (!conffilesFile.getParentFile().mkdirs())
+	  	if (!conffilesFile.getParentFile().mkdirs()){
 			throw new MojoExecutionException(
 					"Could not create directory for conffiles file.");
-	  
+	  	}
 		try {
 			conffilesFile.createNewFile();
 		} catch (IOException ioe) {

@@ -98,9 +98,9 @@ public class PackageMap
   {
     this.bundleOverrides = bundleOverrides;
     
-    if (packageMapURL == null)
+    if (packageMapURL == null) {
       packageMapURL = PackageMap.class.getResource("default-package-maps.xml");
-    
+    }    
     try
     {
       mapping = new Parser(packageMapURL,
@@ -234,8 +234,9 @@ public class PackageMap
            // package map.
            l.warn(mapping.distro + " has no entry for: " + a);
            
-           if (bundleNonExisting)
+           if (bundleNonExisting) {
              v.bundle(a);
+           }
          }
        else if (e.bundleEntry)
        {

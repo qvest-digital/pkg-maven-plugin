@@ -22,9 +22,9 @@ public class PropertiesMerger implements IMerge {
 			Object def) {
 		Properties c = ((Properties)parent != null ? (Properties)parent : (Properties)def);
 
-		if (child != null)
+		if (child != null){
 			c.putAll((Properties)child);
-
+		}
 		return (Properties)c;
 	}
 

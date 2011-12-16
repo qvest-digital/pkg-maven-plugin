@@ -26,9 +26,9 @@ public class CollectionMerger implements IMerge {
 			
 			Collection<T> c = (parent != null ? (Collection<T>)parent : (Collection<T>)def);
 
-			if (child != null)
+			if (child != null){
 				c.addAll((Collection<T>)child);
-
+			}
 			return (Collection<T>)c;
 		}
 }

@@ -126,12 +126,12 @@ public class DebianSigner extends AbstractPackagingMojo {
 	 * @see org.apache.maven.plugin.Mojo#execute()
 	 */
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		if(!getPackagingType().equals("deb"))
+		if(!getPackagingType().equals("deb")){
 			throw new MojoFailureException("Signing packaging-type '"+ getPackagingType() + "' is currently not supported.");
-
-		if(getDistroConfiguration().getMaintainer() == null)
+		}
+		if(getDistroConfiguration().getMaintainer() == null){
 			throw new MojoFailureException("Maintainer has to be defined.");
-		
+		}
 		packageVersion = (String) getPluginContext().get("packageVersion");
 
 		start(getLog(), buildDir);
@@ -319,8 +319,9 @@ public class DebianSigner extends AbstractPackagingMojo {
 		"Error creating the changes-file.");
 		
 		// Store output of the executed process into a .changes-file
-		if(processOutput != null)
+		if(processOutput != null) {
 			Utils.storeInputStream(processOutput, pathToChangesFile, "Error when storing the changes-file.");
+		}
 		else
 			throw new MojoExecutionException("Storing the changes-file to \""+pathToChangesFile.getAbsolutePath()+"\"failed (No output from "+changesGenCmd+").");
 	}
@@ -359,62 +360,62 @@ public class DebianSigner extends AbstractPackagingMojo {
 
 	public File getTempRoot() {
 		
-		if (tempRoot == null)
+		if (tempRoot == null) {
 			tempRoot = new File(buildDir, getPackagingType() + "-tmp");
-
+		}
 		return tempRoot;
 	}
 
 	public File getBasePkgDir()	{
 		
-		if (basePkgDir == null)
+		if (basePkgDir == null) {
 			basePkgDir = new File(getTempRoot(), getPackageName() + "-"
 					+ getPackageVersion());
-
+		}
 		return basePkgDir;
 	}
 
 	public String getPackagingType() {
-		if(packagingType == null)
+		if(packagingType == null) {
 			packagingType = getPackageMap().getPackaging();
-
+		}
 		return packagingType;
 	}
 
 	public PackageMap getPackageMap() {
-		if(packageMap == null)
+		if(packageMap == null) {
 			packageMap = ((PackageMap)getPluginContext().get("pm"));
-
+		}
 		return packageMap;
 	}
 
 	public TargetConfiguration getDistroConfiguration() {
-		if(distroConfiguration == null)
+		if(distroConfiguration == null) {
 			distroConfiguration = ((TargetConfiguration)getPluginContext().get("dc"));
-
+		}
 		return distroConfiguration;
 	}
 
 	public String getPackageVersion() {
-		if (packageVersion == null)
+		if (packageVersion == null) {
 			packageVersion = Utils.fixVersion(version) + "-0" + Utils.sanitizePackageVersion(getDistroConfiguration().getTarget())
 			+ (getDistroConfiguration().getRevision().length() == 0 ? "" : "-" + getDistroConfiguration().getRevision());
-
+		}
 		return packageVersion;
 	}
 
 	public String getPackageName() {
-		if (packageName == null)
+		if (packageName == null) {
 			packageName = Utils.createPackageName(artifactId, getDistroConfiguration().getPackageNameSuffix(), getDistroConfiguration().getSection(), 
 					getPackageMap().isDebianNaming());
-
+		}
 		return packageName;
 	}
 
 	public String getArchitecture() {
-		if(architecture == null)
+		if(architecture == null) {
 			architecture = getDistroConfiguration().getArchitecture();
-
+		}
 		return architecture;
 	}
 	

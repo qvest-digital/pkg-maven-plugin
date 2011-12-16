@@ -171,8 +171,9 @@ public class IpkPackager extends Packager
     
     Utils.checkProgramAvailability("ipkg-build");
     
-    if (error)
+    if (error){
       throw new MojoExecutionException("Aborting due to earlier errors.");
+    }
   }
 
   /**

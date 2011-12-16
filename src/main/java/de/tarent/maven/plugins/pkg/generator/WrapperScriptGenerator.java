@@ -111,9 +111,9 @@ public class WrapperScriptGenerator
   
   public void generate(File file) throws IOException
   {
-   if(!file.exists())
+   if(!file.exists()) {
      file.createNewFile();
-   
+   }
    PrintWriter w = new PrintWriter(new FileOutputStream(file));
    
    w.println("#!/bin/sh");
@@ -190,9 +190,9 @@ public class WrapperScriptGenerator
   
   public void generateBatchFile(File file) throws IOException
   {
-   if(!file.exists())
+   if(!file.exists()) {
      file.createNewFile();
-   
+   }
    PrintWriter w = new PrintWriter(new FileOutputStream(file));
    
    w.println("@echo off");
@@ -241,8 +241,9 @@ public class WrapperScriptGenerator
    */
   protected String getMemParameter() 
   {
-    if (maxJavaMemory == null || maxJavaMemory.length() == 0)
+    if (maxJavaMemory == null || maxJavaMemory.length() == 0){
           return "";
+    }
     return "-Xmx"+maxJavaMemory;
   }
     
@@ -292,8 +293,9 @@ public class WrapperScriptGenerator
    */
   private String createPropertyLine()
   {
-    if (properties == null)
+    if (properties == null){
       return "";
+    }
 	StringBuffer buf = new StringBuffer();
 	
 	Iterator ite = properties.keySet().iterator();

@@ -54,10 +54,10 @@ public class RpmHelper extends Helper {
 		@Override
 	    public File getDstArtifactFile()
 	    {
-	      if (dstArtifactFile == null)
+	      if (dstArtifactFile == null) {
 	        dstArtifactFile = new File(getBaseBuildDir(),
 	                                   getTargetArtifactFile().toString());
-
+	      }
 	      return dstArtifactFile;
 	    }
 	    

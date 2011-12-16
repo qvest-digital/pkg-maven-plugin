@@ -69,9 +69,9 @@ public class APTUploader extends AbstractPackagingMojo {
 	 * @see org.apache.maven.plugin.Mojo#execute()
 	 */
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		if(!getPackagingType().equals("deb"))
+		if(!getPackagingType().equals("deb")) {
 			throw new MojoFailureException("Uploading packaging-type '"+ getPackagingType() + "' is currently not supported.");
-
+		}
 		checkEnvironment(getLog());
 		
 		uploadPackage(getLog(), buildDir);
@@ -97,11 +97,11 @@ public class APTUploader extends AbstractPackagingMojo {
 		
 		String[] command;
 		
-		if(repo != null && repo.length() > 0)
+		if(repo != null && repo.length() > 0) {
 			command = new String[] { uploadCmd, "--to", repo };
-		else
+		} else {
 			command = new String[] { uploadCmd };
-		
+		}
 		Utils.exec(command ,
 				base,
 				"Uploading package failed.",
@@ -115,9 +115,9 @@ public class APTUploader extends AbstractPackagingMojo {
 	 * @return
 	 */
 	public PackageMap getPackageMap() {
-		if(packageMap == null)
+		if(packageMap == null) {
 			packageMap = ((PackageMap)getPluginContext().get("pm"));
-
+		}
 		return packageMap;
 	}
 	
@@ -126,9 +126,9 @@ public class APTUploader extends AbstractPackagingMojo {
 	 * @return
 	 */
 	public String getPackagingType() {
-		if(packagingType == null)
+		if(packagingType == null) {
 			packagingType = getPackageMap().getPackaging();
-
+		}
 		return packagingType;
 	}
 

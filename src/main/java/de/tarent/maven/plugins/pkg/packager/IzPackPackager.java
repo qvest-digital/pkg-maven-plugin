@@ -176,9 +176,9 @@ public class IzPackPackager extends Packager
 
         ph.generateWrapperScript(bundledArtifacts, bcp, cp, true);
         
-        if (distroConfig.isAdvancedStarter())
+        if (distroConfig.isAdvancedStarter()){
           desc.addStarter("_starter", "_classpath");
-
+        }
         l.info("adding wrapper script information.");
         desc.addUnixWrapperScript(wrapperScriptFile.getName(), ph.getProjectDescription());
         desc.addWindowsWrapperScript(windowsWrapperScriptFile.getName(), ph.getProjectDescription());
@@ -193,15 +193,16 @@ public class IzPackPackager extends Packager
                         modifiedInstallerXmlFile,
                         resultFile);
         
-				if (distroConfig.isCreateWindowsExecutable())
+				if (distroConfig.isCreateWindowsExecutable()){
 					createWindowsExecutable(l,
                                             ph.get7ZipExec(),
                                             izPackEmbeddedRoot,
                                             resultFile,
                                             resultFileWindows);
-
-				if (distroConfig.isCreateOSXApp())
+				}
+				if (distroConfig.isCreateOSXApp()){
 					createOSXExecutable(l, izPackEmbeddedRoot, resultFile, resultFileOSX);
+				}
       }
     catch (MojoExecutionException badMojo)
       {
@@ -232,8 +233,9 @@ public class IzPackPackager extends Packager
 
     Utils.checkProgramAvailability(ph.getJavaExec());
     
-    if (targetConfiguration.isCreateWindowsExecutable())
+    if (targetConfiguration.isCreateWindowsExecutable()){
       Utils.checkProgramAvailability(ph.get7ZipExec());
+    }
   }
 
   /**
@@ -253,9 +255,9 @@ public class IzPackPackager extends Packager
   {
     l.info("creating temporary directory: " + tempRoot.getAbsolutePath());
 
-    if (!tempRoot.exists() && !tempRoot.mkdirs())
+    if (!tempRoot.exists() && !tempRoot.mkdirs()){
       throw new MojoExecutionException("Could not create temporary directory.");
-
+    }
     l.info("cleaning the temporary directory");
     try
     {
@@ -268,12 +270,12 @@ public class IzPackPackager extends Packager
     }
 
     l.info("creating IzPack base directory: " + izPackEmbeddedRoot.getAbsolutePath());
-    if (!izPackEmbeddedRoot.mkdirs())
+    if (!izPackEmbeddedRoot.mkdirs()){
       throw new MojoExecutionException("Could not create directory for the embedded IzPack installation.");
-    
-    if (!tempDescriptorRoot.mkdirs())
+    }
+    if (!tempDescriptorRoot.mkdirs()){
       throw new MojoExecutionException("Could not create base directory for the IzPack descriptor.");
-    
+    }
     l.info("copying IzPack descriptor data");
     try
     {
@@ -285,9 +287,9 @@ public class IzPackPackager extends Packager
     }
     
     l.info("creating directory for dependencies: " + libraryRoot.getAbsolutePath());
-    if (!libraryRoot.mkdirs())
+    if (!libraryRoot.mkdirs()){
       throw new MojoExecutionException("Could not create directory for the dependencies.");
-
+    }
   }
   
   /**
@@ -320,10 +322,9 @@ public class IzPackPackager extends Packager
         ZipEntry entry = (ZipEntry) e.nextElement();
         File unpacked = new File(izPackEmbeddedHomeDir,
                                    entry.getName());
-        if (entry.isDirectory())
+        if (entry.isDirectory()){
           unpacked.mkdirs(); // TODO: Check success.
-        else
-          {
+        }else{
             Utils.createFile(unpacked, "Unable to create ZIP file entry ");
             Utils.storeInputStream(zip.getInputStream(entry), unpacked,
                                    "IOException while unpacking ZIP file entry.");

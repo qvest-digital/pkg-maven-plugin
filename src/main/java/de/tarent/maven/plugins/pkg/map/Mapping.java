@@ -153,17 +153,18 @@ class Mapping
   Entry getEntry(String groupId, String artifactId, ArtifactVersion artifactVersion)
   {
 	HashSet<Entry> entryList = entryMap.get(groupId + ":" + artifactId);
-    if (entryList == null)
+    if (entryList == null) {
     	return null;
-    
+    }
     Entry unrangedCandidate = null;
     
     for (Entry e : entryList)
     {
     	if (e.versionRange != null)
     	{
-    		if (e.versionRange.containsVersion(artifactVersion))
+    		if (e.versionRange.containsVersion(artifactVersion)) {
     			return e;
+    		}
     	}
     	else
     	{

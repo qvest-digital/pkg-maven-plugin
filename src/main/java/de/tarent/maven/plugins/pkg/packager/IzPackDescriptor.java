@@ -170,13 +170,14 @@ class IzPackDescriptor
 	   attrs = appPackNode.getAttributes();
 	   attrs.setNamedItem(createAttribute("required", "yes"));
 	        
-	   if (!attributeExists(attrs, "name"))
+	   if (!attributeExists(attrs, "name")){
 	     attrs.setNamedItem(createAttribute("name", "base installation files"));
+	   }
 	 }
 
-	 if (appPackNode == null)
+	 if (appPackNode == null){
 	   throw new MojoExecutionException("Unable to find a <pack> which is mandatory (where 'required' equals 'yes')");
-
+	 }
 	 return appPackNode;
   }
   
@@ -246,22 +247,22 @@ class IzPackDescriptor
     Node rootInstallPackNode;
     
     rootInstallPackNode = doc.getElementById(ROOT_INSTALL_PACK_ID);
-    if (rootInstallPackNode == null)
+    if (rootInstallPackNode == null){
       rootInstallPackNode = doc.createElement("pack");
-    
+    }
     attrs = rootInstallPackNode.getAttributes();
-    if (!attributeExists(attrs, "name"))
+    if (!attributeExists(attrs, "name")){
       attrs.setNamedItem(createAttribute("name", "Wrapper script in PATH (requires root privileges!)"));
-    
-    if (!attributeExists(attrs, "preselected"))
+    }
+    if (!attributeExists(attrs, "preselected")){
       attrs.setNamedItem(createAttribute("preselected", "no"));
-    
-    if (!attributeExists(attrs, "required"))
+    }
+    if (!attributeExists(attrs, "required")){
       attrs.setNamedItem(createAttribute("required", "no"));
-    
-    if (!attributeExists(attrs, "os"))
+    }
+    if (!attributeExists(attrs, "os")){
       attrs.setNamedItem(createAttribute("os", "unix"));
-    
+    }
     packsNode.appendChild(rootInstallPackNode);
 
     if (!childExists(rootInstallPackNode, "description"))
@@ -357,8 +358,9 @@ class IzPackDescriptor
   void removeAotPack()
   {
     Node packNode = doc.getElementById(AOT_PACK_ID);
-    if (packNode != null)
+    if (packNode != null){
       packNode.getParentNode().removeChild(packNode);
+    }
   }
   
   /**
@@ -438,9 +440,9 @@ class IzPackDescriptor
     NodeList list = parent.getChildNodes();
     int size = list.getLength();
     for (int i=0; i<size; i++)
-      if (childName.equals(list.item(i).getLocalName()))
+      if (childName.equals(list.item(i).getLocalName())){
         return true;
-    
+      }
     return false;
   }
   

@@ -95,9 +95,9 @@ class Parser
       s.nextMatch("version");
       
       String vc = s.nextElement();
-      if (Double.parseDouble(vc) != 1.0)
+      if (Double.parseDouble(vc) != 1.0) {
         throw new Exception("unsupported document: document version " + vc + " is not supported");
-     
+      }
       s.nextElement();
       while (s.token != null)
         {
@@ -290,9 +290,9 @@ class Parser
     {
       Mapping m = (Mapping) mappings.get(distro);
       
-      if (m == null)
+      if (m == null) {
         mappings.put(distro, m = new Mapping(distro));
-      
+      }
       return m;
     }
     
@@ -343,9 +343,9 @@ class Parser
                   return token = null;
                 case XmlPullParser.TEXT:
                   // We don't care about whitespace characters.
-                  if (parser.isWhitespace())
+                  if (parser.isWhitespace()) {
                     continue;
-                  
+                  }
 //                  System.err.println("text: " + parser.getText());
                   
                   return token = parser.getText();
@@ -366,8 +366,9 @@ class Parser
       private void nextMatch(String expected) throws Exception
       {
         nextElement();
-        if (!expected.equals(token))
+        if (!expected.equals(token)) {
           throw new Exception("malformed document: expected " + expected + " got '" + token + "'");
+        }
       }
 
       private boolean peek(String expected)

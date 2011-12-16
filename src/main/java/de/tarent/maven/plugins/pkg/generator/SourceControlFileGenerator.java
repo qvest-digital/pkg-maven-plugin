@@ -34,9 +34,9 @@ public class SourceControlFileGenerator extends ControlFileGenerator {
 	    writeEntry(w, "Maintainer", getMaintainer());
 	    writeEntry(w, "Description", getShortDescription());
 	    
-	    if (getDescription() != null)
+	    if (getDescription() != null) {
 	      w.println(" " + getDescription());
-	    
+	    }
 	    w.close();
 	}
 	

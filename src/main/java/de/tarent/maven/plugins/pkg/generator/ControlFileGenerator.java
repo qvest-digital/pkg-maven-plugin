@@ -268,22 +268,24 @@ public class ControlFileGenerator
     writeEntry(w, "Description", shortDescription);
     writeEntry(w, "Source", source);
     
-    if (description != null)
+    if (description != null) {
       w.println(" " + description);
-    
+    }
     w.close();
   }
   
   protected void writeEntry(PrintWriter w, String name, String value)
   {
-    if (value != null)
+    if (value != null) {
       w.println(name + ": " +  value);
+    }
   }
 
   protected void writeEntry(PrintWriter w, String name, long value)
   {
-    if (value != 0)
+    if (value != 0) {
       w.println(name + ": " +  value);
+    }
   }
   
 }

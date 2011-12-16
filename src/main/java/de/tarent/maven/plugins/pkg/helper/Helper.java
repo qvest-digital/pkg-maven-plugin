@@ -466,9 +466,9 @@ public class Helper {
 	}
 
 	public File getDstBundledJarDir() {
-		if (dstBundledJarDir == null)
+		if (dstBundledJarDir == null) {
 			dstBundledJarDir = new File(basePkgDir, getTargetBundledJarDir().toString());
-
+		}
 		return dstBundledJarDir;
 	}
 
