@@ -282,7 +282,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	public String getSignPassPhrase(){
 		return signPassPhrase;
 	}
-	private String signPassPhrase;
+	protected String signPassPhrase;
 	
 	public String get_7zipExec() {
 		return _7zipExec;
