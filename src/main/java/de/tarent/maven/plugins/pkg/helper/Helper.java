@@ -229,9 +229,9 @@ public class Helper {
 	}
 	
 	public final void init(AbstractPackagingMojo mojo, PackageMap packageMap, TargetConfiguration targetConfiguration, List<TargetConfiguration> resolvedRelations) {
-		if (apm != null) 
+		if (apm != null){ 
 			throw new IllegalStateException("Helper instance is already initialized.");
-		
+		}
 		this.apm = mojo;
 		this.packageMap = packageMap;
 		this.targetConfiguration = targetConfiguration;
@@ -304,27 +304,27 @@ public class Helper {
 		final File dir = getDstScriptDir();
 	    long bytesCopied = 0;
 	    
-		if (targetConfiguration.getPreinstScript() != null)
+		if (targetConfiguration.getPreinstScript() != null){
 			bytesCopied +=  writeScript("pre-install", 
 					new File(getSrcAuxFilesDir(), targetConfiguration.getPreinstScript()), 
 					new File(dir, "preinst"), this);
-
-		if (targetConfiguration.getPrermScript() != null)
+		}
+		if (targetConfiguration.getPrermScript() != null){
 			bytesCopied += writeScript("pre-remove", 
 					new File(getSrcAuxFilesDir(), targetConfiguration.getPrermScript()), 
 					new File(dir, "prerm"), this);
-
-		if (targetConfiguration.getPostinstScript() != null)
+		}
+		if (targetConfiguration.getPostinstScript() != null){
 			bytesCopied += writeScript("post-install", 
 					new File(getSrcAuxFilesDir(), targetConfiguration.getPostinstScript()), 
 					new File(dir, "postinst"),
 					this);
-
-		if (targetConfiguration.getPostrmScript() != null)
+		}
+		if (targetConfiguration.getPostrmScript() != null){
 			bytesCopied += writeScript("post-remove", 
 					new File(getSrcAuxFilesDir(), targetConfiguration.getPostrmScript()), 
 					new File(dir, "postrm"), this);
-		
+		}
 		return bytesCopied;
 	}
 
@@ -372,16 +372,16 @@ public class Helper {
 
 		gen.setCustomCodeUnix(targetConfiguration.getCustomCodeUnix());
 
-		if (getTargetLibraryPath() != null)
+		if (getTargetLibraryPath() != null){
 			gen.setLibraryPath(new Path(getTargetLibraryPath()));
-
+		}
 		gen.setProperties(targetConfiguration.getSystemProperties());
 
 		// Set to default Classmap file on Debian/Ubuntu systems.
 		// TODO: make this configurable
-		if (targetConfiguration.isAotCompile())
+		if (targetConfiguration.isAotCompile()){
 			gen.setClassmapFile("/var/lib/gcj-4.1/classmap.db");
-
+		}
 		if (targetConfiguration.isAdvancedStarter()) {
 			l.info("setting up advanced starter");
 			Utils.setupStarter(l, targetConfiguration.getMainClass(), getDstStarterDir(), classpath);
@@ -423,16 +423,16 @@ public class Helper {
 	}
 
 	public String getAotPackageName() {
-		if (aotPackageName == null)
+		if (aotPackageName == null){
 			aotPackageName = Utils.gcjise(getArtifactId(), targetConfiguration.getSection(), packageMap.isDebianNaming());
-
+		}
 		return aotPackageName;
 	}
 
 	public File getAotPkgDir() {
-		if (aotPkgDir == null)
+		if (aotPkgDir == null){
 			aotPkgDir = new File(getTempRoot(), aotPackageName + "-" + getPackageVersion());
-
+		}
 		return aotPkgDir;
 	}
 
@@ -441,16 +441,16 @@ public class Helper {
 	}
 
 	public File getBasePkgDir() {
-		if (basePkgDir == null)
+		if (basePkgDir == null){
 			basePkgDir = new File(getTempRoot(), getPackageName() + "-" + getPackageVersion());
-
+		}
 		return basePkgDir;
 	}
 
 	public File getDstArtifactFile() {
-		if (dstArtifactFile == null)
+		if (dstArtifactFile == null){
 			dstArtifactFile = new File(getBasePkgDir(), getTargetArtifactFile().toString());
-
+		}
 		return dstArtifactFile;
 	}
 
@@ -459,9 +459,9 @@ public class Helper {
 	}
 
 	public File getDstBinDir() {
-		if (dstBinDir == null)
+		if (dstBinDir == null){
 			dstBinDir = new File(getBasePkgDir(), getTargetBinDir().toString());
-
+		}
 		return dstBinDir;
 	}
 
@@ -473,67 +473,67 @@ public class Helper {
 	}
 
 	public File getDstDataDir() {
-		if (dstDataDir == null)
+		if (dstDataDir == null){
 			dstDataDir = new File(getBasePkgDir(), getTargetDataDir().toString());
-
+		}
 		return dstDataDir;
 	}
 
 	public File getDstDatarootDir() {
-		if (dstDatarootDir == null)
+		if (dstDatarootDir == null){
 			dstDatarootDir = new File(getBasePkgDir(), getTargetDatarootDir().toString());
-
+		}
 		return dstDatarootDir;
 	}
 
 	public File getDstJNIDir() {
-		if (dstJNIDir == null)
+		if (dstJNIDir == null){
 			dstJNIDir = new File(getBasePkgDir(), getTargetJNIDir().toString());
-
+		}
 		return dstJNIDir;
 	}
 
 	public File getDstRoot() {
-		if (dstRoot == null)
+		if (dstRoot == null){
 			dstRoot = new File(getBasePkgDir(), getTargetRoot().toString());
-
+		}
 		return dstRoot;
 	}
 
 	public File getDstScriptDir() {
-		if (dstScriptDir == null)
+		if (dstScriptDir == null){
 			throw new UnsupportedOperationException(
 					"This dstScriptDir property has to be provided explicitly in advance!");
-
+		}
 		return dstScriptDir;
 	}
 
 	public File getDstStarterDir() {
-		if (dstStarterDir == null)
+		if (dstStarterDir == null){
 			dstStarterDir = new File(getBasePkgDir(), getTargetStarterDir().toString());
-
+		}
 		return dstStarterDir;
 	}
 
 	public File getDstSysconfDir() {
-		if (dstSysconfDir == null)
+		if (dstSysconfDir == null){
 			dstSysconfDir = new File(getBasePkgDir(), getTargetSysconfDir().toString());
-
+		}
 		return dstSysconfDir;
 	}
 
 	public File getDstWindowsWrapperScriptFile() {
-		if (dstWindowsWrapperScriptFile == null)
+		if (dstWindowsWrapperScriptFile == null){
 			dstWindowsWrapperScriptFile = new File(getDstWrapperScriptFile().getAbsolutePath() + ".bat");
-
+		}
 		return dstWindowsWrapperScriptFile;
 	}
 
 	public File getDstWrapperScriptFile() {
-		if (dstWrapperScriptFile == null)
+		if (dstWrapperScriptFile == null){
 			// Use the provided wrapper script name or the default.
 			dstWrapperScriptFile = new File(getBasePkgDir(), getTargetWrapperScriptFile().toString());
-
+		}
 		return dstWrapperScriptFile;
 	}
 
@@ -550,21 +550,21 @@ public class Helper {
 	}
 
 	public String getPackageName() {
-		if (packageName == null)
+		if (packageName == null){
 			packageName = Utils.createPackageName(
 					apm.getProject().getArtifactId(),
 					targetConfiguration.getPackageNameSuffix(),
 					targetConfiguration.getSection(),
 					packageMap.isDebianNaming());
-
+		}
 		return packageName;
 	}
 
 	public String getPackageVersion() {
-		if (packageVersion == null)
+		if (packageVersion == null){
 			packageVersion = Utils.fixVersion(apm.getProject().getVersion()) + "-0" + Utils.sanitizePackageVersion(targetConfiguration.getTarget())
 					+ (targetConfiguration.getRevision().length() == 0 ? "" : "-" + targetConfiguration.getRevision());
-
+		}
 		return packageVersion;
 	}
 
@@ -577,9 +577,9 @@ public class Helper {
 	}
 
 	public File getSrcArtifactFile() {
-		if (srcArtifactFile == null)
+		if (srcArtifactFile == null){
 			srcArtifactFile = new File(apm.getOutputDirectory().getPath(), apm.getFinalName() + "." + apm.getProject().getPackaging());
-
+		}
 		return srcArtifactFile;
 	}
 
@@ -631,10 +631,10 @@ public class Helper {
 	}
 
 	public File getTargetArtifactFile() {
-		if (targetArtifactFile == null)
+		if (targetArtifactFile == null){
 			targetArtifactFile = new File((targetConfiguration.isBundleAll() || packageMap.hasNoPackages() ? getTargetBundledJarDir()
 					: new File(packageMap.getDefaultJarPath())), apm.getProject().getArtifactId() + "." + apm.getProject().getPackaging());
-
+		}
 		return targetArtifactFile;
 	}
 
@@ -659,34 +659,34 @@ public class Helper {
 	 * @return
 	 */
 	public File getTargetBinDir() {
-		if (targetBinDir == null)
+		if (targetBinDir == null){
 			targetBinDir = (targetConfiguration.getBindir().length() == 0 ? new File(getTargetRoot(), packageMap.getDefaultBinPath()) : new File(
 					targetConfiguration.getBindir()));
-
+		}
 		return targetBinDir;
 	}
 
 	public File getTargetBundledJarDir() {
-		if (targetBundledJarDir == null)
+		if (targetBundledJarDir == null){
 			targetBundledJarDir = (targetConfiguration.getBundledJarDir().length() == 0 ? new File(getTargetRoot(), new File(
 					packageMap.getDefaultJarPath(), apm.getProject().getArtifactId()).toString()) : new File(targetConfiguration.getBundledJarDir()));
-
+		}
 		return targetBundledJarDir;
 	}
 
 	public File getTargetDataDir() {
-		if (targetDataDir == null)
+		if (targetDataDir == null){
 			targetDataDir = (targetConfiguration.getDatadir().length() == 0 ? new File(getTargetDatarootDir(), apm.getProject().getName()) : new File(
 					targetConfiguration.getDatadir()));
-
+		}
 		return targetDataDir;
 	}
 
 	public File getTargetDatarootDir() {
-		if (targetDatarootDir == null)
+		if (targetDatarootDir == null){
 			targetDatarootDir = (targetConfiguration.getDatarootdir().length() == 0 ? new File(getTargetRoot(), "usr/share") : new File(
 					targetConfiguration.getDatarootdir()));
-
+		}
 		return targetDatarootDir;
 	}
 
@@ -699,53 +699,53 @@ public class Helper {
 	 * @return
 	 */
 	public File getTargetJNIDir() {
-		if (targetJNIDir == null)
+		if (targetJNIDir == null){
 			targetJNIDir = new File(getTargetRoot(), packageMap.getDefaultJNIPath().split(":")[0]);
-
+		}
 		return targetJNIDir;
 	}
 
 	public File getTargetLibraryPath() {
-		if (targetLibraryPath == null)
+		if (targetLibraryPath == null){
 			targetLibraryPath = new File(getTargetRoot(), packageMap.getDefaultJNIPath());
-
+		}
 		return targetLibraryPath;
 	}
 
 	public File getTargetRoot() {
-		if (targetRoot == null)
+		if (targetRoot == null){
 			targetRoot = new File(targetConfiguration.getPrefix());
-
+		}
 		return targetRoot;
 	}
 
 	public File getTargetStarterDir() {
-		if (targetStarterDir == null)
+		if (targetStarterDir == null){
 			targetStarterDir = new File(getTargetBundledJarDir(), "_starter");
-
+		}
 		return targetStarterDir;
 	}
 
 	public File getTargetSysconfDir() {
-		if (targetSysconfDir == null)
+		if (targetSysconfDir == null){
 			targetSysconfDir = (targetConfiguration.getSysconfdir().length() == 0 ? new File(getTargetRoot(), "etc")
 					: new File(targetConfiguration.getSysconfdir()));
-
+		}
 		return targetSysconfDir;
 	}
 
 	public File getTargetWrapperScriptFile() {
-		if (targetWrapperScriptFile == null)
+		if (targetWrapperScriptFile == null){
 			targetWrapperScriptFile = new File(getTargetBinDir(), (targetConfiguration.getWrapperScriptName() != null ? targetConfiguration.getWrapperScriptName()
 					: apm.getProject().getArtifactId()));
-
+		}
 		return targetWrapperScriptFile;
 	}
 
 	public File getTempRoot() {
-		if (tempRoot == null)
+		if (tempRoot == null){
 			tempRoot = new File(apm.getBuildDir(), packageMap.getPackaging() + "-tmp");
-
+		}
 		return tempRoot;
 	}
 
@@ -886,30 +886,31 @@ public class Helper {
 	}
 
 	final void prepareDirectories(Log l, File tempRoot, File basePkgDir, File jniDir) throws MojoExecutionException {
-		if (l != null)
+		if (l != null){
 			l.info("creating temporary directory: " + tempRoot.getAbsolutePath());
-
-		if (!tempRoot.exists() && !tempRoot.mkdirs())
+		}
+		if (!tempRoot.exists() && !tempRoot.mkdirs()){
 			throw new MojoExecutionException("Could not create temporary directory.");
-		
-		if (l != null)
+		}
+		if (l != null){
 			l.info("cleaning the temporary directory");
-		
+		}
 		try {
 			FileUtils.cleanDirectory(tempRoot);
 		} catch (IOException ioe) {
 			throw new MojoExecutionException("Exception while cleaning temporary directory.", ioe);
 		}
 		
-		if (l != null)
+		if (l != null){
 			l.info("creating package directory: " + basePkgDir.getAbsolutePath());
-		
-		if (!basePkgDir.mkdirs())
+		}
+		if (!basePkgDir.mkdirs()){
 			throw new MojoExecutionException("Could not create package directory.");
-
+		}
 		if (jniDir != null && targetConfiguration.getJniFiles() != null && targetConfiguration.getJniFiles().size() > 0) {
-			if (!jniDir.mkdirs())
+			if (!jniDir.mkdirs()){
 				throw new MojoExecutionException("Could not create JNI directory.");
+			}
 		}
 
 	}
@@ -1166,15 +1167,15 @@ public class Helper {
 	        manualDeps.append(", ");
 	      }
 	
-	    if (manualDeps.length() >= 2)
+	    if (manualDeps.length() >= 2){
 	      manualDeps.delete(manualDeps.length() - 2, manualDeps.length());
-
+	    }
 	    // If all dependencies should be bundled the package will only
 	    // need the default Java dependencies of the system and the remainder
 	    // of the method can be skipped.
-	    if (targetConfiguration.isBundleAll())
+	    if (targetConfiguration.isBundleAll()){
 	      return Utils.joinDependencyLines(defaults, manualDeps.toString());
-
+	    }
 	    Set runtimeDeps = null;
 	
 	    try
@@ -1239,12 +1240,12 @@ public class Helper {
 	      {
 	        // Certain Maven Packages have only one package in the target system.
 	        // If that one was already added we should not add it any more.
-	        if (processedDeps.contains(entry.dependencyLine))
+	        if (processedDeps.contains(entry.dependencyLine)){
 	          return;
-	
-	        if (entry.dependencyLine.length() == 0)
+	        }
+	        if (entry.dependencyLine.length() == 0){
 	          l.warn("Invalid package name for artifact: " + entry.artifactSpec);
-	
+	        }
 	        line.append(", ");
 	        line.append(entry.dependencyLine);
 	
@@ -1260,9 +1261,9 @@ public class Helper {
 
 	protected final String createPackageLine(List<String> packageDescriptors)
 	  {
-		  if(packageDescriptors == null || packageDescriptors.isEmpty())
+		  if(packageDescriptors == null || packageDescriptors.isEmpty()){
 			  return null;
-		  
+		  }
 		  StringBuffer packageLine = new StringBuffer();
 		  Iterator<String> ite = packageDescriptors.iterator();
 		  while (ite.hasNext())
@@ -1274,9 +1275,9 @@ public class Helper {
 		  }
 	
 		  // Remove last ", "
-		  if (packageLine.length() >= 2)
+		  if (packageLine.length() >= 2){
 			  packageLine.delete(packageLine.length() - 2, packageLine.length());
-		  
+		  }
 		  return packageLine.toString();
 	  }
 
@@ -1334,10 +1335,10 @@ public class Helper {
 	  protected final boolean packagingTypeBelongsToIgnoreList(){
 		boolean inList = false;
 		
-		  if (l!=null)
+		  if (l!=null){
 			  l.info("ignorePackagingTypes set. Contains: " + apm.getIgnorePackagingTypes() 
 					+ " . Project packaging is "+apm.getProject().getPackaging());
-		  
+		  }
 		  for(String s : apm.getIgnorePackagingTypes().split(",")){
 			  if(apm.getProject().getPackaging().compareToIgnoreCase(s)==0){
 				  	inList = true;
