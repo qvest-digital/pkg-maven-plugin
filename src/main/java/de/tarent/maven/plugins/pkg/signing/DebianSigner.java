@@ -46,6 +46,7 @@ import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.ChangelogFileGenerator;
 import de.tarent.maven.plugins.pkg.generator.SourceControlFileGenerator;
+import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 
@@ -88,6 +89,13 @@ public class DebianSigner extends AbstractPackagingMojo {
 	protected String packageVersion;
 	protected String packageName;
 	protected String architecture;
+	
+	/**
+	 * This variable controls the behaviour of the signer. 
+	 * <p>If set to true it will show user prompts for some steps.</p>
+	 * <p>Default is true</p>
+	 */
+	protected boolean awaitUserInput = true;
 
 	/**
 	 * @see org.apache.maven.plugin.Mojo#execute()
@@ -101,15 +109,29 @@ public class DebianSigner extends AbstractPackagingMojo {
 		
 		packageVersion = (String) getPluginContext().get("packageVersion");
 
-		generateFileList(getLog(), buildDir);
+		start(getLog(), buildDir);
 		
-		generateSourceControlFile(getLog(), buildDir);
+	}
+	
+	/**
+	 * Main steps of the signing process extracted in order to be able to
+	 * execute them from outside the class;
+	 * 
+	 * @param l
+	 * @param buildDir
+	 * @throws MojoExecutionException
+	 */
+	public void start(Log l, File buildDir) throws MojoExecutionException{
+
+		generateFileList(l, buildDir);
+		
+		generateSourceControlFile(l, buildDir);
 			
-		generateChangelogFile(getLog(), buildDir);
+		generateChangelogFile(l, buildDir);
 
-		generateChangesFile(getLog(), buildDir);
+		generateChangesFile(l, buildDir);
 
-		signPackage(getLog(), buildDir);
+		signPackage(l, buildDir);		
 		
 	}
 
@@ -220,25 +242,32 @@ public class DebianSigner extends AbstractPackagingMojo {
 	 * @throws MojoExecutionException
 	 */
 	protected List<String> promptForChanges() throws MojoExecutionException {
+
 		List<String> changes = new ArrayList<String>();
 		
-		System.out.println("Please type in your changes since last deployment of this package. One change per line. If you are ready just make an empty line.");
-		
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-		try {
+		if(!awaitUserInput){			
+			System.out.println("Please type in your changes since last deployment of this package. One change per line. If you are ready just make an empty line.");
 			
-			String line = reader.readLine();
-			
-			while(line != null && line.trim().length() != 0) {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+			try {
 				
-				changes.add(new String(line));
-				line = reader.readLine();
+				String line = reader.readLine();
+				
+				while(line != null && line.trim().length() != 0) {
+					
+					changes.add(new String(line));
+					line = reader.readLine();
+				}
+				
+			} catch(IOException excp) {
+				throw new MojoExecutionException("Error getting user-input ", excp);
 			}
-			
-		} catch(IOException excp) {
-			throw new MojoExecutionException("Error getting user-input ", excp);
+			if(changes.size()==0){
+				changes.add("No changes");
+			}
+		}else{
+			changes.add("No changes");
 		}
-		
 		return changes;
 	}
 
@@ -376,8 +405,23 @@ public class DebianSigner extends AbstractPackagingMojo {
 	protected void executeTargetConfiguration(
 			WorkspaceSession workspaceSession, String distro)
 			throws MojoExecutionException, MojoFailureException {
-		// TODO: Sign- and Upload is being unser rework!
+		// TODO: Sign- and Upload is being under rework!
 		throw new UnsupportedOperationException("does not work!");
+	}
+	
+	public DebianSigner(TargetConfiguration tc, Helper ph,boolean awaitUserInput) throws MojoExecutionException{
+		this.packageMap = new PackageMap(defaultPackageMapURL, 
+										 auxPackageMapURL, 
+										 tc.getChosenDistro(),
+										 tc.getBundleDependencies());
+		this.distroConfiguration = tc;
+		this.tempRoot = ph.getTempRoot();
+		this.basePkgDir = ph.getBasePkgDir();
+		this.packagingType = packageMap.getPackaging();
+		this.packageVersion = ph.getPackageVersion();
+		this.packageName = ph.getPackageName();
+		this.architecture = distroConfiguration.getArchitecture();
+		
 	}
 	
 }
