@@ -7,15 +7,16 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.junit.Assert;
+import org.junit.Test;
 
-import junit.framework.TestCase;
-
-public class TargetConfigurationTest extends TestCase {
+public class TargetConfigurationTest {
 
 	/**
 	 * Tests whether the JNI file sets are really merged.
 	 * @throws MojoExecutionException 
 	 */
+	@Test
 	public void testJNIFileMerge() throws MojoExecutionException
 	{
 		JniFile f;
@@ -45,13 +46,14 @@ public class TargetConfigurationTest extends TestCase {
 		tc2.setJniFiles(l2);
 		
 		TargetConfiguration merged = Utils.mergeConfigurations(tc2,tc1);
-		assertEquals(expected, merged.getJniFiles());
+		Assert.assertEquals(expected, merged.getJniFiles());
 	}
 	
 	/**
 	 * Tests whether the distros property is really and properly merged.
 	 * @throws MojoExecutionException 
 	 */
+	@Test
 	public void testDistrosMerge() throws MojoExecutionException
 	{
 		String d;
@@ -76,13 +78,14 @@ public class TargetConfigurationTest extends TestCase {
 		tc2.setDistros(l2);
 		
 		TargetConfiguration merged = Utils.mergeConfigurations(tc2,tc1);
-		assertEquals(expected, merged.getDistros());
+		Assert.assertEquals(expected, merged.getDistros());
 	}
 
 	/**
 	 * Tests whether the distros property is really and properly merged.
 	 * @throws MojoExecutionException 
 	 */
+	@Test
 	public void testSystemPropertiesMerge() throws MojoExecutionException
 	{
 		Properties expected = new Properties();
@@ -103,7 +106,7 @@ public class TargetConfigurationTest extends TestCase {
 		tc2.setSystemProperties(l2);
 		
 		TargetConfiguration merged = Utils.mergeConfigurations(tc2,tc1);
-		assertEquals(expected, merged.getSystemProperties());
+		Assert.assertEquals(expected, merged.getSystemProperties());
 	}
 
 	/**
@@ -111,6 +114,7 @@ public class TargetConfigurationTest extends TestCase {
 	 * and properly merged.
 	 * @throws MojoExecutionException 
 	 */
+	@Test
 	public void testManualDependenciesMerge() throws MojoExecutionException
 	{
 		String d;
@@ -135,7 +139,76 @@ public class TargetConfigurationTest extends TestCase {
 		tc2.setManualDependencies(l2);
 		
 		TargetConfiguration merged = Utils.mergeConfigurations(tc2,tc1);
-		assertEquals(expected, merged.getManualDependencies());
+		Assert.assertEquals(expected, merged.getManualDependencies());
+	}
+
+	/**
+	 * Tests whether an unset string property with a default value is properly
+	 * fixated.
+	 * 
+	 * @throws MojoExecutionException 
+	 */
+	@Test
+	public void testStringPropertyMerge_unset_fixate() throws MojoExecutionException
+	{
+		TargetConfiguration tc1 = new TargetConfiguration("tc1");
+		tc1.fixate();
+		
+		Assert.assertEquals("", tc1.getRelease());
+	}
+	
+	/**
+	 * Tests whether a set string property with a default value is properly
+	 * fixated.
+	 * 
+	 * @throws MojoExecutionException 
+	 */
+	@Test
+	public void testStringPropertyMerge_set_fixate() throws MojoExecutionException
+	{
+		TargetConfiguration tc1 = new TargetConfiguration("tc1");
+		tc1.setRelease("heavens");
+		tc1.fixate();
+		
+		Assert.assertEquals("heavens", tc1.getRelease());
+	}
+	
+	/**
+	 * Tests whether a string property with a default value is properly
+	 * inherited.
+	 * 
+	 * @throws MojoExecutionException 
+	 */
+	@Test
+	public void testStringPropertyMerge_inherit() throws MojoExecutionException
+	{
+		TargetConfiguration tc1 = new TargetConfiguration("tc1");
+		tc1.setRelease("inheritme");
+		
+		TargetConfiguration tc2 = new TargetConfiguration("tc2");
+		
+		Utils.mergeConfigurations(tc2, tc1);
+		
+		Assert.assertEquals("inheritme", tc2.getRelease());
+	}
+	
+	/**
+	 * Tests whether a string property with a default value is properly
+	 * overridden.
+	 * 
+	 * @throws MojoExecutionException 
+	 */
+	@Test
+	public void testStringPropertyMerge_override() throws MojoExecutionException
+	{
+		TargetConfiguration tc1 = new TargetConfiguration("tc1");
+		
+		TargetConfiguration tc2 = new TargetConfiguration("tc2");
+		tc1.setRelease("overrideme");
+		
+		Utils.mergeConfigurations(tc2, tc1);
+		
+		Assert.assertEquals("overrideme", tc2.getRelease());
 	}
 	
 	/**
@@ -143,15 +216,16 @@ public class TargetConfigurationTest extends TestCase {
 	 * It should only be ready when it has been fixated or merged at least once.
 	 * @throws MojoExecutionException 
 	 */
+	@Test
 	public void testTargetConfigurationIsReady() throws MojoExecutionException{
 		TargetConfiguration tc = new TargetConfiguration();
-		assertFalse(tc.isReady());
+		Assert.assertFalse(tc.isReady());
 		tc.fixate();
-		assertTrue(tc.isReady());
+		Assert.assertTrue(tc.isReady());
 		tc = new TargetConfiguration();
-		assertFalse(tc.isReady());
+		Assert.assertFalse(tc.isReady());
 		Utils.mergeConfigurations(tc,new TargetConfiguration());
-		assertTrue(tc.isReady());
+		Assert.assertTrue(tc.isReady());
 		
 	}
 }
