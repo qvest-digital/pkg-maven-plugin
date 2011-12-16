@@ -72,9 +72,9 @@ public class Path implements Iterable<String> {
 		StringBuffer sb = new StringBuffer(pathEntries.size() * 10);
 		
 		Iterator<String> ite = pathEntries.iterator();
-		if (ite.hasNext())
+		if (ite.hasNext()){
 			sb.append(fixForUnix(ite.next()));
-		
+		}
 		while (ite.hasNext())
 		{
 			sb.append(":");
@@ -99,9 +99,9 @@ public class Path implements Iterable<String> {
 		StringBuffer sb = new StringBuffer(pathEntries.size() * 10);
 		
 		Iterator<String> ite = pathEntries.iterator();
-		if (ite.hasNext())
+		if (ite.hasNext()){
 			sb.append(fixForWindows(ite.next()));
-		
+		}
 		while (ite.hasNext())
 		{
 			sb.append(";");
@@ -120,9 +120,9 @@ public class Path implements Iterable<String> {
 			.replaceAll("\\\\");
 		
 		// Quote entries with spaces in them.
-		if (e.contains(" "))
+		if (e.contains(" ")){
 			e = "\"" + e + "\"";
-		
+		}
 		return e;
 	}
 

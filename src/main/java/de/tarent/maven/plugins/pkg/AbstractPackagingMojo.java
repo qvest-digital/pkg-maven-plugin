@@ -417,8 +417,9 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	    l.info("bindir                   : "
 	           + (tc.getBindir().length() == 0 ? "(default)" : tc.getBindir()));
 
-	    if (tc.getChosenDistro() == null)
+	    if (tc.getChosenDistro() == null){
 	      throw new MojoExecutionException("No distribution configured!");
+	    }
 
 	    if (tc.isAotCompile())
 	      {
@@ -428,19 +429,21 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 
 	    if (tc.getMainClass() == null)
 	      {
-	        if (! "libs".equals(tc.getSection()))
+	        if (! "libs".equals(tc.getSection())){
 	          throw new MojoExecutionException(
 	                                           "section has to be 'libs' if no main class is given.");
-
-	        if (tc.isBundleAll())
+	        }
+	        if (tc.isBundleAll()){
 	          throw new MojoExecutionException(
 	                                           "Bundling dependencies to a library makes no sense.");
+	        }
 	      }
 	    else
 	      {
-	        if ("libs".equals(tc.getSection()))
+	        if ("libs".equals(tc.getSection())){
 	          throw new MojoExecutionException(
 	                                           "Set a proper section if main class parameter is set.");
+	        }
 	      }
 
 	    if (tc.isAotCompile())

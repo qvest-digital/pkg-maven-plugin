@@ -41,14 +41,14 @@ public class ShowConfig extends Packaging
 {
   public void execute() throws MojoExecutionException, MojoFailureException
   {
-    if (targetConfigurations == null)
+    if (targetConfigurations == null){
       targetConfigurations = new ArrayList<TargetConfiguration>();
-    
+    }
     getLog().info("specific configurations: ");
     
     Iterator<TargetConfiguration> ite = targetConfigurations.iterator();
-    while (ite.hasNext())
+    while (ite.hasNext()){
       getLog().info(ite.next().toString());
-    
+    }
   }
 }

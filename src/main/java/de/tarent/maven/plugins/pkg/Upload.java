@@ -136,12 +136,12 @@ public class Upload extends AbstractPackagingMojo {
 		List<Element> elements = new ArrayList<Element>();
 		elements.add(new Element("fromFile", file.getAbsolutePath()));
 		
-		if(param.getToDir()!=null)
+		if(param.getToDir()!=null){
 			elements.add(new Element("toDir", param.getToDir()));
-		
-		if(param.getServerId()!=null)
+		}
+		if(param.getServerId()!=null){
 			elements.add(new Element("serverId", param.getToDir()));
-		
+		}
 		elements.add(new Element("url", param.parseUrlPlaceholders(url)));
 		
 		Element[] e = new Element[elements.size()];

@@ -133,24 +133,33 @@ public class AuxFile {
 	public int getOctalPermission() {
 		short total = 0;
 				
-		if(userRead)
+		if(userRead){
 			total+=400;
-		if(userWrite)
+		}
+		if(userWrite){
 			total+=200;
-		if(userExecute)
+		}
+		if(userExecute){
 			total+=100;
-		if(groupRead)
+		}
+		if(groupRead){
 			total+=40;
-		if(groupWrite)
+		}
+		if(groupWrite){
 			total+=20;
-		if(groupExecute)
+		}
+		if(groupExecute){
 			total+=10;
-		if(othersRead)
+		}
+		if(othersRead){
 			total+=4;
-		if(othersWrite)
+		}
+		if(othersWrite){
 			total+=2;
-		if(othersExecute)
-			total+=1;		
+		}
+		if(othersExecute){
+			total+=1;
+		}
 		return total;
 	}
 	public String getOwner() {

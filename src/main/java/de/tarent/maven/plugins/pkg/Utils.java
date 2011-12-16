@@ -112,8 +112,9 @@ public final class Utils {
 
 	public static void createParentDirs(File f, String item) throws MojoExecutionException {
 		File p = f.getParentFile();
-		if (!p.exists() && !p.mkdirs())
+		if (!p.exists() && !p.mkdirs()){
 			throw new MojoExecutionException("Cannot create parent dirs for the " + item + " .");
+		}
 	}
 
 	/**
@@ -240,9 +241,9 @@ public final class Utils {
 	 * @throws MojoExecutionException
 	 */
 	public static void storeInputStream(InputStream is, File file, String ioExceptionMsg) throws MojoExecutionException {
-		if (is == null)
+		if (is == null){
 			throw new MojoExecutionException("InputStream must not be null.");
-
+		}
 		try {
 			FileOutputStream fos = new FileOutputStream(file);
 
@@ -356,9 +357,9 @@ public final class Utils {
 			l.info("copying " + type + ": " + from.toString());
 			l.info("destination: " + to.toString());
 
-			if (!from.exists())
+			if (!from.exists()){
 				throw new MojoExecutionException("File to copy does not exist: " + from.toString());
-
+			}
 			createParentDirs(to, type);
 
 			try {
@@ -373,14 +374,16 @@ public final class Utils {
 					FileUtils.copyFile(from, to);
 					size += from.length();
 
-					if (makeExecutable)
+					if (makeExecutable){
 						makeExecutable(l, to.getAbsolutePath());
+					}
 				} else {
 					FileUtils.copyFileToDirectory(from, to);
 					size += from.length();
 
-					if (makeExecutable)
+					if (makeExecutable){
 						makeExecutable(l, to.getAbsolutePath() + File.separator + from.getName());
+					}
 				}
 			} catch (IOException ioe) {
 				throw new MojoExecutionException("IOException while copying " + type, ioe);
@@ -474,8 +477,9 @@ public final class Utils {
 		} catch (IOException e) {
 			throw new MojoExecutionException("storing the classpath entries failed", e);
 		} finally {
-			if (writer != null)
+			if (writer != null){
 				writer.close();
+			}
 		}
 	}
 
@@ -756,9 +760,9 @@ public final class Utils {
 	        TargetConfiguration currentTargetConfiguration = ite.next();
 	        
 	        // The target configuration should be for the requested target.
-	        if (!currentTargetConfiguration.getTarget().equals(target))
+	        if (!currentTargetConfiguration.getTarget().equals(target)){
 	        	continue;
-	        
+	        }
 	        // Recursively creates the merged configuration of the parent. By doing so we
 	        // traverse the chain of configurations from the bottom to the top.
 	        
