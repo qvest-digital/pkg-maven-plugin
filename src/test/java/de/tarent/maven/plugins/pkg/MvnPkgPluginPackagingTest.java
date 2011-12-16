@@ -9,7 +9,12 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	
 	@Before
 	public void setUp() throws Exception{
-
+		// Cleaning up in case the key is still there
+		try{
+			removeTestGPGKey();
+		}catch (Exception e) {
+			// No need to do anything
+		}
 		super.setUp();
 	}
 	
