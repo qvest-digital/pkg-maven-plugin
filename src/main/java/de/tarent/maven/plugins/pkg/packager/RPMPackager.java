@@ -124,7 +124,15 @@ public class RPMPackager extends Packager {
 			createPackage(l, workspaceSession, specFile);
 			l.info("Package created.");
 			File resultingPackage = copyRPMToTargetFolder(l, ph, distroConfig);
+			
+			l.info("Listing target-directory contents :");
+			String out2 = IOUtils.toString(Utils.exec(new String[] {"ls", "-ltra"},
+					 resultingPackage.getParentFile(),
+					 "RPM not found",
+					 "RPM not found"));
+			
 			l.info("Output of rpm -pqi :");
+			for(String s: out2.split("\\r?\\n")){l.info(s);}
 			String out = IOUtils.toString(Utils.exec(new String[] {"rpm", "-pqi", resultingPackage.getAbsolutePath()},
 													 resultingPackage.getParentFile(),
 													 "RPM not found",
