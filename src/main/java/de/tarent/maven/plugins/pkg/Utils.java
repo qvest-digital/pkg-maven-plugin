@@ -231,10 +231,11 @@ public final class Utils {
 				BufferedOutputStream bos = new BufferedOutputStream(p.getOutputStream());
 				bos.write(userInput.getBytes());
 				bos.close();
-			}			
-			if (p.waitFor() != 0) {				
+			}	
+			int exitValue = p.waitFor();
+			if (exitValue != 0) {				
 				print(p);
-				throw new MojoExecutionException(failureMsg);
+				throw new MojoExecutionException("(Suproces exit value = "+exitValue+ " ) " +failureMsg);
 			}
 		} catch (IOException ioe) {
 			throw new MojoExecutionException(ioExceptionMsg + " :" + ioe.getMessage(), ioe);
