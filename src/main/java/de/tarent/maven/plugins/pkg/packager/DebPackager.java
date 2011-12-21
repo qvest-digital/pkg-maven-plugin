@@ -73,6 +73,7 @@ import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
+import de.tarent.maven.plugins.pkg.signing.DebianSigner;
 
 /**
  * Creates a Debian package file (.deb)
@@ -390,13 +391,13 @@ public class DebPackager extends Packager
                 ph.getTempRoot(),
                 "'fakeroot dpkg --build' failed.",
                 "Error creating the .deb file.");
-    /**
-     * If the package is marked to be signed we will proceed to sign it
-     * DISCLAIMER: At the moment only signing of the external changes file is supported.
-     * Included the signed changes file in the package is WIP.
-     */
+
     if(targetConfiguration.isSign()){
-    	bundleSignatureWithPackage(workspaceSession);    	
+    	// This bundles the signature with the package
+    	bundleSignatureWithPackage(workspaceSession);
+    	// This creates a signed .changes file - needed when uploading to repository
+    	DebianSigner db = new DebianSigner(workspaceSession, false);
+    	db.start(l);
     }
 
   }
@@ -423,7 +424,7 @@ public class DebPackager extends Packager
   private void bundleSignatureWithPackage(WorkspaceSession workspaceSession) throws MojoExecutionException{	  
 
 	  File tempRoot = workspaceSession.getHelper().getTempRoot();
-	  String packageFilename = workspaceSession.getHelper().generatePackageFileName();
+	  String packageFilename = workspaceSession.getHelper().getPackageFileName();
 	  String maintainer = workspaceSession.getTargetConfiguration().getMaintainer();
 	  AbstractPackagingMojo apm = workspaceSession.getMojo();
 	  Utils.exec(new String[]{"ar","x",packageFilename},
@@ -445,7 +446,7 @@ public class DebPackager extends Packager
 	  }
 	  
 	  // If signPassPhrase has been set we don't expect any interaction with the user
-	  // there fore we call gpg with --tty
+	  // therefore we call gpg with --tty
 	  if(apm.getSignPassPhrase()!=null){
 		  Utils.exec(new String[]{"gpg","--no-tty", "--passphrase",apm.getSignPassPhrase(),
 				  				  "--default-key",maintainer,

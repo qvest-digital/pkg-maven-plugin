@@ -1,21 +1,18 @@
 package de.tarent.maven.plugins.pkg;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.PluginManager;
 import org.apache.maven.plugin.logging.Log;
-import org.twdata.maven.mojoexecutor.MojoExecutor;
-import org.twdata.maven.mojoexecutor.MojoExecutor.Element;
-import org.twdata.maven.mojoexecutor.MojoExecutor.ExecutionEnvironmentM2;
 
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
+import de.tarent.maven.plugins.pkg.upload.APTUploader;
+import de.tarent.maven.plugins.pkg.upload.IPkgUploader;
+import de.tarent.maven.plugins.pkg.upload.WagonUploader;
 
 /**
  * Enables the plugin to transfer packages resulting from a TargetConfiguration 
@@ -30,22 +27,6 @@ public class Upload extends AbstractPackagingMojo {
 
 	Log l = getLog();
 	
-	/**
-	 * The Maven Session Object
-	 * 
-	 * @parameter expression="${session}"
-	 * @required
-	 * @readonly
-	 */
-	protected MavenSession session;
-	/**
-	 * The Maven PluginManager Object
-	 * 
-	 * @component
-	 * @required
-	 */
-	protected PluginManager pluginManager;
-
 	@Override
 	protected void executeTargetConfiguration(WorkspaceSession ws, String distro)
 			throws MojoExecutionException, MojoFailureException {
@@ -90,6 +71,7 @@ public class Upload extends AbstractPackagingMojo {
 		}catch (Exception ex){
 			throw new MojoExecutionException("No upload paramenters found for configuration " + tc.getTarget(), ex);			
 		}			
+
 			File packageFile = getPackageFile(currentTarget, ph, tc.getTarget());
 
 			l.info("Name of package is: " + packageFile.getAbsolutePath());
@@ -101,55 +83,28 @@ public class Upload extends AbstractPackagingMojo {
 			if (param != null) {
 				for (String url : param.getUrls()) {
 					l.info("Starting upload routine to " + url);
-					try{
-						MojoExecutor.executeMojoImpl(MojoExecutor.plugin("org.codehaus.mojo", "wagon-maven-plugin"),
-								MojoExecutor.goal("upload-single"),
-								MojoExecutor.configuration(generateUploadElements(packageFile, url, param)),
-								new ExecutionEnvironmentM2(project, session, pluginManager));
-						l.info("Upload successful to " + url);
-					}catch(Exception ex){
-						throw new MojoExecutionException("Error while uploading file: " +ex.getMessage(),ex);
-					}
-					
+					IPkgUploader iup;
+					iup = getUploaderForProtocol(ws,url);
+					iup.uploadPackage();
 				}
 			} else {
 				throw new MojoExecutionException("No upload url(s) set for " + tc.getTarget());
 			}		
 	}
+
+	private IPkgUploader getUploaderForProtocol(WorkspaceSession ws, String url) {
+
+		if(url.startsWith("debapt://")){
+			return new APTUploader(ws, url.replace("debapt://",""));
+		}else{
+			return new WagonUploader(ws, url);
+		}
+
+	}
 	
 	public File getPackageFile(TargetConfiguration currentTargetConfiguration, Helper helper,
 			String targetString) {
-		return new File(helper.getTempRoot().getParent(), helper.generatePackageFileName());
-	}
-
-	/**
-	 * Generates a an Array of Elements containing the needed information for an upload
-	 * 
-	 * @param file
-	 * @param url
-	 * @param param
-	 * @return
-	 * @throws MojoExecutionException
-	 */
-	public Element[] generateUploadElements(File file, String url, UploadParameters param) throws MojoExecutionException {
-		
-		List<Element> elements = new ArrayList<Element>();
-		elements.add(new Element("fromFile", file.getAbsolutePath()));
-		
-		if(param.getToDir()!=null){
-			elements.add(new Element("toDir", param.getToDir()));
-		}
-		if(param.getServerId()!=null){
-			elements.add(new Element("serverId", param.getToDir()));
-		}
-		elements.add(new Element("url", param.parseUrlPlaceholders(url)));
-		
-		Element[] e = new Element[elements.size()];
-		for (int i = 0; i < elements.size(); i++) {
-			e[i] = elements.get(i);
-		}
-		return e;
-
+		return new File(helper.getTempRoot().getParent(), helper.getPackageFileName());
 	}
 
 }

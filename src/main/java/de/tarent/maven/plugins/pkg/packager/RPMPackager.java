@@ -163,7 +163,7 @@ public class RPMPackager extends Packager {
 		rpmPackagePath.append("/RPMS/");
 		rpmPackagePath.append(distroConfig.getArchitecture());
 		rpmPackagePath.append("/");		
-		String rpmPackageName = ph.generatePackageFileName();
+		String rpmPackageName = ph.getPackageFileName();
 		
 		File targetFile = new File(ph.getTempRoot().getParentFile(),rpmPackageName);
 		

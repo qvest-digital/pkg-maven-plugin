@@ -87,9 +87,11 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.PluginManager;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
@@ -276,6 +278,28 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	 */
 	protected List<TargetConfiguration> targetConfigurations;
 	
+	/**
+	 * The Maven Session Object
+	 * 
+	 * @parameter expression="${session}"
+	 * @required
+	 * @readonly
+	 */
+	protected MavenSession session;
+	/**
+	 * The Maven PluginManager Object
+	 * 
+	 * @component
+	 * @required
+	 */
+	protected PluginManager pluginManager;
+	
+	public MavenSession getSession() {
+		return session;
+	}
+	public PluginManager getPluginManager() {
+		return pluginManager;
+	}
 	public void setSignPassPhrase(String phrase){
 		this.signPassPhrase = phrase;
 	}

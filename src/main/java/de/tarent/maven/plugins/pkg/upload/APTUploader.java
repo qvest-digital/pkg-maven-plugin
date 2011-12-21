@@ -31,10 +31,8 @@ package de.tarent.maven.plugins.pkg.upload;
 import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 
-import de.tarent.maven.plugins.pkg.AbstractPackagingMojo;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
@@ -44,41 +42,35 @@ import de.tarent.maven.plugins.pkg.map.PackageMap;
  * Uploads packages generated in the package-phase to an APT-repository.
  * 
  * @author Fabian K&ouml;ster (f.koester@tarent.de) tarent GmbH Bonn
- * 
- * @goal deploy
  */
-public class APTUploader extends AbstractPackagingMojo {
+public class APTUploader implements IPkgUploader{
 	
 	/**
 	 * Defines the Repository-ID to use for dupload. For use on the command-line. 
 	 * 
-	 * @parameter expression="${repo}"
 	 */
 	protected String repo;
 	
 	protected PackageMap packageMap;
 	protected String packagingType;
+	protected Log l;
+	private File base;
 	
 	/**
 	 * The command to use for uploading packages
 	 */
 	protected final String uploadCmd = "dupload";
-	
 
-	/**
-	 * @see org.apache.maven.plugin.Mojo#execute()
-	 */
-	public void execute() throws MojoExecutionException, MojoFailureException {
-		if(!getPackagingType().equals("deb")) {
-			throw new MojoFailureException("Uploading packaging-type '"+ getPackagingType() + "' is currently not supported.");
-		}
-		checkEnvironment(getLog());
 		
-		uploadPackage(getLog(), buildDir);
-	}
-	
 	protected void checkEnvironment(Log l) throws MojoExecutionException {
 	    Utils.checkProgramAvailability("dupload");
+	}
+	public APTUploader(WorkspaceSession ws, String repo){
+		this.packageMap = ws.getPackageMap();
+		this.packagingType= packageMap.getPackaging();
+		this.repo = repo;
+		this.l = ws.getMojo().getLog();
+		this.base = ws.getMojo().getBuildDir();
 	}
 	
 	/**
@@ -92,7 +84,7 @@ public class APTUploader extends AbstractPackagingMojo {
 	 * @param base
 	 * @throws MojoExecutionException
 	 */
-	protected void uploadPackage(Log l, File base) throws MojoExecutionException  {
+	public void uploadPackage() throws MojoExecutionException  { 
 		l.info("calling " + uploadCmd + " to upload package");
 		
 		String[] command;
@@ -108,35 +100,5 @@ public class APTUploader extends AbstractPackagingMojo {
 		"Error while uploading package.");
 		
 		l.info("package uploaded sucessfully.");
-	}
-
-	/**
-	 * TODO same functionality as in DebianSigner.getPackageMap(). Refactoring needed.
-	 * @return
-	 */
-	public PackageMap getPackageMap() {
-		if(packageMap == null) {
-			packageMap = ((PackageMap)getPluginContext().get("pm"));
-		}
-		return packageMap;
-	}
-	
-	/**
-	 * TODO same functionality as in DebianSigner.getPackagingType(). Refactoring needed.
-	 * @return
-	 */
-	public String getPackagingType() {
-		if(packagingType == null) {
-			packagingType = getPackageMap().getPackaging();
-		}
-		return packagingType;
-	}
-
-	@Override
-	protected void executeTargetConfiguration(
-			WorkspaceSession workspaceSession, String distro)
-			throws MojoExecutionException, MojoFailureException {
-		// TODO: Sign- and Upload is being unser rework!
-		throw new UnsupportedOperationException("does not work!");
 	}
 }

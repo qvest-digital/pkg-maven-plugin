@@ -255,13 +255,22 @@ public class Helper {
 			instance.prepareDirectories(instance.l, instance.tempRoot, instance.basePkgDir, instance.dstJNIDir);
 		}
 
-		public String generatePackageFileName(Helper instance) {
+		public String getPackageFileName(Helper instance) {
+
+			StringBuilder packageName = new StringBuilder();
+			packageName.append(getPackageFileNameWithoutExtension(instance));
+			packageName.append(".deb");
+			return packageName.toString();
+
+		}
+
+		public String getPackageFileNameWithoutExtension(Helper instance) {
 
 			StringBuilder packageName = new StringBuilder();
 			packageName.append(instance.getPackageName().toLowerCase());
 			packageName.append("_");
 			packageName.append(instance.getPackageVersion());
-			packageName.append("_all.deb");
+			packageName.append("_all");
 			return packageName.toString();
 
 		}
@@ -312,7 +321,15 @@ public class Helper {
 		}
 
 		@Override
-		protected String generatePackageFileName(Helper instance) {
+		protected String getPackageFileName(Helper instance) {
+			StringBuilder rpmPackageName = new StringBuilder();			
+			rpmPackageName.append(getPackageFileNameWithoutExtension(instance));
+			rpmPackageName.append(".rpm");
+			return rpmPackageName.toString();
+		}
+
+		@Override
+		protected String getPackageFileNameWithoutExtension(Helper instance) {
 			StringBuilder rpmPackageName = new StringBuilder();			
 			rpmPackageName.append(instance.getPackageName());
 			rpmPackageName.append("-");
@@ -321,7 +338,6 @@ public class Helper {
 			rpmPackageName.append(instance.targetConfiguration.getRelease());
 			rpmPackageName.append(".");
 			rpmPackageName.append(instance.targetConfiguration.getArchitecture());
-			rpmPackageName.append(".rpm");
 			return rpmPackageName.toString();
 		}
 		
@@ -1643,9 +1659,14 @@ public class Helper {
 	      return strategy.getDstArtifactFile(this);
 	    }
 
-		public String generatePackageFileName() {
+		public String getPackageFileName() {
 	    	// Implementation note: Subtle differences between DEB and RPM.
-			return strategy.generatePackageFileName(this);
+			return strategy.getPackageFileName(this);
+		}
+
+		public String getPackageFileNameWithoutExtension() {
+			// Implementation note: Subtle differences between DEB and RPM.
+			return strategy.getPackageFileNameWithoutExtension(this);
 		}
 
 		public void prepareInitialDirectories() throws MojoExecutionException{
@@ -1668,7 +1689,9 @@ public class Helper {
 			
 			protected abstract void prepareInitialDirectories(Helper instance) throws MojoExecutionException;
 
-			protected abstract String generatePackageFileName(Helper instance);
+			protected abstract String getPackageFileName(Helper instance);
+			
+			protected abstract String getPackageFileNameWithoutExtension(Helper instance);
 		}
 		
 }

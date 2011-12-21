@@ -96,14 +96,6 @@ public class Packaging
 	    if (packager == null){
 	      throw new MojoExecutionException("Unsupported packaging type: "+ packaging);
 	    }
-	  
-	    // Store configuration in plugin-context for later use by signer- and deploy-goal
-	    // TODO: This is completely broken now because a single run of the plugin can
-	    // create multiple binary packages and these variables assume that there is just one.
-	    // TODO: This stuff makes my eyes bleed.
-	    getPluginContext().put("dc", tc);
-	    getPluginContext().put("pm", pm);
-	    getPluginContext().put("packageVersion", ph.getPackageVersion());
 	    
 	    // Finally now that we know that our cool newly created work objects are
 	    // prepared and can be used (none of them is null) we stuff them 
