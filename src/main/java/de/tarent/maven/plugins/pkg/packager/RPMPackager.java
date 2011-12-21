@@ -124,23 +124,10 @@ public class RPMPackager extends Packager {
 			createPackage(l, workspaceSession, specFile);
 			l.info("Package created.");
 			copyRPMToTargetFolder(l, ph, distroConfig);
-			
-			/*
-			 * It is unclear why "rpm -pqi" of the resulting package fails in some tests 
-			 * when running on the jenkins server.
-			 *  
-			 * As this output is rather for debugging puposes, executing this tool will 
-			 * be disabled until the root cause is found.
-			 * 
+
 			File resultingPackage = copyRPMToTargetFolder(l, ph, distroConfig);
-			l.info("Listing target-directory contents :");
-			String out2 = IOUtils.toString(Utils.exec(new String[] {"ls", "-ltra"},
-					 resultingPackage.getParentFile(),
-					 "RPM not found",
-					 "RPM not found"));
 			
 			l.info("Output of rpm -pqi :");
-			for(String s: out2.split("\\r?\\n")){l.info(s);}
 			String out = IOUtils.toString(Utils.exec(new String[] {"rpm", "-pqi", resultingPackage.getAbsolutePath()},
 													 resultingPackage.getParentFile(),
 													 "RPM not found",
@@ -149,7 +136,7 @@ public class RPMPackager extends Packager {
 			l.info("=======================================");
 			for(String s: out.split("\\r?\\n")){l.info(s);}
 			l.info("=======================================");
-			*/
+			
 			
 		} catch (Exception ex) {
 			throw new MojoExecutionException(ex.toString());

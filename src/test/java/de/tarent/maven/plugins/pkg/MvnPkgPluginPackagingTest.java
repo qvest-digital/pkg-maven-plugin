@@ -4,22 +4,27 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.internal.runners.JUnit4ClassRunner;
+import org.junit.runner.RunWith;
 
 public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	
+
 	@Before
 	public void setUp() throws Exception{
-		// Cleaning up in case the key is still there
-		try{
-			removeTestGPGKey();
-		}catch (Exception e) {
-			// No need to do anything
-		}
+		addTestGPGKey();
 		super.setUp();
 	}
 	
 	@After
 	public void tearDown() throws Exception{
+		
+		// Cleaning up in case the key is still there
+		try{
+			removeTestGPGKey();
+		}catch (Exception e) {
+			// Nothing to do here
+		}
 		super.tearDown();
 	}
 	
@@ -271,13 +276,11 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void createSignedDEB()
             throws Exception, MojoExecutionException
         {
-			addTestGPGKey();
 			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","ubuntu_lucid_target_sign");
             packagingPlugin.execute();
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
             assertTrue(debIsSigned());
-            removeTestGPGKey();
         }
 	
 	/**
@@ -292,13 +295,13 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void createNotSignedDEB()
             throws Exception, MojoExecutionException
         {
-			addTestGPGKey();
+
 			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","ubuntu_lucid_target_simple");
             packagingPlugin.execute();
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
             assertFalse(debIsSigned());
-            removeTestGPGKey();
+
         }
 	
 	/**
@@ -313,13 +316,13 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void createSignedRPM()
             throws Exception, MojoExecutionException
         {
-			addTestGPGKey();
+
 			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","centos_5_6_target_sign");
             packagingPlugin.execute();
             assertTrue(numberOfRPMsIs(1));
             assertTrue(rpmContainsMainArtifact());
             assertTrue(rpmIsSigned());
-            removeTestGPGKey(); 
+
         }
 	
 	/**
@@ -334,13 +337,13 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void createNotSignedRPM()
             throws Exception, MojoExecutionException
         {
-			addTestGPGKey();
+
 			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","centos_5_6_target_simple");
             packagingPlugin.execute();
             assertTrue(numberOfRPMsIs(1));
             assertTrue(rpmContainsMainArtifact());
             assertFalse(rpmIsSigned());
-            removeTestGPGKey(); 
+
         }
 
 
@@ -358,7 +361,6 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void executingMultipleSignedTargetsWithoutDependenciesContainingJar()
             throws Exception, MojoExecutionException
         {
-			addTestGPGKey();
 			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg",
 														"ubuntu_lucid_target_sign,centos_5_6_target_sign");
             packagingPlugin.execute();
@@ -368,7 +370,6 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertTrue(debContainsMainArtifact());
             assertTrue(rpmIsSigned());
             assertTrue(debIsSigned());
-            removeTestGPGKey(); 
         }	
 
 
@@ -384,9 +385,8 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	
 	private void addTestGPGKey() throws MojoExecutionException{
 		
-		Utils.exec(new String[]{"gpg","--batch","--import",
-				"src/test/resources/testuserkeys/testuserkey.txt",
-				"src/test/resources/testuserkeys/testuserpubkey.txt"}, "Error adding GPG key", 
+		Utils.exec(new String[]{"gpg","--batch","--import",	PRIVATEKEYLOCATION,	PUBLICKEYLOCATION}, 
+				"Error adding GPG key", 
 				"Error writing GPG key");
 		
 	}

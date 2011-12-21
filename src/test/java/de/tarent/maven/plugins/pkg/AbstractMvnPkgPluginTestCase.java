@@ -1,9 +1,8 @@
 package de.tarent.maven.plugins.pkg;
 
 
-import java.io.File;
-
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,7 +20,6 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.runner.RunWith;
 
-import de.tarent.maven.plugins.pkg.Packaging;
 import de.tarent.maven.plugins.pkg.testingstubs.PkgArtifactStub;
 import de.tarent.maven.plugins.pkg.testingstubs.PkgProjectStub;
 
@@ -34,15 +32,25 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 
 	
 	/**
-	 * This is the key fingerprint for Test User <no@address.com></br>
+	 * This is the key fingerprint for Test User MVNPKGPLUGIN <no@address.com></br>
 	 * It is needed for test purposes
 	 */
-	static final String keyFingerprint = "FE68C8E434E475CC516472D67DB93B6461E99DD5";
+	static final String keyFingerprint = "A70F93982E429501732931CF0481A82949692090";
 	/**
-	 * This is the keyID for Test User <no@address.com></br>
+	 * This is the keyID for Test User MVNPKGPLUGIN <no@address.com> ()</br>
+	 * (The last four hexadecimal character groups of the user's fingerprint). 
 	 * It is needed for test purposes
 	 */
-	static final String keyID = "7db93b6461e99dd5";
+	static final String keyID = keyFingerprint.substring(24, 40).toLowerCase();
+	/**
+	 * location of the public key to use
+	 */
+	protected static final String PUBLICKEYLOCATION = "src/test/resources/testuserkeys/testuser_public.key";
+	/**
+	 * location of the private key to use
+	 */
+	protected static final String PRIVATEKEYLOCATION = "src/test/resources/testuserkeys/testuser_private.key";
+
 	
 	/**{@inheritDoc} */
 	protected void setUp() throws Exception{

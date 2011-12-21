@@ -32,6 +32,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -225,13 +226,15 @@ public final class Utils {
 		Process p = null;
 		
 		try {
+			
 			p = pb.start();
-
+			
 			if(userInput!=null){
-				BufferedOutputStream bos = new BufferedOutputStream(p.getOutputStream());
-				bos.write(userInput.getBytes());
-				bos.close();
-			}	
+				PrintWriter writer = new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(p.getOutputStream())), true);
+				writer.println(userInput);
+				writer.flush();
+				writer.close();
+			}
 			int exitValue = p.waitFor();
 			if (exitValue != 0) {				
 				print(p);

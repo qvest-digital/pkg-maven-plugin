@@ -34,12 +34,12 @@
 				<artifactId>maven-pkg-plugin</artifactId>
 				<version>4.0</version>
 				<configuration>
-					<signPassPhrase>secret</signPassPhrase>
+					<signPassPhrase>123456</signPassPhrase>
 					<targetConfigurations>
 						<targetConfiguration> <!-- simple ubuntu lucid target -->
 							<target>ubuntu_lucid_target</target>							
 							<mainClass>de.tarent.maven.plugins.dummytest</mainClass>
-							<maintainer>Test User &lt;no@address.com&gt;</maintainer>
+							<maintainer>Test User MVNPKGPLUGIN &lt;no@address.com&gt;</maintainer>
 							<manualDependencies>
 								<string>kdm</string>
 								<string>usbmount</string>
@@ -92,7 +92,7 @@
 
 						<targetConfiguration>
 							<target>centos_5_6_target_simple</target>
-							<maintainer>Test User &lt;no@address.com&gt;</maintainer>
+							<maintainer>Test User MVNPKGPLUGIN &lt;no@address.com&gt;</maintainer>
 							<distros>
 								<distro>centos_5_6</distro>
 							</distros>
@@ -119,7 +119,7 @@
 						<targetConfiguration>
 							<target>centos_5_6_target_manual_dependencies</target>							
 							<mainClass>de.tarent.maven.plugins.dummytest</mainClass>
-							<maintainer>Test User &lt;no@address.com&gt;</maintainer>
+							<maintainer>Test User MVNPKGPLUGIN &lt;no@address.com&gt;</maintainer>
 							<distros>
 								<distro>centos_5_6</distro>
 							</distros>

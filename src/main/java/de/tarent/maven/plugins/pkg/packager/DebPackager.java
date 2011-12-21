@@ -448,13 +448,16 @@ public class DebPackager extends Packager
 		  throw new MojoExecutionException(e.getMessage(),e);
 	  }
 	  
+	  // If signPassPhrase has been set we don't expect any interaction with the user
+	  // there fore we call gpg with --tty
 	  if(apm.getSignPassPhrase()!=null){
-		  Utils.exec(new String[]{"gpg","--default-key",maintainer,
+		  Utils.exec(new String[]{"gpg","--no-tty", "--passphrase",apm.getSignPassPhrase(),
+				  				  "--default-key",maintainer,
+				  				  "--no-use-agent",
 				  				  "-abs","-o","_pgporigin","combined-contents"},
 							  	  tempRoot.getParentFile(),
 							  	  "Error signing concatenated file",
-							  	  "Error signing concatenated file",
-							  	apm.getSignPassPhrase());
+							  	  "Error signing concatenated file");
 		  
 	  }else{
 		  Utils.exec(new String[]{"gpg","--default-key",maintainer,
