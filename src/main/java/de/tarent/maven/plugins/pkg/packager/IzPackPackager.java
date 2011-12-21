@@ -67,7 +67,6 @@ import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.helper.Helper;
-import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 public class IzPackPackager extends Packager
 {
@@ -78,7 +77,6 @@ public class IzPackPackager extends Packager
                       ) throws MojoExecutionException
   {
 
-	PackageMap packageMap = workspaceSession.getPackageMap();
 	TargetConfiguration distroConfig = workspaceSession.getTargetConfiguration();
 	Helper ph = workspaceSession.getHelper();
 	

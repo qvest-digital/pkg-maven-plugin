@@ -54,7 +54,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
 
@@ -62,7 +61,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.AbstractPackagingMojo;
@@ -75,7 +73,6 @@ import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
-import de.tarent.maven.plugins.pkg.signing.DebianSigner;
 
 /**
  * Creates a Debian package file (.deb)
@@ -428,7 +425,6 @@ public class DebPackager extends Packager
 	  File tempRoot = workspaceSession.getHelper().getTempRoot();
 	  String packageFilename = workspaceSession.getHelper().generatePackageFileName();
 	  String maintainer = workspaceSession.getTargetConfiguration().getMaintainer();
-	  TargetConfiguration tc = workspaceSession.getTargetConfiguration();
 	  AbstractPackagingMojo apm = workspaceSession.getMojo();
 	  Utils.exec(new String[]{"ar","x",packageFilename},
 			  	 tempRoot.getParentFile(),

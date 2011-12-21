@@ -29,7 +29,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.WorkspaceSession;
-import de.tarent.maven.plugins.pkg.helper.Helper;
 
 public abstract class Packager
 {

@@ -64,7 +64,6 @@ import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
 import de.tarent.maven.plugins.pkg.helper.Helper;
-import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 /**
  * Creates a Debian package file (.deb)
@@ -78,7 +77,6 @@ public class IpkPackager extends Packager
                       ) throws MojoExecutionException
   {
 	TargetConfiguration distroConfig = workspaceSession.getTargetConfiguration();
-	PackageMap packageMap = workspaceSession.getPackageMap();
 	Helper ph = workspaceSession.getHelper();
 	
     String packageName = ph.getPackageName();
