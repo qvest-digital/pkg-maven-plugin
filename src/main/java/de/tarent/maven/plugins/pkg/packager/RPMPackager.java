@@ -185,6 +185,7 @@ public class RPMPackager extends Packager {
 	public void checkEnvironment(Log l, WorkspaceSession workspaceSession) throws MojoExecutionException {
 		Helper ph = workspaceSession.getHelper();
 		try {
+			Utils.checkProgramAvailability("gpg");
 			Utils.checkProgramAvailability("rpmbuild");
 			l.info(IOUtils.toString(Utils.exec(new String[] {"rpm", "--version"},
 					null,"Calling rpm --version failed","ioError",null)).trim());

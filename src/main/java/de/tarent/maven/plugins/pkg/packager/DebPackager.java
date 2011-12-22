@@ -260,7 +260,9 @@ public class DebPackager extends Packager
   public void checkEnvironment(Log l,
                                WorkspaceSession workspaceSession) throws MojoExecutionException
   {
-    // No specifics to show or test.
+    Utils.checkProgramAvailability("gpg");
+    Utils.checkProgramAvailability("ar");
+    Utils.checkProgramAvailability("dpkg-deb");
   }
 
   /**
