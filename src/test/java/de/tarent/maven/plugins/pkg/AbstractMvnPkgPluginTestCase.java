@@ -53,14 +53,19 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	 * location of the private key to use
 	 */
 	protected static String PRIVATEKEYLOCATION;
-	
-	private enum keytype{
+	/**
+	 * This enum is used to define the type of keys to be used when signing packages.
+	 * @author plafue
+	 *
+	 */
+	private enum KeyType{
 		RSA,
 		DSA
 	}
 	
 	@BeforeClass
 	public static void keySetup() throws MojoExecutionException{
+		// We will add keys for Test User once per session with these methods
 		selectKeyForRPMVersion();
 		addTestGPGKey();
 	}
@@ -68,7 +73,7 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	
 	@AfterClass
 	public static void keyRemoval(){		
-		// Cleaning up in case the key is still there
+		// Cleaning up imported GPG keys
 		try{
 			removeTestGPGKey();
 		}catch (Exception e) {
@@ -291,35 +296,56 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		return false;
 	}
 	
+	/**
+	 * Sets the variables related to the GPG keys needed by some tests.
+	 * 
+	 * @throws MojoExecutionException
+	 */
 	private static void selectKeyForRPMVersion() throws MojoExecutionException {
-		keytype type = getKeyTypeForRPMVersion();
+		KeyType type = getKeyTypeForRPMVersion();
 		PUBLICKEYLOCATION = "src/test/resources/testuserkeys/"+ type +"/testuser_public.key";
 		PRIVATEKEYLOCATION = "src/test/resources/testuserkeys/"+ type +"/testuser_private.key";
-		if(type==keytype.DSA){
+		if(type==KeyType.DSA){
 				keyFingerprint = "A70F93982E429501732931CF0481A82949692090";
-		}else if(type==keytype.RSA){
+		}else if(type==KeyType.RSA){
 				keyFingerprint = "22D763EEFA5E27AE399357C3B18A1F8A9544944C";
 		}			
 		keyID = keyFingerprint.substring(24, 40).toLowerCase();
 	}
 
-	private static keytype getKeyTypeForRPMVersion() throws MojoExecutionException {
+	/**
+	 * Returns an appropriate keytype to be used when importing keys for the test user.<br/>
+	 * 
+	 * <p>Older versions of rpm do not work as expected when using RSA keys 
+	 * (<a href="https://bugzilla.redhat.com/show_bug.cgi?id=436812">Bug 436812</a> in RedHat's Bugzilla).
+	 * This method evaluates the version of rpm being used and, if >=4.8 returns keytype RSA, otherwise DSA.<p> 
+	 * @return
+	 * @throws MojoExecutionException
+	 */
+	private static KeyType getKeyTypeForRPMVersion() throws MojoExecutionException {
 		String version = null;
 		try {
-			version = IOUtils.toString(Utils.exec(new String[]{"rpm","--version"}, new File("/"),"error getting rpm version", "error getting rpm version"));
+			version = IOUtils.toString(Utils.exec(new String[]{"rpm","--version"}, 
+												  new File("/"),
+												  "error getting rpm version",
+												  "error getting rpm version"));
 			
 		} catch (IOException e) {
 			throw new MojoExecutionException(e.getMessage(),e);
 		}
-		Pattern p = Pattern.compile("[4-9]\\.([8-9]|\\d{2})\\.?");
+		Pattern p = Pattern.compile("\\s[4-9]\\.([8-9]|\\d{2})\\.?");
 		Matcher m = p.matcher(version);
 		if (m.find()){
-			return keytype.RSA;	
+			return KeyType.RSA;	
 		}else{
-			return keytype.DSA;
+			return KeyType.DSA;
 		}
 	}
 	
+	/**
+	 * Imports the GPG key needed for the tests that sign packages.
+	 * @throws MojoExecutionException
+	 */
 	private static void addTestGPGKey() throws MojoExecutionException{
 		
 		Utils.exec(new String[]{"gpg","--batch","--import",	PRIVATEKEYLOCATION,	PUBLICKEYLOCATION}, 
@@ -328,6 +354,10 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		
 	}
 	
+	/**
+	 * Deletes the GPG key used by the tests that sign packages. 
+	 * @throws MojoExecutionException
+	 */
 	private static void removeTestGPGKey() throws MojoExecutionException{
 		Utils.exec(new String[]{"gpg","--batch","--delete-secret-and-public-keys",keyFingerprint}, 
 								"Error removing GPG key", 
