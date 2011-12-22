@@ -554,8 +554,7 @@ public class SpecFileGenerator {
 	 * @throws IOException
 	 */
 	public void generate(File f) throws  MojoExecutionException, IOException {
-		
-		checkneededfields();		
+				
 		w = new PrintWriter(new FileOutputStream(f));
 		
 		writeEntry("Summary", summary);
@@ -587,19 +586,7 @@ public class SpecFileGenerator {
 
 		w.close();
 	}
-
-	private void checkneededfields() throws MojoExecutionException {
-		if(packageName=="unknown"||version=="unknown"||
-				summary=="unknown"||description=="unknown"||
-				license=="unknown"||release=="unknown"){
-			String message = "At least PackageName, Version, Description, Summary, "+ 
-							 "License and Release are needed for the spec file.";
-			if(logger!=null){
-				logger.error(message);
-			}
-			throw new MojoExecutionException(message);
-		}
-	}
+	
 	/**
 	 * Creates a section with the given title and the provided text
 	 * @param w

@@ -121,6 +121,25 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	/**
 	 * This test attempts the following:
 	 * 
+	 * Execute a target configuration without parent
+	 * Use the only distribution defined for this target
+	 * Try to create a RPM file without PackageName, 
+	 * Version, Description, Summary, License and Release.
+	 *  
+	 * This test should fail.
+	 * 
+	*/
+	@Test(expected=MojoExecutionException.class)
+    public void createRpmForCentOS_5_6WithoutNeededInformationFails()
+            throws Exception
+        {	
+			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg","centos_5_6_target_simple",false);
+			packagingPlugin.execute();
+        }
+
+	/**
+	 * This test attempts the following:
+	 * 
 	 * Execute a target configuration 
 	 * 		which itself has parent configuration
 	 * 		which contains manually added dependencies
@@ -365,15 +384,19 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 
 		
 	public Packaging mockPackagingEnvironment(String pomFilename, String goal) throws Exception{		
-		 return (Packaging)mockEnvironment(pomFilename,"pkg");		
+		 return (Packaging)mockEnvironment(pomFilename,"pkg",true);		
 	}	
 	public Packaging mockPackagingEnvironment(String pomFilename, String goal, String target) throws Exception{		
-		Packaging p = (Packaging) mockEnvironment(pomFilename,"pkg");
+		Packaging p = (Packaging) mockEnvironment(pomFilename,"pkg",true);
 		p.target = target;
 		return p;		
 	}
-		
-		
+	
+	private Packaging mockPackagingEnvironment(String pomFilename, String goal, String target, boolean b) throws Exception {
+		Packaging p = (Packaging) mockEnvironment(pomFilename,"pkg",b);
+		p.target = target;
+		return p;	
+	}
 		
 	
 	

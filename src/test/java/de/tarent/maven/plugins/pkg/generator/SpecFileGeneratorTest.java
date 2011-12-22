@@ -54,12 +54,6 @@ public class SpecFileGeneratorTest {
 		Assert.assertTrue(spec.exists());
 	}
 
-	@Test(expected = MojoExecutionException.class)
-	public void testFileGenerationWithPackageNameMissingThrowsException()
-			throws MojoExecutionException, IOException {
-		specgenerator.generate(spec);
-	}
-
 	@Test
 	public void testCreatePreinstallScriptFromExternalFileSuccessfully()
 			throws IOException {

@@ -106,7 +106,8 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	 * @return
 	 * @throws Exception
 	 */
-	public AbstractPackagingMojo mockEnvironment(String pomFilename, String goal) throws Exception{
+	public AbstractPackagingMojo mockEnvironment(String pomFilename, String goal, boolean setAllNeededParameters) 
+			throws Exception{
 		
 
         File pom = getTestFile( getBasedir(), "src/test/resources/dummyproject/" + pomFilename );
@@ -119,17 +120,12 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 
         // Parameters that are not part of the mvn-pkg-plugin section are somehow loaded into the project
         // TODO: Find why this problem exists and/or a more elegant way to do this
-        
-        packagingPlugin.project.setPackaging("jar");
-        packagingPlugin.project.setName("DummyProject");
-        packagingPlugin.project.setArtifactId("DummyProject");
-        packagingPlugin.project.setDescription("DummyDescription");
-        packagingPlugin.project.setUrl("http://DummyURL.com");
-        packagingPlugin.project.setVersion("1.0.0");
+
         packagingPlugin.project.setLicenses(createLicenseList("License 1","License 2"));
-        packagingPlugin.version =    packagingPlugin.project.getVersion();
-        packagingPlugin.artifactId = packagingPlugin.project.getArtifactId();
-        packagingPlugin.finalName =	 packagingPlugin.project.getArtifactId();
+        
+        if(setAllNeededParameters){
+        	setNeededInformation(packagingPlugin);
+        }
         
         packagingPlugin.buildDir =  TARGETDIR;
         packagingPlugin.outputDirectory = TARGETDIR;
@@ -149,6 +145,23 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
         
         return packagingPlugin;
 		
+	}
+	public AbstractPackagingMojo mockEnvironment(String pomFilename, String goal) throws Exception{
+		return mockEnvironment(pomFilename,goal,true);
+	}
+
+
+	private void setNeededInformation(AbstractPackagingMojo packagingPlugin) {
+		packagingPlugin.project.setPackaging("jar");
+        packagingPlugin.project.setName("DummyProject");
+        packagingPlugin.project.setArtifactId("DummyProject");
+        packagingPlugin.project.setDescription("DummyDescription");
+        packagingPlugin.project.setUrl("http://DummyURL.com");
+        packagingPlugin.project.setVersion("1.0.0");
+        packagingPlugin.project.setLicenses(createLicenseList("License 1","License 2"));
+        packagingPlugin.version =    packagingPlugin.project.getVersion();
+        packagingPlugin.artifactId = packagingPlugin.project.getArtifactId();
+        packagingPlugin.finalName =	 packagingPlugin.project.getArtifactId();
 	}
 	
 	

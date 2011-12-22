@@ -184,6 +184,8 @@ public class RPMPackager extends Packager {
 	@Override
 	public void checkEnvironment(Log l, WorkspaceSession workspaceSession) throws MojoExecutionException {
 		Helper ph = workspaceSession.getHelper();
+		
+		checkneededfields(ph,workspaceSession.getTargetConfiguration());
 		try {
 			Utils.checkProgramAvailability("gpg");
 			Utils.checkProgramAvailability("rpmbuild");
@@ -299,6 +301,20 @@ public class RPMPackager extends Packager {
 			}
 		}catch(MojoExecutionException ex){
 			throw ex;
+		}
+	}
+	
+
+
+	private void checkneededfields(Helper ph, TargetConfiguration dc) throws MojoExecutionException {
+		if(ph.getPackageName()=="unknown"|| ph.getPackageName()==null||
+		   ph.getPackageVersion()=="unknown"||ph.getPackageVersion()==null||
+		   ph.getProjectDescription()=="unknown"||ph.getProjectDescription()==null||
+		   ph.getLicense()=="unknown"||ph.getLicense()==null||
+		   dc.getRelease()=="unknown"||dc.getRelease()==null){
+			String message = "At least PackageName, Version, Description, Summary, "+ 
+							 "License and Release are needed for the spec file.";
+			throw new MojoExecutionException(message);
 		}
 	}
 }
