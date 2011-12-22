@@ -243,7 +243,7 @@ public class TargetConfiguration {
 	 * Set default distribution to package for.
 	 * 
 	 */
-	@MergeMe(defaultString="unknown")
+	@MergeMe(defaultValueIsNull=true)
 	private String defaultDistro;
 	
 	/**
@@ -801,13 +801,13 @@ public class TargetConfiguration {
 	private Boolean sign;
 	
 	/**
-	 * Denothes the release of the package to build. As of now, this value is
+	 * Denotes the release of the package to build. As of now, this value is
 	 * only taken in consideration when building RPM packages.
 	 * 
 	 * <p>Default value is <code>unknown</code>.</p>
 	 * 
 	 */
-	@MergeMe(defaultString="")
+	@MergeMe(defaultString="unknown")
 	private String release;
 	
 	/**
@@ -837,139 +837,167 @@ public class TargetConfiguration {
 	private boolean ready;
 	
 	public TargetConfiguration() {
-		// For instantiation.
-		this("default");
+		// Intentionally empty.
 	}
 
 	public String getArchitecture() {
+		checkIfReady();
 		return architecture;
 	}
 
 	public List<? extends AuxFile> getAuxFiles() {
+		checkIfReady();
 		return auxFiles;
 	}
 
 	public String getBindir() {
+		checkIfReady();
 		return bindir;
 	}
 
 	public Set<String> getBundleDependencies() {
+		checkIfReady();
 		return bundleDependencies;
 	}
 
 	public String getDatadir() {
+		checkIfReady();
 		return datadir;
 	}
 
 	public List<? extends DataFile> getDataFiles() {
+		checkIfReady();
 		return dataFiles;
 	}
 	
 	public List<? extends BinFile> getBinFiles() {
+		checkIfReady();
 		return binFiles;
 	}
 
 	public String getDatarootdir() {
+		checkIfReady();
 		return datarootdir;
 	}
 
 	public List<? extends DatarootFile> getDatarootFiles() {
+		checkIfReady();
 		return datarootFiles;
 	}
 
 	public Set<String> getDistros() {
+		// No readyness check as the Utils#getMergedConfiguration() method
+		// depends on this field being available.
 		return distros;
 	}
 
 	public String getGcjDbToolExec() {
+		checkIfReady();
 		return gcjDbToolExec;
 	}
 
 	public String getGcjExec() {
+		checkIfReady();
 		return gcjExec;
 	}
 
 	public String getIzPackInstallerXml() {
+		checkIfReady();
 		return izPackInstallerXml;
 	}
 
 	public List<JarFile> getJarFiles() {
+		checkIfReady();
 		return jarFiles;
 	}
 
 	public List<? extends AuxFile> getJniFiles() {
+		checkIfReady();
 		return jniFiles;
 	}
 
 	public String getJniLibraryPath() {
+		checkIfReady();
 		return jniLibraryPath;
 	}
 
 	public String getMainClass() {
+		checkIfReady();
 		return mainClass;
 	}
 
 	public String getMaintainer() {
+		checkIfReady();
 		return maintainer;
-	}
-	
-	public String getTarget() {
-		return target;
 	}
 
 	public List<String> getManualDependencies() {
+		checkIfReady();
 		return manualDependencies;
 	}
 
 	public List<String> getRecommends() {
+		checkIfReady();
 		return recommends;
 	}
 
 	public List<String> getSuggests() {
+		checkIfReady();
 		return recommends;
 	}
 
 	public List<String> getProvides() {
+		checkIfReady();
 		return provides;
 	}
 
 	public List<String> getConflicts() {
+		checkIfReady();
 		return conflicts;
 	}
 
 	public List<String> getReplaces() {
+		checkIfReady();
 		return replaces;
 	}
 
 	public String getMaxJavaMemory() {
+		checkIfReady();
 		return maxJavaMemory;
 	}
 
 	public String getPostinstScript() {
+		checkIfReady();
 		return postinstScript;
 	}
 
 	public String getPostrmScript() {
+		checkIfReady();
 		return postrmScript;
 	}
 
 	public String getPrefix() {
+		checkIfReady();
 		return prefix;
 	}
 
 	public String getPreinstScript() {
+		checkIfReady();
 		return preinstScript;
 	}
 
 	public String getPrermScript() {
+		checkIfReady();
 		return prermScript;
 	}
 
 	public String getSection() {
+		checkIfReady();
 		return section;
 	}
 
 	public String getRevision() {
+		checkIfReady();
 		if(revision == null){
 			return "";
 		}else{
@@ -982,66 +1010,82 @@ public class TargetConfiguration {
 	}
 
 	public String getChosenDistro() {
+		checkIfReady();
 		return chosenDistro;
 	}
 
 	public String getSrcAuxFilesDir() {
+		checkIfReady();
 		return srcAuxFilesDir;
 	}
 
 	public String getSrcBinFilesDir() {
+		checkIfReady();
 		return srcBinFilesDir;
 	}
 
 	public String getSrcDataFilesDir() {
+		checkIfReady();
 		return srcDataFilesDir;
 	}
 
 	public String getSrcDatarootFilesDir() {
+		checkIfReady();
 		return srcDatarootFilesDir;
 	}
 
 	public String getSrcIzPackFilesDir() {
+		checkIfReady();
 		return srcIzPackFilesDir;
 	}
 
 	public String getSrcJarFilesDir() {
+		checkIfReady();
 		return srcJarFilesDir;
 	}
 
 	public String getSrcJNIFilesDir() {
+		checkIfReady();
 		return srcJNIFilesDir;
 	}
 
 	public String getSrcSysconfFilesDir() {
+		checkIfReady();
 		return srcSysconfFilesDir;
 	}
 
 	public String getSysconfdir() {
+		checkIfReady();
 		return sysconfdir;
 	}
 
 	public List<SysconfFile> getSysconfFiles() {
+		checkIfReady();
 		return sysconfFiles;
 	}
 
 	public Properties getSystemProperties() {
+		checkIfReady();
 		return systemProperties;
 	}
 
 	public String getWrapperScriptName() {
+		checkIfReady();
 		return wrapperScriptName;
 	}
 
 	public boolean isAdvancedStarter() {
+		checkIfReady();
 		return advancedStarter.booleanValue();
 	}
 
 	public boolean isAotCompile() {
+		checkIfReady();
 		return aotCompile.booleanValue();
 	}
 
 	public boolean isBundleAll() {
+		checkIfReady();
 		return bundleAll.booleanValue();
 	}
 
@@ -1407,6 +1451,7 @@ public class TargetConfiguration {
 	}
 
 	public String getCustomCodeUnix() {
+		checkIfReady();
 		return customCodeUnix;
 	}
 
@@ -1415,6 +1460,7 @@ public class TargetConfiguration {
 	}
 
 	public String getCustomCodeWindows() {
+		checkIfReady();
 		return customCodeWindows;
 	}
 
@@ -1424,6 +1470,7 @@ public class TargetConfiguration {
 
 
 	public boolean isSign() {
+		checkIfReady();
 		return sign.booleanValue();
 	}
 
@@ -1433,6 +1480,7 @@ public class TargetConfiguration {
 	}
 
 	public String getRelease() {
+		checkIfReady();
 		return release;
 	}
 
@@ -1443,6 +1491,7 @@ public class TargetConfiguration {
 
 
 	public String getSource() {
+		checkIfReady();
 		return source;
 	}
 
@@ -1452,6 +1501,7 @@ public class TargetConfiguration {
 	}
 
 	public String getBundledJarDir() {
+		checkIfReady();
 		return bundledJarDir;
 	}
 
@@ -1462,10 +1512,12 @@ public class TargetConfiguration {
 
 
 	public UploadParameters getUploadParameters() {
+		checkIfReady();
 		return uploadParameters;
 	}
 
 	public List<String> getRelations() {
+		checkIfReady();
 		return relations;
 	}
 
@@ -1486,6 +1538,7 @@ public class TargetConfiguration {
 
 
 	public String getDefaultDistro() {
+		checkIfReady();
 		return defaultDistro;
 	}
 	
@@ -1494,11 +1547,16 @@ public class TargetConfiguration {
 	}
 
 	public String getPackageNameSuffix() {
+		checkIfReady();
 		return packageNameSuffix;
 	}
 
 	public void setPackageNameSuffix(String packageNameSuffix) {
 		this.packageNameSuffix = packageNameSuffix;
+	}
+
+	public String getTarget() {
+		return target;
 	}
 
 	/**
@@ -1523,4 +1581,9 @@ public class TargetConfiguration {
 		this.ready = ready;
 	}
 
+	private void checkIfReady() {
+		if (!ready)
+			throw new IllegalStateException(TargetConfiguration.class.getCanonicalName() + " was not ready to be used. Either call fixate() or merge().");
+	}
+	
 }

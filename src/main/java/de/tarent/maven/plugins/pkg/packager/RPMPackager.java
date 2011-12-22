@@ -157,11 +157,11 @@ public class RPMPackager extends Packager {
 	 * @return
 	 * @throws IOException
 	 */
-	private File copyRPMToTargetFolder(Log l, Helper ph, TargetConfiguration distroConfig) throws IOException {
+	private File copyRPMToTargetFolder(Log l, Helper ph, TargetConfiguration distroConfig) throws MojoExecutionException, IOException {
 		
 		StringBuilder rpmPackagePath= new StringBuilder(ph.getBaseBuildDir().getParent());				
 		rpmPackagePath.append("/RPMS/");
-		rpmPackagePath.append(distroConfig.getArchitecture());
+		rpmPackagePath.append(ph.getArchitecture());
 		rpmPackagePath.append("/");		
 		String rpmPackageName = ph.getPackageFileName();
 		
@@ -231,7 +231,7 @@ public class RPMPackager extends Packager {
 			
 			// Following parameters are not mandatory
 			l.info("Adding optional parameters to SPEC file.");
-			sgen.setArch(dc.getArchitecture());
+			sgen.setArch(ph.getArchitecture());
 			sgen.setPrefix(dc.getPrefix());
 			sgen.setPackager(dc.getMaintainer());
 			sgen.setFiles(ph.generateFilelist());

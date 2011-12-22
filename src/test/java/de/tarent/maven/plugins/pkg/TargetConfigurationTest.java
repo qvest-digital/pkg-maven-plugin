@@ -154,7 +154,7 @@ public class TargetConfigurationTest {
 		TargetConfiguration tc1 = new TargetConfiguration("tc1");
 		tc1.fixate();
 		
-		Assert.assertEquals("", tc1.getRelease());
+		Assert.assertEquals("unknown", tc1.getRelease());
 	}
 	
 	/**

@@ -96,6 +96,9 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 
+import de.tarent.maven.plugins.pkg.helper.Helper;
+import de.tarent.maven.plugins.pkg.map.PackageMap;
+
 /**
  * Base Mojo for all packaging mojos. It provides convenient access to a mean to
  * resolve the project's complete dependencies.
@@ -265,9 +268,10 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	 * @required
 	 */
 	protected String ignorePackagingTypes;
-	
+
 	/**
-	 * Parameter with a comma separated list of targets. For use on the command-line.
+	 * Parameter with a comma separated list of targets. For use on the
+	 * command-line.
 	 * 
 	 * @parameter expression="${target}"
 	 */
@@ -303,11 +307,13 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	public void setSignPassPhrase(String phrase){
 		this.signPassPhrase = phrase;
 	}
-	public String getSignPassPhrase(){
+
+	public String getSignPassPhrase() {
 		return signPassPhrase;
 	}
+
 	protected String signPassPhrase;
-	
+
 	public String get_7zipExec() {
 		return _7zipExec;
 	}
@@ -363,8 +369,8 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	protected final boolean packagingTypeBelongsToIgnoreList() {
 		boolean inList = false;
 		Log l = getLog();
-		l.info("ignorePackagingTypes set. Contains: " + ignorePackagingTypes + " . Project packaging is "
-				+ project.getPackaging());
+		l.info("ignorePackagingTypes set. Contains: " + ignorePackagingTypes
+				+ " . Project packaging is " + project.getPackaging());
 		for (String s : ignorePackagingTypes.split(",")) {
 			if (project.getPackaging().compareToIgnoreCase(s) == 0) {
 				inList = true;
@@ -372,158 +378,220 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 		}
 		return inList;
 	}
-	  
-	  /**
-	   * 
-	   * Returns the comma separated target list as String[].</br></br> 
-	   * 
-	   * In order to allow multiple target to be called through the command line we allow the user to provide
-	   * a comma separated list (Maven < 3.0.3 does not transform comma separated values 
-	   * from the command line to String[]). 
-	   * 
-	   * @param target
-	   * @return
-	   */
-	  protected String[] getTargets()throws MojoExecutionException{
-	  
+
+	/**
+	 * 
+	 * Returns the comma separated target list as String[].</br></br>
+	 * 
+	 * In order to allow multiple target to be called through the command line
+	 * we allow the user to provide a comma separated list (Maven < 3.0.3 does
+	 * not transform comma separated values from the command line to String[]).
+	 * 
+	 * @param target
+	 * @return
+	 */
+	protected String[] getTargets() throws MojoExecutionException {
+
 		String[] targetArray = null;
-		
-		if (target!=null){
-			targetArray =  target.split(",");
-		}else{
-			throw new MojoExecutionException("No target(s) specified for execution.");
+
+		if (target != null) {
+			targetArray = target.split(",");
+		} else {
+			throw new MojoExecutionException(
+					"No target(s) specified for execution.");
 		}
-		
+
 		return targetArray;
-		
-	  }
-	
 
-	  /**
-	   * Validates arguments and test tools.
-	   * 
-	   * @throws MojoExecutionException
-	   */
-	  protected void checkEnvironment(Log l, TargetConfiguration tc) throws MojoExecutionException
-	  {
-	    l.info("distribution             : " + tc.getChosenDistro());
-	    l.info("default package map      : "
-	           + (defaultPackageMapURL == null ? "built-in"
-	                                          : defaultPackageMapURL.toString()));
-	    l.info("auxiliary package map    : "
-	           + (auxPackageMapURL == null ? "no" : auxPackageMapURL.toString()));
-	    l.info("type of project          : "
-	           + ((tc.getMainClass() != null) ? "application" : "library"));
-	    l.info("section                  : " + tc.getSection());
-	    l.info("bundle all dependencies  : " + ((tc.isBundleAll()) ? "yes" : "no"));
-	    l.info("ahead of time compilation: " + ((tc.isAotCompile()) ? "yes" : "no"));
-	    l.info("custom jar libraries     : "
-	            + ((tc.getJarFiles().isEmpty()) ? "<none>"
-	                                      : String.valueOf(tc.getJarFiles().size())));
-	    l.info("JNI libraries            : "
-	           + ((tc.getJniFiles().isEmpty()) ? "<none>"
-	                                     : String.valueOf(tc.getJniFiles().size())));
-	    l.info("auxiliary file source dir: "
-	           + (tc.getSrcAuxFilesDir().length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-	                                             : tc.getSrcAuxFilesDir()));
-	    l.info("auxiliary files          : "
-	           + ((tc.getAuxFiles().isEmpty()) ? "<none>"
-	                                     : String.valueOf(tc.getAuxFiles().size())));
-	    l.info("prefix                   : "
-	           + (tc.getPrefix().length() == 1 ? "/ (default)" : tc.getPrefix()));
-	    l.info("sysconf files source dir : "
-	           + (tc.getSrcSysconfFilesDir().length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-	                                                 : tc.getSrcSysconfFilesDir()));
-	    l.info("sysconfdir               : "
-	           + (tc.getSysconfdir().length() == 0 ? "(default)" : tc.getSysconfdir()));
-	    l.info("dataroot files source dir: "
-	           + (tc.getSrcDatarootFilesDir().length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-	                                                  : tc.getSrcDatarootFilesDir()));
-	    l.info("dataroot                 : "
-	           + (tc.getDatarootdir().length() == 0 ? "(default)" : tc.getDatarootdir()));
-	    l.info("data files source dir    : "
-	           + (tc.getSrcDataFilesDir().length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
-	                                              : tc.getSrcDataFilesDir()));
-	    l.info("datadir                  : "
-	           + (tc.getDatadir().length() == 0 ? "(default)" : tc.getDatadir()));
-	    l.info("bindir                   : "
-	           + (tc.getBindir().length() == 0 ? "(default)" : tc.getBindir()));
+	}
 
-	    if (tc.getChosenDistro() == null){
-	      throw new MojoExecutionException("No distribution configured!");
-	    }
+	/**
+	 * Validates arguments and test tools.
+	 * 
+	 * @throws MojoExecutionException
+	 */
+	protected void checkEnvironment(Log l, TargetConfiguration tc)
+			throws MojoExecutionException {
+		l.info("distribution             : " + tc.getChosenDistro());
+		l.info("default package map      : "
+				+ (defaultPackageMapURL == null ? "built-in"
+						: defaultPackageMapURL.toString()));
+		l.info("auxiliary package map    : "
+				+ (auxPackageMapURL == null ? "no" : auxPackageMapURL
+						.toString()));
+		l.info("type of project          : "
+				+ ((tc.getMainClass() != null) ? "application" : "library"));
+		l.info("section                  : " + tc.getSection());
+		l.info("bundle all dependencies  : "
+				+ ((tc.isBundleAll()) ? "yes" : "no"));
+		l.info("ahead of time compilation: "
+				+ ((tc.isAotCompile()) ? "yes" : "no"));
+		l.info("custom jar libraries     : "
+				+ ((tc.getJarFiles().isEmpty()) ? "<none>" : String.valueOf(tc
+						.getJarFiles().size())));
+		l.info("JNI libraries            : "
+				+ ((tc.getJniFiles().isEmpty()) ? "<none>" : String.valueOf(tc
+						.getJniFiles().size())));
+		l.info("auxiliary file source dir: "
+				+ (tc.getSrcAuxFilesDir().length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+						: tc.getSrcAuxFilesDir()));
+		l.info("auxiliary files          : "
+				+ ((tc.getAuxFiles().isEmpty()) ? "<none>" : String.valueOf(tc
+						.getAuxFiles().size())));
+		l.info("prefix                   : "
+				+ (tc.getPrefix().length() == 1 ? "/ (default)" : tc
+						.getPrefix()));
+		l.info("sysconf files source dir : "
+				+ (tc.getSrcSysconfFilesDir().length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+						: tc.getSrcSysconfFilesDir()));
+		l.info("sysconfdir               : "
+				+ (tc.getSysconfdir().length() == 0 ? "(default)" : tc
+						.getSysconfdir()));
+		l.info("dataroot files source dir: "
+				+ (tc.getSrcDatarootFilesDir().length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+						: tc.getSrcDatarootFilesDir()));
+		l.info("dataroot                 : "
+				+ (tc.getDatarootdir().length() == 0 ? "(default)" : tc
+						.getDatarootdir()));
+		l.info("data files source dir    : "
+				+ (tc.getSrcDataFilesDir().length() == 0 ? (getDefaultSrcAuxfilesdir() + " (default)")
+						: tc.getSrcDataFilesDir()));
+		l.info("datadir                  : "
+				+ (tc.getDatadir().length() == 0 ? "(default)" : tc
+						.getDatadir()));
+		l.info("bindir                   : "
+				+ (tc.getBindir().length() == 0 ? "(default)" : tc.getBindir()));
 
-	    if (tc.isAotCompile())
-	      {
-	        l.info("aot compiler             : " + tc.getGcjExec());
-	        l.info("aot classmap generator   : " + tc.getGcjDbToolExec());
-	      }
+		if (tc.getChosenDistro() == null) {
+			throw new MojoExecutionException("No distribution configured!");
+		}
 
-	    if (tc.getMainClass() == null)
-	      {
-	        if (! "libs".equals(tc.getSection())){
-	          throw new MojoExecutionException(
-	                                           "section has to be 'libs' if no main class is given.");
-	        }
-	        if (tc.isBundleAll()){
-	          throw new MojoExecutionException(
-	                                           "Bundling dependencies to a library makes no sense.");
-	        }
-	      }
-	    else
-	      {
-	        if ("libs".equals(tc.getSection())){
-	          throw new MojoExecutionException(
-	                                           "Set a proper section if main class parameter is set.");
-	        }
-	      }
+		if (tc.isAotCompile()) {
+			l.info("aot compiler             : " + tc.getGcjExec());
+			l.info("aot classmap generator   : " + tc.getGcjDbToolExec());
+		}
 
-	    if (tc.isAotCompile())
-	      {
-	        AotCompileUtils.setGcjExecutable(tc.getGcjExec());
-	        AotCompileUtils.setGcjDbToolExecutable(tc.getGcjDbToolExec());
+		if (tc.getMainClass() == null) {
+			if (!"libs".equals(tc.getSection())) {
+				throw new MojoExecutionException(
+						"section has to be 'libs' if no main class is given.");
+			}
+			if (tc.isBundleAll()) {
+				throw new MojoExecutionException(
+						"Bundling dependencies to a library makes no sense.");
+			}
+		} else {
+			if ("libs".equals(tc.getSection())) {
+				throw new MojoExecutionException(
+						"Set a proper section if main class parameter is set.");
+			}
+		}
 
-	        AotCompileUtils.checkToolAvailability();
-	      }
-	  }
+		if (tc.isAotCompile()) {
+			AotCompileUtils.setGcjExecutable(tc.getGcjExec());
+			AotCompileUtils.setGcjDbToolExecutable(tc.getGcjDbToolExec());
 
-	  public void execute() throws MojoExecutionException, MojoFailureException
-	  {
-		// For some tasks it is practical to have the TargetConfiguration instances as a
-		// map. This transformation step also serves as check for double entries.
-	    Map<String, TargetConfiguration> targetConfigurationMap = Utils.toMap(targetConfigurations);
-		  
-		// Container for collecting target configurations that have been built. This
-		// is used to make sure that TCs are not build repeatedly when the given target
+			AotCompileUtils.checkToolAvailability();
+		}
+	}
+
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		// For some tasks it is practical to have the TargetConfiguration
+		// instances as a
+		// map. This transformation step also serves as check for double
+		// entries.
+		Map<String, TargetConfiguration> targetConfigurationMap = Utils
+				.toMap(targetConfigurations);
+
+		// Container for collecting target configurations that have been built.
+		// This
+		// is used to make sure that TCs are not build repeatedly when the given
+		// target
 		// configuration have a dependency to a common target configuration.
 		HashSet<String> finishedTargets = new HashSet<String>();
-		
-		for(String t : getTargets()){
-			// A single target (and all its dependent target configurations are supposed to use the same
+
+		for (String t : getTargets()) {
+			// A single target (and all its dependent target configurations are
+			// supposed to use the same
 			// distro value).
-		    String d = (distro != null) ? distro : Utils.getDefaultDistro(t, targetConfigurations, getLog());
-		    
-		    // Retrieve all target configurations that need to be build for /t/
-			List<TargetConfiguration> buildChain = Utils.createBuildChain(t, d, targetConfigurations);
+			String d = (distro != null) ? distro : Utils.getDefaultDistro(t,
+					targetConfigurations, getLog());
+
+			// Retrieve all target configurations that need to be build for /t/
+			List<TargetConfiguration> buildChain = Utils.createBuildChain(t, d,
+					targetConfigurations);
 
 			for (TargetConfiguration tc : buildChain) {
-				if (!finishedTargets.contains(tc.getTarget()) && tc.isReady())
-				{
+				if (!finishedTargets.contains(tc.getTarget()) && tc.isReady()) {
 					WorkspaceSession ws = new WorkspaceSession();
 					ws.setMojo(this); // its us
 					ws.setTargetConfigurationMap(targetConfigurationMap);
 					ws.setTargetConfiguration(tc);
 					
+					// Populates session with PackageMap, Helper and resolved relations
+					prepareWorkspaceSession(ws, d);
+
 					executeTargetConfiguration(ws, d);
 
 					// Mark as done.
-				    finishedTargets.add(tc.getTarget());
+					finishedTargets.add(tc.getTarget());
 				}
 
 			}
 		}
-	  }
-	  
-	  protected abstract void executeTargetConfiguration(WorkspaceSession workspaceSession, String distro)
-			  throws MojoExecutionException, MojoFailureException;
+	}
+
+	private void prepareWorkspaceSession(WorkspaceSession ws, String d)
+			throws MojoExecutionException, MojoFailureException {
+		AbstractPackagingMojo mojo = ws.getMojo();
+		TargetConfiguration tc = ws.getTargetConfiguration();
+		Map<String, TargetConfiguration> tcMap = ws.getTargetConfigurationMap();
+
+		// At first we create the various work objects that we need to process
+		// the
+		// request to package what is specified in 'tc' and test their validity.
+
+		// Resolve all the relations of the given target configuration. This can
+		// fail
+		// with an exception if there is a configuration mistake.
+		List<TargetConfiguration> resolvedRelations = Utils
+				.resolveConfigurations(tc.getRelations(), tcMap);
+
+		// Retrieve package map for chosen distro.
+		PackageMap pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL,
+				d, tc.getBundleDependencies());
+
+		String packaging = pm.getPackaging();
+
+		if (packaging == null) {
+			throw new MojoExecutionException(
+					"Package maps document set no packaging for distro: "
+							+ tc.getChosenDistro());
+		}
+
+		// Create packager and packaging helper according to the chosen
+		// packaging type.
+		// Note: Helper is historically strongly dependent on the mojo, the
+		// package and
+		// the targetconfiguration because this makes method calls to the helper
+		// so neatly
+		// short and uniform among all Packager implementations, ie. there're
+		// almost no
+		// arguments needed and all packagers call the same stuff while in
+		// reality they're
+		// subtle differences between them.
+		Helper ph = new Helper();
+		ph.init(mojo, pm, tc, resolvedRelations);
+		
+	    // Finally now that we know that our cool newly created work objects are
+	    // prepared and can be used (none of them is null) we stuff them 
+	    // into the session and run the actual packaging steps.
+	    ws.setResolvedRelations(resolvedRelations);
+	    ws.setPackageMap(pm);
+	    ws.setHelper(ph);
+	}
+
+	protected abstract void executeTargetConfiguration(
+			WorkspaceSession workspaceSession, String distro)
+			throws MojoExecutionException, MojoFailureException;
 }

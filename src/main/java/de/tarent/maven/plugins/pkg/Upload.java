@@ -2,14 +2,12 @@ package de.tarent.maven.plugins.pkg;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.helper.Helper;
-import de.tarent.maven.plugins.pkg.map.PackageMap;
 import de.tarent.maven.plugins.pkg.upload.APTUploader;
 import de.tarent.maven.plugins.pkg.upload.IPkgUploader;
 import de.tarent.maven.plugins.pkg.upload.WagonUploader;
@@ -30,49 +28,17 @@ public class Upload extends AbstractPackagingMojo {
 	@Override
 	protected void executeTargetConfiguration(WorkspaceSession ws, String distro)
 			throws MojoExecutionException, MojoFailureException {
-	    AbstractPackagingMojo mojo = ws.getMojo();
-	    TargetConfiguration tc = ws.getTargetConfiguration();
-	    Map<String, TargetConfiguration> tcMap = ws.getTargetConfigurationMap();
-	    
-	    // At first we create the various work objects that we need to process the
-	    // request to package what is specified in 'tc' and test their validity.
-
-	    // Resolve all the relations of the given target configuration. This can fail
-	    // with an exception if there is a configuration mistake.
-	    List<TargetConfiguration> resolvedRelations = Utils.resolveConfigurations(
-	    		tc.getRelations(), tcMap);
+		TargetConfiguration tc = ws.getTargetConfiguration();
+		Helper helper = ws.getHelper();
 		
-	    // Retrieve package map for chosen distro.
-	    PackageMap pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL, distro,
-	                        tc.getBundleDependencies());
-
-	    String packaging = pm.getPackaging();
-	    
-	    if (packaging == null){
-	      throw new MojoExecutionException(
-	                                       "Package maps document set no packaging for distro: "
-	                                           + tc.getChosenDistro());
-	    }
-	
-	    // Create packager and packaging helper according to the chosen packaging type.
-	    // Note: Helper is historically strongly dependent on the mojo, the package and
-	    // the targetconfiguration because this makes method calls to the helper so neatly
-	    // short and uniform among all Packager implementations, ie. there're almost no
-	    // arguments needed and all packagers call the same stuff while in reality they're
-	    // subtle differences between them.
-	    Helper ph = new Helper();
-	    ph.init(mojo, pm, tc, resolvedRelations);
-
-		TargetConfiguration currentTarget = tc;
 		UploadParameters param;
 		
 		try{
-			param = currentTarget.getUploadParameters();
+			param = tc.getUploadParameters();
 		}catch (Exception ex){
 			throw new MojoExecutionException("No upload paramenters found for configuration " + tc.getTarget(), ex);			
 		}			
-
-			File packageFile = getPackageFile(currentTarget, ph, tc.getTarget());
+			File packageFile = getPackageFile(tc, helper, tc.getTarget());
 
 			l.info("Name of package is: " + packageFile.getAbsolutePath());
 			if(packageFile.exists()){

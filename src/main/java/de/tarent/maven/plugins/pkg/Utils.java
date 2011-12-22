@@ -682,7 +682,10 @@ public final class Utils {
 	public static String getDefaultDistro(String targetString, List<TargetConfiguration> targetConfigurations, Log l) throws MojoExecutionException {
 		String distro = new String();
 		TargetConfiguration target = Utils.getTargetConfigurationFromString(targetString, targetConfigurations);
-
+		
+		// We can only operate on a fixated TargetConfiguration. 
+		target.fixate();
+		
 		if (target.getDefaultDistro() != null) {
 			distro = target.getDefaultDistro();
 			l.info("Default distribution is set to \"" + distro + "\".");
@@ -793,6 +796,7 @@ public final class Utils {
 	        														distro, targetConfigurations);
 		        // Checks whether this targetconfiguration supports
 		        // the wanted distro.
+	        	
 		        if (currentTargetConfiguration.getDistros().contains(distro))
 		        {
 			        if (merged.getDistros().contains(distro))
@@ -866,17 +870,33 @@ public final class Utils {
 	  }
 
 	  /**
-	   * Returns a Packager Object for a certain packaging type (deb, rpm, etc.) 
+	   * Returns a Packager Object for a certain packaging type (deb, rpm, etc.)
+	   * 
+	   * <p>Conveniently throws a {@link MojoExecutionException} if there is no
+	   * {@link Packager} instance for the given package type.</p>
+	   *  
 	   * @param packaging
 	   * @return
 	   */
-	  public static Packager getPackagerForPackaging(String packaging) {
-		    Map<String, Packager> extPackagerMap = new HashMap<String,Packager>();
-		    extPackagerMap.put("deb", new DebPackager());
-		    extPackagerMap.put("ipk", new IpkPackager());
-		    extPackagerMap.put("izpack", new IzPackPackager());
-		    extPackagerMap.put("rpm", new RPMPackager());
-		    return extPackagerMap.get(packaging);
+	  public static Packager getPackagerForPackaging(String packaging) 
+			  throws MojoExecutionException {
+		    Map<String, Class<? extends Packager>> extPackagerMap = new HashMap<String, Class<? extends Packager>>();
+		    extPackagerMap.put("deb", DebPackager.class);
+		    extPackagerMap.put("ipk", IpkPackager.class);
+		    extPackagerMap.put("izpack", IzPackPackager.class);
+		    extPackagerMap.put("rpm", RPMPackager.class);
+		    
+		    Class<? extends Packager> klass = extPackagerMap.get(packaging);
+		    try {
+		    	return klass.newInstance();
+		    } catch (NullPointerException e)
+		    {
+			      throw new MojoExecutionException("Unsupported packaging type: "+ packaging, e);
+		    } catch (InstantiationException e) {
+			      throw new MojoExecutionException("Unsupported packaging type: "+ packaging, e);
+			} catch (IllegalAccessException e) {
+			      throw new MojoExecutionException("Unsupported packaging type: "+ packaging, e);
+			}
 	  }
 	  
 	  /**

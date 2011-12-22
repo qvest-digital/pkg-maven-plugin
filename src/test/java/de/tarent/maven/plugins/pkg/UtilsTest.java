@@ -357,14 +357,16 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	 * Checks the {@link Utils#createPackageNames} method.
 	 */
 	@Test
-	public void createPackageNames() {
+	public void createPackageNames() throws Exception {
 		TargetConfiguration tc1 = new TargetConfiguration("tc1");
 		tc1.setPackageNameSuffix("GUI");
 		tc1.setSection("office");
+		tc1.fixate();
 
 		TargetConfiguration tc2 = new TargetConfiguration("tc2");
 		tc2.setPackageNameSuffix("CORE");
 		tc2.setSection("libs");
+		tc2.fixate();
 		
 		ArrayList<TargetConfiguration> tcs = new ArrayList<TargetConfiguration>();
 		tcs.add(tc1);

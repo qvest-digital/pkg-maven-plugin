@@ -255,7 +255,8 @@ public class Helper {
 			instance.prepareDirectories(instance.l, instance.tempRoot, instance.basePkgDir, instance.dstJNIDir);
 		}
 
-		public String getPackageFileName(Helper instance) {
+		@Override
+		protected String getPackageFileName(Helper instance) {
 
 			StringBuilder packageName = new StringBuilder();
 			packageName.append(getPackageFileNameWithoutExtension(instance));
@@ -264,7 +265,8 @@ public class Helper {
 
 		}
 
-		public String getPackageFileNameWithoutExtension(Helper instance) {
+		@Override
+		protected String getPackageFileNameWithoutExtension(Helper instance) {
 
 			StringBuilder packageName = new StringBuilder();
 			packageName.append(instance.getPackageName().toLowerCase());
@@ -273,6 +275,11 @@ public class Helper {
 			packageName.append("_all");
 			return packageName.toString();
 
+		}
+
+		@Override
+		protected String getArchitecture(Helper instance) {
+			return instance.targetConfiguration.getArchitecture();
 		}
 	};
 	
@@ -313,7 +320,6 @@ public class Helper {
 				FileUtils.forceMkdir(new File(instance.basePkgDir,"/RPMS"));
 				FileUtils.forceMkdir(new File(instance.basePkgDir,"/RPMS/x86_64"));
 				FileUtils.forceMkdir(new File(instance.basePkgDir,"/RPMS/i386"));
-				
 			} catch (IOException e) {
 				throw new MojoExecutionException("Error creating needed folder structure",e);
 			}
@@ -337,10 +343,19 @@ public class Helper {
 			rpmPackageName.append("-");
 			rpmPackageName.append(instance.targetConfiguration.getRelease());
 			rpmPackageName.append(".");
-			rpmPackageName.append(instance.targetConfiguration.getArchitecture());
+			rpmPackageName.append(getArchitecture(instance));
 			return rpmPackageName.toString();
 		}
 		
+		@Override
+		protected String getArchitecture(Helper instance) {
+			String arch = instance.targetConfiguration.getArchitecture();
+			// all translates to noarch in RPM
+			if ("all".equals(arch)) {
+				return "noarch";
+			}
+			return arch;
+		}
 	};
 	
 	public File getTargetAuxDir() {
@@ -1674,6 +1689,11 @@ public class Helper {
 			strategy.prepareInitialDirectories(this);
 		}
 
+		public String getArchitecture() throws MojoExecutionException{
+	    	// Implementation note: Subtle differences between DEB and RPM.
+			return strategy.getArchitecture(this);
+		}
+
 		/**
 		 * Abstracts all the functionality that is different between different
 		 * packaging types.
@@ -1692,6 +1712,8 @@ public class Helper {
 			protected abstract String getPackageFileName(Helper instance);
 			
 			protected abstract String getPackageFileNameWithoutExtension(Helper instance);
+
+			protected abstract String getArchitecture(Helper instance);
 		}
 		
 }

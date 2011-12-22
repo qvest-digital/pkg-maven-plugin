@@ -129,6 +129,8 @@ public class HelperTest extends AbstractMvnPkgPluginTestCase{
 	
 	@Test
 	public void creatingRpmmacrosfileWithoutMaintainerAndRemovingSuccessfully() throws IOException, MojoExecutionException{
+		// Depends on fixates TargetConfiguration.
+		targetConfiguration.fixate();
 		
 		helper.setBasePkgDir(new File("/"));		
 		helper.createRpmMacrosFile();
@@ -138,7 +140,9 @@ public class HelperTest extends AbstractMvnPkgPluginTestCase{
 	
 	@Test
 	public void creatingRpmmacrosfileWitMaintainerAndRemovingSuccessfully() throws IOException, MojoExecutionException{
-		targetConfiguration.setMaintainer("Dummy maintainer");		
+		targetConfiguration.setMaintainer("Dummy maintainer");	
+		targetConfiguration.fixate();
+		
 		helper.setBasePkgDir(new File("/"));		
 		helper.createRpmMacrosFile();
 		Assert.assertTrue(f.exists());
@@ -146,8 +150,16 @@ public class HelperTest extends AbstractMvnPkgPluginTestCase{
 		helper.restoreRpmMacrosFileBackup(null);
 	}
 	
-	@Test(expected=NullPointerException.class)
-	public void testCreatingRpmmacrosfileWithoutBaseDirThrowsException() throws IOException, MojoExecutionException{
+	/**
+	 * Checks whether macro file generation works without exception with an unconfigured
+	 * {@link TargetConfiguration}.
+	 * 
+	 * @throws IOException
+	 * @throws MojoExecutionException
+	 */
+	public void testCreatingRpmmacrosfileWithoutBaseDir() throws IOException, MojoExecutionException{
+		targetConfiguration.fixate();
+		
 		helper.createRpmMacrosFile();
 	}
 	
@@ -181,8 +193,12 @@ public class HelperTest extends AbstractMvnPkgPluginTestCase{
 	}
 	
 	@Test
-	public void getVersionReturnsPackagingVersion_RPM(){
+	public void getVersionReturnsPackagingVersion_RPM() throws Exception {
+		targetConfiguration.setDistro("foobar");
+		targetConfiguration.fixate();
+		
 		helper.setStrategy(Helper.RPM_STRATEGY);
+		
 		Assert.assertTrue(helper.getPackageVersion().contains(packaging.project.getVersion()));
 	}
 	
