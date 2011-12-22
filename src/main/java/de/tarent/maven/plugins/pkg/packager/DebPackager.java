@@ -391,13 +391,18 @@ public class DebPackager extends Packager
                 ph.getTempRoot(),
                 "'fakeroot dpkg --build' failed.",
                 "Error creating the .deb file.");
-
+    
     if(targetConfiguration.isSign()){
     	// This bundles the signature with the package
     	bundleSignatureWithPackage(workspaceSession);
-    	// This creates a signed .changes file - needed when uploading to repository
+    	
+    	/* This creates a signed .changes file - needed when uploading to repository.
+    	 * Unfortunatelly debsign, the program used to perform this action won't allow
+    	 * entering the passphrase through an automated process.
+    	 * TODO:Find a way to do this, or change the packager executable to also sign
     	DebianSigner db = new DebianSigner(workspaceSession, false);
     	db.start(l);
+    	*/
     }
 
   }

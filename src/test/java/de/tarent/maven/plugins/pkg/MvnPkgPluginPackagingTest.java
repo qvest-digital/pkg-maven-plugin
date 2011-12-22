@@ -4,27 +4,17 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
 
 public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
-	
 
 	@Before
 	public void setUp() throws Exception{
-		addTestGPGKey();
 		super.setUp();
 	}
 	
 	@After
 	public void tearDown() throws Exception{
-		
-		// Cleaning up in case the key is still there
-		try{
-			removeTestGPGKey();
-		}catch (Exception e) {
-			// Nothing to do here
-		}
+
 		super.tearDown();
 	}
 	
@@ -382,19 +372,9 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 		p.target = target;
 		return p;		
 	}
-	
-	private void addTestGPGKey() throws MojoExecutionException{
 		
-		Utils.exec(new String[]{"gpg","--batch","--import",	PRIVATEKEYLOCATION,	PUBLICKEYLOCATION}, 
-				"Error adding GPG key", 
-				"Error writing GPG key");
 		
-	}
+		
 	
-	private void removeTestGPGKey() throws MojoExecutionException{
-		Utils.exec(new String[]{"gpg","--batch","--delete-secret-and-public-keys",keyFingerprint}, 
-								"Error removing GPG key", 
-								"Error removing GPG key");
-	}
 	
 }

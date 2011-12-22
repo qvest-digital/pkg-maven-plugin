@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
@@ -17,6 +18,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.runner.RunWith;
 
@@ -30,27 +33,48 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	Upload packagingTransportPlugin;
 	protected static final File TARGETDIR = new File(getBasedir()+ "/src/test/resources/dummyproject/target/");
 
-	
+
 	/**
 	 * This is the key fingerprint for Test User MVNPKGPLUGIN <no@address.com></br>
 	 * It is needed for test purposes
 	 */
-	static final String keyFingerprint = "A70F93982E429501732931CF0481A82949692090";
+	static String keyFingerprint = "A70F93982E429501732931CF0481A82949692090";
 	/**
 	 * This is the keyID for Test User MVNPKGPLUGIN <no@address.com> ()</br>
 	 * (The last four hexadecimal character groups of the user's fingerprint). 
 	 * It is needed for test purposes
 	 */
-	static final String keyID = keyFingerprint.substring(24, 40).toLowerCase();
+	static String keyID;
 	/**
 	 * location of the public key to use
 	 */
-	protected static final String PUBLICKEYLOCATION = "src/test/resources/testuserkeys/testuser_public.key";
+	protected static String PUBLICKEYLOCATION;
 	/**
 	 * location of the private key to use
 	 */
-	protected static final String PRIVATEKEYLOCATION = "src/test/resources/testuserkeys/testuser_private.key";
+	protected static String PRIVATEKEYLOCATION;
+	
+	private enum keytype{
+		RSA,
+		DSA
+	}
+	
+	@BeforeClass
+	public static void keySetup() throws MojoExecutionException{
+		selectKeyForRPMVersion();
+		addTestGPGKey();
+	}
 
+	
+	@AfterClass
+	public static void keyRemoval(){		
+		// Cleaning up in case the key is still there
+		try{
+			removeTestGPGKey();
+		}catch (Exception e) {
+			// Nothing to do here
+		}
+	}
 	
 	/**{@inheritDoc} */
 	protected void setUp() throws Exception{
@@ -267,5 +291,47 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		return false;
 	}
 	
+	private static void selectKeyForRPMVersion() throws MojoExecutionException {
+		keytype type = getKeyTypeForRPMVersion();
+		PUBLICKEYLOCATION = "src/test/resources/testuserkeys/"+ type +"/testuser_public.key";
+		PRIVATEKEYLOCATION = "src/test/resources/testuserkeys/"+ type +"/testuser_private.key";
+		if(type==keytype.DSA){
+				keyFingerprint = "A70F93982E429501732931CF0481A82949692090";
+		}else if(type==keytype.RSA){
+				keyFingerprint = "22D763EEFA5E27AE399357C3B18A1F8A9544944C";
+		}			
+		keyID = keyFingerprint.substring(24, 40).toLowerCase();
+	}
+
+	private static keytype getKeyTypeForRPMVersion() throws MojoExecutionException {
+		String version = null;
+		try {
+			version = IOUtils.toString(Utils.exec(new String[]{"rpm","--version"}, new File("/"),"error getting rpm version", "error getting rpm version"));
+			
+		} catch (IOException e) {
+			throw new MojoExecutionException(e.getMessage(),e);
+		}
+		Pattern p = Pattern.compile("[4-9]\\.([8-9]|\\d{2})\\.?");
+		Matcher m = p.matcher(version);
+		if (m.find()){
+			return keytype.RSA;	
+		}else{
+			return keytype.DSA;
+		}
+	}
+	
+	private static void addTestGPGKey() throws MojoExecutionException{
+		
+		Utils.exec(new String[]{"gpg","--batch","--import",	PRIVATEKEYLOCATION,	PUBLICKEYLOCATION}, 
+				"Error adding GPG key", 
+				"Error writing GPG key");
+		
+	}
+	
+	private static void removeTestGPGKey() throws MojoExecutionException{
+		Utils.exec(new String[]{"gpg","--batch","--delete-secret-and-public-keys",keyFingerprint}, 
+								"Error removing GPG key", 
+								"Error removing GPG key");
+	}
 
 }

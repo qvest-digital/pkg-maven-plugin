@@ -74,8 +74,8 @@ public class DebianSigner {
 	 */
 	protected final String rfc2822DateCmd = "date";
 	
-	protected static final String NOCHANGES = "Package automatically generated with mvn-pkg-plugin. " +
-											  "No changes were provided when packaging.";
+	protected static final String AUTOMATICGENERATIONDISCLAIMER = "Package automatically generated with mvn-pkg-plugin. " +
+																  "No changes were provided when packaging.";
 
 	protected TargetConfiguration distroConfiguration;
 	
@@ -99,6 +99,8 @@ public class DebianSigner {
 
 	private File tempRoot;
 	
+	private String userInput;
+	
 	
 
 	/**
@@ -119,7 +121,9 @@ public class DebianSigner {
 		this.repositoryName = ws.getPackageMap().getRepositoryName();
 		this.packageFileNameWithoutExtension = ws.getHelper().getPackageFileNameWithoutExtension();
 		this.packageFileName = ws.getHelper().getPackageFileName();
-		this.tempRoot = ws.getHelper().getTempRoot();	
+		this.tempRoot = ws.getHelper().getTempRoot();
+		this.userInput = ws.getMojo().getSignPassPhrase();
+		this.awaitUserInput=awaitUserInput;
 		
 	}
 	
@@ -163,12 +167,20 @@ public class DebianSigner {
 
 		File pathToChangesFile = new File(base, packageFileNameWithoutExtension + ".changes");
 
-		Utils.exec(new String[] {signCmd,
-				pathToChangesFile.getAbsolutePath()} ,
-				base,
-				"Signing the changes-file failed.",
-		"Error signing the changes-file.");
-		
+		if(!awaitUserInput && userInput != null){
+			Utils.exec(new String[] {signCmd, 
+					pathToChangesFile.getAbsolutePath()} ,
+					base,
+					"Signing the changes-file failed.",
+					"Error signing the changes-file.",
+					userInput);
+		}else{
+			Utils.exec(new String[] {signCmd,
+					pathToChangesFile.getAbsolutePath()} ,
+					base,
+					"Signing the changes-file failed.",
+					"Error signing the changes-file.");
+		}
 		l.info("changes-file signed successfully");
 	}
 
@@ -261,7 +273,7 @@ public class DebianSigner {
 
 		List<String> changes = new ArrayList<String>();
 		
-		if(!awaitUserInput){			
+		if(awaitUserInput){			
 			System.out.println("Please type in your changes since last deployment of this package. One change per line. If you are ready just make an empty line.");
 			
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -279,10 +291,10 @@ public class DebianSigner {
 				throw new MojoExecutionException("Error getting user-input ", excp);
 			}
 			if(changes.size()==0){
-				changes.add(NOCHANGES);
+				changes.add(AUTOMATICGENERATIONDISCLAIMER);
 			}
 		}else{
-			changes.add(NOCHANGES);
+			changes.add(AUTOMATICGENERATIONDISCLAIMER);
 		}
 		return changes;
 	}
