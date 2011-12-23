@@ -49,7 +49,7 @@ public class Upload extends AbstractPackagingMojo {
 				for (String url : param.getUrls()) {
 					l.info("Starting upload routine to " + url);
 					IPkgUploader iup;
-					iup = getUploaderForProtocol(ws,url);
+					iup = getUploaderForProtocol(ws,param.parseUrlPlaceholders(url));
 					iup.uploadPackage();
 				}
 			} else {

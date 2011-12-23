@@ -30,7 +30,7 @@ public class WagonUploader implements IPkgUploader{
 		session = ws.getMojo().getSession();
 		pluginManager = ws.getMojo().getPluginManager();
 		this.url = url;
-		packageFile = new File(ws.getHelper().getTempRoot(), ws.getHelper().getPackageFileName());
+		packageFile = new File(ws.getHelper().getTempRoot().getParent(), ws.getHelper().getPackageFileName());
 		
 	}
 
@@ -41,7 +41,7 @@ public class WagonUploader implements IPkgUploader{
 					MojoExecutor.goal("upload-single"),
 					MojoExecutor.configuration(generateUploadElements(packageFile, url)),
 					new ExecutionEnvironmentM2(project, session, pluginManager));
-			l.info("Upload successful to " + url);
+			l.info("Upload successful!");
 		}catch(Exception ex){
 			throw new MojoExecutionException("Error while uploading file: " +ex.getMessage(),ex);
 		}

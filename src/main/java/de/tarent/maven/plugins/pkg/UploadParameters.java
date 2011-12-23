@@ -28,7 +28,6 @@ public class UploadParameters {
 	 * Optional parameter to specify a password. This will them replace the %PASSWORD% placeholder in the url. 
 	 */
 	private String password;
-	private String serverId;
 	
 	static final Pattern usernamePattern = Pattern.compile("%USERNAME%");
 	static final Pattern passwordPattern = Pattern.compile("%PASSWORD%");
@@ -73,14 +72,6 @@ public class UploadParameters {
 	}
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	public String getServerId() {
-		return serverId;
-	}
-
-	public void setServerId(String serverId) {
-		this.serverId = serverId;
 	}
 	
 }

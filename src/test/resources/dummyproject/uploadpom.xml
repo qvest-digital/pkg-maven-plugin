@@ -61,7 +61,11 @@
 								<urls>
 									<url>file:///tmp/</url>
 									<url>file:///tmp/2/</url>
+									<url>file:///tmp/%USERNAME%/</url>
+									<url>file:///tmp/%USERNAME%-%PASSWORD%/</url>
 								</urls>
+								<username>superUser</username>
+								<password>superPassword</password>
 							</uploadParameters>
 						</targetConfiguration>
 
