@@ -54,14 +54,14 @@ import java.util.LinkedList;
  * 
  */
 public class _Starter {
-
-	public static void main(String[] args) {
-		LinkedList<URL> urls = new LinkedList<URL>();
+	
+	private static String parse(String resource, LinkedList<URL> urls) {
 		String mainClassName = null;
+		
 		try
 		  {
 		    BufferedReader reader = new BufferedReader(new InputStreamReader(
-		    		_Starter.class.getResourceAsStream("_classpath")));
+		    		_Starter.class.getResourceAsStream(resource)));
 		    
 		    String line = null;
 		    while ((line = reader.readLine()) != null)
@@ -90,6 +90,13 @@ public class _Starter {
 		  {
 			throw new RuntimeException("Unable to load _classpath", ioe);
 		  }
+		
+		return mainClassName;
+	}
+
+	public static void main(String[] args) {
+		LinkedList<URL> urls = new LinkedList<URL>();
+		String mainClassName = parse("_classpath", urls);
 		
 		URLClassLoader ucl = new URLClassLoader((URL[]) urls.toArray(new URL[urls.size()]));
 		Method m = null;

@@ -1,0 +1,9 @@
+# Test _classpath file for a test for the _Starter class
+de.tarent.maven.plugins.pkg._default.StartMe
+# Some comment
+foo.jar
+# Some more comments
+/somewhere/bar.jar
+# Almost last comment
+../baz.jar
+# Really last comment
