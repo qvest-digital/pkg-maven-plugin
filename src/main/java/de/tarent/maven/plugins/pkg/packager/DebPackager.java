@@ -265,6 +265,7 @@ public void execute(Log l,
     Utils.checkProgramAvailability("gpg");
     Utils.checkProgramAvailability("ar");
     Utils.checkProgramAvailability("dpkg-deb");
+    Utils.checkProgramAvailability("python");
   }
 
   /**
@@ -404,9 +405,11 @@ public void execute(Log l,
     	 * Unfortunatelly debsign, the program used to perform this action won't allow
     	 * entering the passphrase through an automated process.
     	 * TODO:Find a way to do this, or change the packager executable to also sign
-    	DebianSigner db = new DebianSigner(workspaceSession, false);
-    	db.start(l);
-    	*/
+    	 *
+    	 * DebianSigner db = new DebianSigner(workspaceSession, false);
+    	 * db.start(l);
+    	 */
+    	
     }
 
   }
