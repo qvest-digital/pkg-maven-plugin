@@ -546,9 +546,10 @@ public final class Utils {
 						byteAmount += (long) f.length();
 					}
 
-				} else
+				} else {
 					throw new MojoExecutionException("Unable to copy Artifact " + a
 							+ " because it is not locally available.");
+				}
 			}
 		} catch (IOException ioe) {
 			throw new MojoExecutionException("IOException while copying dependency artifacts.", ioe);

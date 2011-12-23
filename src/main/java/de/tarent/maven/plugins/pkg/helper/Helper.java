@@ -1185,11 +1185,12 @@ public class Helper {
 	
 	        // Bundled Jars will always live in targetJarPath
 	        File file = artifact.getFile();
-	        if (file != null)
+	        if (file != null) { 
 	          cp.append(targetJarPath.toString() + "/" + file.getName());
-	        else
+	        } else {
 	          l.warn("Cannot put bundled artifact " + artifact.getArtifactId()
 	                 + " to Classpath.");
+	        }
 	      }
 	
 	      public void visit(Artifact artifact, Entry entry)

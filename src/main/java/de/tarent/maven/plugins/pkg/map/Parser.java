@@ -110,8 +110,9 @@ class Parser
               handleInclude(s, s.nextElement());
               s.nextElement();
             }
-          else
+          else{
             throw new Exception("malformed document: unexpected token " + s.token);
+          }
         }
       
     }
@@ -125,13 +126,13 @@ class Parser
       
       s.nextElement();
       // Either "inherit" or "packaging".
-      if (s.peek("inherit"))
+      if (s.peek("inherit")) {
         distroMapping.parent = s.nextElement();
-      else if(s.peek("packaging"))
+      } else if(s.peek("packaging")) {
         distroMapping.packaging = s.nextElement();
-      else
+      } else {
         throw new Exception("malformed document: unexpected token '" + s.token + "'. Expected either <inherit> or <packaging>.");
-      
+      }
       s.nextElement();
       // debian naming parameter is optional
       if (s.peek("debianNaming"))
@@ -276,9 +277,9 @@ class Parser
     {
       Mapping m = (Mapping) mappings.get(distro);
       
-      if (m == null)
+      if (m == null) {
         mappings.put(distro, m = new Mapping(distro));
-      else if (m.parent != null)
+      } else if (m.parent != null)
         {
           return new Mapping(m, getMapping(m.parent));
         }

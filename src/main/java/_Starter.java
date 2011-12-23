@@ -67,11 +67,12 @@ public class _Starter {
 		    while ((line = reader.readLine()) != null)
 		      {
 		    	// Lines starting with a dash are comments
-		    	if (line.startsWith("#"))
+		    	if (line.startsWith("#")){
 		    	  continue;
-		    	else if (mainClassName == null)
+		    	} else if (mainClassName == null) 
+		    	{
 		    		mainClassName = line; // The first non-dashed line is evaluated here.
-		    	else
+		    	} else
 		    	  {
 		    		// Afterwards every other line is interpreted as a class path entry.
 					String fixedFilename = line.replace('/', File.separatorChar);
@@ -123,12 +124,13 @@ public class _Starter {
 			throw new RuntimeException("Unable to execute main() method", e);
 		} catch (InvocationTargetException e) {
 			Throwable c = e.getCause();
-			if (c instanceof Error)
+			if (c instanceof Error) {
 				throw (Error) c;
-			else if (c instanceof RuntimeException)
+			} else if (c instanceof RuntimeException) {
 				throw (RuntimeException) c;
-			else
+			} else {
 				throw new RuntimeException(c);
+			}
 		}
 	}
 }

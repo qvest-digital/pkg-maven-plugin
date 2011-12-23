@@ -226,9 +226,9 @@ public class PackageMap
 		}
        // If a distro is explicitly declared to have no packages everything
        // will be bundled (without warning).
-       if (mapping.hasNoPackages)
+       if (mapping.hasNoPackages) {
          v.bundle(a);
-       else if (e == null)
+       } else if (e == null)
          {
            // If a package as not been declared a warning reminds to fix the
            // package map.

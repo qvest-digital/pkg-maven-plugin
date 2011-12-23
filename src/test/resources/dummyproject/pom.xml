@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>de.maven.plugins.test</groupId>
+	<artifactId>DummyProject</artifactId>
+	<version>1.0.0</version>
+	<packaging>jar</packaging>
+	<name>Test mvn-pkg-plugin</name>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	
+	<description>Dummy</description>
+	<url>http://dummy.com</url>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>utf-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>de.tarent.maven.plugins</groupId>
+				<artifactId>maven-pkg-plugin</artifactId>
+				<version>4.0-SNAPSHOT</version>
+				<configuration>
+
+					<targetConfigurations>
+						<targetConfiguration>
+							<target>ubuntu_lucid_target</target>
+							<manualDependencies>
+								<string>kdm</string>
+								<string>usbmount</string>
+								<string>blackbox</string>
+							</manualDependencies>
+							<distros>
+								<distro>ubuntu_lucid</distro>
+							</distros>
+						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>ubuntu_lucid_upload</target>
+							<parent>ubuntu_lucid_target</parent>
+							<distros>
+								<distro>ubuntu_lucid</distro>
+							</distros>
+							<uploadParameters>
+								<urls>
+									<url>file:///tmp/</url>
+									<url>file:///tmp/2/</url>
+									<url>file:///tmp/%USERNAME%/</url>
+									<url>file:///tmp/%USERNAME%-%PASSWORD%/</url>
+									<url>debapt://example2</url>
+								</urls>
+								<username>superUser</username>
+								<password>superPassword</password>
+							</uploadParameters>
+						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>centos_5_6_upload</target>
+							<distros>
+								<distro>centos_5_6</distro>
+							</distros>
+							<uploadParameters>
+								<urls>
+									<url>scpexe://dummyserver/home/%USERNAME%</url>
+									<url>file:///{project.build.directory}/target</url>
+									<username>test</username>
+								</urls>
+							</uploadParameters>
+							<revision>r0</revision>
+							<source>dummysource</source>
+							<release>dummyrelease</release>
+							<architecture>x86_64</architecture>
+						</targetConfiguration>						
+					</targetConfigurations>					
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>pkg</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

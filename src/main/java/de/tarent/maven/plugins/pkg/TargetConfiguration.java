@@ -1368,9 +1368,9 @@ public class TargetConfiguration {
 			{
 				sb.append("\t" + ite.next() + "\n");
 			}
-		} else
+		} else {
 			sb.append("\t(not set)\n");
-
+		}
 		sb.append("\n");
 		sb.append("auxfile locations:\n");
 		appendStringDefault(sb, "srcAuxFilesDir", srcAuxFilesDir);
@@ -1425,8 +1425,9 @@ public class TargetConfiguration {
 				sb.append(ite.next());
 				sb.append("\n");
 			}
-		} else
+		} else {
 			sb.append("\t(not set)\n");
+		}
 	}
 	
 	private void appendAuxFileList(StringBuilder sb, String name, List<? extends AuxFile> list)
@@ -1443,9 +1444,9 @@ public class TargetConfiguration {
 				sb.append("-> " + (af.to == null ? "(default dir)" : af.to));
 				sb.append("\n");
 			}
-		} else
+		} else {
 			sb.append("\t(not set)\n");
-
+		}
 	}
 
 	public boolean isCreateOSXApp() {

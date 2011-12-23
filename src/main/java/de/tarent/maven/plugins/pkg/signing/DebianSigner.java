@@ -244,8 +244,9 @@ public class DebianSigner {
 				throw new MojoExecutionException("Generating RFC-2822 date failed. ", e);
 			}
 		}
-		else
+		else {
 			throw new MojoExecutionException("Generating RFC-2822 date failed (No output from "+rfc2822DateCmd+").");
+		}
 	}
 	
 	/**
@@ -337,8 +338,11 @@ public class DebianSigner {
 		if(processOutput != null) {
 			Utils.storeInputStream(processOutput, pathToChangesFile, "Error when storing the changes-file.");
 		}
-		else
-			throw new MojoExecutionException("Storing the changes-file to \""+pathToChangesFile.getAbsolutePath()+"\"failed (No output from "+changesGenCmd+").");
+		else {
+			throw new MojoExecutionException("Storing the changes-file to \"" +
+											 pathToChangesFile.getAbsolutePath() +
+											 "\"failed (No output from "+changesGenCmd+").");
+		}
 	}
 	
 	/**
