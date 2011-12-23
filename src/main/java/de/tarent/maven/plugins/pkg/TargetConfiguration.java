@@ -68,6 +68,12 @@ public class TargetConfiguration {
 	@MergeMe
 	private String target;
 
+	@MergeMe(defaultBoolean=true)
+	private Boolean createWindowsExecutable;
+
+	@MergeMe(defaultBoolean=true)
+	private Boolean createOSXApp;
+
 	/**
 	 * Denotes whether the packager should use a special starter class to run
 	 * the application which allows working around platform limitations as fixed
@@ -1313,6 +1319,9 @@ public class TargetConfiguration {
 		appendBoolean(sb, "sign", sign);
 		appendStringDefault(sb, "release", release);
 		appendStringDefault(sb, "source", source);
+		// TODO rschuster: To my knowledge this is not implemented yet.
+//		sb.append("createWindowsExecutable: " + createWindowsExecutable + "\n");
+//		sb.append("createOSXApp: " + createOSXApp + "\n");
 
 		sb.append("\n");
 		sb.append("dependencies and packaged files:\n");
@@ -1425,6 +1434,22 @@ public class TargetConfiguration {
 		} else
 			sb.append("\t(not set)\n");
 
+	}
+
+	public boolean isCreateOSXApp() {
+		return createOSXApp.booleanValue();
+	}
+
+	public void setCreateOSXApp(boolean createOSXApp) {
+		this.createOSXApp = Boolean.valueOf(createOSXApp);
+	}
+
+	public boolean isCreateWindowsExecutable() {
+		return createWindowsExecutable.booleanValue();
+	}
+
+	public void setCreateWindowsExecutable(boolean createWindowsExecutable) {
+		this.createWindowsExecutable = Boolean.valueOf(createWindowsExecutable);
 	}
 
 	public String getCustomCodeUnix() {
