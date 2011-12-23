@@ -398,6 +398,50 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 		return p;	
 	}
 		
+	/**
+	 * Runs a package phase with a target configuration which contains a relation.
+	 * This means that there must be two binary packages in the end.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+    public void runTargetWithARelation()
+            throws Exception
+        {
+    		packagingPlugin = mockPackagingEnvironment(DEBPOM, "ubuntu_lucid_relation2");
+            packagingPlugin.execute();
+            assertTrue(numberOfDEBsIs(2));
+        }
 	
+	/**
+	 * Runs a package phase with a target configuration which contains a relation containing a relation.
+	 * This means that there must be <em>three</em> binary packages in the end.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+    public void runTargetWithARelationWithARelation()
+            throws Exception
+        {
+    		packagingPlugin = mockPackagingEnvironment(DEBPOM, "ubuntu_lucid_relation3a");
+            packagingPlugin.execute();
+            assertTrue(numberOfDEBsIs(3));
+        }
+
+	/**
+	 * Runs a package phase with a target configuration which contains two relations.
+	 * 
+	 * This means that there must be <em>three</em> binary packages in the end.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+    public void runTargetWithTwoRelations()
+            throws Exception
+        {
+    		packagingPlugin = mockPackagingEnvironment(DEBPOM, "ubuntu_lucid_relation3b");
+            packagingPlugin.execute();
+            assertTrue(numberOfDEBsIs(3));
+        }
 	
 }

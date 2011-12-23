@@ -117,6 +117,44 @@
 							</sysconfFiles>
 						</targetConfiguration>
 
+						<targetConfiguration>
+							<target>ubuntu_lucid_relation1</target>
+							<distros>
+								<distro>ubuntu_lucid</distro>
+							</distros>
+						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>ubuntu_lucid_relation2</target>
+							<relations>
+								<relation>ubuntu_lucid_relation1</relation>
+							</relations>
+							<distros>
+								<distro>ubuntu_lucid</distro>
+							</distros>
+						</targetConfiguration>
+						
+						<targetConfiguration>
+							<target>ubuntu_lucid_relation3a</target>
+							<relations>
+								<relation>ubuntu_lucid_relation2</relation>
+							</relations>
+							<distros>
+								<distro>ubuntu_lucid</distro>
+							</distros>
+						</targetConfiguration>
+						
+						<targetConfiguration>
+							<target>ubuntu_lucid_relation3b</target>
+							<relations>
+								<relation>ubuntu_lucid_relation1</relation>
+								<relation>ubuntu_lucid_relation2</relation>
+							</relations>
+							<distros>
+								<distro>ubuntu_lucid</distro>
+							</distros>
+						</targetConfiguration>
+						
 					</targetConfigurations>
 				</configuration>
 			</plugin>
