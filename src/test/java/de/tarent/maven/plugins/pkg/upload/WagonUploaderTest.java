@@ -41,7 +41,7 @@ public class WagonUploaderTest extends AbstractMvnPkgPluginTestCase{
 		Helper h = new Helper();
 		h.init(up, expectedPackageMap, new TargetConfiguration().fixate(), new ArrayList<TargetConfiguration>());
 		ws.setHelper(h);
-		File expectedPackageFile = new File(ws.getHelper().getTempRoot(), ws.getHelper().getPackageFileName());
+		File expectedPackageFile = new File(ws.getHelper().getTempRoot().getParentFile(), ws.getHelper().getPackageFileName());
 		
 		WagonUploader wu = new WagonUploader(ws, expectedUrl);
 		
