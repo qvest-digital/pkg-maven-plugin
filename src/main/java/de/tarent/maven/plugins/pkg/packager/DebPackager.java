@@ -266,7 +266,6 @@ public void execute(Log l,
     Utils.checkProgramAvailability("gpg");
     Utils.checkProgramAvailability("ar");
     Utils.checkProgramAvailability("dpkg-deb");
-    Utils.checkProgramAvailability("python");
   }
 
   /**

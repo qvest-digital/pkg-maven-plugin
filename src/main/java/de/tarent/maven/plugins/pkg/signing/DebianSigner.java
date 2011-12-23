@@ -36,9 +36,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.codehaus.plexus.util.FileUtils;
 
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
@@ -167,26 +167,26 @@ public class DebianSigner {
 		l.info("calling " + signCmd + " to sign package");
 
 		File pathToChangesFile = new File(base, packageFileNameWithoutExtension + ".changes");
-		
-		// When not using a ssh-angent, debsign needs a terminal to get keystrokes from 
-		// when asking for the gpg password. Using an InputStream to write into the process 
-		// does not work, so we had to find a workaround to make this work properly.
-		// TODO: Find a more elegant way to do this and take away the shame this implicates
-		
-		File pyScript = new File(base+"/sign.py");		
-		try {			
-			FileUtils.copyFile(new File("src/main/resources/de/tarent/maven/plugins/pkg/sign/sign.py"), 
-					pyScript);
-		} catch (IOException e) {
-			throw new MojoExecutionException(e.getMessage(),e);
-		}
-		pyScript.setExecutable(true, true);
+		/**
+		 * If a passphrase has been provided we will sign the package manually with gpg and
+		 * if not we will give the user the chance to enter the passphrase manually (or to the 
+		 * agent to take control)
+		 */
 		if(!awaitUserInput && userInput != null){
-			Utils.exec(new String[] {"./sign.py"} ,
-					base,
-					"Signing the changes-file failed.",
-					"Error signing the changes-file."
-					,userInput);
+			Utils.exec(new String[] {"gpg", "--no-tty", "--passphrase", userInput, 
+									 "--default-key", maintainer,
+									 "--no-use-agent",
+									 "--yes",
+									 "--clearsign", pathToChangesFile.getName()} ,
+									 base,
+									 "Signing the changes-file failed.",
+									 "Error signing the changes-file.");
+			
+			try {
+				FileUtils.copyFile(new File(pathToChangesFile+".asc"), pathToChangesFile);
+			} catch (IOException e) {
+				throw new MojoExecutionException(e.getMessage(),e);
+			}
 		}else{
 			Utils.exec(new String[] {signCmd,
 					pathToChangesFile.getAbsolutePath()} ,
@@ -194,8 +194,6 @@ public class DebianSigner {
 					"Signing the changes-file failed.",
 					"Error signing the changes-file.");
 		}
-		
-		pyScript.delete();
 		
 		l.info("changes-file signed successfully");
 	}
