@@ -736,15 +736,14 @@ public final class Utils {
 	 * @throws IOException 
 	 */
 	public static String getTextFromUrl(String url) throws IOException{
-		
-	    String s;
-	    StringBuilder sb = new StringBuilder();
-	    BufferedReader r = new BufferedReader(new InputStreamReader(new URL(url).openStream()));
-	    while ((s = r.readLine()) != null) {
-	        sb.append(s);
-	        sb.append("\n");
-	    }
-		return sb.toString();
+		InputStream stream = null;
+		try {
+			stream = new URL(url).openStream();
+			
+			return IOUtils.toString(stream);
+		} finally {
+			IOUtils.closeQuietly(stream);
+		}
 	}
 
 	/**
