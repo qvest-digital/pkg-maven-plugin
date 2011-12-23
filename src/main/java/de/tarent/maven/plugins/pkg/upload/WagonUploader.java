@@ -58,15 +58,10 @@ public class WagonUploader implements IPkgUploader{
 	 */
 	private Element[] generateUploadElements(File file, String url) throws MojoExecutionException {
 		
-		List<Element> elements = new ArrayList<Element>();
-		elements.add(new Element("fromFile", file.getAbsolutePath()));
-		elements.add(new Element("url", url));
-		
-		Element[] e = new Element[elements.size()];
-		for (int i = 0; i < elements.size(); i++) {
-			e[i] = elements.get(i);
-		}
-		return e;
+		return new Element[]{
+				new Element("fromFile", file.getAbsolutePath()),
+				new Element("url", url)
+		};
 
 	}
 
