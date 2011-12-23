@@ -73,6 +73,7 @@ import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
+import de.tarent.maven.plugins.pkg.signing.DebianSigner;
 
 /**
  * Creates a Debian package file (.deb)
@@ -405,10 +406,11 @@ public void execute(Log l,
     	 * Unfortunatelly debsign, the program used to perform this action won't allow
     	 * entering the passphrase through an automated process.
     	 * TODO:Find a way to do this, or change the packager executable to also sign
-    	 *
-    	 * DebianSigner db = new DebianSigner(workspaceSession, false);
-    	 * db.start(l);
     	 */
+    	
+    	DebianSigner db = new DebianSigner(workspaceSession, false);
+    	db.start(l);
+    	 
     	
     }
 
