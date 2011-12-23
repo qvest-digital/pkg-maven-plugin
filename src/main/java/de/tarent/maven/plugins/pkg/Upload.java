@@ -1,7 +1,6 @@
 package de.tarent.maven.plugins.pkg;
 
 import java.io.File;
-import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
