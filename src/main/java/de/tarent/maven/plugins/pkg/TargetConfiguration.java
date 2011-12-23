@@ -68,9 +68,19 @@ public class TargetConfiguration {
 	@MergeMe
 	private String target;
 
+	/**
+	 * Denotes whether a Windows executable is to be created.
+	 * 
+	 * <p>This is an IzPack specific property.</p>
+	 */
 	@MergeMe(defaultBoolean=true)
 	private Boolean createWindowsExecutable;
 
+	/**
+	 * Denotes whether an OS X executable is to be created.
+	 * 
+	 * <p>This is an IzPack specific property.</p>
+	 */
 	@MergeMe(defaultBoolean=true)
 	private Boolean createOSXApp;
 
@@ -1319,9 +1329,8 @@ public class TargetConfiguration {
 		appendBoolean(sb, "sign", sign);
 		appendStringDefault(sb, "release", release);
 		appendStringDefault(sb, "source", source);
-		// TODO rschuster: To my knowledge this is not implemented yet.
-//		sb.append("createWindowsExecutable: " + createWindowsExecutable + "\n");
-//		sb.append("createOSXApp: " + createOSXApp + "\n");
+		sb.append("createWindowsExecutable: " + createWindowsExecutable + "\n");
+		sb.append("createOSXApp: " + createOSXApp + "\n");
 
 		sb.append("\n");
 		sb.append("dependencies and packaged files:\n");
