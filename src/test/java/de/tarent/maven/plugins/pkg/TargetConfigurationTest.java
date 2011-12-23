@@ -13,6 +13,32 @@ import org.junit.Test;
 public class TargetConfigurationTest {
 
 	/**
+	 * Tests that accessing a property in a non-fixated target configuration results
+	 * in a {@link IllegalStateException}.
+	 */
+	@Test(expected=IllegalStateException.class)
+	public void testFixationRequirement() {
+		TargetConfiguration tc = new TargetConfiguration("bla");
+		
+		// Results in an exception
+		tc.getArchitecture();
+	}
+
+	/**
+	 * Tests that accessing a property in a fixated target configuration works
+	 * as expected.
+	 */
+	@Test
+	public void testFixationRequirementMet() throws Exception {
+		TargetConfiguration tc = new TargetConfiguration("bla");
+		
+		tc.fixate();
+		
+		// Results in an exception
+		tc.getArchitecture();
+	}
+	
+	/**
 	 * Tests whether the JNI file sets are really merged.
 	 * @throws MojoExecutionException 
 	 */
