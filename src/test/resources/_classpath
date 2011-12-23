@@ -1,5 +1,5 @@
 # Test _classpath file for a test for the _Starter class
-de.tarent.maven.plugins.pkg._default.StartMe
+de.tarent.maven.plugins.pkg._default._StarterTest
 # Some comment
 foo.jar
 # Some more comments

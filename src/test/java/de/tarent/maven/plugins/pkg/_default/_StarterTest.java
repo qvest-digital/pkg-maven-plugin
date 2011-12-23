@@ -11,6 +11,12 @@ import org.junit.Test;
 
 public class _StarterTest {
 
+	/**
+	 * Tests whether the parsing of the little file that is needed for the
+	 * _Starter class works as expected.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testStarter_parse() throws Exception {
 		// _Starter lies in the default package and thus needs to be accessed in a quirky way
@@ -22,7 +28,7 @@ public class _StarterTest {
 		String className = (String) m.invoke(null, new Object[] { "_classpath", urls } );
 		
 		// See the class name line in the _classpath resource.
-		Assert.assertEquals("de.tarent.maven.plugins.pkg._default.StartMe", className);
+		Assert.assertEquals(_StarterTest.class.getName(), className);
 		Assert.assertEquals(3, urls.size());
 		Assert.assertEquals(toURL("foo.jar"), urls.get(0)); 
 		Assert.assertEquals(toURL("/somewhere/bar.jar"), urls.get(1)); 
@@ -33,6 +39,12 @@ public class _StarterTest {
 		return new File(f).toURI().toURL();
 	}
 
+	/**
+	 * Tests whether the _Starter calls the configured class' main method
+	 * and properly propagates the program arguments.
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testStarter_main() throws Exception {
 		// _Starter lies in the default package and thus needs to be accessed in a quirky way
@@ -43,7 +55,13 @@ public class _StarterTest {
 
 		m.invoke(null, new Object[] { args } );
 		
-		Assert.assertEquals(args, StartMe.last_args);
+		Assert.assertEquals(args, last_args);
+	}
+	
+	public static String[] last_args;
+	
+	public static void main(String[] args) {
+		last_args = args;
 	}
 	
 }
