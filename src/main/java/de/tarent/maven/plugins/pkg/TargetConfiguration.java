@@ -801,8 +801,10 @@ public class TargetConfiguration {
 	private Boolean sign;
 	
 	/**
-	 * Denotes the release of the package to build. As of now, this value is
-	 * only taken in consideration when building RPM packages.
+	 * Denotes the release of the package to build.
+	 * 
+	 * <p>This is an RPM-specific property and is equivalent to
+	 * Debian's <em>revision</em> property.</p>
 	 * 
 	 * <p>Default value is <code>unknown</code>.</p>
 	 * 
@@ -811,7 +813,7 @@ public class TargetConfiguration {
 	private String release;
 	
 	/**
-	 * Denothes the source of the package to build. As of now, this value is
+	 * Denotes the source of the package to build. As of now, this value is
 	 * only taken in consideration when building RPM packages.
 	 * 
 	 * <p>Default value is <code>unknown</code>.</p>
