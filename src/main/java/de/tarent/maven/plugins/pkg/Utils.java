@@ -581,32 +581,6 @@ public final class Utils {
 	}
 
 	/**
-	 * Makes the version string compatible to the system's requirements.
-	 * 
-	 * @param v
-	 * @return
-	 */
-	public final static String fixVersion(String v) {
-		int i = v.indexOf("-SNAPSHOT");
-		if (i > 0)
-			return v.substring(0, i) + "~SNAPSHOT~" + createSnapshotTimestamp();
-
-		return v;
-	}
-
-	/**
-	 * Returns a String representing the current time (UTC) in format
-	 * yyyyMMddHHmmss
-	 * 
-	 * @return
-	 */
-	private final static String createSnapshotTimestamp() {
-
-		return new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-				.getTime());
-	}
-
-	/**
 	 * Makes a valid and useful package version string from one that cannot be
 	 * used or is unsuitable.
 	 * 
