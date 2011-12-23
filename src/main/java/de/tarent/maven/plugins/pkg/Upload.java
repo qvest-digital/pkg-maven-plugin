@@ -27,17 +27,16 @@ public class Upload extends AbstractPackagingMojo {
 	@Override
 	protected void executeTargetConfiguration(WorkspaceSession ws, String distro)
 			throws MojoExecutionException, MojoFailureException {
-		TargetConfiguration tc = ws.getTargetConfiguration();
-		Helper helper = ws.getHelper();
-		
+		TargetConfiguration tc = ws.getTargetConfiguration();		
 		UploadParameters param;
 		
 		try{
 			param = tc.getUploadParameters();
 		}catch (Exception ex){
 			throw new MojoExecutionException("No upload paramenters found for configuration " + tc.getTarget(), ex);			
-		}			
-			File packageFile = getPackageFile(tc, helper, tc.getTarget());
+		}	
+		
+			File packageFile = getPackageFile(ws);
 
 			l.info("Name of package is: " + packageFile.getAbsolutePath());
 			if(packageFile.exists()){
@@ -67,9 +66,8 @@ public class Upload extends AbstractPackagingMojo {
 
 	}
 	
-	public File getPackageFile(TargetConfiguration currentTargetConfiguration, Helper helper,
-			String targetString) {
-		return new File(helper.getTempRoot().getParent(), helper.getPackageFileName());
+	public File getPackageFile(WorkspaceSession ws) {
+		return new File(ws.getMojo().getBuildDir(), ws.getHelper().getPackageFileName());
 	}
 
 }
