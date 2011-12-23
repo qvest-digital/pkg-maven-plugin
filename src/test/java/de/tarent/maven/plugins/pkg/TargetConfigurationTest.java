@@ -34,7 +34,7 @@ public class TargetConfigurationTest {
 		
 		tc.fixate();
 		
-		// Results in an exception
+		// Must not result in an exception
 		tc.getArchitecture();
 	}
 	
