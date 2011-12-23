@@ -80,7 +80,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	}
 	
 	/**
-	 * This test attempts to grab a local file and checks its contets to verify that the process
+	 * This test attempts to grab a local file and checks its contents to verify that the process
 	 * was executed correctly.
 	 *  
 	 * <p>Fetching external (web) resources relays on the same mechanism (java.net.URL.openStream()), 
