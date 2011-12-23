@@ -203,6 +203,46 @@ public class HelperTest extends AbstractMvnPkgPluginTestCase{
 	}
 	
 	@Test
+	public void testVersion_plain_DEB() throws Exception {
+		targetConfiguration.fixate();
+		
+		String expected = packaging.project.getVersion();
+		Assert.assertEquals(expected, helper.getPackageVersion());
+	}
+
+	@Test
+	public void testVersion_versionsuffix_DEB() throws Exception {
+		String vs = "debianrules";
+		targetConfiguration.setPackageVersionSuffix(vs);
+		targetConfiguration.fixate();
+		
+		String expected = packaging.project.getVersion() + "-0" + vs;
+		Assert.assertEquals(expected, helper.getPackageVersion());
+	}
+
+	@Test
+	public void testVersion_revision_DEB() throws Exception {
+		String rs = "r0";
+		targetConfiguration.setRevision(rs);
+		targetConfiguration.fixate();
+		
+		String expected = packaging.project.getVersion() + "-" + rs;
+		Assert.assertEquals(expected, helper.getPackageVersion());
+	}
+
+	@Test
+	public void testVersion_versionsuffix_revision_DEB() throws Exception {
+		String vs = "debianrules";
+		targetConfiguration.setPackageVersionSuffix(vs);
+		String rs = "r0";
+		targetConfiguration.setRevision(rs);
+		targetConfiguration.fixate();
+		
+		String expected = String.format("%s-0%s-%s", packaging.project.getVersion(), vs, rs);
+		Assert.assertEquals(expected, helper.getPackageVersion());
+	}
+	
+	@Test
 	public void getDstArtifactFileReturnsgetBaseBuildDirAndgetTargetArtifactFiletoStringIfNotSet_RPM(){
 		// This test needs the Helper to be in RPM mode
 		helper.setStrategy(Helper.RPM_STRATEGY);

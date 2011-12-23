@@ -143,6 +143,23 @@ public class TargetConfigurationTest {
 	}
 
 	/**
+	 * Tests whether an unset string property with no default value is properly
+	 * fixated.
+	 * 
+	 * @throws MojoExecutionException 
+	 */
+	@Test
+	public void testStringPropertyMerge_unset_nodefault_fixate() throws MojoExecutionException
+	{
+		TargetConfiguration tc1 = new TargetConfiguration("tc1");
+		tc1.fixate();
+		
+		Assert.assertEquals(null, tc1.getPackageNameSuffix());
+		Assert.assertEquals(null, tc1.getPackageVersionSuffix());
+		Assert.assertEquals(null, tc1.getRevision());
+	}
+
+	/**
 	 * Tests whether an unset string property with a default value is properly
 	 * fixated.
 	 * 

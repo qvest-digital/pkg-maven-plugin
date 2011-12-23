@@ -987,13 +987,13 @@ public final class Utils {
 							
 						}else if(field.getType()==List.class){
 							if(defaultValue!=null){
-								defaultValue = new ArrayList();
+								defaultValue = new ArrayList<Object>();
 							}
 							merger = new CollectionMerger();
 							
 						}else if(field.getType()==Set.class){
 							if(defaultValue!=null){								
-								defaultValue = new HashSet();								
+								defaultValue = new HashSet<Object>();								
 							}
 							merger = new CollectionMerger();
 							

@@ -580,7 +580,7 @@ public class TargetConfiguration {
 	 * parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultString="r0")
+	@MergeMe(defaultValueIsNull=true)
 	private String revision;
 	
 	/**
@@ -1017,11 +1017,7 @@ public class TargetConfiguration {
 
 	public String getRevision() {
 		checkIfReady();
-		if(revision == null){
-			return "";
-		}else{
-			return revision;
-		}
+		return revision;
 	}
 
 	public void setRevision(String revision) {

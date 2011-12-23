@@ -697,8 +697,9 @@ public class Helper {
 
 	public String getPackageVersion() {
 		if (packageVersion == null){
-			packageVersion = Utils.fixVersion(apm.getProject().getVersion()) + "-0" + Utils.sanitizePackageVersion(targetConfiguration.getTarget())
-					+ (targetConfiguration.getRevision().length() == 0 ? "" : "-" + targetConfiguration.getRevision());
+			String versionSuffix = (targetConfiguration.getPackageVersionSuffix() == null ? "" : "-0" + targetConfiguration.getPackageVersionSuffix());
+			String revisionSuffix = (targetConfiguration.getRevision() == null ? "" : "-" + targetConfiguration.getRevision());
+			packageVersion = Utils.fixVersion(apm.getProject().getVersion()) + versionSuffix + revisionSuffix;
 		}
 		return packageVersion;
 	}
