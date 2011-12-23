@@ -83,7 +83,7 @@ import de.tarent.maven.plugins.pkg.signing.DebianSigner;
 public class DebPackager extends Packager
 {
 
-private static final String _PGPORIGIN = "_pgporigin";
+private static final String PGPORIGIN = "_pgporigin";
 private static final String COMBINEDCONTENTSFILENAME = "combined-contents";
   
 public void execute(Log l,
@@ -464,20 +464,20 @@ public void execute(Log l,
 		  Utils.exec(new String[]{"gpg","--no-tty", "--passphrase",apm.getSignPassPhrase(),
 				  				  "--default-key",maintainer,
 				  				  "--no-use-agent",
-				  				  "-abs","-o",_PGPORIGIN,COMBINEDCONTENTSFILENAME},
+				  				  "-abs","-o",PGPORIGIN,COMBINEDCONTENTSFILENAME},
 							  	  tempRoot.getParentFile(),
 							  	  "Error signing concatenated file",
 							  	  "Error writing concatenated file");
 		  
 	  }else{
 		  Utils.exec(new String[]{"gpg","--default-key",maintainer,
-				  				  "-abs","-o",_PGPORIGIN,COMBINEDCONTENTSFILENAME},
+				  				  "-abs","-o",PGPORIGIN,COMBINEDCONTENTSFILENAME},
 				  	 tempRoot.getParentFile(),
 				  	 "Error signing concatenated file",
 				  	 "Error writing concatenated file");
 	  }
 	  Utils.exec(new String[]{"ar","rc",packageFilename,
-			  				  _PGPORIGIN,"debian-binary",
+			  				  PGPORIGIN,"debian-binary",
 			  				  "control.tar.gz","data.tar.gz"},
 			  	 tempRoot.getParentFile(),
 			  	 "Error putting package back together",
@@ -490,7 +490,7 @@ public void execute(Log l,
 	  f.delete();
 	  f = new File(tempRoot.getParentFile(),"data.tar.gz");
 	  f.delete();
-	  f = new File(tempRoot.getParentFile(),_PGPORIGIN);
+	  f = new File(tempRoot.getParentFile(),PGPORIGIN);
 	  f.delete();
 	  f = new File(tempRoot.getParentFile(),COMBINEDCONTENTSFILENAME);
 	  f.delete();

@@ -59,7 +59,7 @@ public class APTUploader implements IPkgUploader{
 	/**
 	 * The command to use for uploading packages
 	 */
-	protected final String uploadCmd = "dupload";
+	static String uploadCmd = "dupload";
 
 		
 	protected void checkEnvironment(Log l) throws MojoExecutionException {

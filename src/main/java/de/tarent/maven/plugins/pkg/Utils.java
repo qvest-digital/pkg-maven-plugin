@@ -294,7 +294,7 @@ public final class Utils {
 
 	}
 
-	public static final long copyProjectArtifact(Log l, File src, File dst) throws MojoExecutionException {
+	public static long copyProjectArtifact(Log l, File src, File dst) throws MojoExecutionException {
 		
 		if (l!=null){
 			l.info("copying artifact: " + src.getAbsolutePath());
@@ -515,7 +515,7 @@ public final class Utils {
 	 * @return
 	 * @throws MojoExecutionException
 	 */
-	static public final long copyArtifacts(Log l, Set<Artifact> artifacts, File dst) throws MojoExecutionException {
+	public static long copyArtifacts(Log l, Set<Artifact> artifacts, File dst) throws MojoExecutionException {
 		long byteAmount = 0;
 
 		if (artifacts.size() == 0) {
@@ -593,7 +593,7 @@ public final class Utils {
 	 *            The string which might contain underscores
 	 * @return The given string without underscores
 	 */
-	public final static String sanitizePackageVersion(String string) {
+	public static String sanitizePackageVersion(String string) {
 
 		return string.replaceAll("_", "");
 	}
@@ -609,7 +609,7 @@ public final class Utils {
 	 * @throws ProjectBuildingException
 	 * @throws InvalidDependencyVersionException
 	 */
-	public final static Set findArtifacts(ArtifactFilter filter, 
+	public static Set findArtifacts(ArtifactFilter filter, 
 										  ArtifactFactory factory,
 										  ArtifactResolver resolver,
 										  MavenProject project, 
@@ -637,7 +637,7 @@ public final class Utils {
 	 * @return
 	 * @throws MojoExecutionException 
 	 */
-	public final static TargetConfiguration getTargetConfigurationFromString(String target, 
+	public static TargetConfiguration getTargetConfigurationFromString(String target, 
 											List<TargetConfiguration> targetConfigurations) throws MojoExecutionException{
 		
 		for (TargetConfiguration currentTargetConfiguration : targetConfigurations) {

@@ -50,7 +50,7 @@ public interface Visitor
    * @param artifact
    * @param entry
    */
-  public void visit(Artifact artifact, Entry entry);
+  void visit(Artifact artifact, Entry entry);
   
   /**
    *  If called it means that the dependency will be bundled along
@@ -58,5 +58,5 @@ public interface Visitor
    *  
    * @param artifact
    */
-  public void bundle(Artifact artifact);
+  void bundle(Artifact artifact);
 }

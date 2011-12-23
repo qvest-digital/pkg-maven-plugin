@@ -1028,10 +1028,10 @@ public class Helper {
 		if (!basePkgDir.mkdirs()){
 			throw new MojoExecutionException("Could not create package directory.");
 		}
-		if (jniDir != null && targetConfiguration.getJniFiles() != null && targetConfiguration.getJniFiles().size() > 0) {
-			if (!jniDir.mkdirs()){
+		if (jniDir != null && targetConfiguration.getJniFiles() != null && 
+			targetConfiguration.getJniFiles().size() > 0 &&
+			!jniDir.mkdirs()){
 				throw new MojoExecutionException("Could not create JNI directory.");
-			}
 		}
 
 	}

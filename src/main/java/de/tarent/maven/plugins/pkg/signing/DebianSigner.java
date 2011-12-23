@@ -58,22 +58,22 @@ public class DebianSigner {
 	/**
 	 * The command to use for generating a files-list.
 	 */
-	protected final String filesGenCmd = "dpkg-distaddfile";
+	protected static String filesGenCmd = "dpkg-distaddfile";
 
 	/**
 	 * The command to use for actually signing the Debian-Packages.
 	 */
-	protected final String signCmd = "debsign";
+	protected static String signCmd = "debsign";
 
 	/**
 	 * The command to use for generating a .changes-file.
 	 */
-	protected final String changesGenCmd = "dpkg-genchanges";
+	protected static String changesGenCmd = "dpkg-genchanges";
 	
 	/**
 	 * The command to use for generating a date-string which complies to the RFC-2822 specification.
 	 */
-	protected final String rfc2822DateCmd = "date";
+	protected static String rfc2822DateCmd = "date";
 	
 	protected static final String AUTOMATICGENERATIONDISCLAIMER = "Package automatically generated with mvn-pkg-plugin. " +
 																  "No changes were provided when packaging.";

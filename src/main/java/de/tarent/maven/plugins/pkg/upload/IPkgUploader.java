@@ -4,5 +4,5 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 public interface IPkgUploader {
 
-	public void uploadPackage() throws MojoExecutionException;
+	void uploadPackage() throws MojoExecutionException;
 }

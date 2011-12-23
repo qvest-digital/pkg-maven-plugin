@@ -29,21 +29,21 @@ public class UploadParameters {
 	 */
 	private String password;
 	
-	static final Pattern usernamePattern = Pattern.compile("%USERNAME%");
-	static final Pattern passwordPattern = Pattern.compile("%PASSWORD%");
+	static final Pattern USERNAMEPATTERN = Pattern.compile("%USERNAME%");
+	static final Pattern PASSWORDPATTERN = Pattern.compile("%PASSWORD%");
 	
 	public String parseUrlPlaceholders(String url) {
 		
 		Matcher m;
 		
 		if(username!=null){
-			m = usernamePattern.matcher(url);
+			m = USERNAMEPATTERN.matcher(url);
 			while(m.find()){
 				url = m.replaceAll(username);
 			}
 		}
 		if(password!=null){
-			m = passwordPattern.matcher(url);
+			m = PASSWORDPATTERN.matcher(url);
 			while(m.find()){
 				url = m.replaceAll(password);
 			}
