@@ -73,7 +73,6 @@ import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
-import de.tarent.maven.plugins.pkg.signing.DebianSigner;
 
 /**
  * Creates a Debian package file (.deb)
@@ -83,7 +82,10 @@ import de.tarent.maven.plugins.pkg.signing.DebianSigner;
 public class DebPackager extends Packager
 {
 
-  public void execute(Log l,
+private static final String _PGPORIGIN = "_pgporigin";
+private static final String COMBINEDCONTENTSFILENAME = "combined-contents";
+  
+public void execute(Log l,
                       WorkspaceSession workspaceSession)
                     		  throws MojoExecutionException
   {
@@ -439,7 +441,7 @@ public class DebPackager extends Packager
 			  	 "Error extracting package",
 			  	 "Error extracting package");
 	  try {
-		  File combinedContents = new File(tempRoot.getParentFile(),"combined-contents");
+		  File combinedContents = new File(tempRoot.getParentFile(),COMBINEDCONTENTSFILENAME);
 		  FileWriter fw = new FileWriter(combinedContents);
 		  
 		  InputStream stream = Utils.exec(new String[]{"cat","debian-binary","control.tar.gz","data.tar.gz"},
@@ -458,24 +460,24 @@ public class DebPackager extends Packager
 		  Utils.exec(new String[]{"gpg","--no-tty", "--passphrase",apm.getSignPassPhrase(),
 				  				  "--default-key",maintainer,
 				  				  "--no-use-agent",
-				  				  "-abs","-o","_pgporigin","combined-contents"},
+				  				  "-abs","-o",_PGPORIGIN,COMBINEDCONTENTSFILENAME},
 							  	  tempRoot.getParentFile(),
 							  	  "Error signing concatenated file",
-							  	  "Error signing concatenated file");
+							  	  "Error writing concatenated file");
 		  
 	  }else{
 		  Utils.exec(new String[]{"gpg","--default-key",maintainer,
-				  				  "-abs","-o","_pgporigin","combined-contents"},
+				  				  "-abs","-o",_PGPORIGIN,COMBINEDCONTENTSFILENAME},
 				  	 tempRoot.getParentFile(),
 				  	 "Error signing concatenated file",
-				  	 "Error signing concatenated file");
+				  	 "Error writing concatenated file");
 	  }
 	  Utils.exec(new String[]{"ar","rc",packageFilename,
-			  				  "_pgporigin","debian-binary",
+			  				  _PGPORIGIN,"debian-binary",
 			  				  "control.tar.gz","data.tar.gz"},
 			  	 tempRoot.getParentFile(),
 			  	 "Error putting package back together",
-			  	 "Error putting package back together");
+			  	 "Error writing package parts into package");
 	  
 	  // Here we clean the artifacts created while signing
 	  File f = new File(tempRoot.getParentFile(),"debian-binary");
@@ -484,9 +486,9 @@ public class DebPackager extends Packager
 	  f.delete();
 	  f = new File(tempRoot.getParentFile(),"data.tar.gz");
 	  f.delete();
-	  f = new File(tempRoot.getParentFile(),"_pgporigin");
+	  f = new File(tempRoot.getParentFile(),_PGPORIGIN);
 	  f.delete();
-	  f = new File(tempRoot.getParentFile(),"combined-contents");
+	  f = new File(tempRoot.getParentFile(),COMBINEDCONTENTSFILENAME);
 	  f.delete();
   }
 
