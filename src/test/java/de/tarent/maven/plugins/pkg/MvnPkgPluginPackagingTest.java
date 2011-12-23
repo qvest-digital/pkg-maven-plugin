@@ -32,7 +32,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void runDefaultTarget()
             throws Exception
         {
-    		packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg", "ubuntu_lucid_target_simple");
+    		packagingPlugin = mockPackagingEnvironment(DEBPOM, "ubuntu_lucid_target_simple");
             packagingPlugin.execute();
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
@@ -54,7 +54,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void runAgainstUnkownTargetThrowsException()
             throws Exception
         {
-    		packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg", "non_existent_target");
+    		packagingPlugin = mockPackagingEnvironment(DEBPOM, "non_existent_target");
             packagingPlugin.execute();
         }
 
@@ -72,7 +72,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void createDebForUbuntuLucidWithoutDependenciesContainingJar()
             throws Exception
         {	
-			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg", "ubuntu_lucid_target_simple");
+			packagingPlugin = mockPackagingEnvironment(DEBPOM, "ubuntu_lucid_target_simple");
             packagingPlugin.execute();
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
@@ -92,7 +92,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             throws Exception
         {	
 
-			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg","centos_5_6_target_simple");
+			packagingPlugin = mockPackagingEnvironment(RPMPOM,"centos_5_6_target_simple");
 			packagingPlugin.project.setLicenses(null);
 			packagingPlugin.execute();
         }
@@ -111,7 +111,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             throws Exception
         {	
 
-			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg","centos_5_6_target_simple");
+			packagingPlugin = mockPackagingEnvironment(RPMPOM,"centos_5_6_target_simple");
             packagingPlugin.execute();
             assertTrue(numberOfRPMsIs(1));
             assertTrue(rpmContainsMainArtifact());
@@ -133,7 +133,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void createRpmForCentOS_5_6WithoutNeededInformationFails()
             throws Exception
         {	
-			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg","centos_5_6_target_simple",false);
+			packagingPlugin = mockPackagingEnvironment(RPMPOM,"centos_5_6_target_simple",false);
 			packagingPlugin.execute();
         }
 
@@ -153,7 +153,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void createDebForUbuntuLucidWithManualDependenciesContainingJar()
             throws Exception
         {
-			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg","ubuntu_lucid_target_manual_dependencies");
+			packagingPlugin = mockPackagingEnvironment(DEBPOM,"ubuntu_lucid_target_manual_dependencies");
             packagingPlugin.execute();
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
@@ -177,7 +177,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void createRpmForCentOS_5_6WithManualDependenciesContainingJar()
             throws Exception
         {
-			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg","centos_5_6_target_manual_dependencies");
+			packagingPlugin = mockPackagingEnvironment(RPMPOM,"centos_5_6_target_manual_dependencies");
             packagingPlugin.execute();
             assertTrue(numberOfRPMsIs(1));
             assertTrue(rpmContainsMainArtifact());
@@ -202,7 +202,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	@Test (expected=MojoExecutionException.class)
     public void createDebForUbuntuKarmicOverridingDistroWithoutDependenciesContainingJarShouldFail() throws Exception
         {
-			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg", "ubuntu_lucid_target_double");
+			packagingPlugin = mockPackagingEnvironment(DEBPOM, "ubuntu_lucid_target_double");
             packagingPlugin.execute();
         }
 
@@ -220,7 +220,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void executingMultipleTargetsWithoutDependenciesContainingJar()
             throws Exception, MojoExecutionException
         {
-			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg",
+			packagingPlugin = mockPackagingEnvironment(MIXEDPOM,
 														"ubuntu_lucid_target_simple,centos_5_6_target_simple");
             packagingPlugin.execute();
             assertTrue(numberOfDEBsIs(1));
@@ -233,11 +233,11 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 
 	/**
 	 * This test attempts the following:
-	 * 
-	 * Execute two different target configurations 
-	 * Create a DEB and a RPM file 
-	 * Include a main artifact (JAR) in the DEB file
+	 *
+	 * Execute a single target configuration
+	 * Create a RPM file 
 	 * Include a main artifact (JAR) in the RPM file
+	 * Include external auxilary files in the package
 	 * 
 	 * @throws Exception
 	 */
@@ -245,7 +245,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void createRPMWithAuxFileDependenciesContainingJar()
             throws Exception, MojoExecutionException
         {
-			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg","centos_5_6_target_external_artifact");
+			packagingPlugin = mockPackagingEnvironment(RPMPOM,"centos_5_6_target_external_artifact");
             packagingPlugin.execute();
             assertTrue(numberOfRPMsIs(1));
             assertTrue(rpmContainsMainArtifact());
@@ -255,10 +255,10 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	/**
 	 * This test attempts the following:
 	 * 
-	 * Execute two different target configurations 
-	 * Create a DEB and a RPM file 
+	 * Execute a single target configuration
+	 * Create a DEB file
 	 * Include a main artifact (JAR) in the DEB file
-	 * Include a main artifact (JAR) in the RPM file
+	 * Include external auxilary files in the package
 	 * 
 	 * @throws Exception
 	 */
@@ -266,7 +266,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void createDEBWithAuxFileDependenciesContainingJar()
             throws Exception, MojoExecutionException
         {
-			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","ubuntu_lucid_target_external_artifact");
+			packagingPlugin = mockPackagingEnvironment(DEBPOM,"ubuntu_lucid_target_external_artifact");
             packagingPlugin.execute();
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
@@ -285,7 +285,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void createSignedDEB()
             throws Exception, MojoExecutionException
         {
-			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","ubuntu_lucid_target_sign");
+			packagingPlugin = mockPackagingEnvironment(DEBPOM,"ubuntu_lucid_target_sign");
             packagingPlugin.execute();
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
@@ -305,7 +305,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             throws Exception, MojoExecutionException
         {
 
-			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","ubuntu_lucid_target_simple");
+			packagingPlugin = mockPackagingEnvironment(DEBPOM,"ubuntu_lucid_target_simple");
             packagingPlugin.execute();
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
@@ -326,7 +326,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             throws Exception, MojoExecutionException
         {
 
-			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","centos_5_6_target_sign");
+			packagingPlugin = mockPackagingEnvironment(RPMPOM,"centos_5_6_target_sign");
             packagingPlugin.execute();
             assertTrue(numberOfRPMsIs(1));
             assertTrue(rpmContainsMainArtifact());
@@ -347,14 +347,13 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             throws Exception, MojoExecutionException
         {
 
-			packagingPlugin = mockPackagingEnvironment("simplepom.xml", "pkg","centos_5_6_target_simple");
+			packagingPlugin = mockPackagingEnvironment(RPMPOM, "centos_5_6_target_simple");
             packagingPlugin.execute();
             assertTrue(numberOfRPMsIs(1));
             assertTrue(rpmContainsMainArtifact());
             assertFalse(rpmIsSigned());
 
         }
-
 
 	/**
 	 * This test attempts the following:
@@ -370,7 +369,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void executingMultipleSignedTargetsWithoutDependenciesContainingJar()
             throws Exception, MojoExecutionException
         {
-			packagingPlugin = mockPackagingEnvironment("simplepom.xml","pkg",
+			packagingPlugin = mockPackagingEnvironment(MIXEDPOM,
 														"ubuntu_lucid_target_sign,centos_5_6_target_sign");
             packagingPlugin.execute();
             assertTrue(numberOfDEBsIs(1));
@@ -383,16 +382,17 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 
 
 		
-	public Packaging mockPackagingEnvironment(String pomFilename, String goal) throws Exception{		
+	public Packaging mockPackagingEnvironment(String pomFilename) throws Exception{		
 		 return (Packaging)mockEnvironment(pomFilename,"pkg",true);		
-	}	
-	public Packaging mockPackagingEnvironment(String pomFilename, String goal, String target) throws Exception{		
+	}
+	
+	public Packaging mockPackagingEnvironment(String pomFilename, String target) throws Exception{		
 		Packaging p = (Packaging) mockEnvironment(pomFilename,"pkg",true);
 		p.target = target;
 		return p;		
 	}
 	
-	private Packaging mockPackagingEnvironment(String pomFilename, String goal, String target, boolean b) throws Exception {
+	private Packaging mockPackagingEnvironment(String pomFilename, String target, boolean b) throws Exception {
 		Packaging p = (Packaging) mockEnvironment(pomFilename,"pkg",b);
 		p.target = target;
 		return p;	

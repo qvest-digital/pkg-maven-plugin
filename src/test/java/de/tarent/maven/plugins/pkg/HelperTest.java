@@ -35,7 +35,7 @@ public class HelperTest extends AbstractMvnPkgPluginTestCase{
 	@Before
 	public void setUp() throws Exception{
 		super.setUp();
-		packaging = (Packaging) mockEnvironment("simplepom.xml","pkg",true);
+		packaging = (Packaging) mockEnvironment(RPMPOM,"pkg",true);
 		
 		// Blank instance that tests can modify at will.
 		targetConfiguration = new TargetConfiguration();

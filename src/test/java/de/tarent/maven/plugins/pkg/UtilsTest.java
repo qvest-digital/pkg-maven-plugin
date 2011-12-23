@@ -56,7 +56,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	@SuppressWarnings("unchecked")
 	public void getLicenseForProject() throws Exception{
 		
-		Packaging p = (Packaging)mockEnvironment("simplepom.xml", "pkg");
+		Packaging p = (Packaging)mockEnvironment(RPMPOM, "pkg");
 		List<License>licenses = createLicenseList("License 1", "License 2");
 		
 		p.project.setLicenses(licenses);
@@ -74,7 +74,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	@Test(expected=MojoExecutionException.class)
 	public void getLicenseForProjectWithoutLicenses() throws Exception{
 		
-		Packaging p = (Packaging)mockEnvironment("simplepom.xml", "pkg");
+		Packaging p = (Packaging)mockEnvironment(RPMPOM, "pkg");
 		p.project.setLicenses(null);
 		Utils.getConsolidatedLicenseString(p.project);
 	}
@@ -89,7 +89,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	 */
 	@Test
 	public void getLicenseFromUrl() throws IOException{
-		String localFile = "file://" + getBasedir() + "/src/test/resources/dummyproject/simplepom.xml";
+		String localFile = "file://" + getBasedir() + "/src/test/resources/dummyproject/"+DEBPOM;
 		
 		Assert.assertTrue(Utils.getTextFromUrl(localFile).
 				contains("<groupId>de.maven.plugins.test</groupId>"));

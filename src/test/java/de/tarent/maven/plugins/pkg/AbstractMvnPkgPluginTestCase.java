@@ -33,18 +33,33 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	Upload packagingTransportPlugin;
 	protected static final File TARGETDIR = new File(getBasedir()+ "/src/test/resources/dummyproject/target/");
 
-
+	/**
+	 * Name of the pom used for .deb packaging tests 
+	 */
+	protected static final String DEBPOM = "debpom.xml";
+	/**
+	 * Name of the pom used for .rpm packaging tests
+	 */
+	protected static final String RPMPOM = "rpmpom.xml";
+	/**
+	 * Name of the pom used for mixed packaging tests
+	 */
+	protected static final String MIXEDPOM = "mixedpom.xml";
+	/**
+	 * Name of the pom used for upload tests
+	 */
+	protected static final String UPLOADPOM = "uploadpom.xml";
 	/**
 	 * This is the key fingerprint for Test User MVNPKGPLUGIN <no@address.com></br>
 	 * It is needed for test purposes
 	 */
-	static String keyFingerprint = "A70F93982E429501732931CF0481A82949692090";
+	protected static String keyFingerprint = "A70F93982E429501732931CF0481A82949692090";
 	/**
 	 * This is the keyID for Test User MVNPKGPLUGIN <no@address.com> ()</br>
 	 * (The last four hexadecimal character groups of the user's fingerprint). 
 	 * It is needed for test purposes
 	 */
-	static String keyID;
+	protected static String keyID;
 	/**
 	 * location of the public key to use
 	 */
