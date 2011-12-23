@@ -2,6 +2,10 @@ package de.tarent.maven.plugins.pkg.upload;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -10,6 +14,7 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.twdata.maven.mojoexecutor.MojoExecutor.Element;
 
 import de.tarent.maven.plugins.pkg.AbstractMvnPkgPluginTestCase;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
@@ -20,9 +25,28 @@ import de.tarent.maven.plugins.pkg.map.PackageMap;
 
 public class WagonUploaderTest extends AbstractMvnPkgPluginTestCase{
 	
+	File expectedPackageFile;
+	WagonUploader wu;
+	String expectedUrl;
+	WorkspaceSession ws;
+	Upload up;
+	
 	@Before
 	public void setUp() throws Exception{
 		super.setUp();
+		up = mockUploadEnvironment(UPLOADPOM);
+		ws = new WorkspaceSession();
+		PackageMap expectedPackageMap = new PackageMap(null, null, "dull", new HashSet<String>());
+		ws.setPackageMap(expectedPackageMap);
+		ws.setMojo(up);
+		expectedUrl = "someurl";
+		Helper h = new Helper();
+		h.init(up, expectedPackageMap, new TargetConfiguration().fixate(), new ArrayList<TargetConfiguration>());
+		ws.setHelper(h);
+		expectedPackageFile = new File(ws.getHelper().getTempRoot().getParentFile(), ws.getHelper().getPackageFileName());
+		wu = new WagonUploader(ws, expectedUrl);
+		
+		
 	}
 	
 	@After
@@ -32,27 +56,23 @@ public class WagonUploaderTest extends AbstractMvnPkgPluginTestCase{
 	
 	@Test
 	public void testConstructor() throws Exception{
-		Upload up = mockUploadEnvironment(UPLOADPOM);
-		WorkspaceSession ws = new WorkspaceSession();
-		PackageMap expectedPackageMap = new PackageMap(null, null, "dull", new HashSet<String>());
-		ws.setPackageMap(expectedPackageMap);
-		ws.setMojo(up);
-		String expectedUrl = "someurl";
-		Helper h = new Helper();
-		h.init(up, expectedPackageMap, new TargetConfiguration().fixate(), new ArrayList<TargetConfiguration>());
-		ws.setHelper(h);
-		File expectedPackageFile = new File(ws.getHelper().getTempRoot().getParentFile(), ws.getHelper().getPackageFileName());
-		
-		WagonUploader wu = new WagonUploader(ws, expectedUrl);
-		
-		
-
 		Assert.assertEquals(expectedUrl,getValueOfFieldInObject("url",wu));
 		Assert.assertEquals(up.getLog(),getValueOfFieldInObject("l",wu));
 		Assert.assertEquals(ws.getMojo().getProject(), getValueOfFieldInObject("project",wu));
 		Assert.assertEquals(ws.getMojo().getPluginManager(), getValueOfFieldInObject("pluginManager",wu));
 		Assert.assertEquals(ws.getMojo().getSession(), getValueOfFieldInObject("session",wu));
 		Assert.assertEquals(expectedPackageFile, getValueOfFieldInObject("packageFile",wu));
+	}
+	
+	@Test
+	public void generateUploadElements() throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, SecurityException, NoSuchMethodException{	
+		Method m = WagonUploader.class.getDeclaredMethod("generateUploadElements",new Class[]{File.class, String.class});
+		m.setAccessible(true);
+		Element[] elementArray = (Element[]) m.invoke(wu,new Object[]{expectedPackageFile,expectedUrl});
+		Element element0 = elementArray[0];
+		Element element1 = elementArray[1];
+		assertTrue(element0.toDom().toString().contains("<fromFile>/home/plafue/workspace/mvn-pkg-plugin/trunk/src/test/resources/dummyproject/target/libdummyproject-java_1.0.0_all.deb</fromFile>"));
+		assertTrue(element1.toDom().toString().contains("<url>someurl</url>"));
 	}
 	
 	public Upload mockUploadEnvironment(String pomFilename) throws Exception{		
