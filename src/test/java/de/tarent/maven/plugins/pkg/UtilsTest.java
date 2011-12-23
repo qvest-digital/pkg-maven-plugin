@@ -79,10 +79,20 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		Utils.getConsolidatedLicenseString(p.project);
 	}
 	
+	/**
+	 * This test attempts to grab a local file and checks its contets to verify that the process
+	 * was executed correctly.
+	 *  
+	 * <p>Fetching external (web) resources relays on the same mechanism (java.net.URL.openStream()), 
+	 * so we will just test it locally.</p> 
+	 * @throws IOException
+	 */
 	@Test
 	public void getLicenseFromUrl() throws IOException{
-		Assert.assertTrue(Utils.getTextFromUrl("http://www.gnu.org/licenses/lgpl.txt").
-				contains("GNU LESSER GENERAL PUBLIC LICENSE"));
+		String localFile = "file://" + getBasedir() + "/src/test/resources/dummyproject/simplepom.xml";
+		
+		Assert.assertTrue(Utils.getTextFromUrl(localFile).
+				contains("<groupId>de.maven.plugins.test</groupId>"));
 	}
 	
 	/**
