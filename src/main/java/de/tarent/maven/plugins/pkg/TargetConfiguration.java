@@ -591,6 +591,13 @@ public class TargetConfiguration {
 	private String packageNameSuffix;
 
 	/**
+	 * Denotes a suffix which is added to the package version.
+	 * 
+	 */
+	@MergeMe(defaultValueIsNull=true)
+	private String packageVersionSuffix;
+
+	/**
 	 * Denotes the value of the section property supported by packaging systems.
 	 * 
 	 * <p>
@@ -1564,6 +1571,15 @@ public class TargetConfiguration {
 
 	public void setPackageNameSuffix(String packageNameSuffix) {
 		this.packageNameSuffix = packageNameSuffix;
+	}
+
+	public String getPackageVersionSuffix() {
+		checkIfReady();
+		return packageVersionSuffix;
+	}
+
+	public void setPackageVersionSuffix(String packageVersionSuffix) {
+		this.packageVersionSuffix = packageVersionSuffix;
 	}
 
 	public String getTarget() {
