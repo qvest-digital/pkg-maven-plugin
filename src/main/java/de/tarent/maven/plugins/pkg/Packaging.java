@@ -35,8 +35,10 @@ import de.tarent.maven.plugins.pkg.packager.Packager;
 /**
  * Creates a package file for the project and the given distribution.
  * 
- * @execute phase="package"
+ * @phase package
  * @goal pkg
+ * @requiresProject
+ * @requiresDependencyResolution runtime
  */
 public class Packaging
     extends AbstractPackagingMojo

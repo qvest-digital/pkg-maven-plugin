@@ -6,7 +6,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 
-import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.upload.APTUploader;
 import de.tarent.maven.plugins.pkg.upload.IPkgUploader;
 import de.tarent.maven.plugins.pkg.upload.WagonUploader;
@@ -17,8 +16,9 @@ import de.tarent.maven.plugins.pkg.upload.WagonUploader;
  * This goal uses codehaus' wagon-maven-plugin behind the scenes.</br>
  * Tested providers are: ssh (scpexe://), sftp (sftp://), file (file://)</br>
  * 
- * @phase "deploy"
+ * @phase deploy
  * @goal upload
+ * @requiresProject
  */
 public class Upload extends AbstractPackagingMojo {
 
