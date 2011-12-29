@@ -754,9 +754,27 @@ public final class Utils {
 			  List<TargetConfiguration> targetConfigurations)
 	      throws MojoExecutionException
 	  {
-		return getMergedConfigurationImpl(target, distro, targetConfigurations, false);  
+		  // Unneeded fixation will cause a MojoExecutionException which is considered
+		  // wrong usage of the API (a programming mistake).
+		  return getMergedConfigurationImpl(target, distro, targetConfigurations, false);  
 	  }
 	  
+	  /**
+	   * Internal method which is used by {@link #createBuildChain(String, String, List)}
+	   * which allows preventing an unneeded fixation.
+	   * 
+	   * <p>A fixation is to be prevented when a {@link TargetConfiguration} instance
+	   * is handed over to this method a second time during the construction of a build chain.
+	   * This is the case when two target configurations have a relation to a common third one.
+	   * </p>
+	   * 
+	   * @param target
+	   * @param distro
+	   * @param targetConfigurations
+	   * @param preventUnneededFixate
+	   * @return
+	   * @throws MojoExecutionException
+	   */
 	  private static TargetConfiguration getMergedConfigurationImpl(
 			  String target,
 			  String distro,
@@ -804,7 +822,11 @@ public final class Utils {
 		        	throw new MojoExecutionException("target configuration '" + currentTargetConfiguration.getTarget() + "' does not support distro: " + distro);
 		        }
 	        }else{
-	        	return ((currentTargetConfiguration.isReady() && preventUnneededFixate) ? currentTargetConfiguration : currentTargetConfiguration.fixate());
+	        	// If a TargetConfiguration ends up here which is already fixated we only prevent it being done again
+	        	// when the respective flag is set. It is important that misuse of the public variant of this method
+	        	// and the actual state of the TargetConfiguration leads to an exception.
+	        	return ((currentTargetConfiguration.isReady()
+	        			&& preventUnneededFixate) ? currentTargetConfiguration : currentTargetConfiguration.fixate());
 	        }
 	      }
 	    
