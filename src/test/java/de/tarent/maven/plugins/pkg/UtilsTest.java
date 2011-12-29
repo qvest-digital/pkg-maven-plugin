@@ -577,6 +577,36 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		
 		Assert.assertEquals(distro, Utils.getDefaultDistro("test", tcs, new SystemStreamLog()));
 	}
+
+	/**
+	 * Tests that requesting the default distro which is not available in a
+	 * given @{TargetConfiguration} instance but in its parent leads to an
+	 * exception.
+	 * 
+	 * <p>Actually that we cannot do this is a kind of ugly limitation of the current
+	 * implementation that we however accept for the moment. The way to deal with it
+	 * would be to untangle the plain merging process in 
+	 * {@link Utils#getMergedConfiguration(String, String, List)} from the distro
+	 * variable checking stuff.
+	 * </p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test(expected=MojoExecutionException.class)
+	public void getDefaultDistro_singledistro_singleinheritance() throws Exception {
+		String distro = "bla";
+		TargetConfiguration t1 = new TargetConfiguration("t1");
+		t1.setDistro(distro);
+
+		TargetConfiguration t2 = new TargetConfiguration("t2");
+		t2.parent = "t1";
+		
+		List<TargetConfiguration> tcs = new ArrayList<TargetConfiguration>();
+		tcs.add(t1);
+		tcs.add(t2);
+		
+		Assert.assertEquals(distro, Utils.getDefaultDistro("t2", tcs, new SystemStreamLog()));
+	}
 	
 	@Test
 	public void getDefaultDistro_manydistros_withdefault() throws Exception {
