@@ -767,7 +767,7 @@ public final class Utils {
 	   * @param target
 	   * @param distro
 	   * @param targetConfigurations
-	   * @param preventUnneededFixate
+	   * @param preventUnneededMerge
 	   * @return
 	   * @throws MojoExecutionException
 	   */
@@ -775,7 +775,7 @@ public final class Utils {
 			  String target,
 			  String distro,
 			  List<TargetConfiguration> targetConfigurations,
-			  boolean preventUnneededFixate)
+			  boolean preventUnneededMerge)
 	      throws MojoExecutionException
 	  {
 	    Iterator<TargetConfiguration> ite = targetConfigurations.iterator();
@@ -787,6 +787,13 @@ public final class Utils {
 	        if (!currentTargetConfiguration.getTarget().equals(target)){
 	        	continue;
 	        }
+	        
+	        // If the selected target configuration (might also be a parent of a previous
+	        // call) is already ready, we can return it here.
+	        // TODO: This short-cut is not backed by a test yet.
+	        if (preventUnneededMerge && currentTargetConfiguration.isReady())
+	        	return currentTargetConfiguration;
+	        
 	        // Recursively creates the merged configuration of the parent. By doing so we
 	        // traverse the chain of configurations from the bottom to the top.
 	        
@@ -820,7 +827,7 @@ public final class Utils {
 	        	// when the respective flag is set. It is important that misuse of the public variant of this method
 	        	// and the actual state of the TargetConfiguration leads to an exception.
 	        	return ((currentTargetConfiguration.isReady()
-	        			&& preventUnneededFixate) ? currentTargetConfiguration : currentTargetConfiguration.fixate());
+	        			&& preventUnneededMerge) ? currentTargetConfiguration : currentTargetConfiguration.fixate());
 	        }
 	      }
 	    
