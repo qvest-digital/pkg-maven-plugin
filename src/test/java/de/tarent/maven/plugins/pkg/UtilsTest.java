@@ -240,6 +240,69 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	}
 	
 	/**
+	 * Checks the core functionality of the {@link Utils#getMergedConfiguration()}
+	 * method.
+	 * 
+	 * <p>Two targetconfiguration with the same parent.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void getMergedConfiguration_mergeddistros_sharedparent() throws Exception {
+		// Sets up 3 configuration where one inherits from the other.
+		// When the method is called we expect a new instance which has
+		// properties of both.
+		
+		// Just some random values that can be accessed by their
+		// reference later (IOW the value is not important and has
+		// no meaning).
+		String set_in_t1 = "set_in_t1";
+		String overridden_in_t2a = "overridden_in_t2a";
+		String overridden_in_t2b = "overridden_in_t2b";
+		
+		// T1 supports foo
+		TargetConfiguration t1 = new TargetConfiguration("t1");
+		t1.setDistro("foo");
+		t1.setPrefix(set_in_t1);
+		t1.setMainClass(set_in_t1);
+		
+		TargetConfiguration t2a = new TargetConfiguration("t2a");
+		t2a.setMainClass(overridden_in_t2a);
+		t2a.parent = "t1";
+
+		TargetConfiguration t2b = new TargetConfiguration("t2b");
+		t2b.setMainClass(overridden_in_t2b);
+		t2b.parent = "t1";
+		
+		List<TargetConfiguration> tcs = new LinkedList<TargetConfiguration>();
+		tcs.add(t1);
+		tcs.add(t2a);
+		tcs.add(t2b);
+		
+		TargetConfiguration result2a =
+				Utils.getMergedConfiguration("t2a", "foo", tcs);
+		
+		TargetConfiguration result2b =
+				Utils.getMergedConfiguration("t2b", "foo", tcs);
+		
+		Assert.assertEquals("t2a", result2a.getTarget());
+		Assert.assertEquals("t1", result2a.parent);
+		Assert.assertEquals("foo", result2a.getChosenDistro());
+		Assert.assertEquals(set_in_t1, result2a.getPrefix());
+		Assert.assertEquals(overridden_in_t2a, result2a.getMainClass());
+
+		Assert.assertEquals("t2b", result2b.getTarget());
+		Assert.assertEquals("t1", result2b.parent);
+		Assert.assertEquals("foo", result2b.getChosenDistro());
+		Assert.assertEquals(set_in_t1, result2b.getPrefix());
+		Assert.assertEquals(overridden_in_t2b, result2b.getMainClass());
+		
+		// Besides the basic functionality it is actually important for this test
+		// that the creation of result2b suceeds because a previous bug prevented the
+		// merge request of that one because t1 was already touched.
+	}
+	
+	/**
 	 * A test for the {@link Utils#createBuildChain} method.
 	 * 
 	 * <p>It checks whether the relation between the target configurations

@@ -794,8 +794,9 @@ public final class Utils {
 	        // If the parent == null, then we know we are at the very
 	        // top and there is no need to continue merging
 	        if (currentTargetConfiguration.parent!=null){
-	        	TargetConfiguration merged = getMergedConfiguration(currentTargetConfiguration.parent, 
-	        														distro, targetConfigurations);
+	        	// For elements further up we unconditionally allow that they have already been merged previously.
+	        	TargetConfiguration merged = getMergedConfigurationImpl(currentTargetConfiguration.parent, 
+	        														distro, targetConfigurations, true);
 		        // The distros property is not merged at this point, so we test whether either
 	        	// the (merged) parent or the child supports the requested distro. If its not
 	        	// in either of them, we cannot continue.

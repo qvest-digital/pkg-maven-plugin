@@ -62,6 +62,24 @@
 								<distro>ubuntu_lucid</distro>
 							</distros>
 						</targetConfiguration>
+						
+						<targetConfiguration>
+							<target>ubuntu_lucid_target_sharedparent1</target>
+							<parent>ubuntu_lucid_target</parent>
+							<packageNameSuffix>sharedparent1</packageNameSuffix>
+							<distros>
+								<distro>ubuntu_lucid</distro>
+							</distros>
+						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>ubuntu_lucid_target_sharedparent2</target>
+							<parent>ubuntu_lucid_target</parent>
+							<packageNameSuffix>sharedparent2</packageNameSuffix>
+							<distros>
+								<distro>ubuntu_lucid</distro>
+							</distros>
+						</targetConfiguration>
 
 						<targetConfiguration>
 							<target>ubuntu_lucid_target_sign</target>

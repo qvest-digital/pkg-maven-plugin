@@ -41,6 +41,24 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
         }
 	
 	/**
+	 * Runs the plugin against a configuration where two target configurations have a
+	 * single common parent.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+    public void runTwoTargetsDependingOnSharedThird()
+            throws Exception
+        {
+    		packagingPlugin = mockPackagingEnvironment(DEBPOM, "ubuntu_lucid_target_sharedparent1,ubuntu_lucid_target_sharedparent2");
+            packagingPlugin.execute();
+            assertTrue(numberOfDEBsIs(2));
+            assertTrue(debContainsMainArtifact());
+            assertTrue(debContainsCopyrightFile());
+            assertFalse(debIsSigned());
+        }
+	
+	/**
 	 * This test attempts the following:
 	 * 
 	 * Execute the default target set on the configuration section of the pom file (ubuntu_lucid_target_simple)
