@@ -149,6 +149,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	 * 
 	 * @throws Exception
 	 */
+	@Test
 	public void getMergedConfiguration_mergeddistros() throws Exception {
 		// Sets up 2 configuration where one inherits from the other.
 		// When the method is called we expect a new instance which has
@@ -187,6 +188,57 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		Assert.assertEquals(overridden_in_t2, result.getMainClass());
 	}
 
+	/**
+	 * Checks the core functionality of the {@link Utils#getMergedConfiguration()}
+	 * method.
+	 * 
+	 * <p>Uses the distro defined in a parent's parent.</p>
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void getMergedConfiguration_mergeddistros2() throws Exception {
+		// Sets up 3 configuration where one inherits from the other.
+		// When the method is called we expect a new instance which has
+		// properties of both.
+		
+		// Just some random values that can be accessed by their
+		// reference later (IOW the value is not important and has
+		// no meaning).
+		String set_in_t1 = "set_in_t1";
+		String overridden_in_t2 = "overridden_in_t2";
+		
+		// T1 supports foo
+		TargetConfiguration t1 = new TargetConfiguration("t1");
+		t1.setDistro("foo");
+		t1.setPrefix(set_in_t1);
+		t1.setMainClass(set_in_t1);
+		
+		// T2 supports foo indirectly (
+		TargetConfiguration t2 = new TargetConfiguration("t2");
+		t2.parent = "t1";
+		t2.setMainClass(overridden_in_t2);
+
+		// T3 supports foo indirectly (
+		TargetConfiguration t3 = new TargetConfiguration("t3");
+		t3.parent = "t2";
+		
+		List<TargetConfiguration> tcs = new LinkedList<TargetConfiguration>();
+		tcs.add(t1);
+		tcs.add(t2);
+		tcs.add(t3);
+		
+		TargetConfiguration result =
+				Utils.getMergedConfiguration("t3", "foo", tcs);
+		
+		Assert.assertEquals("t3", result.getTarget());
+		Assert.assertEquals("t2", result.parent);
+		// foo is declared in t1 but not t2 nor t3. This is OK.
+		Assert.assertEquals("foo", result.getChosenDistro());
+		Assert.assertEquals(set_in_t1, result.getPrefix());
+		Assert.assertEquals(overridden_in_t2, result.getMainClass());
+	}
+	
 	/**
 	 * A test for the {@link Utils#createBuildChain} method.
 	 * 
