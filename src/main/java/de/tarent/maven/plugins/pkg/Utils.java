@@ -659,24 +659,28 @@ public final class Utils {
 		TargetConfiguration target = Utils.getTargetConfigurationFromString(targetString, targetConfigurations);
 		
 		// We can only operate on a fixated TargetConfiguration. 
-		target.fixate();
+		//target.fixate();
 		
 		if (target.getDefaultDistro() != null) {
 			distro = target.getDefaultDistro();
 			l.info("Default distribution is set to \"" + distro + "\".");
-		} else if (target.getDistros() != null) {
-			if (target.getDistros().size() == 1) {
+		} else 
+			switch (target.getDistros().size()) {
+			case 0:
+				throw new MojoExecutionException(
+						"No distros defined for configuration " + targetString);
+			case 1:
 				distro = (String) target.getDistros().iterator().next();
-				l.info("Size of \"Distros\" list is one. Using \"" + distro + "\" as default.");
-			} else if (target.getDistros().size() > 1) {
-				String m = "No default configuration given for" + targetString
-						+ ", and more than one distro is supported. Please provide one.";
-				l.error(m);
+				l.info("Size of \"Distros\" list is one. Using \"" + distro
+						+ "\" as default.");
+				break;
+			default:
+				String m = "No default configuration given for distro '"
+						+ targetString
+						+ "', and more than one distro is supported. Please provide one.";
+				l.error(m + "(size: " + target.getDistros().size() + ")");
 				throw new MojoExecutionException(m);
 			}
-		} else {
-			throw new MojoExecutionException("No distros defined for configuration " + targetString);
-		}
 		return distro;
 	}
 	
@@ -750,6 +754,16 @@ public final class Utils {
 			  List<TargetConfiguration> targetConfigurations)
 	      throws MojoExecutionException
 	  {
+		return getMergedConfigurationImpl(target, distro, targetConfigurations, false);  
+	  }
+	  
+	  private static TargetConfiguration getMergedConfigurationImpl(
+			  String target,
+			  String distro,
+			  List<TargetConfiguration> targetConfigurations,
+			  boolean preventUnneededFixate)
+	      throws MojoExecutionException
+	  {
 	    Iterator<TargetConfiguration> ite = targetConfigurations.iterator();
 	    while (ite.hasNext())
 	      {
@@ -783,14 +797,14 @@ public final class Utils {
 			            return Utils.mergeConfigurations(currentTargetConfiguration,merged);
 			          }
 			        else {
-			        	throw new MojoExecutionException("TargetConfiguration '" + merged.getTarget() + "' does not support distro: " + distro);
+			        	throw new MojoExecutionException("target configuration '" + merged.getTarget() + "' does not support distro: " + distro);
 			        }
 		        } else
 		        {
-		        	throw new MojoExecutionException("TargetConfiguration '" + currentTargetConfiguration.getTarget() + "' does not support distro: " + distro);
+		        	throw new MojoExecutionException("target configuration '" + currentTargetConfiguration.getTarget() + "' does not support distro: " + distro);
 		        }
 	        }else{
-	        	return currentTargetConfiguration.fixate();
+	        	return ((currentTargetConfiguration.isReady() && preventUnneededFixate) ? currentTargetConfiguration : currentTargetConfiguration.fixate());
 	        }
 	      }
 	    
@@ -823,7 +837,7 @@ public final class Utils {
 		  
 		  // Merges vertically, that means through the 'parent' property.
 		  TargetConfiguration tc = 
-				  Utils.getMergedConfiguration(target, distro, targetConfigurations);
+				  Utils.getMergedConfigurationImpl(target, distro, targetConfigurations, true);
 		  
 		  // In getMergedConfiguraion we check if targets that are hierarchically related
 		  // support the same distro. Here we will have to check again, as there may not
@@ -838,7 +852,7 @@ public final class Utils {
 			  }		  
 		  	  return tcs;
 		  }else{
-			  throw new MojoExecutionException("TargetConfiguration '" + tc.getTarget() + 
+			  throw new MojoExecutionException("target configuration '" + tc.getTarget() + 
 					                           "' does not support distro: " + distro);
 		  }
 	  }
@@ -939,6 +953,9 @@ public final class Utils {
 		*/
 	  public static TargetConfiguration mergeConfigurations(TargetConfiguration child, 
 			  TargetConfiguration parent) throws MojoExecutionException{
+		  
+		  if (child.isReady())
+			  throw new MojoExecutionException(String.format("target configuration '%s' is already merged.", child.getTarget()));
 	  
 			
 			Field[] allFields = TargetConfiguration.class.getDeclaredFields();

@@ -2,6 +2,7 @@ package de.tarent.maven.plugins.pkg;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,6 +12,7 @@ import junit.framework.Assert;
 
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -247,6 +249,20 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		Assert.assertEquals(t3.getTarget(), result.get(2).getTarget());
 		Assert.assertEquals(t2.getTarget(), result.get(3).getTarget());
 		Assert.assertEquals(t1.getTarget(), result.get(4).getTarget());
+	}
+	
+	@Test(expected=MojoExecutionException.class)
+	public void getMergedConfiguration_twice() throws Exception {
+		TargetConfiguration tc1 = new TargetConfiguration("tc1");
+		tc1.setDistro("foo");
+		
+		List<TargetConfiguration> tcs = new LinkedList<TargetConfiguration>();
+		tcs.add(tc1);
+
+		Utils.getMergedConfiguration("tc1", "foo", tcs);
+		
+		// Doing it twice should result in an exception
+		Utils.getMergedConfiguration("tc1", "foo", tcs);
 	}
 	
 	/**
@@ -503,4 +519,54 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		Utils.resolveConfigurations(list, map);
 	}
 
+	@Test
+	public void getDefaultDistro_singledistro() throws Exception {
+		String distro = "bla";
+		TargetConfiguration tc = new TargetConfiguration("test");
+		tc.setDistro(distro);
+		tc.fixate();
+		
+		List<TargetConfiguration> tcs = new ArrayList<TargetConfiguration>();
+		tcs.add(tc);
+		
+		Assert.assertEquals(distro, Utils.getDefaultDistro("test", tcs, new SystemStreamLog()));
+	}
+	
+	@Test
+	public void getDefaultDistro_manydistros_withdefault() throws Exception {
+		String distro = "bla";
+		TargetConfiguration tc = new TargetConfiguration("test");
+		tc.setDistros(new HashSet<String>(Arrays.asList(new String[] { "bar", "baz", distro, "foo" })));
+		tc.setDefaultDistro(distro);
+		tc.fixate();
+		
+		List<TargetConfiguration> tcs = new ArrayList<TargetConfiguration>();
+		tcs.add(tc);
+		
+		Assert.assertEquals(distro, Utils.getDefaultDistro("test", tcs, new SystemStreamLog()));
+	}
+
+	@Test(expected=MojoExecutionException.class)
+	public void getDefaultDistro_nodistro() throws Exception {
+		TargetConfiguration tc = new TargetConfiguration("test");
+		tc.fixate();
+		
+		List<TargetConfiguration> tcs = new ArrayList<TargetConfiguration>();
+		tcs.add(tc);
+		
+		Utils.getDefaultDistro("test", tcs, new SystemStreamLog());
+	}
+	
+	@Test(expected=MojoExecutionException.class)
+	public void getDefaultDistro_manydistros_nodefault() throws Exception {
+		String distro = "bla";
+		TargetConfiguration tc = new TargetConfiguration("test");
+		tc.setDistros(new HashSet<String>(Arrays.asList(new String[] { "bar", "baz", distro, "foo" })));
+		tc.fixate();
+		
+		List<TargetConfiguration> tcs = new ArrayList<TargetConfiguration>();
+		tcs.add(tc);
+		
+		Utils.getDefaultDistro("test", tcs, new SystemStreamLog());
+	}
 }

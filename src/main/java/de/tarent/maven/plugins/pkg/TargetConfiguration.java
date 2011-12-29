@@ -1553,7 +1553,6 @@ public class TargetConfiguration {
 
 
 	public String getDefaultDistro() {
-		checkIfReady();
 		return defaultDistro;
 	}
 	
@@ -1585,10 +1584,11 @@ public class TargetConfiguration {
 
 	/**
 	 * Returns the configuration with all needed members initialized.
+	 * 
 	 * @return
 	 */
 	public TargetConfiguration fixate() throws MojoExecutionException{
-		return Utils.mergeConfigurations(this,new TargetConfiguration());		
+		return Utils.mergeConfigurations(this, new TargetConfiguration());		
 	}
 	
 	/**
