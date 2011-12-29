@@ -655,11 +655,8 @@ public final class Utils {
 	   * @throws MojoExecutionException 
 	   */
 	public static String getDefaultDistro(String targetString, List<TargetConfiguration> targetConfigurations, Log l) throws MojoExecutionException {
-		String distro = new String();
+		String distro = null;
 		TargetConfiguration target = Utils.getTargetConfigurationFromString(targetString, targetConfigurations);
-		
-		// We can only operate on a fixated TargetConfiguration. 
-		//target.fixate();
 		
 		if (target.getDefaultDistro() != null) {
 			distro = target.getDefaultDistro();
@@ -671,14 +668,13 @@ public final class Utils {
 						"No distros defined for configuration " + targetString);
 			case 1:
 				distro = (String) target.getDistros().iterator().next();
-				l.info("Size of \"Distros\" list is one. Using \"" + distro
-						+ "\" as default.");
+				l.info(String.format("Only one distro defined, using '%s' as default", distro));
 				break;
 			default:
 				String m = "No default configuration given for distro '"
 						+ targetString
 						+ "', and more than one distro is supported. Please provide one.";
-				l.error(m + "(size: " + target.getDistros().size() + ")");
+				l.error(m);
 				throw new MojoExecutionException(m);
 			}
 		return distro;
@@ -800,25 +796,22 @@ public final class Utils {
 	        if (currentTargetConfiguration.parent!=null){
 	        	TargetConfiguration merged = getMergedConfiguration(currentTargetConfiguration.parent, 
 	        														distro, targetConfigurations);
-		        // Checks whether this targetconfiguration supports
-		        // the wanted distro.
-	        	
-		        if (currentTargetConfiguration.getDistros().contains(distro))
+		        // The distros property is not merged at this point, so we test whether either
+	        	// the (merged) parent or the child supports the requested distro. If its not
+	        	// in either of them, we cannot continue.
+		        if (currentTargetConfiguration.getDistros().contains(distro)
+		        		|| merged.getDistros().contains(distro))
 		        {
-			        if (merged.getDistros().contains(distro))
-			          {
-			            // Stores the chosen distro in the configuration for later use.
-			            currentTargetConfiguration.setChosenDistro(distro);
-		
-			            // Returns a configuration that is merged with
-			            // the default configuration-
-			            return Utils.mergeConfigurations(currentTargetConfiguration,merged);
-			          }
-			        else {
-			        	throw new MojoExecutionException("target configuration '" + merged.getTarget() + "' does not support distro: " + distro);
-			        }
+		            // Stores the chosen distro in the configuration for later use.
+		            currentTargetConfiguration.setChosenDistro(distro);
+	
+		            // Returns a configuration that is merged with
+		            // the default configuration-
+		            return Utils.mergeConfigurations(currentTargetConfiguration,merged);
 		        } else
 		        {
+		        	// From a user's point of view when this targetconfiguration and its ancestors do not support
+		        	// a distro it actually means, that the chosen target configuration is wrongly configured.
 		        	throw new MojoExecutionException("target configuration '" + currentTargetConfiguration.getTarget() + "' does not support distro: " + distro);
 		        }
 	        }else{

@@ -117,11 +117,6 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		String set_in_t1 = "set_in_t1";
 		String overridden_in_t2 = "overridden_in_t2";
 		
-		// Default configuration must exist for now to please
-		// the method signature.
-		TargetConfiguration defaultConfig = new TargetConfiguration();
-		defaultConfig.setDistro("foo");
-		
 		TargetConfiguration t1 = new TargetConfiguration("t1");
 		t1.setDistro("foo");
 		t1.setPrefix(set_in_t1);
@@ -150,12 +145,11 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	 * Checks the core functionality of the {@link Utils#getMergedConfiguration()}
 	 * method.
 	 * 
-	 * <p>Uses an invalid dataset where the affected target configurations do
-	 * not share a common distro value.</p>
+	 * <p>Uses the distro defined in a parent.</p>
 	 * 
 	 * @throws Exception
-	 */	@Test(expected=MojoExecutionException.class)
-	public void getMergedConfiguration_invalid() throws Exception {
+	 */
+	public void getMergedConfiguration_mergeddistros() throws Exception {
 		// Sets up 2 configuration where one inherits from the other.
 		// When the method is called we expect a new instance which has
 		// properties of both.
@@ -165,14 +159,6 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		// no meaning).
 		String set_in_t1 = "set_in_t1";
 		String overridden_in_t2 = "overridden_in_t2";
-		
-		// Default configuration must exist for now to please
-		// the method signature.
-		TargetConfiguration defaultConfig = new TargetConfiguration();
-		HashSet<String> ds = new HashSet<String>();
-		ds.add("foo");
-		ds.add("baz");
-		defaultConfig.setDistros(ds);
 		
 		// T1 supports foo
 		TargetConfiguration t1 = new TargetConfiguration("t1");
@@ -190,7 +176,15 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		tcs.add(t1);
 		tcs.add(t2);
 		
-		Utils.getMergedConfiguration("t2", "baz", tcs);
+		TargetConfiguration result =
+				Utils.getMergedConfiguration("t2", "foo", tcs);
+		
+		Assert.assertEquals("t2", result.getTarget());
+		Assert.assertEquals("t1", result.parent);
+		// foo is declared in t1 but not t2. This is OK.
+		Assert.assertEquals("foo", result.getChosenDistro());
+		Assert.assertEquals(set_in_t1, result.getPrefix());
+		Assert.assertEquals(overridden_in_t2, result.getMainClass());
 	}
 
 	/**
