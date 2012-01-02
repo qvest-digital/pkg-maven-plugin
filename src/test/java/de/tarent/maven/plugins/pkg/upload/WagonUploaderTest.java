@@ -72,10 +72,8 @@ public class WagonUploaderTest extends AbstractMvnPkgPluginTestCase{
 		Element element0 = elementArray[0];
 		Element element1 = elementArray[1];
 		
-		// TODO: This needs to be fixed as it does not work anywhere else as on plafue's
-		// machine.
-		//assertTrue(element0.toDom().toString().contains("<fromFile>/home/plafue/workspace/mvn-pkg-plugin/trunk/src/test/resources/dummyproject/target/libdummyproject-java_1.0.0_all.deb</fromFile>"));
-		assertTrue(element1.toDom().toString().contains("<url>someurl</url>"));
+		assertTrue(element0.toDom().toString().contains("<fromFile>"+expectedPackageFile+"</fromFile>"));
+		assertTrue(element1.toDom().toString().contains("<url>"+expectedUrl+"</url>"));
 	}
 	
 	public Upload mockUploadEnvironment(String pomFilename) throws Exception{		
