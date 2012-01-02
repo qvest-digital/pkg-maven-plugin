@@ -145,67 +145,62 @@ public class IzPackPackager extends Packager
     Path bcp = new Path();
     Path cp = new Path();
     
-    try
-      {
-        prepareDirectories(l,
-                           ph.getTempRoot(),
-                           izPackEmbeddedRoot,
-                           ph.getSrcIzPackFilesDir(),
-                           packagingBaseDir,
-                           ph.getDstBundledJarDir());
-        
-        unpackIzPack(l, izPackEmbeddedJarFile, izPackEmbeddedRoot);
-        
-        bundledArtifacts = ph.createClasspathLine(bcp, cp);
-        
-        ph.copyProjectArtifact();
-        
-        ph.copyArtifacts(bundledArtifacts);
-        
-        ph.copyFiles();
 
-        l.info("parsing installer xml file: " + installerXmlFile);
-        IzPackDescriptor desc = new IzPackDescriptor(installerXmlFile, "Unable to parse installer xml file.");
-
-        l.info("adding/modifying basic information");
-        desc.fillInfo(l, ph.getPackageName(), ph.getPackageVersion(), ph.getProjectUrl());
-        
-        desc.removeAotPack();
-
-        ph.generateWrapperScript(bundledArtifacts, bcp, cp, true);
-        
-        if (distroConfig.isAdvancedStarter()){
-          desc.addStarter("_starter", "_classpath");
-        }
-        l.info("adding wrapper script information.");
-        desc.addUnixWrapperScript(wrapperScriptFile.getName(), ph.getProjectDescription());
-        desc.addWindowsWrapperScript(windowsWrapperScriptFile.getName(), ph.getProjectDescription());
-        
-        l.info("writing modified installer xml file.");
-        desc.finish(modifiedInstallerXmlFile, "Unable to write modified installer xml file.");
-        
-        createInstaller(l,
-                        ph.getJavaExec(),
-                        izPackEmbeddedRoot,
-                        packagingBaseDir,
-                        modifiedInstallerXmlFile,
-                        resultFile);
-        
-				if (distroConfig.isCreateWindowsExecutable()){
-					createWindowsExecutable(l,
-                                            ph.get7ZipExec(),
-                                            izPackEmbeddedRoot,
-                                            resultFile,
-                                            resultFileWindows);
-				}
-				if (distroConfig.isCreateOSXApp()){
-					createOSXExecutable(l, izPackEmbeddedRoot, resultFile, resultFileOSX);
-				}
-      }
-    catch (MojoExecutionException badMojo)
-      {
-        throw badMojo;
-      }
+	prepareDirectories(l,
+	                   ph.getTempRoot(),
+	                   izPackEmbeddedRoot,
+	                   ph.getSrcIzPackFilesDir(),
+	                   packagingBaseDir,
+	                   ph.getDstBundledJarDir());
+	
+	unpackIzPack(l, izPackEmbeddedJarFile, izPackEmbeddedRoot);
+	
+	bundledArtifacts = ph.createClasspathLine(bcp, cp);
+	
+	ph.copyProjectArtifact();
+	
+	ph.copyArtifacts(bundledArtifacts);
+	
+	ph.copyFiles();
+	
+	l.info("parsing installer xml file: " + installerXmlFile);
+	IzPackDescriptor desc = new IzPackDescriptor(installerXmlFile, "Unable to parse installer xml file.");
+	
+	l.info("adding/modifying basic information");
+	desc.fillInfo(l, ph.getPackageName(), ph.getPackageVersion(), ph.getProjectUrl());
+	
+	desc.removeAotPack();
+	
+	ph.generateWrapperScript(bundledArtifacts, bcp, cp, true);
+	
+	if (distroConfig.isAdvancedStarter()){
+	  desc.addStarter("_starter", "_classpath");
+	}
+	l.info("adding wrapper script information.");
+	desc.addUnixWrapperScript(wrapperScriptFile.getName(), ph.getProjectDescription());
+	desc.addWindowsWrapperScript(windowsWrapperScriptFile.getName(), ph.getProjectDescription());
+	
+	l.info("writing modified installer xml file.");
+	desc.finish(modifiedInstallerXmlFile, "Unable to write modified installer xml file.");
+	
+	createInstaller(l,
+	                ph.getJavaExec(),
+	                izPackEmbeddedRoot,
+	                packagingBaseDir,
+	                modifiedInstallerXmlFile,
+	                resultFile);
+	
+	if (distroConfig.isCreateWindowsExecutable()){
+		createWindowsExecutable(l,
+                                ph.get7ZipExec(),
+                                izPackEmbeddedRoot,
+                                resultFile,
+                                resultFileWindows);
+	}
+	if (distroConfig.isCreateOSXApp()){
+		createOSXExecutable(l, izPackEmbeddedRoot, resultFile, resultFileOSX);
+	}
+      
     
     /* When the Mojo fails to complete its task the work directory will be left
      * in an unclean state to make it easier to debug problems.

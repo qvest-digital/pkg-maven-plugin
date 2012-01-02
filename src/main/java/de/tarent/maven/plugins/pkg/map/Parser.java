@@ -33,6 +33,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
@@ -51,7 +53,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
  */
 class Parser
   {
-    HashMap<String, Mapping> mappings = new HashMap<String, Mapping>();
+    Map<String, Mapping> mappings = new HashMap<String, Mapping>();
     
     Parser(URL packageMapDocument, URL auxMapDocument)
       throws Exception
@@ -263,7 +265,7 @@ class Parser
       return artifactSpec.substring(artifactSpec.indexOf(':') + 1);
     }
 
-    private void parseJars(Parser.State s, HashSet<String> jarFileNames) throws Exception
+    private void parseJars(Parser.State s, Set<String> jarFileNames) throws Exception
     {
       s.nextElement();
       while (s.peek("jar"))

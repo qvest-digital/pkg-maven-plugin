@@ -75,6 +75,10 @@ import de.tarent.maven.plugins.pkg.helper.Helper;
  */
 public class RPMPackager extends Packager {
 
+	private static final String UNKNOWN = "unknown";
+
+
+
 	@Override
 	public void execute(Log l, WorkspaceSession workspaceSession)
 			throws MojoExecutionException {
@@ -139,12 +143,12 @@ public class RPMPackager extends Packager {
 			
 			
 		} catch (Exception ex) {
-			throw new MojoExecutionException(ex.toString());
+			throw new MojoExecutionException(ex.toString(),ex);
 		} finally {
 			try {
 				ph.restoreRpmMacrosFileBackup(l);
 			} catch (IOException e) {
-				throw new MojoExecutionException(e.toString());
+				throw new MojoExecutionException(e.toString(),e);
 			}
 		}
 	}
@@ -247,12 +251,11 @@ public class RPMPackager extends Packager {
 			l.info("Creating SPEC file: " + specFile.getAbsolutePath());
 			Utils.createFile(specFile, "spec");
 			sgen.generate(specFile);
+			
 		} catch (IOException ioe) {
 			throw new MojoExecutionException(
 					"IOException while creating SPEC file.", ioe);
-		} catch (MojoExecutionException e) {
-			throw e;
-		} catch(NullPointerException e){
+		}  catch(NullPointerException e){
 			throw new MojoExecutionException(
 					"Parameter not found while creating SPEC file.", e);
 			
@@ -290,28 +293,25 @@ public class RPMPackager extends Packager {
 					ph.getBaseBuildDir().toString(),
 					specFile.toString() };
 		}
-
-		try{
-			if(apm.getSignPassPhrase()!=null && dc.isSign()){
-				Utils.exec(command, "'rpmbuild -bb' failed.",
-					"Error creating rpm file.",apm.getSignPassPhrase());
-			}else{
-				Utils.exec(command, "'rpmbuild -bb' failed.",
-						"Error creating rpm file.");				
-			}
-		}catch(MojoExecutionException ex){
-			throw ex;
+		
+		if(apm.getSignPassPhrase()!=null && dc.isSign()){
+			Utils.exec(command, "'rpmbuild -bb' failed.",
+				"Error creating rpm file.",apm.getSignPassPhrase());
+		}else{
+			Utils.exec(command, "'rpmbuild -bb' failed.",
+					"Error creating rpm file.");				
 		}
+		
 	}
 	
 
 
 	private void checkneededfields(Helper ph, TargetConfiguration dc) throws MojoExecutionException {
-		if(ph.getPackageName()=="unknown"|| ph.getPackageName()==null||
-		   ph.getPackageVersion()=="unknown"||ph.getPackageVersion()==null||
-		   ph.getProjectDescription()=="unknown"||ph.getProjectDescription()==null||
-		   ph.getLicense()=="unknown"||ph.getLicense()==null||
-		   dc.getRelease()=="unknown"||dc.getRelease()==null){
+		if(ph.getPackageName()==null || ph.getPackageName().equals(UNKNOWN) ||
+		   ph.getPackageVersion()==null || ph.getPackageVersion().equals(UNKNOWN) ||
+		   ph.getProjectDescription()==null || ph.getProjectDescription().equals(UNKNOWN) ||
+		   ph.getLicense()==null || ph.getLicense().equals(UNKNOWN) ||
+		   dc.getRelease()==null || dc.getRelease().equals(UNKNOWN)){
 			String message = "At least PackageName, Version, Description, Summary, "+ 
 							 "License and Release are needed for the spec file.";
 			throw new MojoExecutionException(message);

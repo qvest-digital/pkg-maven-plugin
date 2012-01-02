@@ -94,52 +94,44 @@ public class IpkPackager extends Packager
     
     long byteAmount = 0;
 
-    try
+	// The following section does the coarse-grained steps
+	// to build the package(s). It is meant to be kept clean
+	// from simple Java statements. Put additional functionality
+	// into the existing methods or create a new one and add it
+	// here.
+	
+    ph.prepareInitialDirectories();
+
+    byteAmount += ph.copyProjectArtifact();
+    
+    byteAmount += ph.copyFiles();
+    
+    byteAmount += ph.copyScripts();
+    
+    byteAmount += ph.createCopyrightFile();
+
+    // Create classpath line, copy bundled jars and generate wrapper
+    // start script only if the project is an application.
+    if (distroConfig.getMainClass() != null)
       {
-    	// The following section does the coarse-grained steps
-    	// to build the package(s). It is meant to be kept clean
-    	// from simple Java statements. Put additional functionality
-    	// into the existing methods or create a new one and add it
-    	// here.
-    	
-        ph.prepareInitialDirectories();
+        // TODO: Handle native library artifacts properly.            
+        bundledArtifacts = ph.createClasspathLine(bcp, cp);
 
-        byteAmount += ph.copyProjectArtifact();
-        
-        byteAmount += ph.copyFiles();
-        
-        byteAmount += ph.copyScripts();
-        
-        byteAmount += ph.createCopyrightFile();
+        ph.generateWrapperScript(bundledArtifacts, bcp, cp, false);
 
-        // Create classpath line, copy bundled jars and generate wrapper
-        // start script only if the project is an application.
-        if (distroConfig.getMainClass() != null)
-          {
-            // TODO: Handle native library artifacts properly.            
-            bundledArtifacts = ph.createClasspathLine(bcp, cp);
-
-            ph.generateWrapperScript(bundledArtifacts, bcp, cp, false);
-
-            byteAmount += ph.copyArtifacts(bundledArtifacts);
-          }
-        
-        generateControlFile(l,
-                            ph,
-                            distroConfig,
-                            controlFile,
-                            packageName,
-                            packageVersion,
-                            ph.createDependencyLine(),
-                            byteAmount);
-
-        createPackage(l, ph, ph.getBasePkgDir());
-        
+        byteAmount += ph.copyArtifacts(bundledArtifacts);
       }
-    catch (MojoExecutionException badMojo)
-      {
-        throw badMojo;
-      }
+    
+    generateControlFile(l,
+                        ph,
+                        distroConfig,
+                        controlFile,
+                        packageName,
+                        packageVersion,
+                        ph.createDependencyLine(),
+                        byteAmount);
+
+    createPackage(l, ph, ph.getBasePkgDir());
     
     /* When the Mojo fails to complete its task the work directory will be left
      * in an unclean state to make it easier to debug problems.

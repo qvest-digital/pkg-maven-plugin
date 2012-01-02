@@ -693,7 +693,7 @@ public final class Utils {
 		try {
 			ite = (Iterator<License>) project.getLicenses().iterator();
 		} catch (Exception ex) {
-			throw new MojoExecutionException("Please provide at least one license in your POM.");
+			throw new MojoExecutionException("Please provide at least one license in your POM.",ex);
 		}
 		license.append(((License) ite.next()).getName());
 		while (ite.hasNext()) {

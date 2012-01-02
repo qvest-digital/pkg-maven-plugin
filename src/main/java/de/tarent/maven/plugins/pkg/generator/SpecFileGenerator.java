@@ -683,7 +683,7 @@ public class SpecFileGenerator {
 	 * @throws MojoExecutionException
 	 * @throws IOException 
 	 */
-	private ArrayList<String> generateArrayListFromExternalFile(File parent, String scriptName) throws IOException{
+	private List<String> generateArrayListFromExternalFile(File parent, String scriptName) throws IOException{
 		
 		ArrayList<String> arrayList = new ArrayList<String>();	
 		File inputFile = new File(parent, scriptName);

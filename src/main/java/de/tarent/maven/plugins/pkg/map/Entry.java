@@ -28,7 +28,7 @@
  */
 package de.tarent.maven.plugins.pkg.map;
 
-import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -50,7 +50,7 @@ public class Entry
   
   public String dependencyLine;
   
-  public HashSet<String> jarFileNames;
+  public Set<String> jarFileNames;
   
   public boolean isBootClasspath;
   
@@ -85,7 +85,7 @@ public class Entry
 	  return e; 
   }
 
-  Entry(String artifactSpec, VersionRange versionRange, String packageName, HashSet<String> jarFileNames, boolean isBootClasspath)
+  Entry(String artifactSpec, VersionRange versionRange, String packageName, Set<String> jarFileNames, boolean isBootClasspath)
   {
     this.artifactSpec = artifactSpec;
     this.versionRange = versionRange;

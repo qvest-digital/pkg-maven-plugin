@@ -144,109 +144,101 @@ public void execute(Log l,
     
     long byteAmount = 0;
     
-    try
-      {
-    	// The following section does the coarse-grained steps
-    	// to build the package(s). It is meant to be kept clean
-    	// from simple Java statements. Put additional functionality
-    	// into the existing methods or create a new one and add it
-    	// here.
-    	
-        ph.prepareInitialDirectories();
-
-        byteAmount += ph.copyProjectArtifact();
-        
-        byteAmount += ph.copyFiles();
-        
-        generateConffilesFile(l, conffilesFile, targetConfiguration, ph);
-        
-        byteAmount += ph.copyScripts();
-        
-		byteAmount += ph.createCopyrightFile();
-
-        // Create classpath line, copy bundled jars and generate wrapper
-        // start script only if the project is an application.
-        if (targetConfiguration.getMainClass() != null)
-          {
-            // TODO: Handle native library artifacts properly.
-            bundledArtifacts = ph.createClasspathLine(bcp, cp);
-
-            ph.generateWrapperScript(bundledArtifacts, bcp, cp, false);
-
-            byteAmount += ph.copyArtifacts(bundledArtifacts);
-          }
-        
-        generateControlFile(l,
-        					targetConfiguration,
-                            ph,
-        		            controlFile,
-        		            packageName,
-        		            packageVersion,
-        		            ph.createDependencyLine(),
-        		            ph.createRecommendsLine(),
-        		            ph.createSuggestsLine(),
-        		            ph.createProvidesLine(),
-        		            ph.createConflictsLine(),
-        		            ph.createReplacesLine(),
-        		            byteAmount);
-        
-        createPackage(l, workspaceSession, basePkgDir, targetConfiguration);
-        
-        if (targetConfiguration.isAotCompile())
-          {
-            ph.prepareAotDirectories();
-            // At this point anything created in the basePkgDir cannot be used
-            // any more as it was removed by the above method.
-            
-            byteAmount = aotCompiledBinaryFile.length() + aotClassmapFile.length();
-            
-            AotCompileUtils.compile(l, srcArtifactFile, aotCompiledBinaryFile);
-            
-            AotCompileUtils.generateClassmap(l,
-                                             aotClassmapFile,
-                                             srcArtifactFile,
-                                             aotCompiledBinaryFile,
-                                             packageMap.getDefaultJarPath());
-
-            // AOT-compile and classmap generation for bundled Jar libraries
-            // are only needed for applications.
-            if (targetConfiguration.getMainClass() != null){
-              byteAmount += AotCompileUtils.compileAndMap(l,
-            		                bundledArtifacts,
-            		                aotDstDir,
-            		                aotExtension,
-            		                aotDstClassmapDir,
-                                    packageMap.getDefaultJarPath());
-            }
-            
-            // The dependencies of a "-gcj" package are always java-gcj-compat
-            // and the corresponding 'bytecode' version of the package.
-            // GCJ can only compile for one architecture.
-            targetConfiguration.setArchitecture(System.getProperty("os.arch"));
-            generateControlFile(l,
-            					targetConfiguration,
-                                ph,
-                                aotControlFile,
-            		            gcjPackageName,
-            		            packageVersion,
-            		            "java-gcj-compat",
-            		            null,
-            		            null,
-            		            null,
-            		            null,
-            		            null,
-            		            byteAmount);
-            
-            AotCompileUtils.depositPostinstFile(l, aotPostinstFile);
-            
-            createPackage(l, workspaceSession, aotPkgDir, targetConfiguration);
-          }
-        
-      }
-    catch (MojoExecutionException badMojo)
-      {
-        throw badMojo;
-      }
+	// The following section does the coarse-grained steps
+	// to build the package(s). It is meant to be kept clean
+	// from simple Java statements. Put additional functionality
+	// into the existing methods or create a new one and add it
+	// here.
+	
+	ph.prepareInitialDirectories();
+	
+	byteAmount += ph.copyProjectArtifact();
+	
+	byteAmount += ph.copyFiles();
+	
+	generateConffilesFile(l, conffilesFile, targetConfiguration, ph);
+	
+	byteAmount += ph.copyScripts();
+	
+	byteAmount += ph.createCopyrightFile();
+	
+	// Create classpath line, copy bundled jars and generate wrapper
+	// start script only if the project is an application.
+	if (targetConfiguration.getMainClass() != null)
+	  {
+	    // TODO: Handle native library artifacts properly.
+	    bundledArtifacts = ph.createClasspathLine(bcp, cp);
+	
+	    ph.generateWrapperScript(bundledArtifacts, bcp, cp, false);
+	
+	    byteAmount += ph.copyArtifacts(bundledArtifacts);
+	  }
+	
+	generateControlFile(l,
+						targetConfiguration,
+	                    ph,
+			            controlFile,
+			            packageName,
+			            packageVersion,
+			            ph.createDependencyLine(),
+			            ph.createRecommendsLine(),
+			            ph.createSuggestsLine(),
+			            ph.createProvidesLine(),
+			            ph.createConflictsLine(),
+			            ph.createReplacesLine(),
+			            byteAmount);
+	
+	createPackage(l, workspaceSession, basePkgDir, targetConfiguration);
+	
+	if (targetConfiguration.isAotCompile())
+	  {
+	    ph.prepareAotDirectories();
+	    // At this point anything created in the basePkgDir cannot be used
+	    // any more as it was removed by the above method.
+	    
+	    byteAmount = aotCompiledBinaryFile.length() + aotClassmapFile.length();
+	    
+	    AotCompileUtils.compile(l, srcArtifactFile, aotCompiledBinaryFile);
+	    
+	    AotCompileUtils.generateClassmap(l,
+	                                     aotClassmapFile,
+	                                     srcArtifactFile,
+	                                     aotCompiledBinaryFile,
+	                                     packageMap.getDefaultJarPath());
+	
+	    // AOT-compile and classmap generation for bundled Jar libraries
+	    // are only needed for applications.
+	    if (targetConfiguration.getMainClass() != null){
+	      byteAmount += AotCompileUtils.compileAndMap(l,
+	    		                bundledArtifacts,
+	    		                aotDstDir,
+	    		                aotExtension,
+	    		                aotDstClassmapDir,
+	                            packageMap.getDefaultJarPath());
+	    }
+	    
+	    // The dependencies of a "-gcj" package are always java-gcj-compat
+	    // and the corresponding 'bytecode' version of the package.
+	    // GCJ can only compile for one architecture.
+	    targetConfiguration.setArchitecture(System.getProperty("os.arch"));
+	    generateControlFile(l,
+	    					targetConfiguration,
+	                        ph,
+	                        aotControlFile,
+	    		            gcjPackageName,
+	    		            packageVersion,
+	    		            "java-gcj-compat",
+	    		            null,
+	    		            null,
+	    		            null,
+	    		            null,
+	    		            null,
+	    		            byteAmount);
+	    
+	    AotCompileUtils.depositPostinstFile(l, aotPostinstFile);
+	    
+	    createPackage(l, workspaceSession, aotPkgDir, targetConfiguration);
+	  }
     
     /* When the Mojo fails to complete its task the work directory will be left
      * in an unclean state to make it easier to debug problems.
