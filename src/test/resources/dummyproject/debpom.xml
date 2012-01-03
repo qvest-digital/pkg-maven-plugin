@@ -70,6 +70,9 @@
 							<distros>
 								<distro>ubuntu_lucid</distro>
 							</distros>
+							<manualDependencies>
+								<string>dependencysharedparent1</string>
+							</manualDependencies>
 						</targetConfiguration>
 
 						<targetConfiguration>
@@ -79,6 +82,9 @@
 							<distros>
 								<distro>ubuntu_lucid</distro>
 							</distros>
+							<manualDependencies>
+								<string>dependencysharedparent2</string>
+							</manualDependencies>
 						</targetConfiguration>
 
 						<targetConfiguration>

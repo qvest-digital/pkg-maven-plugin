@@ -189,6 +189,17 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	            return p.matcher(file.getName()).matches();
 			}
 		});		
+	}	
+	
+	public File[] returnFilesBasedOnFilename(String filename){
+		
+		final Pattern p = Pattern.compile(".*" + filename);
+	    return TARGETDIR.listFiles(new FileFilter() {			
+			@Override
+	        public boolean accept(File file) {
+	            return p.matcher(file.getName()).matches();
+			}
+		});		
 	}
 
 	protected boolean numberOfRPMsIs(int i) {
@@ -205,6 +216,24 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		try{
 			out = IOUtils.toString(Utils.exec(new String[]{"dpkg",debArgs,
 				returnFilesFoundBasedOnSuffix("deb")[0].getAbsolutePath()},TARGETDIR,
+				"Failure checking contents", "Failure opening rpm file"));
+		}catch (IOException e) {
+			throw new MojoExecutionException(e.getMessage(),e);
+		}
+		//Log l = packagingPlugin.getLog();
+		//l.info("Matching" + out + "/// to "+p);
+		if (p.matcher(out).find()){
+			result = true;
+		}
+		return result;
+	}
+
+	private boolean debContains(Pattern p, String debArgs, String fileName) throws MojoExecutionException{
+		boolean result = false;
+		String out = new String(); 
+		try{
+			out = IOUtils.toString(Utils.exec(new String[]{"dpkg",debArgs,
+				returnFilesBasedOnFilename(fileName)[0].getAbsolutePath()},TARGETDIR,
 				"Failure checking contents", "Failure opening rpm file"));
 		}catch (IOException e) {
 			throw new MojoExecutionException(e.getMessage(),e);
@@ -271,6 +300,11 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	protected boolean debDependsOn(String s) throws MojoExecutionException, IOException {
 		final Pattern p = Pattern.compile("Depends:.*"+Pattern.quote(s)+".*");
 		return debContains(p, "--info");
+	}	
+
+	protected boolean debDependsOn(String s, String filename) throws MojoExecutionException, IOException {
+		final Pattern p = Pattern.compile("Depends:.*"+Pattern.quote(s)+".*");
+		return debContains(p, "--info", filename);
 	}
 	
 	protected List<License> createLicenseList(String ... strings)

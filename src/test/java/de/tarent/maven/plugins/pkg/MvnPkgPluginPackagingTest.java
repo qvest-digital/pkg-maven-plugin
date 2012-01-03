@@ -462,4 +462,24 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertTrue(numberOfDEBsIs(3));
         }
 	
+	/**
+	 * This test checks for regressions on the logic that merges dependencies
+	 * @throws Exception
+	 */
+	@Test
+    public void runTwoTargetsAndDontMixDependencies()
+            throws Exception
+        {
+    		packagingPlugin = mockPackagingEnvironment(DEBPOM, "ubuntu_lucid_target_sharedparent1,ubuntu_lucid_target_sharedparent2");
+            packagingPlugin.execute();
+            assertTrue(numberOfDEBsIs(2));
+            assertFalse(debDependsOn("dependencysharedparent1","libdummyproject-sharedparent2-java_1.0.0_all.deb"));
+            assertTrue(debDependsOn("dependencysharedparent2","libdummyproject-sharedparent2-java_1.0.0_all.deb"));
+            assertFalse(debDependsOn("dependencysharedparent2","libdummyproject-sharedparent1-java_1.0.0_all.deb"));
+            assertTrue(debDependsOn("dependencysharedparent1","libdummyproject-sharedparent1-java_1.0.0_all.deb"));
+        }
+	
+	
+	
+	
 }

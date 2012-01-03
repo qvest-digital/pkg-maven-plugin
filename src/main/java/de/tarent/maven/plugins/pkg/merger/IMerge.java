@@ -6,5 +6,5 @@ package de.tarent.maven.plugins.pkg.merger;
  *
  */
 public interface IMerge {
-	<T> Object merge(Object child, Object parent, Object def);
+	<T> Object merge(Object child, Object parent, Object def) throws InstantiationException, IllegalAccessException;
 }

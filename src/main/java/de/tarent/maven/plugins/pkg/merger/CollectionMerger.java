@@ -1,5 +1,6 @@
 package de.tarent.maven.plugins.pkg.merger;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -19,12 +20,20 @@ public class CollectionMerger implements IMerge {
 	 * @param parent
 	 * @param def
 	 * @return
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	 public <T> Object merge(Object child, Object parent, Object def) {
+	 public <T> Object merge(Object child, Object parent, Object def) throws InstantiationException, IllegalAccessException {
 						
 			def = (def==null)? new Object(): def;
 			
-			Collection<T> c = (parent != null ? (Collection<T>)parent : (Collection<T>)def);
+			Collection<T> c= (Collection<T>) def.getClass().newInstance();
+			
+			if (parent != null){
+				c.addAll((Collection<T>)parent);
+			}else{
+				c.addAll((Collection<T>)def);
+			}
 
 			if (child != null){
 				c.addAll((Collection<T>)child);

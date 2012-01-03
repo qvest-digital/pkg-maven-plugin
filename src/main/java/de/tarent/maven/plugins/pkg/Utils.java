@@ -977,9 +977,9 @@ public final class Utils {
 	  public static TargetConfiguration mergeConfigurations(TargetConfiguration child, 
 			  TargetConfiguration parent) throws MojoExecutionException{
 		  
-		  if (child.isReady())
+		  if (child.isReady()){
 			  throw new MojoExecutionException(String.format("target configuration '%s' is already merged.", child.getTarget()));
-	  
+		  }
 			
 			Field[] allFields = TargetConfiguration.class.getDeclaredFields();
 			for (Field field : allFields){
@@ -1024,11 +1024,15 @@ public final class Utils {
 						}else{
 							merger = new ObjectMerger();
 						}
-						Object currentValue = field.get(child);
+						Object childValue = field.get(child);
 						Object parentValue =  field.get(parent);
-						field.set(child, merger.merge(currentValue,
-										       		  parentValue,
-										       		  defaultValue));
+						try {
+							field.set(child, merger.merge(childValue,
+											       		  parentValue,
+											       		  defaultValue));
+						} catch (InstantiationException e) {
+							throw new MojoExecutionException("Error merging configurations",e);
+						}
 				
 					}catch (SecurityException e){
 						throw new MojoExecutionException(e.getMessage(),e);

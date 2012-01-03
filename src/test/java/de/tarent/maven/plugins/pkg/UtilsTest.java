@@ -269,10 +269,16 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		TargetConfiguration t2a = new TargetConfiguration("t2a");
 		t2a.setMainClass(overridden_in_t2a);
 		t2a.parent = "t1";
+		List<String> t2aDeps = new ArrayList<String>();
+		t2aDeps.add("t2aDependency");
+		t2a.setManualDependencies(t2aDeps);
 
 		TargetConfiguration t2b = new TargetConfiguration("t2b");
 		t2b.setMainClass(overridden_in_t2b);
 		t2b.parent = "t1";
+		List<String> t2bDeps = new ArrayList<String>();
+		t2bDeps.add("t2bDependency");
+		t2b.setManualDependencies(t2bDeps);
 		
 		List<TargetConfiguration> tcs = new LinkedList<TargetConfiguration>();
 		tcs.add(t1);
@@ -285,17 +291,21 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		TargetConfiguration result2b =
 				Utils.getMergedConfiguration("t2b", "foo", tcs);
 		
+		Assert.assertTrue(result2a.isReady());
 		Assert.assertEquals("t2a", result2a.getTarget());
 		Assert.assertEquals("t1", result2a.parent);
 		Assert.assertEquals("foo", result2a.getChosenDistro());
 		Assert.assertEquals(set_in_t1, result2a.getPrefix());
 		Assert.assertEquals(overridden_in_t2a, result2a.getMainClass());
-
+		Assert.assertEquals(1,result2a.getManualDependencies().size());
+		
+		Assert.assertTrue(result2b.isReady());
 		Assert.assertEquals("t2b", result2b.getTarget());
 		Assert.assertEquals("t1", result2b.parent);
 		Assert.assertEquals("foo", result2b.getChosenDistro());
 		Assert.assertEquals(set_in_t1, result2b.getPrefix());
 		Assert.assertEquals(overridden_in_t2b, result2b.getMainClass());
+		Assert.assertEquals(1,result2b.getManualDependencies().size());		
 		
 		// Besides the basic functionality it is actually important for this test
 		// that the creation of result2b suceeds because a previous bug prevented the
