@@ -1117,21 +1117,32 @@ public class Helper {
 	    Set dependencies = new HashSet();
 	    try
 	      {
-	         /* 
-	          * Notice only compilation dependencies which are Jars.
-	          * Shared Libraries ("so") are filtered out because the
-	          * JNI dependency is solved by the system already.
-	    	  * We will consider three scopes when building the classpath:
-	    	  * compile, runtime and provided. 
-	    	  */
-	    	
-	        AndArtifactFilter combinedFilter = new AndArtifactFilter();
-	        combinedFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE));
-	        combinedFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME));
-	        combinedFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_PROVIDED));
-	        combinedFilter.add(new TypeArtifactFilter("jar"));
+	        // Notice only compilation dependencies which are Jars.
+	        // Shared Libraries ("so") are filtered out because the
+	        // JNI dependency is solved by the system already.
+	        AndArtifactFilter compileFilter = new AndArtifactFilter();
+	        compileFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE));
+	        compileFilter.add(new TypeArtifactFilter("jar"));
 	
-	        dependencies.addAll(Utils.findArtifacts(combinedFilter, apm.getFactory(), apm.getResolver(), 
+	        dependencies.addAll(Utils.findArtifacts(compileFilter, apm.getFactory(), apm.getResolver(), 
+	        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
+	        		apm.getRemoteRepos(), apm.getMetadataSource()));
+
+
+	        AndArtifactFilter runtimeFilter = new AndArtifactFilter();
+	        runtimeFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME));
+	        runtimeFilter.add(new TypeArtifactFilter("jar"));
+	        
+	        dependencies.addAll(Utils.findArtifacts(runtimeFilter, apm.getFactory(), apm.getResolver(), 
+	        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
+	        		apm.getRemoteRepos(), apm.getMetadataSource()));
+
+
+	        AndArtifactFilter providedFilter = new AndArtifactFilter();
+	        providedFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_PROVIDED));
+	        providedFilter.add(new TypeArtifactFilter("jar"));
+	        
+	        dependencies.addAll(Utils.findArtifacts(providedFilter, apm.getFactory(), apm.getResolver(), 
 	        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
 	        		apm.getRemoteRepos(), apm.getMetadataSource()));	     
 	        
