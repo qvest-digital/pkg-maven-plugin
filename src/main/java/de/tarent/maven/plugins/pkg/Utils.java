@@ -729,109 +729,6 @@ public final class Utils {
 	public static long getInstalledSize(long byteAmount) {
 		return byteAmount / 1024L;
 	}
-	
-	  /**
-	   * Takes the default configuration and the custom one into account and creates
-	   * a merged one.
-	   * 
-	   * @param target Chosen target configuration
-	   * @param distro Chosen distro
-	   * @param mustMatch Whether a result must be found or whether it is OK to rely on defaults.
-	   * @param targetConfigurations A list of available TargetConfigurations.
-	   * @param defaults A TargetConfiguration that is considered to be the default for each. 
-	   * @return
-	   *//*
-	  public static TargetConfiguration getMergedConfiguration(
-			  String target,
-			  String distro,
-			  List<TargetConfiguration> targetConfigurations)
-	      throws MojoExecutionException
-	  {
-		  // Unneeded fixation will cause a MojoExecutionException which is considered
-		  // wrong usage of the API (a programming mistake).
-		  return getMergedConfigurationImpl(target, distro, targetConfigurations, false);  
-	  }*/
-	  
-	  /**
-	   * Internal method which is used by {@link #createBuildChain(String, String, List)}
-	   * which allows preventing an unneeded fixation.
-	   * 
-	   * <p>A fixation is to be prevented when a {@link TargetConfiguration} instance
-	   * is handed over to this method a second time during the construction of a build chain.
-	   * This is the case when two target configurations have a relation to a common third one.
-	   * </p>
-	   * 
-	   * @param target
-	   * @param distro
-	   * @param targetConfigurations
-	   * @param preventUnneededMerge
-	   * @return
-	   * @throws MojoExecutionException
-	   *//*
-	  private static TargetConfiguration getMergedConfigurationImpl(
-			  String target,
-			  String distro,
-			  List<TargetConfiguration> targetConfigurations,
-			  boolean preventUnneededMerge)
-	      throws MojoExecutionException
-	  {
-	    Iterator<TargetConfiguration> ite = targetConfigurations.iterator();
-	    while (ite.hasNext())
-	      {
-	        TargetConfiguration currentTargetConfiguration = ite.next();
-	        
-	        // The target configuration should be for the requested target.
-	        if (!currentTargetConfiguration.getTarget().equals(target)){
-	        	continue;
-	        }
-	        
-	        // If the selected target configuration (might also be a parent of a previous
-	        // call) is already ready, we can return it here.
-	        // TODO: This short-cut is not backed by a test yet.
-	        if (preventUnneededMerge && currentTargetConfiguration.isReady())
-	        	return currentTargetConfiguration;
-	        
-	        // Recursively creates the merged configuration of the parent. By doing so we
-	        // traverse the chain of configurations from the bottom to the top.
-	        
-	        // If the parent != null, merge with the parent
-	        // If the parent == null, then we know we are at the very
-	        // top and there is no need to continue merging
-	        if (currentTargetConfiguration.parent!=null){
-	        	// For elements further up we unconditionally allow that they have already been merged previously.
-	        	TargetConfiguration merged = getMergedConfigurationImpl(currentTargetConfiguration.parent, 
-	        														distro, targetConfigurations, true);
-		        // The distros property is not merged at this point, so we test whether either
-	        	// the (merged) parent or the child supports the requested distro. If its not
-	        	// in either of them, we cannot continue.
-		        if (currentTargetConfiguration.getDistros().contains(distro)
-		        		|| merged.getDistros().contains(distro))
-		        {
-		            // Stores the chosen distro in the configuration for later use.
-		            currentTargetConfiguration.setChosenDistro(distro);
-	
-		            // Returns a configuration that is merged with
-		            // the default configuration-
-		            return Utils.mergeConfigurations(currentTargetConfiguration,merged);
-		        } else
-		        {
-		        	// From a user's point of view when this targetconfiguration and its ancestors do not support
-		        	// a distro it actually means, that the chosen target configuration is wrongly configured.
-		        	throw new MojoExecutionException("target configuration '" + currentTargetConfiguration.getTarget() + "' does not support distro: " + distro);
-		        }
-	        }else{
-	        	// If a TargetConfiguration ends up here which is already fixated we only prevent it being done again
-	        	// when the respective flag is set. It is important that misuse of the public variant of this method
-	        	// and the actual state of the TargetConfiguration leads to an exception.
-	        	return ((currentTargetConfiguration.isReady()
-	        			&& preventUnneededMerge) ? currentTargetConfiguration : currentTargetConfiguration.fixate());
-	        }
-	      }
-	    
-	    throw new MojoExecutionException("Requested target " + target + " does not exist. Check spelling or configuration.");
-	  
-	    
-	  }*/
 	  
 	  /**
 	   * A <code>TargetConfiguration</code> can depend on another and so multiple
@@ -975,8 +872,7 @@ public final class Utils {
 			  TargetConfiguration parent) throws MojoExecutionException{
 		  
 		  if (child.isReady()){
-			  return child;
-			  //throw new MojoExecutionException(String.format("target configuration '%s' is already merged.", child.getTarget()));
+			  throw new MojoExecutionException(String.format("target configuration '%s' is already merged.", child.getTarget()));
 		  }
 			
 			Field[] allFields = TargetConfiguration.class.getDeclaredFields();
@@ -1055,35 +951,25 @@ public final class Utils {
 	 * @return
 	 * @throws MojoExecutionException
 	 */
-	public static List<TargetConfiguration> mergeAllConfigurations(List<TargetConfiguration> targetConfigurations,
-			boolean preventUnneededMerge) throws MojoExecutionException {
-
-		List<TargetConfiguration> mergedConfigurations = new ArrayList<TargetConfiguration>();
+	public static void mergeAllConfigurations(List<TargetConfiguration> targetConfigurations) 
+			throws MojoExecutionException {
 
 		// We will loop through all targets
 		for (TargetConfiguration tc : targetConfigurations) {
-
-			// If the selected target configuration (might also be a parent of a
-			// previous
-			// call) is already ready, we can return it here.
-			// TODO: This short-cut is not backed by a test yet.
-			if (preventUnneededMerge && tc.isReady()) {
-				mergedConfigurations.add(tc);
-			}
-			// Check if we are at the top of the hierarchy
-			if (tc.parent == null) {
-				// If we are at the top we will just fixate the configuration
-				tc.fixate();
+			// If tc is ready it means that this list has already been merged
+			if (tc.isReady()) {
+				throw new MojoExecutionException("This targetConfiguration list has already been merged.");
 			} else {
-				// If there is a parent we will merge recursivelly tc's hierarchy
-				mergeAncestorsRecursively(tc,targetConfigurations);
-			}
-			// TC gets added to the list that will be returned
-			mergedConfigurations.add(tc);
-
+				// Check if we are at the top of the hierarchy
+				if (tc.parent == null) {
+					// If we are at the top we will just fixate the configuration
+					tc.fixate();
+				} else {
+					// If there is a parent we will merge recursivelly tc's hierarchy
+					mergeAncestorsRecursively(tc,targetConfigurations);
+				}
+			}				
 		}
-		return mergedConfigurations;
-
 	}
 
 	/**
@@ -1095,14 +981,20 @@ public final class Utils {
 	 * @return
 	 * @throws MojoExecutionException
 	 */
-	private static TargetConfiguration mergeAncestorsRecursively(TargetConfiguration tc, List<TargetConfiguration> targetConfigurations) throws MojoExecutionException {
+	private static void mergeAncestorsRecursively(TargetConfiguration tc, List<TargetConfiguration> targetConfigurations) throws MojoExecutionException {
 		
-		TargetConfiguration parent = getTargetConfigurationFromString(tc.parent, targetConfigurations);		
-		// If we have not reached the top, we will continue merging		
-		if (parent.parent != null) {
-			parent = mergeAncestorsRecursively(parent, targetConfigurations);
+		TargetConfiguration parent = getTargetConfigurationFromString(tc.parent, targetConfigurations);
+		
+		// If the top of the hierarchy has not been reached yet, 
+		// all remaining ancestors will be merged. 
+		// The ready flag of the parent will also be checked 
+		// in order to avoid redundant work.
+		
+		if (parent.parent != null && !parent.isReady()) {
+			mergeAncestorsRecursively(parent, targetConfigurations);
 		}
-		// Once we are done checking all ancestors we will merge the child with the parent
-		return mergeConfigurations(tc, parent);
+		// Once done checking all ancestors 
+		// the child will be merged with the parent
+		mergeConfigurations(tc, parent);
 	}
 }

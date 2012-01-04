@@ -501,7 +501,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 		// We will merge all targetConfigurations with their parents, 
 		// so tat all configurations are ready to be used from this point on
 		
-		targetConfigurations = Utils.mergeAllConfigurations(targetConfigurations, true);
+		Utils.mergeAllConfigurations(targetConfigurations);
 		
 		// For some tasks it is practical to have the TargetConfiguration
 		// instances as a

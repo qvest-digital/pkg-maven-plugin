@@ -130,10 +130,10 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		tcs.add(t1);
 		tcs.add(t2);
 		
-		List<TargetConfiguration> resultList = Utils.mergeAllConfigurations(tcs, true);
+		Utils.mergeAllConfigurations(tcs);
 
-		TargetConfiguration resultt1 = resultList.get(0);	
-		TargetConfiguration resultt2 = resultList.get(1);	
+		TargetConfiguration resultt1 = tcs.get(0);	
+		TargetConfiguration resultt2 = tcs.get(1);	
 		
 		// The parent should have its configuration intact
 		Assert.assertEquals("t1", resultt1.getTarget());
@@ -187,11 +187,9 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		tcs.add(t1);
 		tcs.add(t2);
 		
-		List<TargetConfiguration> resultList = Utils.mergeAllConfigurations(tcs, true);
+		Utils.mergeAllConfigurations(tcs);
 		
-		TargetConfiguration result = resultList.get(1);
-		/*TargetConfiguration result =
-				Utils.getMergedConfiguration("t2", "foo", tcs);*/
+		TargetConfiguration result = tcs.get(1);
 		
 		Assert.assertEquals("t2", result.getTarget());
 		Assert.assertEquals("t1", result.parent);
@@ -241,11 +239,9 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		tcs.add(t2);
 		tcs.add(t3);
 		
-		List<TargetConfiguration> resultList = Utils.mergeAllConfigurations(tcs, true);
+		Utils.mergeAllConfigurations(tcs);
 		
-		TargetConfiguration result = resultList.get(2);
-		/*TargetConfiguration result =
-				Utils.getMergedConfiguration("t2", "foo", tcs);*/
+		TargetConfiguration result = tcs.get(2);
 		
 		Assert.assertEquals("t3", result.getTarget());
 		Assert.assertEquals("t2", result.parent);
@@ -302,13 +298,13 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		tcs.add(t2a);
 		tcs.add(t2b);
 		
-		List<TargetConfiguration> resultList = Utils.mergeAllConfigurations(tcs, true);
+		Utils.mergeAllConfigurations(tcs);
 		
-		TargetConfiguration resultt1 = resultList.get(0);
-		TargetConfiguration result2a = resultList.get(1);
-		TargetConfiguration result2b = resultList.get(2);
+		TargetConfiguration resultt1 = tcs.get(0);
+		TargetConfiguration result2a = tcs.get(1);
+		TargetConfiguration result2b = tcs.get(2);
 		
-		//The parent should have its configuration intact
+		// The parent should have its configuration intact
 		Assert.assertTrue(resultt1.isReady());
 		Assert.assertEquals("t1", resultt1.getTarget());
 		Assert.assertEquals(null, resultt1.parent);
@@ -385,7 +381,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		createRelation(t3, t4);
 		createRelation(t4, t5);
 		
-		tcs = Utils.mergeAllConfigurations(tcs, true);
+		Utils.mergeAllConfigurations(tcs);
 		
 		List<TargetConfiguration> result = Utils.createBuildChain("t1", "foo", tcs);
 		
@@ -397,7 +393,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		Assert.assertEquals(t2.getTarget(), result.get(3).getTarget());
 		Assert.assertEquals(t1.getTarget(), result.get(4).getTarget());
 	}
-	/*
+	
 	@Test(expected=MojoExecutionException.class)
 	public void getMergedConfiguration_twice() throws Exception {
 		TargetConfiguration tc1 = new TargetConfiguration("tc1");
@@ -406,11 +402,11 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		List<TargetConfiguration> tcs = new LinkedList<TargetConfiguration>();
 		tcs.add(tc1);
 
-		Utils.getMergedConfiguration("tc1", "foo", tcs);
+		Utils.mergeAllConfigurations(tcs);
 		
 		// Doing it twice should result in an exception
-		Utils.getMergedConfiguration("tc1", "foo", tcs);
-	}*/
+		Utils.mergeAllConfigurations(tcs);
+	}
 	
 	/**
 	 * A test for the {@link Utils#createBuildChain} method.
@@ -463,7 +459,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		createRelation(t3, t4);
 		createRelation(t4, t5);
 		
-		tcs = Utils.mergeAllConfigurations(tcs, true);
+		Utils.mergeAllConfigurations(tcs);
 		
 		List<TargetConfiguration> l = Utils.createBuildChain("t1", "foo", tcs);
 		System.out.println(l);
@@ -683,19 +679,11 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 
 	/**
 	 * Tests that requesting the default distro which is not available in a
-	 * given @{TargetConfiguration} instance but in its parent leads to an
-	 * exception.
-	 * 
-	 * <p>Actually that we cannot do this is a kind of ugly limitation of the current
-	 * implementation that we however accept for the moment. The way to deal with it
-	 * would be to untangle the plain merging process in 
-	 * {@link Utils#getMergedConfiguration(String, String, List)} from the distro
-	 * variable checking stuff.
-	 * </p>
+	 * given @{TargetConfiguration} instance but in its parent.
 	 * 
 	 * @throws Exception
 	 */
-	@Test(expected=MojoExecutionException.class)
+	@Test
 	public void getDefaultDistro_singledistro_singleinheritance() throws Exception {
 		String distro = "bla";
 		TargetConfiguration t1 = new TargetConfiguration("t1");
@@ -707,7 +695,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		List<TargetConfiguration> tcs = new ArrayList<TargetConfiguration>();
 		tcs.add(t1);
 		tcs.add(t2);
-		
+		Utils.mergeAllConfigurations(tcs);
 		Assert.assertEquals(distro, Utils.getDefaultDistro("t2", tcs, new SystemStreamLog()));
 	}
 	
