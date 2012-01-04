@@ -36,9 +36,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -645,7 +642,7 @@ public final class Utils {
 				return currentTargetConfiguration;
 			}
 		}
-		throw new MojoExecutionException("Target " + target + " not found. Check your spelling or configuration");
+		throw new MojoExecutionException("Target " + target + " not found. Check your spelling or configuration (is this target being defined in relation to another, but does not exist anymore?).");
 	}
 	
 	  /**
@@ -743,7 +740,7 @@ public final class Utils {
 	   * @param targetConfigurations A list of available TargetConfigurations.
 	   * @param defaults A TargetConfiguration that is considered to be the default for each. 
 	   * @return
-	   */
+	   *//*
 	  public static TargetConfiguration getMergedConfiguration(
 			  String target,
 			  String distro,
@@ -753,7 +750,7 @@ public final class Utils {
 		  // Unneeded fixation will cause a MojoExecutionException which is considered
 		  // wrong usage of the API (a programming mistake).
 		  return getMergedConfigurationImpl(target, distro, targetConfigurations, false);  
-	  }
+	  }*/
 	  
 	  /**
 	   * Internal method which is used by {@link #createBuildChain(String, String, List)}
@@ -770,7 +767,7 @@ public final class Utils {
 	   * @param preventUnneededMerge
 	   * @return
 	   * @throws MojoExecutionException
-	   */
+	   *//*
 	  private static TargetConfiguration getMergedConfigurationImpl(
 			  String target,
 			  String distro,
@@ -834,7 +831,7 @@ public final class Utils {
 	    throw new MojoExecutionException("Requested target " + target + " does not exist. Check spelling or configuration.");
 	  
 	    
-	  }
+	  }*/
 	  
 	  /**
 	   * A <code>TargetConfiguration</code> can depend on another and so multiple
@@ -859,8 +856,8 @@ public final class Utils {
 		  LinkedList<TargetConfiguration> tcs = new LinkedList<TargetConfiguration>();
 		  
 		  // Merges vertically, that means through the 'parent' property.
-		  TargetConfiguration tc = 
-				  Utils.getMergedConfigurationImpl(target, distro, targetConfigurations, true);
+		  TargetConfiguration tc = Utils.getTargetConfigurationFromString(target, targetConfigurations); 
+				  //Utils.getMergedConfigurationImpl(target, distro, targetConfigurations, true);
 		  
 		  // In getMergedConfiguraion we check if targets that are hierarchically related
 		  // support the same distro. Here we will have to check again, as there may not
@@ -978,7 +975,8 @@ public final class Utils {
 			  TargetConfiguration parent) throws MojoExecutionException{
 		  
 		  if (child.isReady()){
-			  throw new MojoExecutionException(String.format("target configuration '%s' is already merged.", child.getTarget()));
+			  return child;
+			  //throw new MojoExecutionException(String.format("target configuration '%s' is already merged.", child.getTarget()));
 		  }
 			
 			Field[] allFields = TargetConfiguration.class.getDeclaredFields();
@@ -1047,4 +1045,64 @@ public final class Utils {
 			child.setReady(true);
 			return child;
 	  }
+	  
+	/**
+	 * Recursively merges all configurations with their parents and returns a
+	 * list of the available targetConfigurations ready to be consumed by the
+	 * plugin.
+	 * 
+	 * @param targetConfigurations
+	 * @return
+	 * @throws MojoExecutionException
+	 */
+	public static List<TargetConfiguration> mergeAllConfigurations(List<TargetConfiguration> targetConfigurations,
+			boolean preventUnneededMerge) throws MojoExecutionException {
+
+		List<TargetConfiguration> mergedConfigurations = new ArrayList<TargetConfiguration>();
+
+		// We will loop through all targets
+		for (TargetConfiguration tc : targetConfigurations) {
+
+			// If the selected target configuration (might also be a parent of a
+			// previous
+			// call) is already ready, we can return it here.
+			// TODO: This short-cut is not backed by a test yet.
+			if (preventUnneededMerge && tc.isReady()) {
+				mergedConfigurations.add(tc);
+			}
+			// Check if we are at the top of the hierarchy
+			if (tc.parent == null) {
+				// If we are at the top we will just fixate the configuration
+				tc.fixate();
+			} else {
+				// If there is a parent we will merge recursivelly tc's hierarchy
+				mergeAncestorsRecursively(tc,targetConfigurations);
+			}
+			// TC gets added to the list that will be returned
+			mergedConfigurations.add(tc);
+
+		}
+		return mergedConfigurations;
+
+	}
+
+	/**
+	 * Recursively merge the ancestors for a certain configuration.
+	 * 
+	 * @param tc
+	 * @param parent
+	 * @param targetConfigurations
+	 * @return
+	 * @throws MojoExecutionException
+	 */
+	private static TargetConfiguration mergeAncestorsRecursively(TargetConfiguration tc, List<TargetConfiguration> targetConfigurations) throws MojoExecutionException {
+		
+		TargetConfiguration parent = getTargetConfigurationFromString(tc.parent, targetConfigurations);		
+		// If we have not reached the top, we will continue merging		
+		if (parent.parent != null) {
+			parent = mergeAncestorsRecursively(parent, targetConfigurations);
+		}
+		// Once we are done checking all ancestors we will merge the child with the parent
+		return mergeConfigurations(tc, parent);
+	}
 }

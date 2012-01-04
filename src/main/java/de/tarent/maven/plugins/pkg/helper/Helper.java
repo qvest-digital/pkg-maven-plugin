@@ -231,6 +231,22 @@ public class Helper {
 	 * the relations property of the main target configuration.
 	 */
 	protected List<TargetConfiguration> resolvedRelations;
+
+
+	/**
+	 * The distribution which is chosen to be built. This is not handled by
+	 * Maven2 but only by the Packaging class.
+	 */
+	private String chosenDistro;
+
+	public void setChosenDistro(String chosenDistro) {
+		this.chosenDistro = chosenDistro;		
+	}
+
+	public String getChosenDistro() {
+		return chosenDistro;
+	}
+
 	
 	/**
 	 * DEB-specific bits of the Helper.
@@ -370,7 +386,8 @@ public class Helper {
 		// Intentionally empty.
 	}
 	
-	public final void init(AbstractPackagingMojo mojo, PackageMap packageMap, TargetConfiguration targetConfiguration, List<TargetConfiguration> resolvedRelations) {
+	public final void init(AbstractPackagingMojo mojo, PackageMap packageMap, TargetConfiguration targetConfiguration, 
+			List<TargetConfiguration> resolvedRelations, String chosenDistro) {
 		if (apm != null){ 
 			throw new IllegalStateException("Helper instance is already initialized.");
 		}
@@ -379,6 +396,7 @@ public class Helper {
 		this.targetConfiguration = targetConfiguration;
 		this.resolvedRelations = resolvedRelations;
 		this.l = apm.getLog();
+		this.chosenDistro = chosenDistro;
 		
 	}
 
@@ -1067,7 +1085,7 @@ public class Helper {
 	      writer.println("mainClass=\"" + targetConfiguration.getMainClass() + "\"");
 	      writer.println("scriptType=\"" + item + "\"");
 	      writer.println();
-	      writer.println("distro=\"" + targetConfiguration.getChosenDistro() + "\"");
+	      writer.println("distro=\"" + getChosenDistro() + "\"");
 	      writer.println("distroLabel=\"" + packageMap.getDistroLabel() + "\"");
 	      writer.println("packaging=\"" + packageMap.getPackaging() + "\"");
 	      writer.println();

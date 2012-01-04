@@ -412,7 +412,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	 */
 	protected void checkEnvironment(Log l, TargetConfiguration tc)
 			throws MojoExecutionException {
-		l.info("distribution             : " + tc.getChosenDistro());
+		//l.info("distribution             : " + tc.getChosenDistro());
 		l.info("default package map      : "
 				+ (defaultPackageMapURL == null ? "built-in"
 						: defaultPackageMapURL.toString()));
@@ -462,9 +462,9 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 		l.info("bindir                   : "
 				+ (tc.getBindir().length() == 0 ? "(default)" : tc.getBindir()));
 
-		if (tc.getChosenDistro() == null) {
+		/*if (ws.getChosenDistro() == null) {
 			throw new MojoExecutionException("No distribution configured!");
-		}
+		}*/
 
 		if (tc.isAotCompile()) {
 			l.info("aot compiler             : " + tc.getGcjExec());
@@ -496,6 +496,13 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	}
 
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		
+
+		// We will merge all targetConfigurations with their parents, 
+		// so tat all configurations are ready to be used from this point on
+		
+		targetConfigurations = Utils.mergeAllConfigurations(targetConfigurations, true);
+		
 		// For some tasks it is practical to have the TargetConfiguration
 		// instances as a
 		// map. This transformation step also serves as check for double
@@ -509,7 +516,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 		// target
 		// configuration have a dependency to a common target configuration.
 		HashSet<String> finishedTargets = new HashSet<String>();
-
+		
 		for (String t : getTargets()) {
 			// A single target (and all its dependent target configurations are
 			// supposed to use the same
@@ -531,7 +538,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 					// Populates session with PackageMap, Helper and resolved relations
 					prepareWorkspaceSession(ws, d);
 
-					executeTargetConfiguration(ws, d);
+					executeTargetConfiguration(ws);
 
 					// Mark as done.
 					finishedTargets.add(tc.getTarget());
@@ -541,8 +548,9 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 		}
 	}
 
-	private void prepareWorkspaceSession(WorkspaceSession ws, String d)
+	private void prepareWorkspaceSession(WorkspaceSession ws, String distro)
 			throws MojoExecutionException, MojoFailureException {
+		
 		AbstractPackagingMojo mojo = ws.getMojo();
 		TargetConfiguration tc = ws.getTargetConfiguration();
 		Map<String, TargetConfiguration> tcMap = ws.getTargetConfigurationMap();
@@ -559,14 +567,14 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 
 		// Retrieve package map for chosen distro.
 		PackageMap pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL,
-				d, tc.getBundleDependencies());
+				distro, tc.getBundleDependencies());
 
 		String packaging = pm.getPackaging();
 
 		if (packaging == null) {
 			throw new MojoExecutionException(
 					"Package maps document set no packaging for distro: "
-							+ tc.getChosenDistro());
+							+ distro);
 		}
 
 		// Create packager and packaging helper according to the chosen
@@ -581,7 +589,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 		// reality they're
 		// subtle differences between them.
 		Helper ph = new Helper();
-		ph.init(mojo, pm, tc, resolvedRelations);
+		ph.init(mojo, pm, tc, resolvedRelations, distro);
 		
 	    // Finally now that we know that our cool newly created work objects are
 	    // prepared and can be used (none of them is null) we stuff them 
@@ -592,6 +600,6 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	}
 
 	protected abstract void executeTargetConfiguration(
-			WorkspaceSession workspaceSession, String distro)
+			WorkspaceSession workspaceSession)
 			throws MojoExecutionException, MojoFailureException;
 }

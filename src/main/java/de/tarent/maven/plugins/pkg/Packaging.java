@@ -53,7 +53,7 @@ public class Packaging
    * @throws MojoFailureException
    */
 	@Override
-	protected void executeTargetConfiguration(WorkspaceSession ws, String d)
+	protected void executeTargetConfiguration(WorkspaceSession ws)
 			throws MojoExecutionException, MojoFailureException {
 	    Packager packager = Utils.getPackagerForPackaging(ws.getPackageMap().getPackaging());
 	    

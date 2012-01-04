@@ -47,7 +47,6 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		t4.setTarget("unwantedConfig");	
 		
 		t3.setTarget("wantedConfig");
-		t3.setChosenDistro("wantedDistro");
 		
 		Assert.assertEquals(t3, Utils.getTargetConfigurationFromString("wantedConfig", l));
 		
@@ -131,14 +130,25 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		tcs.add(t1);
 		tcs.add(t2);
 		
-		TargetConfiguration result =
-				Utils.getMergedConfiguration("t2", "foo", tcs);
+		List<TargetConfiguration> resultList = Utils.mergeAllConfigurations(tcs, true);
+
+		TargetConfiguration resultt1 = resultList.get(0);	
+		TargetConfiguration resultt2 = resultList.get(1);	
 		
-		Assert.assertEquals("t2", result.getTarget());
-		Assert.assertEquals("t1", result.parent);
-		Assert.assertEquals("foo", result.getChosenDistro());
-		Assert.assertEquals(set_in_t1, result.getPrefix());
-		Assert.assertEquals(overridden_in_t2, result.getMainClass());
+		// The parent should have its configuration intact
+		Assert.assertEquals("t1", resultt1.getTarget());
+		Assert.assertEquals(null, resultt1.parent);
+		Assert.assertEquals(1,resultt1.getDistros().size());
+		Assert.assertTrue(resultt1.getDistros().contains("foo"));
+		Assert.assertEquals(set_in_t1, resultt1.getPrefix());
+		Assert.assertEquals(set_in_t1, resultt1.getMainClass());
+		
+		Assert.assertEquals("t2", resultt2.getTarget());
+		Assert.assertEquals("t1", resultt2.parent);
+		Assert.assertTrue(resultt2.getDistros().contains("foo"));
+		Assert.assertEquals(1,resultt2.getDistros().size());
+		Assert.assertEquals(set_in_t1, resultt2.getPrefix());
+		Assert.assertEquals(overridden_in_t2, resultt2.getMainClass());		
 	}
 
 	/**
@@ -177,13 +187,16 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		tcs.add(t1);
 		tcs.add(t2);
 		
-		TargetConfiguration result =
-				Utils.getMergedConfiguration("t2", "foo", tcs);
+		List<TargetConfiguration> resultList = Utils.mergeAllConfigurations(tcs, true);
+		
+		TargetConfiguration result = resultList.get(1);
+		/*TargetConfiguration result =
+				Utils.getMergedConfiguration("t2", "foo", tcs);*/
 		
 		Assert.assertEquals("t2", result.getTarget());
 		Assert.assertEquals("t1", result.parent);
 		// foo is declared in t1 but not t2. This is OK.
-		Assert.assertEquals("foo", result.getChosenDistro());
+		Assert.assertTrue(result.getDistros().contains("foo"));
 		Assert.assertEquals(set_in_t1, result.getPrefix());
 		Assert.assertEquals(overridden_in_t2, result.getMainClass());
 	}
@@ -228,13 +241,16 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		tcs.add(t2);
 		tcs.add(t3);
 		
-		TargetConfiguration result =
-				Utils.getMergedConfiguration("t3", "foo", tcs);
+		List<TargetConfiguration> resultList = Utils.mergeAllConfigurations(tcs, true);
+		
+		TargetConfiguration result = resultList.get(2);
+		/*TargetConfiguration result =
+				Utils.getMergedConfiguration("t2", "foo", tcs);*/
 		
 		Assert.assertEquals("t3", result.getTarget());
 		Assert.assertEquals("t2", result.parent);
 		// foo is declared in t1 but not t2 nor t3. This is OK.
-		Assert.assertEquals("foo", result.getChosenDistro());
+		Assert.assertTrue(result.getDistros().contains("foo"));
 		Assert.assertEquals(set_in_t1, result.getPrefix());
 		Assert.assertEquals(overridden_in_t2, result.getMainClass());
 	}
@@ -277,7 +293,8 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		t2b.setMainClass(overridden_in_t2b);
 		t2b.parent = "t1";
 		List<String> t2bDeps = new ArrayList<String>();
-		t2bDeps.add("t2bDependency");
+		t2bDeps.add("t2bDependency1");
+		t2bDeps.add("t2bDependency2");
 		t2b.setManualDependencies(t2bDeps);
 		
 		List<TargetConfiguration> tcs = new LinkedList<TargetConfiguration>();
@@ -285,16 +302,25 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		tcs.add(t2a);
 		tcs.add(t2b);
 		
-		TargetConfiguration result2a =
-				Utils.getMergedConfiguration("t2a", "foo", tcs);
+		List<TargetConfiguration> resultList = Utils.mergeAllConfigurations(tcs, true);
 		
-		TargetConfiguration result2b =
-				Utils.getMergedConfiguration("t2b", "foo", tcs);
+		TargetConfiguration resultt1 = resultList.get(0);
+		TargetConfiguration result2a = resultList.get(1);
+		TargetConfiguration result2b = resultList.get(2);
+		
+		//The parent should have its configuration intact
+		Assert.assertTrue(resultt1.isReady());
+		Assert.assertEquals("t1", resultt1.getTarget());
+		Assert.assertEquals(null, resultt1.parent);
+		Assert.assertTrue(resultt1.getDistros().contains("foo"));
+		Assert.assertEquals(set_in_t1, resultt1.getPrefix());
+		Assert.assertEquals(set_in_t1, resultt1.getMainClass());
+		Assert.assertEquals(0,resultt1.getManualDependencies().size());
 		
 		Assert.assertTrue(result2a.isReady());
 		Assert.assertEquals("t2a", result2a.getTarget());
 		Assert.assertEquals("t1", result2a.parent);
-		Assert.assertEquals("foo", result2a.getChosenDistro());
+		Assert.assertTrue(result2a.getDistros().contains("foo"));
 		Assert.assertEquals(set_in_t1, result2a.getPrefix());
 		Assert.assertEquals(overridden_in_t2a, result2a.getMainClass());
 		Assert.assertEquals(1,result2a.getManualDependencies().size());
@@ -302,10 +328,10 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		Assert.assertTrue(result2b.isReady());
 		Assert.assertEquals("t2b", result2b.getTarget());
 		Assert.assertEquals("t1", result2b.parent);
-		Assert.assertEquals("foo", result2b.getChosenDistro());
+		Assert.assertTrue(result2b.getDistros().contains("foo"));
 		Assert.assertEquals(set_in_t1, result2b.getPrefix());
 		Assert.assertEquals(overridden_in_t2b, result2b.getMainClass());
-		Assert.assertEquals(1,result2b.getManualDependencies().size());		
+		Assert.assertEquals(2,result2b.getManualDependencies().size());		
 		
 		// Besides the basic functionality it is actually important for this test
 		// that the creation of result2b suceeds because a previous bug prevented the
@@ -359,6 +385,8 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		createRelation(t3, t4);
 		createRelation(t4, t5);
 		
+		tcs = Utils.mergeAllConfigurations(tcs, true);
+		
 		List<TargetConfiguration> result = Utils.createBuildChain("t1", "foo", tcs);
 		
 		// Now check whether the algorithm really found the right build order
@@ -369,7 +397,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		Assert.assertEquals(t2.getTarget(), result.get(3).getTarget());
 		Assert.assertEquals(t1.getTarget(), result.get(4).getTarget());
 	}
-	
+	/*
 	@Test(expected=MojoExecutionException.class)
 	public void getMergedConfiguration_twice() throws Exception {
 		TargetConfiguration tc1 = new TargetConfiguration("tc1");
@@ -382,7 +410,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		
 		// Doing it twice should result in an exception
 		Utils.getMergedConfiguration("tc1", "foo", tcs);
-	}
+	}*/
 	
 	/**
 	 * A test for the {@link Utils#createBuildChain} method.
@@ -434,6 +462,8 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		createRelation(t2, t3);
 		createRelation(t3, t4);
 		createRelation(t4, t5);
+		
+		tcs = Utils.mergeAllConfigurations(tcs, true);
 		
 		List<TargetConfiguration> l = Utils.createBuildChain("t1", "foo", tcs);
 		System.out.println(l);

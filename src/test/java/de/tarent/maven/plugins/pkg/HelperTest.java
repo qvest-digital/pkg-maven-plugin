@@ -108,7 +108,7 @@ public class HelperTest extends AbstractMvnPkgPluginTestCase{
 		};
 		
 		helper = new Helper();
-		helper.init(packaging, delegatingPackageMap, targetConfiguration, resolvedConfigurations);
+		helper.init(packaging, delegatingPackageMap, targetConfiguration, resolvedConfigurations,"foobar");
 		previousfilefound = false;
 		if(f.exists()){
 			FileUtils.moveFile(f, new File(homedir + "/.rpmmacros_Test_backup"));

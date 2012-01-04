@@ -192,12 +192,6 @@ public class TargetConfiguration {
 	private String bundledJarDir;
 
 	/**
-	 * The distribution which is chosen to be built. This is not handled by
-	 * Maven2 but only by the Packaging class.
-	 */
-	private String chosenDistro;
-
-	/**
 	 * Denotes the directory in the target system where application specific
 	 * data files are put.
 	 * 
@@ -1024,11 +1018,6 @@ public class TargetConfiguration {
 		this.revision = revision;
 	}
 
-	public String getChosenDistro() {
-		checkIfReady();
-		return chosenDistro;
-	}
-
 	public String getSrcAuxFilesDir() {
 		checkIfReady();
 		return srcAuxFilesDir;
@@ -1297,7 +1286,7 @@ public class TargetConfiguration {
 		appendStringDefault(sb, "target", target);
 		appendStringDefault(sb, "parent", parent);
 		appendStringDefault(sb, "defaultDistro", defaultDistro);
-		appendStringDefault(sb, "chosenDistro", chosenDistro);
+		//appendStringDefault(sb, "chosenDistro", chosenDistro);
 		
 		sb.append("\n");
 		appendStringCollection(sb, "distros", distros);
@@ -1540,12 +1529,6 @@ public class TargetConfiguration {
 	public void setRelations(List<String> relations) {
 		this.relations = relations;
 	}
-
-	public void setChosenDistro(String distro) {
-		this.chosenDistro=distro;
-		
-	}
-
 
 	public void setTarget(String target) {
 		this.target=target;		

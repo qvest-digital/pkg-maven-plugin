@@ -25,7 +25,7 @@ public class Upload extends AbstractPackagingMojo {
 	Log l = getLog();
 	
 	@Override
-	protected void executeTargetConfiguration(WorkspaceSession ws, String distro)
+	protected void executeTargetConfiguration(WorkspaceSession ws)
 			throws MojoExecutionException, MojoFailureException {
 		TargetConfiguration tc = ws.getTargetConfiguration();		
 		UploadParameters param;
