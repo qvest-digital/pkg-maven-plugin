@@ -439,10 +439,11 @@ class IzPackDescriptor
   {
     NodeList list = parent.getChildNodes();
     int size = list.getLength();
-    for (int i=0; i<size; i++)
+    for (int i=0; i<size; i++) {
       if (childName.equals(list.item(i).getLocalName())){
         return true;
       }
+    }
     return false;
   }
   

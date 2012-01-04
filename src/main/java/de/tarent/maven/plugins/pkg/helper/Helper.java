@@ -1138,28 +1138,33 @@ public class Helper {
 	        // Notice only compilation dependencies which are Jars.
 	        // Shared Libraries ("so") are filtered out because the
 	        // JNI dependency is solved by the system already.
+	    	
+	    	// Here a filter for depencies of the COMPILE scope is created
 	        AndArtifactFilter compileFilter = new AndArtifactFilter();
 	        compileFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE));
 	        compileFilter.add(new TypeArtifactFilter("jar"));
 	
+	        // The result of the COMPILE filter will be added to the depencies set
 	        dependencies.addAll(Utils.findArtifacts(compileFilter, apm.getFactory(), apm.getResolver(), 
 	        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
 	        		apm.getRemoteRepos(), apm.getMetadataSource()));
 
-
+	    	// Here a filter for depencies of the RUNTIME scope is created
 	        AndArtifactFilter runtimeFilter = new AndArtifactFilter();
 	        runtimeFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME));
 	        runtimeFilter.add(new TypeArtifactFilter("jar"));
-	        
+
+	        // The result of the RUNTIME filter will be added to the depencies set
 	        dependencies.addAll(Utils.findArtifacts(runtimeFilter, apm.getFactory(), apm.getResolver(), 
 	        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
 	        		apm.getRemoteRepos(), apm.getMetadataSource()));
 
-
+	        // Here a filter for depencies of the PROVIDED scope is created
 	        AndArtifactFilter providedFilter = new AndArtifactFilter();
 	        providedFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_PROVIDED));
 	        providedFilter.add(new TypeArtifactFilter("jar"));
 	        
+	        // The result of the PROVIDED filter will be added to the depencies set
 	        dependencies.addAll(Utils.findArtifacts(providedFilter, apm.getFactory(), apm.getResolver(), 
 	        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
 	        		apm.getRemoteRepos(), apm.getMetadataSource()));	     

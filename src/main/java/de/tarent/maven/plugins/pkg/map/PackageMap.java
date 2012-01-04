@@ -35,6 +35,8 @@ import org.apache.maven.artifact.versioning.OverConstrainedVersionException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
+import de.tarent.maven.plugins.pkg.exception.XMLParserException;
+
 /**
  * A <code>PackageMap</code> instance denotes the mapping between a Maven2
  * dependency and a package in a distribution.
@@ -106,7 +108,7 @@ public class PackageMap
       mapping = new Parser(packageMapURL,
                            auxPackageMapURL).getMapping(distribution);
     }
-    catch (Parser.Exception pe)
+    catch (XMLParserException pe)
     {
       throw new MojoExecutionException("Package map creation failed", pe);
     }
@@ -246,8 +248,8 @@ public class PackageMap
        }
        else if (e.ignoreEntry)
        {
-         // If a package is explicitly said to be ignored this will be done
-         // without warning.
+         // If a package is explicitly said to be ignored this will be done without warning.
+    	   l.debug("Ignoring entry '" + e.artifactSpec + "', ignoreEntry flag is set");
        }
        else
        {

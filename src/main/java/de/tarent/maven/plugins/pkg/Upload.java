@@ -56,16 +56,31 @@ public class Upload extends AbstractPackagingMojo {
 			}		
 	}
 
+	/**
+	 * <p>Retunrs the appropiate uploader depending on the protocol used by a url.</p>
+	 * At the moment this method only differentiantes between dupload:// (these urls will be
+	 * managed by our own class, which uses dupload in the background) and everything else 
+	 * (managed by codehaus' wagon-maven-plugin).
+	 * 
+	 * @param ws
+	 * @param url
+	 * @return
+	 */
 	private IPkgUploader getUploaderForProtocol(WorkspaceSession ws, String url) {
 
-		if(url.startsWith("debapt://")){
-			return new APTUploader(ws, url.replace("debapt://",""));
+		if(url.startsWith("dupload://")){
+			return new APTUploader(ws, url.replace("dupload://",""));			
 		}else{
 			return new WagonUploader(ws, url);
 		}
 
 	}
 	
+	/**
+	 * Returns the filename of the package to be build for a specific WorkspaceSession
+	 * @param ws
+	 * @return
+	 */
 	public File getPackageFile(WorkspaceSession ws) {
 		return new File(ws.getMojo().getBuildDir(), ws.getHelper().getPackageFileName());
 	}

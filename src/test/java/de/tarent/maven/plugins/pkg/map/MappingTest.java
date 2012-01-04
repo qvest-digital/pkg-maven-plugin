@@ -10,6 +10,8 @@ import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
 
+import de.tarent.maven.plugins.pkg.exception.XMLParserException;
+
 public class MappingTest extends TestCase {
 
 	public void testEntryWithVersionRange() {
@@ -17,7 +19,7 @@ public class MappingTest extends TestCase {
 		Parser p;
 		try {
 			p = new Parser(url, null);
-		} catch (Parser.Exception e) {
+		} catch (XMLParserException e) {
 			throw new IllegalStateException(
 					"Exception occured during test setup.", e);
 		}

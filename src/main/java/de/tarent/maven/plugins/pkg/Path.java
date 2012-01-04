@@ -46,9 +46,9 @@ public class Path implements Iterable<String> {
 	{
 		Path p = new Path();
 		String[] entries = UNIX_PATH_PATTERN.split(unixPath);
-		for (String e : entries)
+		for (String e : entries) {
 			p.pathEntries.add(e);
-		
+		}
 		return p;
 	}
 

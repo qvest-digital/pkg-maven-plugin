@@ -273,9 +273,16 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	 * Parameter with a comma separated list of targets. For use on the
 	 * command-line.
 	 * 
-	 * @parameter expression="${target}"
+	 * @parameter
 	 */
 	protected String target;
+
+	/**
+	 * This parameter allows overriding the target set in the POM through the command line
+	 * 
+	 * @parameter expression="${target}"
+	 */
+	protected String overrideTarget;
 
 	/**
 	 * @parameter
@@ -394,7 +401,9 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 
 		String[] targetArray = null;
 
-		if (target != null) {
+		if (overrideTarget != null){
+			targetArray = overrideTarget.split(",");
+		} else if (target != null) {
 			targetArray = target.split(",");
 		} else {
 			throw new MojoExecutionException(
@@ -545,6 +554,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 				}
 
 			}
+			getLog().info("Maven-pkg-plugin goal succesfully executed for " + finishedTargets.size() + " target(s).");
 		}
 	}
 

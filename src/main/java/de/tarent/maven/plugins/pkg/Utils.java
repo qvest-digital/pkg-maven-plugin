@@ -794,9 +794,6 @@ public final class Utils {
 		    Class<? extends Packager> klass = extPackagerMap.get(packaging);
 		    try {
 		    	return klass.newInstance();
-		    } catch (NullPointerException e)
-		    {
-			      throw new MojoExecutionException("Unsupported packaging type: "+ packaging, e);
 		    } catch (InstantiationException e) {
 			      throw new MojoExecutionException("Unsupported packaging type: "+ packaging, e);
 			} catch (IllegalAccessException e) {

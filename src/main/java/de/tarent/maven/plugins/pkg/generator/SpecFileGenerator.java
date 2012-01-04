@@ -49,17 +49,19 @@ import de.tarent.maven.plugins.pkg.AuxFile;
  */
 public class SpecFileGenerator {
 
-	private String packageName = "unknown";
+	private static final String UNKNOWN = "unknown";
 
-	private String version = "unknown";
+	private String packageName = UNKNOWN;
 
-	private String description = "uknown";
+	private String version = UNKNOWN;
 
-	private String summary = "unknown";
+	private String description = UNKNOWN;
 
-	private String license = "unknown";
+	private String summary = UNKNOWN;
 
-	private String release = "unknown";
+	private String license = UNKNOWN;
+
+	private String release = UNKNOWN;
 
 	private String dependencies;
 
@@ -135,7 +137,7 @@ public class SpecFileGenerator {
 			if(logger!=null){
 				logger.error("dependencies not set");
 			}
-			this.dependencies = "unknown";
+			this.dependencies = UNKNOWN;
 		}
 	}
 
@@ -150,7 +152,7 @@ public class SpecFileGenerator {
 			if(logger!=null){
 				logger.error("recommends not set");
 			}
-			this.recommends = "unknown";
+			this.recommends = UNKNOWN;
 		}
 	}
 
@@ -165,7 +167,7 @@ public class SpecFileGenerator {
 			if(logger!=null){
 				logger.error("suggests not set");
 			}
-			this.suggests = "unknown";
+			this.suggests = UNKNOWN;
 		}
 	}
 
@@ -180,7 +182,7 @@ public class SpecFileGenerator {
 			if(logger!=null){
 				logger.error("description not set");
 			}
-			this.description = "unknown";
+			this.description = UNKNOWN;
 		}
 	}
 
@@ -195,7 +197,7 @@ public class SpecFileGenerator {
 			if(logger!=null){
 				logger.error("packageName not set");
 			}
-			this.packageName = "unknown";
+			this.packageName = UNKNOWN;
 		}
 	}
 
@@ -210,7 +212,7 @@ public class SpecFileGenerator {
 			if(logger!=null){
 				logger.error("version not set");
 			}
-			this.version = "unknown";
+			this.version = UNKNOWN;
 		}
 	}
 
@@ -225,7 +227,7 @@ public class SpecFileGenerator {
 			if(logger!=null){
 				logger.error("source not set");				
 			}
-			this.source = "unknown";
+			this.source = UNKNOWN;
 		}
 	}
 
@@ -240,7 +242,7 @@ public class SpecFileGenerator {
 			if(logger!=null){
 				logger.debug("summary not set");
 			}
-			this.summary = "unknown";
+			this.summary = UNKNOWN;
 		}
 	}
 
@@ -255,7 +257,7 @@ public class SpecFileGenerator {
 			if(logger!=null){
 				logger.debug("release not set");
 			}
-			this.release = "unknown";
+			this.release = UNKNOWN;
 		}
 	}
 
@@ -285,7 +287,7 @@ public class SpecFileGenerator {
 			if(logger!=null){
 				logger.error("license not set");
 			}
-			this.license = "unknown";
+			this.license = UNKNOWN;
 		}
 	}
 
@@ -300,7 +302,7 @@ public class SpecFileGenerator {
 			if(logger!=null){
 				logger.debug("group not set");
 			}
-			this.group = "unknown";
+			this.group = UNKNOWN;
 		}
 	}
 
@@ -390,7 +392,7 @@ public class SpecFileGenerator {
 			if(logger!=null){
 				logger.debug("vendor not set");
 			}
-			this.vendor = "unknown";
+			this.vendor = UNKNOWN;
 		}
 	}
 
@@ -405,7 +407,7 @@ public class SpecFileGenerator {
 			if(logger!=null){
 				logger.debug("packager not set");
 			}
-			this.packager = "unknown";
+			this.packager = UNKNOWN;
 		}
 	}
 

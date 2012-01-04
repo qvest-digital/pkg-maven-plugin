@@ -42,6 +42,8 @@ import org.codehaus.plexus.util.xml.pull.MXParser;
 import org.codehaus.plexus.util.xml.pull.XmlPullParser;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
+import de.tarent.maven.plugins.pkg.exception.XMLParserException;
+
 /**
  * A parser for the package maps XML document.
  * 
@@ -55,26 +57,28 @@ class Parser
   {
     Map<String, Mapping> mappings = new HashMap<String, Mapping>();
     
-    Parser(URL packageMapDocument, URL auxMapDocument)
-      throws Exception
-    {
-      // Initialize the XML parsing part.
-      Parser.State s = new State(packageMapDocument);
-      
-      s.nextMatch("package-maps");
-      parsePackageMaps(s);
-      
-      if (auxMapDocument != null)
-        {
-          s = new State(auxMapDocument);
-          
-          s.nextMatch("package-maps");
-          parsePackageMaps(s);
-        }
-      
-    }
+	Parser(URL packageMapDocument, URL auxMapDocument) throws XMLParserException {
+		// Initialize the XML parsing part.
+		Parser.State s;
+		try {
+			s = new State(packageMapDocument);
+
+			s.nextMatch("package-maps");
+			parsePackageMaps(s);
+
+			if (auxMapDocument != null) {
+				s = new State(auxMapDocument);
+
+				s.nextMatch("package-maps");
+				parsePackageMaps(s);
+			}
+		} catch (Exception e) {
+			throw new XMLParserException("Error parsing packageMap.",e);
+		}
+
+	}
     
-    private void handleInclude(Parser.State currentState, String includeUrl) throws Exception
+    private void handleInclude(Parser.State currentState, String includeUrl) throws XMLParserException
     {
       try
       {
@@ -88,8 +92,10 @@ class Parser
       }
       catch (MalformedURLException mfue)
       {
-        throw new Exception("URL in <include> tag is invalid '" + includeUrl + "'", mfue);
-      }
+        throw new XMLParserException("URL in <include> tag is invalid '" + includeUrl + "'", mfue);
+      } catch (Exception e) {
+          throw new XMLParserException("URL in <include> tag is invalid '" + includeUrl + "'", e);
+	}
     }
     
     private void parsePackageMaps(Parser.State s) throws Exception
@@ -190,7 +196,7 @@ class Parser
       
     }
     
-    private void parseMap(Parser.State s, Mapping distroMapping) throws Exception
+    private void parseMap(Parser.State s, Mapping distroMapping) throws XMLParserException
     {
       s.nextElement();
       while (s.peek("entry"))
@@ -199,7 +205,7 @@ class Parser
         }
     }
 
-    private void parseEntry(Parser.State s, Mapping distroMapping) throws Exception
+    private void parseEntry(Parser.State s, Mapping distroMapping) throws XMLParserException
     {
       String artifactSpec;
       String dependencyLine;
@@ -247,7 +253,11 @@ class Parser
       HashSet<String> jarFileNames = new HashSet<String>();
       if (s.peek("jars"))
         {
-          parseJars(s, jarFileNames);
+          try {
+			parseJars(s, jarFileNames);
+		} catch (Exception e) {
+			throw new XMLParserException("Error while parsing jars", e);
+		}
         }
       
       distroMapping.putEntry(
@@ -307,7 +317,7 @@ class Parser
       
       URL url;
       
-      State(URL url) throws Exception
+      State(URL url) throws XMLParserException
       {
         parser = new MXParser();
         
@@ -319,16 +329,16 @@ class Parser
         }
         catch (XmlPullParserException xmlppe)
         {
-          throw new Exception("XML document malformed", xmlppe);
+          throw new XMLParserException("XML document malformed", xmlppe);
         }
         catch (IOException ioe)
         {
-          throw new Exception("I/O error when accessing XML document: " + url, ioe);
+          throw new XMLParserException("I/O error when accessing XML document: " + url, ioe);
         }
 
       }
       
-      String nextElement() throws Exception
+      String nextElement() throws XMLParserException
       {
         do
           {
@@ -356,43 +366,27 @@ class Parser
             }
             catch (XmlPullParserException xmlppe)
             {
-              throw new Exception("XML document malformed", xmlppe);
+              throw new XMLParserException("XML document malformed", xmlppe);
             }
             catch (IOException ioe)
             {
-              throw new Exception("I/O error when accessing XML document: " + url, ioe);
+              throw new XMLParserException("I/O error when accessing XML document: " + url, ioe);
             }
           }
         while (true);
       }
 
-      private void nextMatch(String expected) throws Exception
+      private void nextMatch(String expected) throws XMLParserException
       {
         nextElement();
         if (!expected.equals(token)) {
-          throw new Exception("malformed document: expected " + expected + " got '" + token + "'");
+          throw new XMLParserException("malformed document: expected " + expected + " got '" + token + "'");
         }
       }
 
       private boolean peek(String expected)
       {
         return expected.equals(token);
-      }
-      
-    }
-    
-    static class Exception extends java.lang.Exception
-    {
-      private static final long serialVersionUID = - 8872495978331881464L;
-
-      Exception(String msg, Throwable cause)
-      {
-        super(msg, cause);
-      }
-
-      Exception(String msg)
-      {
-        super(msg);
       }
       
     }

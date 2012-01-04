@@ -61,10 +61,15 @@ public class APTUploader implements IPkgUploader{
 	 */
 	static String uploadCmd = "dupload";
 
-		
+	/**
+	 * Checks if the external requirements for this tool are satisfied 
+	 * @param l
+	 * @throws MojoExecutionException
+	 */
 	protected void checkEnvironment(Log l) throws MojoExecutionException {
 	    Utils.checkProgramAvailability("dupload");
 	}
+	
 	public APTUploader(WorkspaceSession ws, String repo){
 		this.packageMap = ws.getPackageMap();
 		this.packagingType= packageMap.getPackaging();
@@ -85,6 +90,7 @@ public class APTUploader implements IPkgUploader{
 	 * @throws MojoExecutionException
 	 */
 	public void uploadPackage() throws MojoExecutionException  { 
+		checkEnvironment(l);
 		l.info("calling " + uploadCmd + " to upload package");
 		
 		String[] command;
