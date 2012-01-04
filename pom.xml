@@ -15,8 +15,8 @@
 
 	<url>http://mvn-pkg-plugin.evolvis.org/</url>
 	<issueManagement>
-		<system>Bugzilla</system>
-		<url>https://bugzilla.tarent.de/</url>
+		<system>Evolvis</system>
+		<url>https://evolvis.org/tracker/?group_id=30</url>
 	</issueManagement>
 	<inceptionYear>2006</inceptionYear>
 	
@@ -48,7 +48,38 @@
 					<encoding>utf-8</encoding>
 				</configuration>
 			</plugin>
-			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+						<manifestEntries>
+							<Implementation-Build>${buildNumber}</Implementation-Build>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+		    <plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<doCheck>true</doCheck>
+					<doUpdate>true</doUpdate>
+				</configuration>
+		    </plugin>
 			<!-- 
 			<plugin>
 				<groupId>de.tarent.maven.plugins</groupId>
@@ -64,8 +95,7 @@
 					<gForgeProject>mvn-pkg-plugin</gForgeProject>
 				</configuration>
 			</plugin>
-			 -->
-			
+			 -->			
 		</plugins>
 	</build>
 
