@@ -7,7 +7,7 @@
 
 	<packaging>maven-plugin</packaging>
 
-	<version>4.0.3</version>
+	<version>4.0.4-SNAPSHOT</version>
 
 	<name>Maven Packaging Plugin</name>
 
@@ -33,8 +33,8 @@
 
 	<!-- Source Code Management -->
 	<scm>
-		<developerConnection>scm:svn:svn+ssh://maven@scm.evolvis.org/svnroot/mvn-pkg-plugin/tags/maven-pkg-plugin-4.0.3</developerConnection>
-		<url>https://evolvis.org/plugins/scmsvn/viewcvs.php/tags/maven-pkg-plugin-4.0.3?root=mvn-pkg-plugin</url>
+		<developerConnection>scm:svn:svn+ssh://maven@scm.evolvis.org/svnroot/mvn-pkg-plugin/tags/maven-pkg-plugin-4.0</developerConnection>
+		<url>https://evolvis.org/plugins/scmsvn/viewcvs.php/trunk/tags/maven-pkg-plugin-4.0?root=mvn-pkg-plugin</url>
 	</scm>
 
 	<build>
