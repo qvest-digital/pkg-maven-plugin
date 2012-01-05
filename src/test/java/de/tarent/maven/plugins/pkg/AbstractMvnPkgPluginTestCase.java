@@ -42,6 +42,14 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	 */
 	protected static final String RPMPOM = "rpmpom.xml";
 	/**
+	 * Name of the pom used for .deb packaging tests 
+	 */
+	protected static final String IPKPOM = "ipkpom.xml";
+	/**
+	 * Name of the pom used for .deb packaging tests 
+	 */
+	protected static final String IZPACKPOM = "izpackpom.xml";
+	/**
 	 * Name of the pom used for mixed packaging tests
 	 */
 	protected static final String MIXEDPOM = "mixedpom.xml";
@@ -209,6 +217,10 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	protected boolean numberOfDEBsIs(int i) {
 		return returnFilesFoundBasedOnSuffix("deb").length==i;
 	}
+
+	protected boolean numberOfIPKsIs(int i) {
+		return returnFilesFoundBasedOnSuffix("ipk").length==i;
+	}
 	
 	private boolean debContains(Pattern p, String debArgs) throws MojoExecutionException{
 		boolean result = false;
@@ -234,6 +246,25 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		try{
 			out = IOUtils.toString(Utils.exec(new String[]{"dpkg",debArgs,
 				returnFilesBasedOnFilename(fileName)[0].getAbsolutePath()},TARGETDIR,
+				"Failure checking contents", "Failure opening rpm file"));
+		}catch (IOException e) {
+			throw new MojoExecutionException(e.getMessage(),e);
+		}
+		//Log l = packagingPlugin.getLog();
+		//l.info("Matching" + out + "/// to "+p);
+		if (p.matcher(out).find()){
+			result = true;
+		}
+		return result;
+	}
+
+	private boolean ipkContains(Pattern p, String debArgs) throws MojoExecutionException{
+		//TODO: Create a real ipk check
+		boolean result = false;
+		String out = new String(); 
+		try{
+			out = IOUtils.toString(Utils.exec(new String[]{"dpkg",debArgs,
+				returnFilesFoundBasedOnSuffix("ipk")[0].getAbsolutePath()},TARGETDIR,
 				"Failure checking contents", "Failure opening rpm file"));
 		}catch (IOException e) {
 			throw new MojoExecutionException(e.getMessage(),e);
@@ -277,6 +308,13 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		return rpmContains(p,"--dump");
 	}
 	
+	protected boolean ipkContainsMainArtifact() throws MojoExecutionException, IOException {
+		final Pattern p = Pattern.compile(".*"+
+										  Pattern.quote(packagingPlugin.project.getArtifact().getFile().getName())+
+										  ".*");
+		return ipkContains(p, "-c");		
+	}
+	
 	protected boolean rpmIsSigned() throws MojoExecutionException, IOException {
 		final Pattern p = Pattern.compile(keyID);
 		return rpmContains(p,"-i");
@@ -291,6 +329,11 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		final Pattern p = Pattern.compile(".*"+ Pattern.quote(s)+ ".*");
 		return debContains(p, "-c");		
 	}
+	
+	protected boolean ipkContainsArtifact(String s) throws MojoExecutionException, IOException {
+		final Pattern p = Pattern.compile(".*"+ Pattern.quote(s)+ ".*");
+		return ipkContains(p, "-c");		
+	}
 		
 	protected boolean rpmDependsOn(String s) throws MojoExecutionException, IOException {
 		final Pattern p = Pattern.compile(Pattern.quote(s)+".*");
@@ -301,6 +344,11 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		final Pattern p = Pattern.compile("Depends:.*"+Pattern.quote(s)+".*");
 		return debContains(p, "--info");
 	}	
+
+	protected boolean ipkDependsOn(String s) throws MojoExecutionException, IOException {
+		final Pattern p = Pattern.compile("Depends:.*"+Pattern.quote(s)+".*");
+		return ipkContains(p, "--info");
+	}		
 
 	protected boolean debDependsOn(String s, String filename) throws MojoExecutionException, IOException {
 		final Pattern p = Pattern.compile("Depends:.*"+Pattern.quote(s)+".*");

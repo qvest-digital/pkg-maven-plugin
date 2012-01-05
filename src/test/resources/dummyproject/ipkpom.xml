@@ -1,0 +1,186 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>de.maven.plugins.test</groupId>
+	<artifactId>DummyProject</artifactId>
+	<version>1.0.0</version>
+	<packaging>jar</packaging>
+	<name>Test mvn-pkg-plugin</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>utf-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>de.tarent.maven.plugins</groupId>
+				<artifactId>maven-pkg-plugin</artifactId>
+				<version>4.0</version>
+				<configuration>
+					<signPassPhrase>123456</signPassPhrase>
+					<targetConfigurations>
+						<targetConfiguration> <!-- simple ubuntu lucid target -->
+							<target>openmoko_target</target>							
+							<mainClass>de.tarent.maven.plugins.dummytest</mainClass>
+							<maintainer>Test User MVNPKGPLUGIN &lt;no@address.com&gt;</maintainer>
+							<manualDependencies>
+								<string>kdm</string>
+								<string>usbmount</string>
+								<string>blackbox</string>
+							</manualDependencies>
+							<distros>
+								<distro>openmoko_2007.11</distro>
+							</distros>
+							<!-- <sysconfFiles> <sysconfFile> <from>org.evolvis.multipc.pkla</from> 
+								<to>polkit-1/localauthority/20-org.d</to> </sysconfFile> </sysconfFiles> 
+								<jniFiles> <jniFile> <from>libjinput-linux.so</from> </jniFile> </jniFiles> 
+								<dataFiles> <dataFile> <from>emptyCursor.xbm</from> </dataFile> </dataFiles> -->
+
+						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>openmoko_target_simple</target>
+							<parent>openmoko_target</parent>
+						</targetConfiguration>
+						
+						<targetConfiguration>
+							<target>openmoko_target_simple_sharedparent1</target>
+							<parent>openmoko_target_simple</parent>
+							<packageNameSuffix>sharedparent1</packageNameSuffix>
+							<manualDependencies>
+								<string>dependencysharedparent1</string>
+							</manualDependencies>
+						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>openmoko_target_simple_sharedparent2</target>
+							<parent>openmoko_target_simple</parent>
+							<packageNameSuffix>sharedparent2</packageNameSuffix>
+							<distros>
+								<distro>openmoko_2007.11</distro>
+							</distros>
+							<manualDependencies>
+								<string>dependencysharedparent2</string>
+							</manualDependencies>
+						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>openmoko_target_simple_sign</target>
+							<parent>openmoko_target_simple</parent>
+							<sign>true</sign>
+							<distros>
+								<distro>openmoko_2007.11</distro>
+							</distros>
+						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>openmoko_target_simple_double</target>
+							<parent>openmoko_target_simple</parent>
+							<distros>
+								<distro>openmoko_2007.11</distro>
+								<distro>ubuntu_karmic</distro>
+							</distros>
+						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>openmoko_target_simple_manual_dependencies</target>
+							<parent>openmoko_target_simple</parent>
+							<distros>
+								<distro>openmoko_2007.11</distro>
+							</distros>
+							<manualDependencies>
+								<string>kdm</string>
+								<string>usbmount</string>
+								<string>blackbox</string>
+							</manualDependencies>
+						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>openmoko_target_external_artifact</target>
+							<parent>openmoko_target_simple</parent>
+							<distros>
+								<distro>openmoko_2007.11</distro>
+							</distros>
+							<revision>r0</revision>
+							<source>dummysource</source>
+							<release>dummyrelease</release>
+							<architecture>x86_64</architecture>
+							<manualDependencies>
+								<string>kdm</string>
+								<string>usbmount</string>
+								<string>blackbox</string>
+							</manualDependencies>
+							<sysconfFiles>
+								<sysconfFile>
+									<from>dummy.properties</from>
+									<to>dummyProject/dummy.properties</to>
+									<rename>true</rename>
+								</sysconfFile>
+							</sysconfFiles>
+						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>openmoko_target_relation1</target>
+							<distros>
+								<distro>openmoko_2007.11</distro>
+							</distros>
+							<packageNameSuffix>data</packageNameSuffix>
+						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>openmoko_target_relation2</target>
+							<relations>
+								<relation>openmoko_target_relation1</relation>
+							</relations>
+							<distros>
+								<distro>openmoko_2007.11</distro>
+							</distros>
+							<packageNameSuffix>core</packageNameSuffix>
+						</targetConfiguration>
+						
+						<targetConfiguration>
+							<target>openmoko_target_relation3a</target>
+							<relations>
+								<relation>openmoko_target_relation2</relation>
+							</relations>
+							<distros>
+								<distro>openmoko_2007.11</distro>
+							</distros>
+							<packageNameSuffix>config-foo</packageNameSuffix>
+						</targetConfiguration>
+						
+						<targetConfiguration>
+							<target>openmoko_target_relation3b</target>
+							<relations>
+								<relation>openmoko_target_relation1</relation>
+								<relation>openmoko_target_relation2</relation>
+							</relations>
+							<distros>
+								<distro>openmoko_2007.11</distro>
+							</distros>
+							<packageNameSuffix>config-bar</packageNameSuffix>
+						</targetConfiguration>
+						
+					</targetConfigurations>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

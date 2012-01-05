@@ -141,6 +141,25 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * 
 	 * Execute a target configuration without parent
 	 * Use the only distribution defined for this target
+	 * Create a IPK file 
+	 * Include a main artifact (JAR) in the RPM file 
+	 * 
+	*/
+	@Test
+    public void createIpkForOpenmokoWithoutDependenciesContainingJar()
+            throws Exception
+        {	
+
+			packagingPlugin = mockPackagingEnvironment(IPKPOM,"openmoko_target_simple");
+            packagingPlugin.execute();
+            assertTrue(numberOfIPKsIs(1));
+            assertTrue(ipkContainsMainArtifact());
+        }	
+	/**
+	 * This test attempts the following:
+	 * 
+	 * Execute a target configuration without parent
+	 * Use the only distribution defined for this target
 	 * Try to create a RPM file without PackageName, 
 	 * Version, Description, Summary, License and Release.
 	 *  
@@ -201,6 +220,29 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertTrue(rpmContainsMainArtifact());
             assertTrue(rpmDependsOn("blackbox"));
             assertFalse(rpmIsSigned());
+        }
+
+	/**
+	 * This test attempts the following:
+	 * 
+	 * Execute a target configuration 
+	 * 		which contains manually added dependencies
+	 * Use the only distribution defined for this target
+	 * 
+	 * Create a IPK file 
+	 * Include a main artifact (JAR) in the IPK file 
+	 * 
+	 * @throws Exception
+	 */	
+	@Test
+    public void createIpkForOpenmokoWithManualDependenciesContainingJar()
+            throws Exception
+        {
+			packagingPlugin = mockPackagingEnvironment(IPKPOM,"openmoko_target_simple");
+            packagingPlugin.execute();
+            assertTrue(numberOfIPKsIs(1));
+            assertTrue(ipkContainsMainArtifact());
+            assertTrue(ipkDependsOn("blackbox"));
         }
 
 	/**
@@ -289,6 +331,27 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
             assertTrue(debContainsArtifact("dummy.properties"));
+        }
+	
+	/**
+	 * This test attempts the following:
+	 * 
+	 * Execute a single target configuration
+	 * Create a IPK file
+	 * Include a main artifact (JAR) in the IPK file
+	 * Include external auxilary files in the package
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+    public void createIpkWithAuxFileDependenciesContainingJar()
+            throws Exception, MojoExecutionException
+        {
+			packagingPlugin = mockPackagingEnvironment(IPKPOM,"openmoko_target_external_artifact");
+            packagingPlugin.execute();
+            assertTrue(numberOfIPKsIs(1));
+            assertTrue(ipkContainsMainArtifact());
+            assertTrue(ipkContainsArtifact("dummy.properties"));
         }
 	
 	/**
