@@ -52,11 +52,14 @@ package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.archiver.ArchiveFile;
+import org.codehaus.plexus.archiver.tar.GZipTarFile;
 
 import de.tarent.maven.plugins.pkg.Path;
 import de.tarent.maven.plugins.pkg.TargetConfiguration;
@@ -72,6 +75,8 @@ import de.tarent.maven.plugins.pkg.helper.Helper;
 public class IpkPackager extends Packager
 {
   
+  File IPKGBUILD;
+	
   public void execute(Log l,
                       WorkspaceSession workspaceSession
                       ) throws MojoExecutionException
@@ -159,14 +164,28 @@ public class IpkPackager extends Packager
       error = true;
     }
     
-    Utils.checkProgramAvailability("ipkg-build");
+      /* The ipkg-build tool, needed by this class is delivered within this package
+       * in the ipkg-utils-050831.tar.gz archive. It will be extracted to a temporary
+       * location and deleted as soon as the vm exits.  
+       */
+    
+	  ArchiveFile IpkUtilsGZip;
+	  try{
+		  IpkUtilsGZip = new GZipTarFile(new File(IpkPackager.class.getResource("ipkg-utils-050831.tar.gz").toURI()));
+	  }catch(URISyntaxException ex){
+		  throw new MojoExecutionException("Location for Zip file is malformed.",ex);
+	  }
+    
+	  IPKGBUILD = Utils.getFileFromArchive(IpkUtilsGZip, "ipkg-utils-050831/ipkg-build");
+	  // The tool needs to be executable
+	  IPKGBUILD.setExecutable(true);
     
     if (error){
       throw new MojoExecutionException("Aborting due to earlier errors.");
     }
   }
 
-  /**
+/**
    * Creates a control file whose dependency line can be provided as an argument.
    * 
    */
@@ -225,7 +244,7 @@ public class IpkPackager extends Packager
   {
     l.info("calling ipkg-build to create binary package");
     
-    Utils.exec(new String[] {"ipkg-build",
+    Utils.exec(new String[] {IPKGBUILD.getAbsolutePath(),
                              "-o",
                              "root",
                              "-g",

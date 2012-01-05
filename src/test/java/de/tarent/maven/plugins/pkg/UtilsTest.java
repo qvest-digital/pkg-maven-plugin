@@ -1,6 +1,10 @@
 package de.tarent.maven.plugins.pkg;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -13,6 +17,8 @@ import junit.framework.Assert;
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.SystemStreamLog;
+import org.codehaus.plexus.archiver.ArchiveFile;
+import org.codehaus.plexus.archiver.tar.GZipTarFile;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -735,5 +741,25 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		tcs.add(tc);
 		
 		Utils.getDefaultDistro("test", tcs, new SystemStreamLog());
+	}
+	
+	@Test
+	public void getFileFromArchiveSucessfully() throws MojoExecutionException, URISyntaxException, IOException{
+		  ArchiveFile archive = new GZipTarFile(new File(UtilsTest.class.getResource("testarchive.tar.gz").toURI()));
+		  File f = Utils.getFileFromArchive(archive, "testfile");
+	      BufferedReader input =  new BufferedReader(new FileReader(f));
+		  assertTrue(input.readLine().equals("test contents"));
+	}
+	
+	@Test(expected=MojoExecutionException.class)
+	public void getFileFromArchiveThrowsExceptionWhenNotFound() throws MojoExecutionException, URISyntaxException, IOException{
+		  ArchiveFile archive = new GZipTarFile(new File(UtilsTest.class.getResource("testarchive.tar.gz").toURI()));
+		  try{
+			  File f = Utils.getFileFromArchive(archive, "filenotavailable");
+		  }catch(MojoExecutionException ex){
+			  assertTrue(ex.getMessage().contains("Desired file not found"));
+			  throw ex;
+		  }
+		  
 	}
 }

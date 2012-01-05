@@ -142,7 +142,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * Execute a target configuration without parent
 	 * Use the only distribution defined for this target
 	 * Create a IPK file 
-	 * Include a main artifact (JAR) in the RPM file 
+	 * Include a main artifact (JAR) in the RPM file
 	 * 
 	*/
 	@Test

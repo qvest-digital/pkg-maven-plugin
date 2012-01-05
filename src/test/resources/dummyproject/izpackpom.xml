@@ -35,6 +35,8 @@
 				<version>4.0</version>
 				<configuration>
 					<signPassPhrase>123456</signPassPhrase>
+					<javaExec>java</javaExec>
+					<_7zipExec>7za</_7zipExec>
 					<targetConfigurations>
 						<targetConfiguration> <!-- simple ubuntu lucid target -->
 							<target>izpack_target</target>							

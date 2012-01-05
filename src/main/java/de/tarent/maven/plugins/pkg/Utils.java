@@ -25,9 +25,11 @@
 
 package de.tarent.maven.plugins.pkg;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +39,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -67,6 +70,8 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.artifact.InvalidDependencyVersionException;
+import org.codehaus.plexus.archiver.ArchiveFile;
+import org.codehaus.plexus.archiver.ArchiveFile.Entry;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
@@ -993,5 +998,87 @@ public final class Utils {
 		// Once done checking all ancestors 
 		// the child will be merged with the parent
 		mergeConfigurations(tc, parent);
+	}
+	
+	/**
+	 * Extracts a file from an archive and stores it in a temporary location.
+	 * The file will be deleted when the virtual machine exits.
+	 * 
+	 * @param archive
+	 * @param needle
+	 * @return
+	 * @throws MojoExecutionException
+	 */
+	public static File getFileFromArchive(ArchiveFile archive, String needle) throws MojoExecutionException{
+		
+			
+			final int BUFFER = 2048;
+			BufferedOutputStream dest = null;
+			BufferedInputStream is = null;
+			Entry entry;
+
+			Enumeration<? extends Entry> e;
+			try {
+				e = archive.getEntries();
+			} catch (IOException ex) {
+				throw new MojoExecutionException("Error getting entries from archive",ex);
+			}
+			
+			while (e.hasMoreElements()){
+				entry = e.nextElement();
+				// If the entry we are in matches the needle we will store its contents to a temp file
+				if (entry.getName().equals(needle)){
+					// The file will be saved in the temporary directory 
+					File tempDir = new File(System.getProperty("java.io.tmpdir"));
+					
+					File extractedFile;
+					try {
+						extractedFile = File.createTempFile("mvn-pkg-plugin",
+																"temp",
+																tempDir);
+					} catch (IOException ex) {
+						throw new MojoExecutionException("Error creating temporary file found",ex);
+					}
+					
+			        try {
+						is = new BufferedInputStream
+						  (archive.getInputStream(entry));
+					} catch (IOException ex) {
+						throw new MojoExecutionException("Error reading entry from archive",ex);
+					}
+			        
+			        int count;
+			        byte data[] = new byte[BUFFER];
+			        FileOutputStream fos;
+			        
+					try {
+						fos = new FileOutputStream(extractedFile);
+					} catch (FileNotFoundException ex) {
+						throw new MojoExecutionException("Error reading entry from archive",ex);
+					}
+					
+			        dest = new 
+			           BufferedOutputStream(fos, BUFFER);
+			        
+			        try {
+						while ((count = is.read(data, 0, BUFFER)) != -1) {
+						    dest.write(data, 0, count);
+						 }
+					} catch (IOException ex) {
+						throw new MojoExecutionException("Error writing to temporary file",ex);
+					}finally{
+				         try {
+							dest.flush();
+							dest.close();
+							is.close();
+						} catch (IOException ex) {
+							throw new MojoExecutionException("Error closing streams.",ex);
+						}						
+					}
+			         extractedFile.deleteOnExit();
+					return extractedFile;
+				}
+			}
+		throw new MojoExecutionException("Desired file not found");
 	}
 }
