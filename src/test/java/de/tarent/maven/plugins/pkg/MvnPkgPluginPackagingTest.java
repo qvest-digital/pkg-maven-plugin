@@ -128,7 +128,6 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void createRpmForCentOS_5_6WithoutDependenciesContainingJar()
             throws Exception
         {	
-
 			packagingPlugin = mockPackagingEnvironment(RPMPOM,"centos_5_6_target_simple");
             packagingPlugin.execute();
             assertTrue(numberOfRPMsIs(1));
@@ -492,6 +491,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     		packagingPlugin = mockPackagingEnvironment(DEBPOM, "ubuntu_lucid_relation2");
             packagingPlugin.execute();
             assertTrue(numberOfDEBsIs(2));
+            assertTrue(debDependsOn("libdummyproject-data-java","libdummyproject-core-java_1.0.0_all.deb"));
         }
 	
 	/**
@@ -506,7 +506,9 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
         {
     		packagingPlugin = mockPackagingEnvironment(DEBPOM, "ubuntu_lucid_relation3a");
             packagingPlugin.execute();
-            assertTrue(numberOfDEBsIs(3));
+            assertTrue(numberOfDEBsIs(3));            
+            assertTrue(debDependsOn("libdummyproject-core-java","libdummyproject-config-foo-java_1.0.0_all.deb"));
+            assertTrue(debDependsOn("libdummyproject-data-java","libdummyproject-core-java_1.0.0_all.deb"));
         }
 
 	/**
@@ -522,7 +524,10 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
         {
     		packagingPlugin = mockPackagingEnvironment(DEBPOM, "ubuntu_lucid_relation3b");
             packagingPlugin.execute();
-            assertTrue(numberOfDEBsIs(3));
+            assertTrue(numberOfDEBsIs(3));            
+            assertTrue(debDependsOn("libdummyproject-data-java","libdummyproject-config-bar-java_1.0.0_all.deb"));
+            assertTrue(debDependsOn("libdummyproject-core-java","libdummyproject-config-bar-java_1.0.0_all.deb"));
+            assertTrue(debDependsOn("libdummyproject-data-java","libdummyproject-core-java_1.0.0_all.deb"));
         }
 	
 	/**

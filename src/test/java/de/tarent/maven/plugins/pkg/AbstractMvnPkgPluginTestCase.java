@@ -85,6 +85,16 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		RSA,
 		DSA
 	}
+	/**
+	 * Flag to determine if the target directory should be emptied
+	 * after running each test
+	 */
+	protected static boolean CLEANTARGETDIRECTORYAFTERRUN = true;
+	/**
+	 * Flag to determine if the target directory should be emptied
+	 * before running each test
+	 */
+	protected static boolean CLEANTARGETDIRECTORYBEFORERUN = true;
 	
 	@BeforeClass
 	public static void keySetup() throws MojoExecutionException{
@@ -108,14 +118,18 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	protected void setUp() throws Exception{
 		super.setUp();
 		FileUtils.forceMkdir(TARGETDIR);
-		FileUtils.cleanDirectory(TARGETDIR);
+		if (CLEANTARGETDIRECTORYBEFORERUN) {
+			FileUtils.cleanDirectory(TARGETDIR);
+		}
 		
 	}
 
 	/**{@inheritDoc} */	
 	protected void tearDown()throws Exception{
 		super.tearDown();
-		FileUtils.cleanDirectory(TARGETDIR);
+		if (CLEANTARGETDIRECTORYAFTERRUN) {
+			FileUtils.cleanDirectory(TARGETDIR);
+		}
 	}
 	
 	
@@ -143,8 +157,6 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 
         // Parameters that are not part of the mvn-pkg-plugin section are somehow loaded into the project
         // TODO: Find why this problem exists and/or a more elegant way to do this
-
-        packagingPlugin.project.setLicenses(createLicenseList("License 1","License 2"));
         
         if(setAllNeededParameters){
         	setNeededInformation(packagingPlugin);
