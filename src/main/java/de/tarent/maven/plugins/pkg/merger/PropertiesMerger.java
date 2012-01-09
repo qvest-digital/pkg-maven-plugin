@@ -20,7 +20,7 @@ public class PropertiesMerger implements IMerge {
 	 */
 	public Properties merge(Object child, Object parent,
 			Object def) {
-		Properties c = ((Properties)parent != null ? (Properties)parent : (Properties)def);
+		Properties c = ((Properties)parent != null ? (Properties)((Properties)parent).clone() : (Properties)((Properties)def).clone());
 
 		if (child != null){
 			c.putAll((Properties)child);
