@@ -63,7 +63,7 @@ public class TargetConfiguration {
 		this.target = target;
 	}	
 	/**
-	 * Denotes the target this configuration is for.
+	 * Denotes the name of this targetConfiguration.
 	 */
 	@MergeMe
 	private String target;
@@ -124,6 +124,9 @@ public class TargetConfiguration {
 	/**
 	 * Denotes a list of {@link AuxFile} instances specifying additional files
 	 * that need to be added to the package.
+	 * 
+	 * <p>AuxFiles must be stored under "src/main/auxfiles" for the plugin to 
+	 * be able to find them.</p>
 	 * 
 	 * <p>
 	 * Default is <code>null</code>, after merging it is an empty list or the
@@ -244,7 +247,7 @@ public class TargetConfiguration {
 
 
 	/**
-	 * Set default distribution to package for.
+	 * Set default distribution to package for. This is only needed when distros.size()>1.
 	 * 
 	 */
 	@MergeMe(defaultValueIsNull=true)
@@ -260,7 +263,7 @@ public class TargetConfiguration {
 	 * or the parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultString="gcj")
+	@MergeMe(defaultString="gcj-dbtool")
 	private String gcjDbToolExec;
 
 	/**
@@ -272,7 +275,7 @@ public class TargetConfiguration {
 	 * parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultString="gcj-dbtool")
+	@MergeMe(defaultString="gcj")
 	private String gcjExec;
 
 	/**
@@ -339,6 +342,9 @@ public class TargetConfiguration {
 	/**
 	 * Denotes the value of the maintainer field in common packaging systems. It
 	 * is basically an email address.
+	 * 
+	 * <p>When used toghether with <code><sign></code>, this string must match 
+	 * the Name and email address stored in the key that will be used.</p>
 	 * 
 	 * <p>
 	 * Default is <code>null</code>, after merging it is <code>null</code> or
@@ -449,7 +455,8 @@ public class TargetConfiguration {
 	private List<String> replaces;
 
 	/**
-	 * Denotes the value of the "-Xmx" argument.
+	 * Denotes the value of the "-Xmx"argument in the wrapper script 
+	 * for this configuration.
 	 * 
 	 * <p>
 	 * Default is <code>null</code>, after merging it is <code>null</code> or
@@ -624,7 +631,7 @@ public class TargetConfiguration {
 	 * 
 	 * <p>
 	 * Default is <code>null</code>, after merging it is the empty string
-	 * (meaning the default location (= <code<src/main/auxfiles</code>) is used
+	 * (meaning the default location (<code>src/main/auxfiles</code>) is used
 	 * or the parent's value.
 	 * </p>
 	 */
@@ -730,6 +737,15 @@ public class TargetConfiguration {
 	@MergeMe
 	private String srcJNIFilesDir;
 
+	/**
+	 * Denotes the directory in which the packager looks for system configuration 
+	 * files to copy into the package.
+	 * 
+	 * <p>
+	 * Default is <code>null</code>, after merging it is an empty string or the
+	 * parent's value.
+	 * </p>
+	 */
 	@MergeMe
 	private String srcSysconfFilesDir;
 
@@ -746,6 +762,17 @@ public class TargetConfiguration {
 	@MergeMe
 	private String sysconfdir;
 
+	/**
+	 * Denotes a list of configuration files. 
+	 * 
+	 * <p>These are copied to their respective destination suitable 
+	 * for the chosen target system.</p>
+	 * 
+	 * <p>
+	 * Default is <code>null</code>, after merging it is an empty list or the
+	 * parent's value.
+	 * </p>
+	 */
 	@MergeMe
 	private List<SysconfFile> sysconfFiles;
 
@@ -833,6 +860,11 @@ public class TargetConfiguration {
 	@MergeMe
 	private String source;
 	
+	/**
+	 * Contains a list of urls to use when calling the pkg:upload target.
+	 * <p>Tested URI schemas are file://, scpexe://, ftp:// 
+	 * (other protocols supported by Codehaus Wagon API may also work).</p>
+	 */
 	private UploadParameters uploadParameters;
 	
 	/**
