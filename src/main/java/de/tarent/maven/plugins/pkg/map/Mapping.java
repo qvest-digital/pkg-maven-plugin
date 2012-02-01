@@ -57,6 +57,8 @@ class Mapping
   
   String defaultBinPath;
   
+  String defaultSBinPath;
+  
   String defaultJarPath;
 
   String defaultJNIPath;
@@ -109,6 +111,7 @@ class Mapping
     debianNaming = (child.debianNaming != null) ? child.debianNaming : parent.debianNaming; 
     defaultJarPath = (child.defaultJarPath != null) ? child.defaultJarPath : parent.defaultJarPath; 
     defaultBinPath = (child.defaultBinPath != null) ? child.defaultBinPath : parent.defaultBinPath; 
+    defaultSBinPath = (child.defaultSBinPath != null) ? child.defaultSBinPath : parent.defaultSBinPath; 
     defaultJNIPath = (child.defaultJNIPath != null) ? child.defaultJNIPath : parent.defaultJNIPath; 
     defaultDependencyLine = (child.defaultDependencyLine != null) ? child.defaultDependencyLine : parent.defaultDependencyLine;
     

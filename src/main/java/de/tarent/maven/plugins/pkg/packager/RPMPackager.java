@@ -91,6 +91,7 @@ public class RPMPackager extends Packager {
 		ph.prepareInitialDirectories();
 		
 		//Setting all destination directories to /BUILD/ + target name
+		ph.setDstSBinDir(new File(ph.getBaseBuildDir(),ph.getTargetSBinDir().toString()));
 		ph.setDstBinDir(new File(ph.getBaseBuildDir(),ph.getTargetBinDir().toString()));
 	    ph.setDstSysconfDir(new File(ph.getBaseBuildDir(),ph.getTargetSysconfDir().toString()));
 	    ph.setDstDatarootDir(new File(ph.getBaseBuildDir(),ph.getTargetDatarootDir().toString()));

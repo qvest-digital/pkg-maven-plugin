@@ -102,6 +102,29 @@
 							</sysconfFiles>
 						</targetConfiguration>
 						
+						<targetConfiguration>
+							<target>centos_5_6_target_external_sbinfile</target>
+							<parent>centos_5_6_target_simple</parent>
+							<distros>
+								<distro>centos_5_6</distro>
+							</distros>
+							<revision>r0</revision>
+							<source>dummysource</source>
+							<release>dummyrelease</release>
+							<architecture>x86_64</architecture>
+							<manualDependencies>
+								<string>kdm</string>
+								<string>usbmount</string>
+								<string>blackbox</string>
+							</manualDependencies>
+							<sBinFiles>
+								<sBinFile>
+									<from>dummy.properties</from>
+									<to>dummy.properties</to>
+								</sBinFile>
+							</sBinFiles>
+						</targetConfiguration>
+						
 					</targetConfigurations>
 				</configuration>
 			</plugin>

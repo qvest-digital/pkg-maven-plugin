@@ -142,6 +142,28 @@
 						</targetConfiguration>
 
 						<targetConfiguration>
+							<target>ubuntu_lucid_target_external_sbinfile</target>
+							<distros>
+								<distro>ubuntu_lucid</distro>
+							</distros>
+							<revision>r0</revision>
+							<source>dummysource</source>
+							<release>dummyrelease</release>
+							<architecture>x86_64</architecture>
+							<manualDependencies>
+								<string>kdm</string>
+								<string>usbmount</string>
+								<string>blackbox</string>
+							</manualDependencies>
+							<sBinFiles>
+								<sysconfFile>
+									<from>dummy.properties</from>
+									<to>dummy.properties</to>
+								</sysconfFile>
+							</sBinFiles>
+						</targetConfiguration>
+
+						<targetConfiguration>
 							<target>ubuntu_lucid_relation1</target>
 							<distros>
 								<distro>ubuntu_lucid</distro>

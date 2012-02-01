@@ -239,6 +239,10 @@ public class Helper {
 	 */
 	private String chosenDistro;
 
+	private File dstSBinDir;
+
+	private File targetSBinDir;
+
 	public void setChosenDistro(String chosenDistro) {
 		this.chosenDistro = chosenDistro;		
 	}
@@ -435,6 +439,8 @@ public class Helper {
 
 		size += Utils.copyFiles(l, getSrcBinFilesDir(), getDstBinDir(), targetConfiguration.getBinFiles(), "bin file", true);
 
+		size += Utils.copyFiles(l, getSrcSBinFilesDir(), getDstSBinDir(), targetConfiguration.getSBinFiles(), "sbin file", true);
+
 		size += Utils.copyFiles(l, getSrcSysconfFilesDir(), getDstSysconfDir(), targetConfiguration.getSysconfFiles(), "sysconf file");
 
 		size += Utils.copyFiles(l, getSrcDatarootFilesDir(), getDstDatarootDir(), targetConfiguration.getDatarootFiles(), "dataroot file");
@@ -618,6 +624,13 @@ public class Helper {
 		return dstBinDir;
 	}
 
+	public File getDstSBinDir() {
+		if (dstSBinDir == null){
+			dstSBinDir = new File(getBasePkgDir(), getTargetSBinDir().toString());
+		}
+		return dstSBinDir;
+	}
+
 	public File getDstBundledJarDir() {
 		if (dstBundledJarDir == null) {
 			dstBundledJarDir = new File(basePkgDir, getTargetBundledJarDir().toString());
@@ -784,6 +797,11 @@ public class Helper {
 				targetConfiguration.getSrcBinFilesDir());
 	}
 
+	public File getSrcSBinFilesDir() {
+		return (targetConfiguration.getSrcSBinFilesDir().length() == 0) ? getSrcAuxFilesDir() : new File(apm.getProject().getBasedir(),
+				targetConfiguration.getSrcSBinFilesDir());
+	}
+
 	public File getTargetArtifactFile() {
 		if (targetArtifactFile == null){
 			targetArtifactFile = new File((targetConfiguration.isBundleAll() || packageMap.hasNoPackages() ? getTargetBundledJarDir()
@@ -818,6 +836,34 @@ public class Helper {
 					targetConfiguration.getBindir()));
 		}
 		return targetBinDir;
+	}
+
+	/**
+	 * Returns the location of the user-level binaries on the target device.
+	 * <p>
+	 * If {@link #setTargetBinDir(File)} has not been called to set this value a
+	 * default value is generated as follows:
+	 * <ul>
+	 * <li>if the distro config defined a non-zero length bindir that one is
+	 * used</li>
+	 * <li>otherwise the distro's default bindir prepended by the prefix of the
+	 * distro configuration is used</li>
+	 * </ul>
+	 * </p>
+	 * <p>
+	 * Therefore the <code>targetBinDir</code> property is dependent on the
+	 * <code>targetRoot</code> property. Check the details for
+	 * {@link #getTargetRoot()}.
+	 * </p>
+	 * 
+	 * @return
+	 */
+	public File getTargetSBinDir() {
+		if (targetSBinDir == null){
+			targetSBinDir = (targetConfiguration.getSBindir().length() == 0 ? new File(getTargetRoot(), packageMap.getDefaultSBinPath()) : new File(
+					targetConfiguration.getSBindir()));
+		}
+		return targetSBinDir;
 	}
 
 	public File getTargetBundledJarDir() {
@@ -929,6 +975,10 @@ public class Helper {
 
 	public void setDstBinDir(File dstBinDir) {
 		this.dstBinDir = dstBinDir;
+	}
+
+	public void setDstSBinDir(File dstSBinDir) {
+		this.dstSBinDir = dstSBinDir;
 	}
 
 	public void setDstBundledJarDir(File dstBundledArtifactsDir) {

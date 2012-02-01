@@ -309,6 +309,27 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertTrue(numberOfRPMsIs(1));
             assertTrue(rpmContainsMainArtifact());
             assertTrue(rpmContainsArtifact("dummy.properties"));
+        }	
+
+	/**
+	 * This test attempts the following:
+	 *
+	 * Execute a single target configuration
+	 * Create a RPM file 
+	 * Include a main artifact (JAR) in the RPM file
+	 * Include external auxilary SBinFiles in the package
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+    public void createRPMSBinFileContainingJar()
+            throws Exception, MojoExecutionException
+        {
+			packagingPlugin = mockPackagingEnvironment(RPMPOM,"centos_5_6_target_external_sbinfile");
+            packagingPlugin.execute();
+            assertTrue(numberOfRPMsIs(1));
+            assertTrue(rpmContainsMainArtifact());
+            assertTrue(rpmContainsArtifact("/sbin/dummy.properties"));
         }
 	
 	/**
@@ -330,6 +351,27 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
             assertTrue(debContainsArtifact("dummy.properties"));
+        }
+	
+	/**
+	 * This test attempts the following:
+	 * 
+	 * Execute a single target configuration
+	 * Create a DEB file
+	 * Include a main artifact (JAR) in the DEB file
+	 * Include external auxilary SBinfiles in the package
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+    public void createDEBWithSBinFileContainingJar()
+            throws Exception, MojoExecutionException
+        {
+			packagingPlugin = mockPackagingEnvironment(DEBPOM,"ubuntu_lucid_target_external_sbinfile");
+            packagingPlugin.execute();
+            assertTrue(numberOfDEBsIs(1));
+            assertTrue(debContainsMainArtifact());
+            assertTrue(debContainsArtifact("/sbin/dummy.properties"));
         }
 	
 	/**

@@ -25,6 +25,7 @@
 
 package de.tarent.maven.plugins.pkg;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -149,12 +150,32 @@ public class TargetConfiguration {
 	 */
 	@MergeMe(defaultString="")
 	private String bindir;
+
+	/**
+	 * Denotes a path that is used for user-level executables (usually
+	 * /usr/bin). If <code>prefix</code> is used it is overriden by this value
+	 * for binaries.
+	 * 
+	 * <p>
+	 * Default is <code>null</code>, after merging it is the empty string or the
+	 * parent's value. In case the value is empty the distribution's default
+	 * bindir prepended by the prefix is used for executables!
+	 * </p>
+	 */
+	@MergeMe(defaultString="")
+	private String sbindir;
 	
 	/**
 	 * List of files which are installed into the directory for executable.
 	 */
 	@MergeMe
 	private List<BinFile> binFiles;
+	
+	/**
+	 * List of files which are installed into the directory for executables meant for root.
+	 */
+	@MergeMe
+	private List<SBinFile> sBinFiles;
 
 	/**
 	 * Denotes whether the packager should bundle every dependency regardless of
@@ -653,6 +674,19 @@ public class TargetConfiguration {
 
 	/**
 	 * Denotes the source directory into which the packager looks for
+	 * executable files for the root user.
+	 * 
+	 * <p>
+	 * Default is <code>null</code>, after merging it is the empty string
+	 * (meaning the default location (= {@link #srcAuxFilesDir}) is used or the
+	 * parent's value.
+	 * </p>
+	 */
+	@MergeMe
+	private String srcSBinFilesDir;
+
+	/**
+	 * Denotes the source directory into which the packager looks for
 	 * application specific data files.
 	 * 
 	 * <p>
@@ -900,6 +934,11 @@ public class TargetConfiguration {
 		return bindir;
 	}
 
+	public String getSBindir() {
+		checkIfReady();
+		return sbindir;
+	}
+
 	public Set<String> getBundleDependencies() {
 		checkIfReady();
 		return bundleDependencies;
@@ -918,6 +957,11 @@ public class TargetConfiguration {
 	public List<? extends BinFile> getBinFiles() {
 		checkIfReady();
 		return binFiles;
+	}
+	
+	public List<? extends SBinFile> getSBinFiles() {
+		checkIfReady();
+		return sBinFiles;
 	}
 
 	public String getDatarootdir() {
@@ -1058,6 +1102,11 @@ public class TargetConfiguration {
 	public String getSrcBinFilesDir() {
 		checkIfReady();
 		return srcBinFilesDir;
+	}
+
+	public String getSrcSBinFilesDir() {
+		checkIfReady();
+		return srcSBinFilesDir;
 	}
 
 	public String getSrcDataFilesDir() {

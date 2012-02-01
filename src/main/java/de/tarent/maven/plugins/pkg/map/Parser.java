@@ -163,6 +163,13 @@ class Parser
           s.nextElement();
         }
       
+      // Default bin (scripts) path is optional
+      if (s.peek("defaultSBinPath"))
+        {
+          distroMapping.defaultSBinPath = s.nextElement();
+          s.nextElement();
+        }
+      
       // Default jar path is optional
       if (s.peek("defaultJarPath"))
         {

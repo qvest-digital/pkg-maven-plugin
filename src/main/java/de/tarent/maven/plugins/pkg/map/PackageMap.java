@@ -189,6 +189,18 @@ public class PackageMap
   }
   
   /**
+   * Returns the default location for executable (scripts) for the root user.
+   * 
+   * <p>In case this has not been set in the XML document the value is "/sbin".</p> 
+   * 
+   * @return
+   */
+  public String getDefaultSBinPath()
+  {
+    return (mapping.defaultSBinPath != null ? mapping.defaultSBinPath : "/sbin");
+  }
+  
+  /**
    * Returns whether the package names generally follow a Debian-style renaming.
    * 
    * <p>In case this has not been set in the XML document the value is <code>true</code>.</p>
