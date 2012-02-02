@@ -755,7 +755,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	public void getFileFromArchiveThrowsExceptionWhenNotFound() throws MojoExecutionException, URISyntaxException, IOException{
 		  ArchiveFile archive = new GZipTarFile(new File(UtilsTest.class.getResource("testarchive.tar.gz").toURI()));
 		  try{
-			  File f = Utils.getFileFromArchive(archive, "filenotavailable");
+			  Utils.getFileFromArchive(archive, "filenotavailable");
 		  }catch(MojoExecutionException ex){
 			  assertTrue(ex.getMessage().contains("Desired file not found"));
 			  throw ex;

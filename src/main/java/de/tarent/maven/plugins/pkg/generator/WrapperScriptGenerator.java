@@ -298,7 +298,7 @@ public class WrapperScriptGenerator
     }
 	StringBuffer buf = new StringBuffer();
 	
-	Iterator ite = properties.keySet().iterator();
+	Iterator<Object> ite = properties.keySet().iterator();
 	while (ite.hasNext())
 	{
 		String name = (String) ite.next();

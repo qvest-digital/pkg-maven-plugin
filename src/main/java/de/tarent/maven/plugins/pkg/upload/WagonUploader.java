@@ -1,8 +1,6 @@
 package de.tarent.maven.plugins.pkg.upload;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
