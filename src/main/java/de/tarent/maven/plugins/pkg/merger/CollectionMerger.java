@@ -1,6 +1,5 @@
 package de.tarent.maven.plugins.pkg.merger;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**

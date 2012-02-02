@@ -162,16 +162,20 @@ public void execute(Log l,
 	
 	byteAmount += ph.createCopyrightFile();
 	
+	// The user may want to avoid including dependencies
+	if(targetConfiguration.isBundleDependencyArtifacts()){
+		bundledArtifacts = ph.bundleDependencies(bcp, cp);
+		byteAmount += ph.copyArtifacts(bundledArtifacts);
+	}
+	
 	// Create classpath line, copy bundled jars and generate wrapper
 	// start script only if the project is an application.
 	if (targetConfiguration.getMainClass() != null)
 	  {
 	    // TODO: Handle native library artifacts properly.
-	    bundledArtifacts = ph.createClasspathLine(bcp, cp);
-	
-	    ph.generateWrapperScript(bundledArtifacts, bcp, cp, false);
-	
-	    byteAmount += ph.copyArtifacts(bundledArtifacts);
+	    // bundledArtifacts = ph.createClasspathLine(bcp, cp);
+		ph.createClasspathLine(bcp, cp);
+	    ph.generateWrapperScript(bcp, cp, false);
 	  }
 	
 	generateControlFile(l,

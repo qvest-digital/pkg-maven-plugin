@@ -25,7 +25,6 @@
 
 package de.tarent.maven.plugins.pkg;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -913,7 +912,13 @@ public class TargetConfiguration {
 	 *  some members needed for the configuration to be used may not have been 
 	 *  initialized properly.
 	 */
-	private boolean ready;
+	private boolean ready;	
+
+	/**
+	 * Denotes whether the dependencies (i.e. external Jars) for the package should be included in it.
+	 */
+	@MergeMe(defaultBoolean=true)
+	private Boolean bundleDependencyArtifacts;
 	
 	public TargetConfiguration() {
 		// Intentionally empty.
@@ -1672,6 +1677,10 @@ public class TargetConfiguration {
 	private void checkIfReady() {
 		if (!ready)
 			throw new IllegalStateException(TargetConfiguration.class.getCanonicalName() + " was not ready to be used. Either call fixate() or merge().");
+	}
+
+	public boolean isBundleDependencyArtifacts() {
+		return bundleDependencyArtifacts;
 	}
 	
 }

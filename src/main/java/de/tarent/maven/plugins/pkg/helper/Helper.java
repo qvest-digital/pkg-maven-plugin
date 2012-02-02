@@ -510,8 +510,8 @@ public class Helper {
 	 * @param cp
 	 * @throws MojoExecutionException
 	 */
-	public Set<Artifact> createClasspathLine(Path bcp, Path cp) throws MojoExecutionException {
-		return createClasspathLine(l, getTargetBundledJarDir(), bcp, cp, getTargetArtifactFile());
+	public void createClasspathLine(Path bcp, Path cp) throws MojoExecutionException {
+		createClasspathLine(l, getTargetBundledJarDir(), bcp, cp, getTargetArtifactFile());
 	}
 
 	/**
@@ -531,7 +531,7 @@ public class Helper {
 	 * @param windows
 	 * @throws MojoExecutionException
 	 */
-	public void generateWrapperScript(Set<Artifact> bundledArtifacts, Path bcp, Path classpath, boolean windows)
+	public void generateWrapperScript(Path bcp, Path classpath, boolean windows)
 			throws MojoExecutionException {
 		WrapperScriptGenerator gen = new WrapperScriptGenerator();
 		gen.setMaxJavaMemory(targetConfiguration.getMaxJavaMemory());
@@ -1157,10 +1157,9 @@ public class Helper {
 	    }
 	  }
 
-	/**
+	  /**
 	   * Creates the bootclasspath and classpath line from the project's
-	   * dependencies and returns the artifacts which will be bundled with the
-	   * package.
+	   * dependencies.
 	   * 
 	   * @param pm The package map used to resolve the Jar file names.
 	   * @param bundled A set used to track the bundled jars for later file-size
@@ -1169,16 +1168,15 @@ public class Helper {
 	   *          of the method.
 	   * @param cp StringBuilder which contains the classpath line at the end of the
 	   *          method.
-	   * @return
 	   */
-	  protected final Set<Artifact> createClasspathLine(final Log l,
+	  protected final void createClasspathLine(final Log l,
 	                                          final File targetJarPath,
 	                                          final Path bcp,
 	                                          final Path cp,
 	                                          File targetArtifactFile)
 	      throws MojoExecutionException
 	  {
-	    final Set<Artifact> bundled = new HashSet<Artifact>();
+	    //final Set<Artifact> bundled = new HashSet<Artifact>();
 	
 	    l.info("resolving dependency artifacts");
 	
@@ -1249,30 +1247,16 @@ public class Helper {
 	    {
 	      public void bundle(Artifact artifact)
 	      {
-	        // Put to artifacts which will be bundled (allows copying and filesize
-	        // summing later).
-	        bundled.add(artifact);
-	
-	        // TODO: Perhaps one want a certain bundled dependency in boot
-	        // classpath.
-	
-	        // Bundled Jars will always live in targetJarPath
-	        File file = artifact.getFile();
-	        if (file != null) { 
-	          cp.append(targetJarPath.toString() + "/" + file.getName());
-	        } else {
-	          l.warn("Cannot put bundled artifact " + artifact.getArtifactId()
-	                 + " to Classpath.");
-	        }
+	    	  // Nothing to do here. bundleDependencies should take care of this.
+
 	      }
 	
 	      public void visit(Artifact artifact, Entry entry)
 	      {
-	        // If all dependencies should be bundled take a short-cut to bundle()
+	        // If all dependencies should be bundled skip adding them to the classpath
 	        // thereby overriding what was configured through property files.
 	        if (targetConfiguration.isBundleAll())
 	          {
-	            bundle(artifact);
 	            return;
 	          }
 	
@@ -1314,9 +1298,184 @@ public class Helper {
 	    // save the deletion of the colon added in the loops above.
 	    cp.append(targetArtifactFile.toString());
 	
-	    return bundled;
+	    //return bundled;
 	  }
+	  
+	  /**
+	   * Prepares the dependencies to be copied into the package.
+	   * 
+	   * @param bcp
+	   * @param cp
+	   * @return
+	   * @throws MojoExecutionException
+	   */
+		public Set<Artifact> bundleDependencies(Path bcp, Path cp) throws MojoExecutionException {
+			return bundleDependencies(l, getTargetBundledJarDir(), bcp, cp, getTargetArtifactFile());
+		}
 
+	  /**
+	   * Investigates the project's runtime dependencies and prepares them to be copied into the package.
+	   * 
+	   * @param l
+	   * @param targetJarPath
+	   * @param bcp
+	   * @param cp
+	   * @param targetArtifactFile
+	   * @return
+	   * @throws MojoExecutionException
+	   */
+	  protected final Set<Artifact> bundleDependencies(final Log l,
+              final File targetJarPath,
+              final Path bcp,
+              final Path cp,
+              File targetArtifactFile) throws MojoExecutionException{
+		  
+		  
+		  final Set<Artifact> bundled = new HashSet<Artifact>();
+			
+		    l.info("Copying dependencies into package");
+		
+		    Set dependencies = new HashSet();
+		    try
+		      {
+		        // Notice only compilation dependencies which are Jars.
+		        // Shared Libraries ("so") are filtered out because the
+		        // JNI dependency is solved by the system already.
+		    	
+		    	// Here a filter for depencies of the COMPILE scope is created
+		        AndArtifactFilter compileFilter = new AndArtifactFilter();
+		        compileFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE));
+		        compileFilter.add(new TypeArtifactFilter("jar"));
+		
+		        // The result of the COMPILE filter will be added to the depencies set
+		        dependencies.addAll(Utils.findArtifacts(compileFilter, apm.getFactory(), apm.getResolver(), 
+		        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
+		        		apm.getRemoteRepos(), apm.getMetadataSource()));
+
+		    	// Here a filter for depencies of the RUNTIME scope is created
+		        AndArtifactFilter runtimeFilter = new AndArtifactFilter();
+		        runtimeFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME));
+		        runtimeFilter.add(new TypeArtifactFilter("jar"));
+
+		        // The result of the RUNTIME filter will be added to the depencies set
+		        dependencies.addAll(Utils.findArtifacts(runtimeFilter, apm.getFactory(), apm.getResolver(), 
+		        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
+		        		apm.getRemoteRepos(), apm.getMetadataSource()));
+
+		        // Here a filter for depencies of the PROVIDED scope is created
+		        AndArtifactFilter providedFilter = new AndArtifactFilter();
+		        providedFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_PROVIDED));
+		        providedFilter.add(new TypeArtifactFilter("jar"));
+		        
+		        // The result of the PROVIDED filter will be added to the depencies set
+		        dependencies.addAll(Utils.findArtifacts(providedFilter, apm.getFactory(), apm.getResolver(), 
+		        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
+		        		apm.getRemoteRepos(), apm.getMetadataSource()));	     
+		        
+		      }
+		    catch (ArtifactNotFoundException anfe)
+		      {
+		        throw new MojoExecutionException(
+		                                         "Exception while resolving dependencies",
+		                                         anfe);
+		      }
+		    catch (InvalidDependencyVersionException idve)
+		      {
+		        throw new MojoExecutionException(
+		                                         "Exception while resolving dependencies",
+		                                         idve);
+		      }
+		    catch (ProjectBuildingException pbe)
+		      {
+		        throw new MojoExecutionException(
+		                                         "Exception while resolving dependencies",
+		                                         pbe);
+		      }
+		    catch (ArtifactResolutionException are)
+		      {
+		        throw new MojoExecutionException(
+		                                         "Exception while resolving dependencies",
+		                                         are);
+		      }
+		
+		    Visitor v = new Visitor()
+		    {
+		      public void bundle(Artifact artifact)
+		      {
+		        // Put to artifacts which will be bundled (allows copying and filesize
+		        // summing later).
+		        bundled.add(artifact);
+		
+		        // TODO: Perhaps one want a certain bundled dependency in boot
+		        // classpath.
+		
+		        // Bundled Jars will always live in targetJarPath
+		        File file = artifact.getFile();
+		        if (file != null) { 
+		          cp.append(targetJarPath.toString() + "/" + file.getName());
+		        } else {
+		          l.warn("Cannot bundle artifact " + artifact.getArtifactId());
+		        }
+		      }
+		
+			public void visit(Artifact artifact, Entry entry) {
+				
+				/**
+				 * Only if we wish to bundle dependency artifacts we will do so
+				 */				
+				if (targetConfiguration.isBundleDependencyArtifacts()) {
+					
+					// If all dependencies should be bundled take a short-cut to
+					// bundle()
+					// thereby overriding what was configured through property
+					// files.
+					if (targetConfiguration.isBundleAll()) {
+						bundle(artifact);
+						return;
+					}
+
+					Path b = (entry.isBootClasspath) ? bcp : cp;
+
+					Iterator<String> ite = entry.jarFileNames.iterator();
+
+					while (ite.hasNext()) {
+						StringBuilder sb = new StringBuilder();
+						String fileName = ite.next();
+
+						// Prepend default Jar path if file is not absolute.
+						if (fileName.charAt(0) != '/') {
+							sb.append(packageMap.getDefaultJarPath());
+							sb.append("/");
+						}
+
+						sb.append(fileName);
+
+						b.append(sb.toString());
+					}
+				}
+			}
+		
+		    };
+		
+		    packageMap.iterateDependencyArtifacts(l, dependencies, v, true);
+		    
+		    // Add the custom jar files to the classpath
+		    for (Iterator<JarFile> ite = targetConfiguration.getJarFiles().iterator(); ite.hasNext();)
+		    {
+		    	AuxFile auxFile = ite.next();
+		    	
+		    	cp.append(targetJarPath.toString()
+		    			  + "/" + new File(auxFile.getFrom()).getName());
+		    }
+		    
+		    // Add the project's own artifact at last. This way we can
+		    // save the deletion of the colon added in the loops above.
+		    cp.append(targetArtifactFile.toString());
+		
+		    return bundled;
+		  
+	  }
+	  
 	/**
 	   * Creates the "Conflicts"-line for the package control file
 	   * 
@@ -1424,11 +1583,11 @@ public class Helper {
 	    // Visitor implementation which creates the dependency line.
 	    Visitor v = new Visitor()
 	    {
-	      Set processedDeps = new HashSet();
+	      Set<String> processedDeps = new HashSet<String>();
 	
 	      public void bundle(Artifact _)
 	      {
-	        // Nothing to do for bundled artifacts.
+	    	// Nothing to do here. bundleDependencies should take care of this.
 	      }
 	
 	      public void visit(Artifact artifact, Entry entry)

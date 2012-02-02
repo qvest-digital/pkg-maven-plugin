@@ -155,11 +155,17 @@ public class IzPackPackager extends Packager
 	
 	unpackIzPack(l, izPackEmbeddedJarFile, izPackEmbeddedRoot);
 	
-	bundledArtifacts = ph.createClasspathLine(bcp, cp);
+	ph.bundleDependencies(bcp, cp);
+	
+	bundledArtifacts = ph.bundleDependencies(bcp, cp);
+
+	// The user may want to avoid including dependencies
+	if(distroConfig.isBundleDependencyArtifacts()){
+		bundledArtifacts = ph.bundleDependencies(bcp, cp);
+		ph.copyArtifacts(bundledArtifacts);
+	}
 	
 	ph.copyProjectArtifact();
-	
-	ph.copyArtifacts(bundledArtifacts);
 	
 	ph.copyFiles();
 	
@@ -171,7 +177,8 @@ public class IzPackPackager extends Packager
 	
 	desc.removeAotPack();
 	
-	ph.generateWrapperScript(bundledArtifacts, bcp, cp, true);
+	ph.createClasspathLine(bcp, cp);
+	ph.generateWrapperScript(bcp, cp, true);
 	
 	if (distroConfig.isAdvancedStarter()){
 	  desc.addStarter("_starter", "_classpath");

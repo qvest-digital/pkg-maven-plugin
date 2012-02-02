@@ -107,17 +107,30 @@ public class RPMPackager extends Packager {
 		l.debug(ph.getPackageName());
 		l.debug(ph.getPackageVersion());
 		l.debug(ph.getBasePkgDir().getPath());
+		
 
-	    /* If there is a main class, we will create a starter script for it
-	     * and we will make sure that the bundled artifacts are copied.
-	    */
-	    if (distroConfig.getMainClass() != null){
-		    Path bcp = new Path();
-		    Path cp = new Path();
-	    	Set<Artifact> bundledArtifacts = ph.createClasspathLine(bcp, cp);
-            ph.generateWrapperScript(bundledArtifacts, bcp, cp, false);
-            ph.copyArtifacts(bundledArtifacts);
-        }
+	    
+	    // A set which will be filled with the artifacts which need to be bundled with the
+	    // application.
+	    Set<Artifact> bundledArtifacts = null;
+	    Path bcp = new Path();
+	    Path cp = new Path();
+
+		// The user may want to avoid including dependencies
+		if(distroConfig.isBundleDependencyArtifacts()){
+			bundledArtifacts = ph.bundleDependencies(bcp, cp);
+			ph.copyArtifacts(bundledArtifacts);
+		}
+		
+		// Create classpath line, copy bundled jars and generate wrapper
+		// start script only if the project is an application.
+		if (distroConfig.getMainClass() != null)
+		  {
+		    // TODO: Handle native library artifacts properly.
+		    // bundledArtifacts = ph.createClasspathLine(bcp, cp);
+			ph.createClasspathLine(bcp, cp);
+		    ph.generateWrapperScript(bcp, cp, false);
+		  }
 
 		File specFile = new File(ph.getBaseSpecsDir(), ph.getPackageName() + ".spec");
 
