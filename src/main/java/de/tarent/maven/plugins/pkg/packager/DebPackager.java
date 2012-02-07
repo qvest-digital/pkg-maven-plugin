@@ -259,9 +259,16 @@ public void execute(Log l,
   public void checkEnvironment(Log l,
                                WorkspaceSession workspaceSession) throws MojoExecutionException
   {
-    Utils.checkProgramAvailability("gpg");
-    Utils.checkProgramAvailability("ar");
+
     Utils.checkProgramAvailability("dpkg-deb");
+    
+    // Some external tools are only needed if the package is to be signed    
+    if(workspaceSession.getTargetConfiguration().isSign()){
+    	Utils.checkProgramAvailability("dpkg-distaddfile");
+        Utils.checkProgramAvailability("gpg");
+        Utils.checkProgramAvailability("ar");
+    }
+    
   }
 
   /**
