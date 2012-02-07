@@ -48,6 +48,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -1081,4 +1083,39 @@ public final class Utils {
 			}
 		throw new MojoExecutionException("Desired file not found");
 	}
+
+	/**
+	 * Tries to match a string representing a debian package name against the convention.
+	 * @param string
+	 * @return True if matches
+	 */
+	public static boolean checkDebianPackageNameConvention(String string){
+		Pattern pattern = Pattern.compile("[a-z0-9][a-z0-9+.-]*[a-z0-9+.]"); 
+		Matcher m = pattern.matcher(string);
+		
+		if(m.matches()){
+			return true;
+		}else{
+			return false;
+		}		
+	}
+
+	/**
+	 * Tries to match a string representing a debian package version against the convention.
+	 * @param string
+	 * @return True if matches
+	 */
+	public static boolean checkDebianPackageVersionConvention(String string){
+		Pattern pattern = Pattern.compile("[0-9][A-Za-z0-9.+~:-]*"); 
+		Matcher m = pattern.matcher(string);
+		
+		if(m.matches()){
+			return true;
+		}else{
+			return false;
+		}		
+	}	
+	
+	
+	
 }

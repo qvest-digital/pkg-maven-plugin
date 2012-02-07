@@ -290,8 +290,14 @@ public class Helper {
 
 			StringBuilder packageName = new StringBuilder();
 			packageName.append(instance.getPackageName().toLowerCase());
+			if(!Utils.checkDebianPackageNameConvention(packageName.toString())){
+				instance.l.warn("Filename for debian package does not follow the debian naming convention, please check your input");
+			}
 			packageName.append("_");
 			packageName.append(instance.getPackageVersion());
+			if(!Utils.checkDebianPackageVersionConvention(instance.getPackageVersion())){
+				instance.l.warn("Version for debian package does not follow the debian naming convention, please check your input");
+			}
 			packageName.append("_all");
 			return packageName.toString();
 

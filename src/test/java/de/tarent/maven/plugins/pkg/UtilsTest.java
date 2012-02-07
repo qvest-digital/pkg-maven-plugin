@@ -762,4 +762,35 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		  }
 		  
 	}
+	
+	@Test
+	public void checkDebianPackageNameCompatibility(){
+		
+		String goodName1 = "bind9";
+		String goodName2 = "bind+9";
+		String badName1  = "BIND9";
+		String badName2  = "-bind9";
+		assertTrue(Utils.checkDebianPackageNameConvention(goodName1));
+		assertTrue(Utils.checkDebianPackageNameConvention(goodName2));
+		assertFalse(Utils.checkDebianPackageNameConvention(badName1));	
+		assertFalse(Utils.checkDebianPackageNameConvention(badName2));		
+	}
+	
+	@Test
+	public void checkDebianPackageVersionCompatibility(){
+		
+		String goodVersion1 = "9.7.3.dfsg-1~squeeze4";
+		String goodVersion2 = "9.7.3.dfsg";
+		String goodVersion3 = "9.7.3.DFSG-";
+		String badVersion1  = "r9.7.3.dfsg-1~squeeze4";
+		String badVersion2  = "R9.7.3.dfsg";
+		String badVersion3  = "R9.7.3._dfsg";
+		assertTrue(Utils.checkDebianPackageVersionConvention(goodVersion1));
+		assertTrue(Utils.checkDebianPackageVersionConvention(goodVersion2));
+		assertTrue(Utils.checkDebianPackageVersionConvention(goodVersion3));
+		assertFalse(Utils.checkDebianPackageVersionConvention(badVersion1));	
+		assertFalse(Utils.checkDebianPackageVersionConvention(badVersion2));	
+		assertFalse(Utils.checkDebianPackageVersionConvention(badVersion3));			
+	}
 }
+
