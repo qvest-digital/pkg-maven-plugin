@@ -389,7 +389,7 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 			  	   "Error extracting package",
 			  	   "Error extracting package");
 
-		  File f = new File(TARGETDIR,"_pgporigin");
+		  File f = new File(TARGETDIR,"_gpgorigin");
 		  if(f.exists()){
 			  return true;
 		  }else{

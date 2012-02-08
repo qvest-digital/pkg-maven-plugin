@@ -51,6 +51,9 @@
 package de.tarent.maven.plugins.pkg.packager;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,7 +86,8 @@ import de.tarent.maven.plugins.pkg.signing.DebianSigner;
 public class DebPackager extends Packager
 {
 
-private static final String PGPORIGIN = "_pgporigin";
+private static final String GPGORIGIN_AR = "_gpgorigin.ar";
+private static final String GPGORIGIN = "_gpgorigin";
 private static final String COMBINEDCONTENTSFILENAME = "combined-contents";
   
 public void execute(Log l,
@@ -262,7 +266,7 @@ public void execute(Log l,
 
     Utils.checkProgramAvailability("dpkg-deb");
     
-    // Some external tools are only needed if the package is to be signed    
+    // Some external tools are only needed if the package is to be sign    
     if(workspaceSession.getTargetConfiguration().isSign()){
     	Utils.checkProgramAvailability("dpkg-distaddfile");
         Utils.checkProgramAvailability("gpg");
@@ -426,12 +430,11 @@ public void execute(Log l,
    * 	  <li>Take an existing .deb and unpack it:<br/> 
    * 	  $ ar x my_package_1_0_0.deb</li>
    * 	  <li>Concatenate its contents (the order is important), and output to a temp file:<br/>
-   * 	  $ cat debian-binary control.tar.gz data.tar.gz > /tmp/combined-contents<br/>
-   * 	  <li>Create a GPG signature of the concatenated file, calling it _gpgorigin:</li>
+   * 	  $ cat debian-binary control.tar.gz data.tar.gz > /tmp/combined-contents<br/></li>
+   * 	  <li>Create a GPG signature of the concatenated file, calling it _gpgorigin:<br/>
    * 	  $ gpg -abs -o _gpgorigin /tmp/combined-contents</li>
-   *	  <li>Finally, bundle the .deb up again, including the signature file:<br/>
-   *	  $ ar rc my_package_1_0_0.deb \<br/>
-   *	  _gpgorigin debian-binary control.tar.gz data.tar.gz</li>
+   *	  <li>Finally, archive the _gpgorigin file and append it to the original deb file<br/>
+   *	  $ ar rc _gpgorigin.ar _gpgorigin<br/></li>
    * </ul>
    * </p>
    * @param workspaceSession
@@ -467,25 +470,68 @@ public void execute(Log l,
 		  Utils.exec(new String[]{"gpg","--no-tty", "--passphrase",apm.getSignPassPhrase(),
 				  				  "--default-key",maintainer,
 				  				  "--no-use-agent",
-				  				  "-abs","-o",PGPORIGIN,COMBINEDCONTENTSFILENAME},
+				  				  "-abs","-o",GPGORIGIN,COMBINEDCONTENTSFILENAME},
 							  	  tempRoot.getParentFile(),
 							  	  "Error signing concatenated file",
 							  	  "Error writing concatenated file");
 		  
 	  }else{
 		  Utils.exec(new String[]{"gpg","--default-key",maintainer,
-				  				  "-abs","-o",PGPORIGIN,COMBINEDCONTENTSFILENAME},
+				  				  "-abs","-o",GPGORIGIN,COMBINEDCONTENTSFILENAME},
 				  	 tempRoot.getParentFile(),
 				  	 "Error signing concatenated file",
 				  	 "Error writing concatenated file");
 	  }
-	  Utils.exec(new String[]{"ar","rc",packageFilename,
-			  				  PGPORIGIN,"debian-binary",
-			  				  "control.tar.gz","data.tar.gz"},
-			  	 tempRoot.getParentFile(),
-			  	 "Error putting package back together",
-			  	 "Error writing package parts into package");
 	  
+	 Utils.exec(new String[]{"ar","rc",GPGORIGIN_AR,GPGORIGIN},
+	 tempRoot.getParentFile(),
+	 "Error putting package back together",
+	 "Error writing package parts into package");
+	 
+	 // We will create a FileInputStream in order to read the ar containing the signature
+	  FileInputStream fis = null;
+	  try {
+		  fis = new FileInputStream(new File(tempRoot.getParentFile(), GPGORIGIN_AR));
+	  } catch (FileNotFoundException e1) {
+		  throw new MojoExecutionException("Ar containing signature not found");
+	  }
+	  
+	  // We will avoid copying the header of the ar file
+	  try {
+		fis.skip(8);
+	  } catch (IOException e1) {
+		  e1.printStackTrace();
+	  }
+
+      // We will create a FileOutputStream in order to write in the debian package
+	  FileOutputStream fos = null;
+	  try {
+		  fos = new FileOutputStream(new File(tempRoot.getParentFile(), packageFilename), true);
+	  } catch (FileNotFoundException e) {
+		  throw new MojoExecutionException("Package file to be signed could not be found");
+	  }  
+
+	  // We copy one stream into the other
+	  try {
+		  int unit;
+		  while ((unit = fis.read()) != -1){
+			  fos.write(unit);
+		  }		  
+	  } catch (IOException e) {
+		  throw new MojoExecutionException("Error appending _gpgorigin to archive");
+	  } finally {
+		  try {
+			fis.close();
+		} catch (IOException e) {
+			  throw new MojoExecutionException("Error closing input stream from _gpgorigin archive");
+		}
+		  try {
+			fos.close();
+		} catch (IOException e) {
+			  throw new MojoExecutionException("Error closing output stream to debian package");
+		}
+				
+	  }
 	  // Here we clean the artifacts created while signing
 	  File f = new File(tempRoot.getParentFile(),"debian-binary");
 	  f.delete();
@@ -493,7 +539,9 @@ public void execute(Log l,
 	  f.delete();
 	  f = new File(tempRoot.getParentFile(),"data.tar.gz");
 	  f.delete();
-	  f = new File(tempRoot.getParentFile(),PGPORIGIN);
+	  f = new File(tempRoot.getParentFile(),GPGORIGIN);
+	  f.delete();
+	  f = new File(tempRoot.getParentFile(),GPGORIGIN_AR);
 	  f.delete();
 	  f = new File(tempRoot.getParentFile(),COMBINEDCONTENTSFILENAME);
 	  f.delete();
