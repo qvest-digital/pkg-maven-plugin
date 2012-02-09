@@ -122,29 +122,52 @@ public class WrapperScriptGenerator
    w.println();
    w.println("# You can provide additional VM arguments by setting the VMARGS environment variable.");
    w.println();
-   w.println("# You can also call this script with the modifiers -d and -p PORTNUMBER. -d Will enable");
-   w.println("#	debugging and -p will set a specific port for the debugging session.");
+   w.println("# You can also call this script with the Following modifiers:");
+   w.println("#     -d");
+   w.println("#        Enables debugging-p PORTNUMBER. -d Will enable debugging and -p will set a specific port for the debugging session.");
+   w.println("#     -p PORTNUMBER");
+   w.println("#        Sets a specific port for the debugging session.");
+   w.println("#     -j ");
+   w.println("#        Enables the JMX Remote console. a port can be provided in otder to override the default.");
+   w.println("#     -r [PORTNUMBER]");
+   w.println("#        Overrides the default port for the JMX Remote console.");
+   w.println("#     -s");
+   w.println("#        Disables ssl for the JMX Remote console.");
+   w.println("#     -a");
+   w.println("#        Disables authentication for the JMX Remote console.");
    w.println();
    w.println("DEFAULTDEBUGPORT=\"8000\"");
-   w.println("while getopts  \"dp:\" flag");
-   w.println("do");
-   w.println("	if [ $flag  == d ] ; then");
-   w.println("		DEBUGARGS=\"-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=0.0.0.0:\"");
-   w.println("	fi");
-   w.println("	if [ $flag  == p ] & [ -n \"$OPTARG\" ]; then");
-   w.println("		DEBUGPORT=$OPTARG");
-   w.println("	fi");
-   w.println("done");
+   w.println("DEFAULTJMXPORT=\"9876\"");
    w.println();
-   w.println("if [ \"$DEBUGARGS\" ] ; then");
+   w.println("while getopts \"dp:jr:sa\" flag");
+   w.println("do");
+   w.println("case $flag in");
+   w.println("	  d ) DEBUGARGS=\"-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=0.0.0.0:\" ;;");
+   w.println("	  p ) DEBUGPORT=$OPTARG ;;");
+   w.println("	  j ) JMXARGS=\"-Dcom.sun.management.jmxremote.port=\" ;;");
+   w.println("	  r ) JMXPORT=$OPTARG ;;");
+   w.println("	  s ) JMXSSLARGS=\"-Dcom.sun.management.jmxremote.ssl=false\" ;;");
+   w.println("	  a ) JMXAUTHARGS=\"-Dcom.sun.management.jmxremote.authenticate=false\" ;;");
+   w.println("	  esac");
+   w.println("done");
+   w.println("shift $(($OPTIND - 1))");
+   w.println();
+   w.println("if [ \"$JMXARGS\" ]; then");
+   w.println("	if [ -z \"$JMXPORT\" ]; then");
+   w.println("		JMXARGS=$JMXARGS$DEFAULTJMXPORT");
+   w.println("	else");
+   w.println("		JMXARGS=$JMXARGS$JMXPORT");
+   w.println("	fi");
+   w.println("fi");
+   w.println();
+   w.println("if [ \"$DEBUGARGS\" ]; then");
    w.println("	if [ -z \"$DEBUGPORT\" ]; then");
    w.println("		DEBUGARGS=$DEBUGARGS$DEFAULTDEBUGPORT");
    w.println("	else");
    w.println("		DEBUGARGS=$DEBUGARGS$DEBUGPORT");
    w.println("	fi");
    w.println("fi");
-   w.println();
-   
+   w.println();   
    // Note: The variables of the resulting script are created in a way that they will have
    // no effect on the final invocation line if the corresponding fields where not
    // set in this instance.
@@ -183,7 +206,7 @@ public class WrapperScriptGenerator
        w.println();
      }
 
-   w.println("exec ${JAVA} "+getMemParameter()+" ${DEBUGARGS} ${VMARGS} ${BOOTCLASSPATH_ARG} ${CLASSPATH_ARG} ${LIBRARY_PATH_ARG} ${DB_PATH_ARG} ${SYSTEM_PROPERTIES} ${MAIN_CLASS} ${@}");
+   w.println("exec ${JAVA} "+getMemParameter()+" ${DEBUGARGS} ${VMARGS} ${JMXARGS} ${JMXSSLARGS} ${JMXAUTHARGS} ${BOOTCLASSPATH_ARG} ${CLASSPATH_ARG} ${LIBRARY_PATH_ARG} ${DB_PATH_ARG} ${SYSTEM_PROPERTIES} ${MAIN_CLASS} ${@}");
 
    w.close();
   }
