@@ -1086,6 +1086,7 @@ public final class Utils {
 
 	/**
 	 * Tries to match a string representing a debian package name against the convention.
+	 * <a href="http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Source">http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Source</a>
 	 * @param string
 	 * @return True if matches
 	 */
@@ -1101,19 +1102,34 @@ public final class Utils {
 	}
 
 	/**
-	 * Tries to match a string representing a debian package version against the convention.
+	 * Tries to match a string representing a debian package version against the convention.<br/>
+	 * <a href="http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version">http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version</a>
 	 * @param string
 	 * @return True if matches
 	 */
 	public static boolean checkDebianPackageVersionConvention(String string){
+		boolean compliant = true;
 		Pattern pattern = Pattern.compile("[0-9][A-Za-z0-9.+~:-]*"); 
 		Matcher m = pattern.matcher(string);
 		
-		if(m.matches()){
-			return true;
-		}else{
-			return false;
-		}		
+		if(!m.matches()){
+			compliant = false;
+		}
+		
+		// A version must never end with a hyphen
+		if(string.endsWith("-")){
+			compliant = false;
+		}
+		
+		// A version should never contain a colon if it does not start with an epoch
+		Pattern epoch = Pattern.compile("^[0-9][0-9]*:.*"); 
+		m = epoch.matcher(string);		
+		if(!m.matches() && string.contains(":")){
+			compliant= false;
+		}
+		
+		return compliant;
+		
 	}	
 	
 	

@@ -764,33 +764,37 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	}
 	
 	@Test
-	public void checkDebianPackageNameCompatibility(){
-		
+	public void checkDebianPackageNameCompatibility(){		
 		String goodName1 = "bind9";
 		String goodName2 = "bind+9";
 		String badName1  = "BIND9";
 		String badName2  = "-bind9";
+		String badName3  = "bind9-";
 		assertTrue(Utils.checkDebianPackageNameConvention(goodName1));
 		assertTrue(Utils.checkDebianPackageNameConvention(goodName2));
 		assertFalse(Utils.checkDebianPackageNameConvention(badName1));	
-		assertFalse(Utils.checkDebianPackageNameConvention(badName2));		
+		assertFalse(Utils.checkDebianPackageNameConvention(badName2));
+		assertFalse(Utils.checkDebianPackageNameConvention(badName3));			
 	}
 	
 	@Test
-	public void checkDebianPackageVersionCompatibility(){
-		
+	public void checkDebianPackageVersionCompatibility(){		
 		String goodVersion1 = "9.7.3.dfsg-1~squeeze4";
 		String goodVersion2 = "9.7.3.dfsg";
-		String goodVersion3 = "9.7.3.DFSG-";
+		String goodVersion3 = "1328106678:9.7.3-DFSG";
 		String badVersion1  = "r9.7.3.dfsg-1~squeeze4";
 		String badVersion2  = "R9.7.3.dfsg";
 		String badVersion3  = "R9.7.3._dfsg";
+		String badVersion4  = "9A:.7.3._dfsg";
+		String badVersion5 = "9.7.3.DFSG-";
 		assertTrue(Utils.checkDebianPackageVersionConvention(goodVersion1));
 		assertTrue(Utils.checkDebianPackageVersionConvention(goodVersion2));
 		assertTrue(Utils.checkDebianPackageVersionConvention(goodVersion3));
 		assertFalse(Utils.checkDebianPackageVersionConvention(badVersion1));	
 		assertFalse(Utils.checkDebianPackageVersionConvention(badVersion2));	
-		assertFalse(Utils.checkDebianPackageVersionConvention(badVersion3));			
+		assertFalse(Utils.checkDebianPackageVersionConvention(badVersion3));	
+		assertFalse(Utils.checkDebianPackageVersionConvention(badVersion4));	
+		assertFalse(Utils.checkDebianPackageVersionConvention(badVersion5));			
 	}
 }
 
