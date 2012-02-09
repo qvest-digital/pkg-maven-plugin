@@ -81,6 +81,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -526,6 +527,8 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 		// configuration have a dependency to a common target configuration.
 		HashSet<String> finishedTargets = new HashSet<String>();
 		
+		checkIfPackagesWillOverwrite();
+		
 		for (String t : getTargets()) {
 			// A single target (and all its dependent target configurations are
 			// supposed to use the same
@@ -536,7 +539,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 			// Retrieve all target configurations that need to be build for /t/
 			List<TargetConfiguration> buildChain = Utils.createBuildChain(t, d,
 					targetConfigurations);
-
+			
 			for (TargetConfiguration tc : buildChain) {
 				if (!finishedTargets.contains(tc.getTarget()) && tc.isReady()) {
 					WorkspaceSession ws = new WorkspaceSession();
@@ -554,8 +557,8 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 				}
 
 			}
-			getLog().info("Maven-pkg-plugin goal succesfully executed for " + finishedTargets.size() + " target(s).");
 		}
+		getLog().info("Maven-pkg-plugin goal succesfully executed for " + finishedTargets.size() + " target(s).");
 	}
 
 	private void prepareWorkspaceSession(WorkspaceSession ws, String distro)
@@ -612,4 +615,56 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	protected abstract void executeTargetConfiguration(
 			WorkspaceSession workspaceSession)
 			throws MojoExecutionException, MojoFailureException;
+
+	/**
+	 * Ensures that execution is aborted if the packages generated would overwrite (i.e. have the same filename). 
+	 * @param strings 
+	 * 
+	 * @param targetConfigurations
+	 * @throws MojoExecutionException
+	 */
+	private void checkIfPackagesWillOverwrite() throws MojoExecutionException{
+		
+		// All filenames will be stored here
+		Set<String> filenames = new HashSet<String>();		
+		// We will need a helper to generate the filename
+		Helper ph;
+		// And a packageMap, as it is there where it is set if the package name should be lowercase
+		PackageMap pm;
+		
+		// We will iterate through all selected targets...
+		for(String target : getTargets()){
+
+			// ... and will grab each of them in form of a targetConfiguration
+			TargetConfiguration currentTarget = Utils.getTargetConfigurationFromString(target, targetConfigurations);
+			
+			// This method could provide wrong results if the configuration is not ready
+			if(!currentTarget.isReady()){
+				StringBuilder sb = new StringBuilder();
+				sb.append("The targetConfiguration \"");
+				sb.append(currentTarget.getTarget());
+				sb.append("\" is not ready. Are you executing this method before merging all Configurations?");
+				getLog().error(sb.toString());
+				throw new MojoExecutionException(sb.toString());
+			}
+			
+			// The packageMap needs to be defined for each targetConfiguration
+			pm = new PackageMap(defaultPackageMapURL, auxPackageMapURL,	distro, currentTarget.getBundleDependencies());
+			// The helper is initialised for each targetConfiguration- resolved relations are not relevant
+			ph = new Helper();
+			ph.init(this, pm, currentTarget, null, currentTarget.getDefaultDistro());
+			
+			// Each filename will be included in the set until one duplicate is found
+			if(!filenames.add(ph.getPackageFileName())){
+				StringBuilder sb = new StringBuilder();
+				sb.append("The package filename \"");
+				sb.append(ph.getPackageFileName());
+				sb.append("\" has been calculated for more than one configuration. This would lead to files being overwritten.");
+				sb.append("Please check your POM and consider using packageNameSuffix or packageVersionSuffix.");
+				getLog().error(sb.toString());
+				throw new MojoExecutionException(sb.toString());
+			}
+		}
+		
+	}
 }

@@ -438,6 +438,24 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	/**
 	 * This test attempts the following:
 	 * 
+	 * Execute two targets that would result in the final package file of the first to be overwritten.
+	 * 
+	 * This test should fail.
+	 * 
+	 * @throws Exception
+	 */
+	@Test (expected=MojoExecutionException.class)
+    public void abortIfPackagesWouldOverwrite()
+            throws Exception, MojoExecutionException
+        {
+			packagingPlugin = mockPackagingEnvironment(DEBPOM,"ubuntu_lucid_target_simple,ubuntu_lucid_target_simple");
+            packagingPlugin.execute();
+
+        }
+	
+	/**
+	 * This test attempts the following:
+	 * 
 	 * Execute a single target
 	 * Create a signed DEB file
 	 * 
