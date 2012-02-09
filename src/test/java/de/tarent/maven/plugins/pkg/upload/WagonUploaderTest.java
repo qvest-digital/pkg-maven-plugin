@@ -41,7 +41,7 @@ public class WagonUploaderTest extends AbstractMvnPkgPluginTestCase{
 		Helper h = new Helper();
 		h.init(up, expectedPackageMap, new TargetConfiguration().fixate(), new ArrayList<TargetConfiguration>(),"ubuntu-lucid");
 		ws.setHelper(h);
-		expectedPackageFile = new File(ws.getHelper().getTempRoot().getParentFile(), ws.getHelper().getPackageFileName());
+		expectedPackageFile = new File(ws.getMojo().getTempRoot().getParentFile(), ws.getHelper().getPackageFileName());
 		wu = new WagonUploader(ws, expectedUrl);
 		
 		

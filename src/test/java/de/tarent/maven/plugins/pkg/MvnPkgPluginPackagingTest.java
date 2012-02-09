@@ -1,5 +1,8 @@
 package de.tarent.maven.plugins.pkg;
 
+import java.io.File;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.After;
 import org.junit.Before;
@@ -82,7 +85,8 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * Execute a target configuration which itself has parent configuration
 	 * Use the only distribution defined for this target
 	 * Create a DEB file 
-	 * Include a main artifact (JAR) in the DEB file 
+	 * Include a main artifact (JAR) in the DEB file
+	 * At the end of the packaging process the directory pkg-tmp should not exist
 	 * 
 	 * @throws Exception
 	 */
@@ -95,7 +99,22 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertTrue(numberOfDEBsIs(1));
             assertTrue(debContainsMainArtifact());
             assertFalse(debIsSigned());
+            assertEquals(0,returnFilesBasedOnFilename("pkg-tmp").length);
         }
+	
+	@Test
+    public void createDebForUbuntuLucidKeepPkgTmpDir()
+            throws Exception
+        {	
+			packagingPlugin = mockPackagingEnvironment(DEBPOM, "ubuntu_lucid_target_simple");
+			packagingPlugin.setKeepPkgTmp(true);
+            packagingPlugin.execute();
+            assertTrue(numberOfDEBsIs(1));
+            File pkgtmp = returnFilesBasedOnFilename("pkg-tmp")[0];
+            assertTrue(pkgtmp.exists());
+            FileUtils.deleteDirectory(pkgtmp);
+        }	
+	
 	
 	/**
 	 * This test attempts the following:

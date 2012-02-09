@@ -28,7 +28,7 @@ public class WagonUploader implements IPkgUploader{
 		session = ws.getMojo().getSession();
 		pluginManager = ws.getMojo().getPluginManager();
 		this.url = url;
-		packageFile = new File(ws.getHelper().getTempRoot().getParent(), ws.getHelper().getPackageFileName());
+		packageFile = new File(ws.getMojo().getTempRoot().getParent(), ws.getHelper().getPackageFileName());
 		
 	}
 

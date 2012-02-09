@@ -256,7 +256,7 @@ public class IpkPackager extends Packager
                              "root",
                              base.getName(),
                              ph.getOutputDirectory().getAbsolutePath() },
-                ph.getTempRoot(),
+                base.getParentFile(),
                 "'ipkg-build failed.",
                 "Error creating the .ipk file.");
   }

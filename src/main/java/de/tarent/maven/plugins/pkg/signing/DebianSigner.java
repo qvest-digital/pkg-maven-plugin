@@ -122,7 +122,7 @@ public class DebianSigner {
 		this.repositoryName = ws.getPackageMap().getRepositoryName();
 		this.packageFileNameWithoutExtension = ws.getHelper().getPackageFileNameWithoutExtension();
 		this.packageFileName = ws.getHelper().getPackageFileName();
-		this.tempRoot = ws.getHelper().getTempRoot();
+		this.tempRoot = ws.getMojo().getTempRoot();
 		this.userInput = ws.getMojo().getSignPassPhrase();
 		this.awaitUserInput=awaitUserInput;
 		

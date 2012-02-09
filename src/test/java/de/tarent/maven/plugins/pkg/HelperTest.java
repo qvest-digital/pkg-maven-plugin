@@ -164,19 +164,17 @@ public class HelperTest extends AbstractMvnPkgPluginTestCase{
 	}
 	
 	@Test
-	public void prepareInitialDirectoriesSuccesfully_RPM() throws MojoExecutionException{
+	public void prepareInitialDirectoriesSuccesfully_RPM() throws MojoExecutionException, IOException{
 		// This method needs the Helper to be in RPM mode
 		helper.setStrategy(Helper.RPM_STRATEGY);
 		
-		File tempRoot = new File("/tmp/BaseTestTemp");
-		File base = new File("/tmp/BaseTestTemp/Base");
+		File base = new File("/tmp/BaseTestTemp");
 		helper.setBasePkgDir(base);
-		helper.setTempRoot(tempRoot);
 		helper.prepareInitialDirectories();
-		Assert.assertTrue(new File("/tmp/BaseTestTemp/Base").exists());
+		Assert.assertTrue(new File("/tmp/BaseTestTemp").exists());
 		Assert.assertEquals(new File(helper.getBasePkgDir(),"/BUILD"),helper.getBaseBuildDir());
 		Assert.assertEquals(new File(helper.getBasePkgDir(),"/SPECS"),helper.getBaseSpecsDir());		
-		base.delete();
+		FileUtils.deleteDirectory(base);
 		
 	}
 	

@@ -66,6 +66,11 @@ public class Packaging
 	    
 	    packager.execute(getLog(), ws);
   }
+
+public void setKeepPkgTmp(boolean b) {
+	keepPkgTmp = b;
+	
+}
   
  
 

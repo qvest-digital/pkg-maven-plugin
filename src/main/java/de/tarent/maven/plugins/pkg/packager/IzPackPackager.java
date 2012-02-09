@@ -82,7 +82,7 @@ public class IzPackPackager extends Packager
 	
     // The root directory into which everything from srcRoot is copied
     // into (inside the outputDirectory).
-    File packagingBaseDir = new File(ph.getTempRoot(), "izpack-packaging");
+    File packagingBaseDir = new File(workspaceSession.getMojo().getTempRoot(), "izpack-packaging");
     ph.setBasePkgDir(packagingBaseDir);
     ph.setDstAuxDir(packagingBaseDir);
     
@@ -135,11 +135,11 @@ public class IzPackPackager extends Packager
     File windowsWrapperScriptFile = ph.getDstWindowsWrapperScriptFile();
 
      // The destination file for the embedded IzPack installation.
-    File izPackEmbeddedJarFile = new File(ph.getTempRoot(), IZPACK_EMBEDDED_JAR);
+    File izPackEmbeddedJarFile = new File(workspaceSession.getMojo().getTempRoot(), IZPACK_EMBEDDED_JAR);
     
     // The directory in which the embedded IzPack installation is unpacked
     // at runtime.
-    File izPackEmbeddedRoot = new File(ph.getTempRoot(), "izpack-embedded");
+    File izPackEmbeddedRoot = new File(workspaceSession.getMojo().getTempRoot(), "izpack-embedded");
     
     Set<Artifact> bundledArtifacts = null;
     Path bcp = new Path();
@@ -147,7 +147,7 @@ public class IzPackPackager extends Packager
     
 
 	prepareDirectories(l,
-	                   ph.getTempRoot(),
+					   workspaceSession.getMojo().getTempRoot(),
 	                   izPackEmbeddedRoot,
 	                   ph.getSrcIzPackFilesDir(),
 	                   packagingBaseDir,

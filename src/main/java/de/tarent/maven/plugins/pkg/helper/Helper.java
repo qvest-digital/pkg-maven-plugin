@@ -190,8 +190,6 @@ public class Helper {
 
 	private File targetWrapperScriptFile;
 
-	private File tempRoot;
-
 	/**
   	 * Convenience field that denotes the BUILD directory
   	 */
@@ -272,7 +270,7 @@ public class Helper {
 
 		@Override
 		protected void prepareInitialDirectories(Helper instance) throws MojoExecutionException {
-			instance.prepareDirectories(instance.l, instance.tempRoot, instance.basePkgDir, instance.dstJNIDir);
+			instance.prepareDirectories(instance.l, instance.basePkgDir, instance.dstJNIDir);
 		}
 
 		@Override
@@ -603,7 +601,7 @@ public class Helper {
 
 	public File getAotPkgDir() {
 		if (aotPkgDir == null){
-			aotPkgDir = new File(getTempRoot(), aotPackageName + "-" + getPackageVersion());
+			aotPkgDir = new File(apm.getTempRoot(), aotPackageName + "-" + getPackageVersion());
 		}
 		return aotPkgDir;
 	}
@@ -614,7 +612,7 @@ public class Helper {
 
 	public File getBasePkgDir() {
 		if (basePkgDir == null){
-			basePkgDir = new File(getTempRoot(), getPackageName() + "-" + getPackageVersion());
+			basePkgDir = new File(apm.getTempRoot(), targetConfiguration.getTarget() + "/" + getPackageName() + "-" + getPackageVersion());
 		}
 		return basePkgDir;
 	}
@@ -947,16 +945,16 @@ public class Helper {
 		}
 		return targetWrapperScriptFile;
 	}
-
+/*
 	public File getTempRoot() {
 		if (tempRoot == null){
 			tempRoot = new File(apm.getBuildDir(), packageMap.getPackaging() + "-tmp");
 		}
 		return tempRoot;
 	}
-
+*/
 	public void prepareAotDirectories() throws MojoExecutionException {
-		prepareDirectories(l, tempRoot, aotPkgDir, null);
+		prepareDirectories(l, aotPkgDir, null);
 	}
 
 	public void setAotPackageName(String aotPackageName) {
@@ -1076,25 +1074,7 @@ public class Helper {
 		this.targetWrapperScriptFile = targetWrapperScriptFile;
 	}
 
-	public void setTempRoot(File tempRoot) {
-		this.tempRoot = tempRoot;
-	}
-
-	final void prepareDirectories(Log l, File tempRoot, File basePkgDir, File jniDir) throws MojoExecutionException {
-		if (l != null){
-			l.info("creating temporary directory: " + tempRoot.getAbsolutePath());
-		}
-		if (!tempRoot.exists() && !tempRoot.mkdirs()){
-			throw new MojoExecutionException("Could not create temporary directory.");
-		}
-		if (l != null){
-			l.info("cleaning the temporary directory");
-		}
-		try {
-			FileUtils.cleanDirectory(tempRoot);
-		} catch (IOException ioe) {
-			throw new MojoExecutionException("Exception while cleaning temporary directory.", ioe);
-		}
+	final void prepareDirectories(Log l, File basePkgDir, File jniDir) throws MojoExecutionException {
 		
 		if (l != null){
 			l.info("creating package directory: " + basePkgDir.getAbsolutePath());

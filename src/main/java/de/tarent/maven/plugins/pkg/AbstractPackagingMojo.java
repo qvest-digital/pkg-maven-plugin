@@ -77,12 +77,14 @@
 package de.tarent.maven.plugins.pkg;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
@@ -306,6 +308,13 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	 */
 	protected PluginManager pluginManager;
 	
+	/**
+	 * This parameter allows overriding the deletion of the temp directory where packages are built.<br/>
+	 * 
+	 * @parameter expression="${keepPkgTmp}"
+	 */
+	protected boolean keepPkgTmp;
+	
 	public MavenSession getSession() {
 		return session;
 	}
@@ -321,6 +330,8 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	}
 
 	protected String signPassPhrase;
+
+	private File tempRoot;
 
 	public String get_7zipExec() {
 		return _7zipExec;
@@ -413,6 +424,13 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 
 		return targetArray;
 
+	}
+	
+	public File getTempRoot() {
+		if (tempRoot == null){
+			tempRoot = new File(getBuildDir(), "pkg-tmp");
+		}
+		return tempRoot;
 	}
 
 	/**
@@ -559,8 +577,24 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 			}
 		}
 		getLog().info("Maven-pkg-plugin goal succesfully executed for " + finishedTargets.size() + " target(s).");
+		cleanUp();
 	}
 
+	/**
+	 * Removes "pkg-tmp" from the target directory of the project. This can be overriden if removePkgTmp is set to false.
+	 * @throws MojoExecutionException 
+	 */
+	private void cleanUp() throws MojoExecutionException {
+		File pkgTmp = new File(getBuildDir(),"pkg-tmp");
+		if(pkgTmp.exists() && !keepPkgTmp){
+			try {
+				FileUtils.deleteDirectory(pkgTmp);
+			} catch (IOException e) {
+				throw new MojoExecutionException("Unable to remove temporary directory pkg-tmp");
+			}
+		}
+		
+	}
 	private void prepareWorkspaceSession(WorkspaceSession ws, String distro)
 			throws MojoExecutionException, MojoFailureException {
 		

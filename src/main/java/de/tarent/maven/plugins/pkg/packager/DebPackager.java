@@ -394,13 +394,12 @@ public void execute(Log l,
     l.info("calling dpkg-deb to create binary package");
     Helper ph = workspaceSession.getHelper();
     
-    
     Utils.exec(new String[] {"fakeroot",
                              "dpkg-deb",
                              "--build",
                              base.getName(),
-                             ph.getOutputDirectory().getAbsolutePath() },
-                ph.getTempRoot(),
+                             ph.getOutputDirectory().getAbsolutePath()},
+                 base.getParentFile(),
                 "'fakeroot dpkg --build' failed.",
                 "Error creating the .deb file.");
     
@@ -442,7 +441,7 @@ public void execute(Log l,
    */
   private void bundleSignatureWithPackage(WorkspaceSession workspaceSession) throws MojoExecutionException{	  
 
-	  File tempRoot = workspaceSession.getHelper().getTempRoot();
+	  File tempRoot = workspaceSession.getMojo().getTempRoot();
 	  String packageFilename = workspaceSession.getHelper().getPackageFileName();
 	  String maintainer = workspaceSession.getTargetConfiguration().getMaintainer();
 	  AbstractPackagingMojo apm = workspaceSession.getMojo();

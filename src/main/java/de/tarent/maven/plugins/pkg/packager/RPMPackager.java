@@ -141,9 +141,8 @@ public class RPMPackager extends Packager {
 			l.info("SPEC file generated.");
 			createPackage(l, workspaceSession, specFile);
 			l.info("Package created.");
-			copyRPMToTargetFolder(l, ph);
-
-			File resultingPackage = copyRPMToTargetFolder(l, ph);
+			
+			File resultingPackage = copyRPMToTargetFolder(workspaceSession);
 			
 			l.info("Output of rpm -pqi :");
 			String out = IOUtils.toString(Utils.exec(new String[] {"rpm", "-pqi", resultingPackage.getAbsolutePath()},
@@ -175,15 +174,16 @@ public class RPMPackager extends Packager {
 	 * @return
 	 * @throws IOException
 	 */
-	private File copyRPMToTargetFolder(Log l, Helper ph) throws MojoExecutionException, IOException {
-		
+	private File copyRPMToTargetFolder(WorkspaceSession ws) throws MojoExecutionException, IOException {
+		Helper ph = ws.getHelper();
+		Log l = ws.getMojo().getLog(); 
 		StringBuilder rpmPackagePath= new StringBuilder(ph.getBaseBuildDir().getParent());				
 		rpmPackagePath.append("/RPMS/");
 		rpmPackagePath.append(ph.getArchitecture());
 		rpmPackagePath.append("/");		
 		String rpmPackageName = ph.getPackageFileName();
 		
-		File targetFile = new File(ph.getTempRoot().getParentFile(),rpmPackageName);
+		File targetFile = new File(ws.getMojo().getTempRoot().getParentFile(),rpmPackageName);
 		
 		l.debug("Attempting to copy from "+ rpmPackagePath.toString() + rpmPackageName +
 				" to " + targetFile.getAbsolutePath());
