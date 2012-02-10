@@ -184,6 +184,12 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	public AbstractPackagingMojo mockEnvironment(String pomFilename, String goal) throws Exception{
 		return mockEnvironment(pomFilename,goal,true);
 	}
+	
+	public AbstractPackagingMojo mockEnvironment(String pomFilename, String goal, boolean b, String target) throws Exception{
+		AbstractPackagingMojo apm = mockEnvironment(pomFilename,goal,b);
+		apm.target = target;
+		return apm;
+	}
 
 
 	private void setNeededInformation(AbstractPackagingMojo packagingPlugin) {

@@ -426,6 +426,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
     public void createSignedDEB()
             throws Exception, MojoExecutionException
         {
+			CLEANTARGETDIRECTORYAFTERRUN=false;
 			packagingPlugin = mockPackagingEnvironment(DEBPOM,"ubuntu_lucid_target_sign");
             packagingPlugin.execute();
             assertTrue(numberOfDEBsIs(1));
@@ -546,15 +547,13 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	}
 	
 	public Packaging mockPackagingEnvironment(String pomFilename, String target) throws Exception{		
-		Packaging p = (Packaging) mockEnvironment(pomFilename,"pkg",true);
-		p.target = target;
-		return p;		
+		return (Packaging) mockEnvironment(pomFilename,"pkg",true, target);
+
 	}
 	
 	private Packaging mockPackagingEnvironment(String pomFilename, String target, boolean b) throws Exception {
-		Packaging p = (Packaging) mockEnvironment(pomFilename,"pkg",b);
-		p.target = target;
-		return p;	
+		return (Packaging) mockEnvironment(pomFilename,"pkg",b, target);
+			
 	}
 		
 	/**

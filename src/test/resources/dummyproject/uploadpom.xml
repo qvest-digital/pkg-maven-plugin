@@ -35,7 +35,7 @@
 			<plugin>
 				<groupId>de.tarent.maven.plugins</groupId>
 				<artifactId>maven-pkg-plugin</artifactId>
-				<version>4.0</version>
+				<version>4.0.8-SNAPSHOT</version>
 				<configuration>
 
 					<targetConfigurations>
@@ -85,7 +85,19 @@
 							<source>dummysource</source>
 							<release>dummyrelease</release>
 							<architecture>x86_64</architecture>
-						</targetConfiguration>						
+						</targetConfiguration>		
+
+						<targetConfiguration>
+							<target>reprepro_upload</target>
+							<distros>
+								<distro>ubuntu_lucid</distro>
+							</distros>
+							<uploadParameters>
+								<urls>
+									<url>reprepro://test</url>
+								</urls>
+							</uploadParameters>
+						</targetConfiguration>					
 					</targetConfigurations>					
 				</configuration>
 				<executions>

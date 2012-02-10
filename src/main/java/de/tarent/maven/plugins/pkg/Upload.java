@@ -8,6 +8,7 @@ import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.upload.APTUploader;
 import de.tarent.maven.plugins.pkg.upload.IPkgUploader;
+import de.tarent.maven.plugins.pkg.upload.RepreproDeployer;
 import de.tarent.maven.plugins.pkg.upload.WagonUploader;
 
 /**
@@ -22,6 +23,8 @@ import de.tarent.maven.plugins.pkg.upload.WagonUploader;
  */
 public class Upload extends AbstractPackagingMojo {
 
+	private static final String duploadURIScheme = "dupload://";
+	private static final String repreproURIScheme = "reprepro://";
 	Log l = getLog();
 	
 	@Override
@@ -68,12 +71,13 @@ public class Upload extends AbstractPackagingMojo {
 	 */
 	private IPkgUploader getUploaderForProtocol(WorkspaceSession ws, String url) {
 
-		if(url.startsWith("dupload://")){
-			return new APTUploader(ws, url.replace("dupload://",""));			
+		if(url.startsWith(duploadURIScheme)){
+			return new APTUploader(ws, url.replace(duploadURIScheme,""));		
+		}else if(url.startsWith(repreproURIScheme)){
+			return new RepreproDeployer(ws, url.replace(repreproURIScheme,""));	
 		}else{
 			return new WagonUploader(ws, url);
 		}
-
 	}
 	
 	/**
