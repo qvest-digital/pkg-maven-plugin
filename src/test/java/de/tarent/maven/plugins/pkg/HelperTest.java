@@ -168,10 +168,10 @@ public class HelperTest extends AbstractMvnPkgPluginTestCase{
 		// This method needs the Helper to be in RPM mode
 		helper.setStrategy(Helper.RPM_STRATEGY);
 		
-		File base = new File("/tmp/BaseTestTemp");
+		File base = new File(TARGETDIR,"/BaseTestTemp/");
 		helper.setBasePkgDir(base);
 		helper.prepareInitialDirectories();
-		Assert.assertTrue(new File("/tmp/BaseTestTemp").exists());
+		Assert.assertTrue(base.exists());
 		Assert.assertEquals(new File(helper.getBasePkgDir(),"/BUILD"),helper.getBaseBuildDir());
 		Assert.assertEquals(new File(helper.getBasePkgDir(),"/SPECS"),helper.getBaseSpecsDir());		
 		FileUtils.deleteDirectory(base);
@@ -245,7 +245,7 @@ public class HelperTest extends AbstractMvnPkgPluginTestCase{
 		// This test needs the Helper to be in RPM mode
 		helper.setStrategy(Helper.RPM_STRATEGY);
 		
-		File testTempdir = new File("/tmp/BaseTestTemp");
+		File testTempdir = new File(TARGETDIR,"/BaseTestTemp/");
 		File testArtifactfile = new File("file1");
 		helper.setBaseBuildDir(testTempdir);
 		helper.setTargetArtifactFile(testArtifactfile);
