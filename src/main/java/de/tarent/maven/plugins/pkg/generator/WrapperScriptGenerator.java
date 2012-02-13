@@ -128,7 +128,7 @@ public class WrapperScriptGenerator
    w.println("#     -p PORTNUMBER");
    w.println("#        Sets a specific port for the debugging session.");
    w.println("#     -j ");
-   w.println("#        Enables the JMX Remote console. a port can be provided in otder to override the default.");
+   w.println("#        Enables the JMX Remote console (port 9876).");
    w.println("#     -r [PORTNUMBER]");
    w.println("#        Overrides the default port for the JMX Remote console.");
    w.println("#     -s");
