@@ -586,6 +586,7 @@
 
 			<entry>
 				<artifactSpec>commons-io:commons-io</artifactSpec>
+				<versionSpec>[,1.4)</versionSpec>
 				<dependencyLine>libcommons-io-java</dependencyLine>
 				<jars>
 					<jar>commons-io.jar</jar>
