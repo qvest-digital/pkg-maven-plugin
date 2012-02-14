@@ -1,20 +1,17 @@
 <!--
-	Package maps document for CentOS 5.6
+	Package maps document for CentOS 6
 -->
 <package-maps>
 	<version>1.0</version>
 	
 	<distro>
-		<id>centos_5_6</id>
-		<label>CentOS 5.6</label>
+		<id>centos_6</id>
+		<label>CentOS 6</label>
 		<packaging>rpm</packaging>	
 		<defaultJarPath>/usr/share/java</defaultJarPath>
 
 		<defaultJNIPath>/usr/lib/jni:/usr/lib</defaultJNIPath>
-
-		<!-- GCJ does not play a role for Ubuntu releases. -->
-		<defaultDependencyLine>java2-runtime</defaultDependencyLine>
-
+		
 	<map>
 		<entry>
 			<artifactSpec>net.java.dev.jna:jna</artifactSpec>
@@ -25,7 +22,7 @@
 		        </jars>
 		</entry>
 
-		<!-- Maven knows multiple SWT variants-->
+		<!--
 		<entry>
 			<artifactSpec>org.eclipse.swt:swt-gtk-linux</artifactSpec>
 			<dependencyLine>libswt3-gtk2</dependencyLine>
@@ -33,8 +30,6 @@
 				<jar>swt-gtk-3.5.1.jar</jar>
 			</jars>
 		</entry>
-		
-		<!-- The following 2 entries are found in the JBoss repositories -->
 		<entry>
 			<artifactSpec>org.eclipse.swt:org.eclipse.swt.gtk.linux.x86</artifactSpec>
 			<dependencyLine>libswt3-gtk2</dependencyLine>
@@ -48,41 +43,41 @@
 			<jars>
 				<jar>swt-gtk-3.5.1.jar</jar>
 			</jars>
-		</entry>
-		<!--  not sure -->
+		</entry> -->
+		<!--  not sure
 		<entry>
 			<artifactSpec>asm:asm</artifactSpec>
 			<dependencyLine>libasm3-java</dependencyLine>
 			<jars>
 				<jar>asm3.jar</jar>
 			</jars>
-		</entry>
-		<!--  not sure -->
+		</entry> -->
+		<!--  not sure
 		<entry>
 			<artifactSpec>asm:asm-util</artifactSpec>
 			<dependencyLine>libasm3-java</dependencyLine>
 			<jars>
 				<jar>asm3-util.jar</jar>
 			</jars>
-		</entry>
+		</entry> -->
 
-		<!--  not sure -->
+		<!--  not sure
 		<entry>
 			<artifactSpec>asm:asm-commons</artifactSpec>
 			<dependencyLine>libasm3-java</dependencyLine>
 			<jars>
 				<jar>asm3-commons.jar</jar>
 			</jars>
-		</entry>
+		</entry> -->
 
-		<!--  not sure -->
+		<!--  not sure
 		<entry>
 			<artifactSpec>asm:asm-tree</artifactSpec>
 			<dependencyLine>libasm3-java</dependencyLine>
 			<jars>
 				<jar>asm3-tree.jar</jar>
 			</jars>
-		</entry>
+		</entry> -->
 		<!-- ok-->
 		<entry>
 			<artifactSpec>axis:axis</artifactSpec>
@@ -117,101 +112,101 @@
 			</jars>
 		</entry>
 		<!--  not sure -->
-		<!-- Apache Commons -->
+		<!-- Apache Commons
 		<entry>
 			<artifactSpec>commons-configuration:commons-configuration</artifactSpec>
 			<dependencyLine>libcommons-configuration-java</dependencyLine>
 			<jars>
 				<jar>commons-configuration.jar</jar>
 			</jars>
-		</entry>
-		<!--  not sure -->
+		</entry> -->
+		<!--  not sure
 		<entry>
 			<artifactSpec>commons-codec:commons-codec</artifactSpec>
 			<dependencyLine>libcommons-codec-java</dependencyLine>
 			<jars>
 				<jar>commons-codec.jar</jar>
 			</jars>
-		</entry>
+		</entry> -->
 
 		<!-- JGoodies Looks -->
-		<!--  not sure -->
+		<!--  not sure
 		<entry>
 			<artifactSpec>jgoodies:looks</artifactSpec>
 			<dependencyLine>libjgoodies-looks-java</dependencyLine>
 			<jars>
 				<jar>looks.jar</jar>
 			</jars>
-		</entry>
+		</entry> -->
 		
-		<!--  not sure -->
+		<!--  not sure
 		<entry>
 			<artifactSpec>com.jgoodies:looks</artifactSpec>
 			<dependencyLine>libjgoodies-looks-java</dependencyLine>
 			<jars>
 				<jar>looks.jar</jar>
 			</jars>
-		</entry>
+		</entry> -->
 
 		<!-- JGoodies Forms -->		
-		<!--  not sure -->
+		<!--  not sure 
 		<entry>
 			<artifactSpec>com.jgoodies:forms</artifactSpec>
 			<dependencyLine>libjgoodies-forms-java</dependencyLine>
 			<jars>
 				<jar>forms.jar</jar>
 			</jars>
-		</entry>
+		</entry>-->
 
 		<!-- jh from org.openoffice provided through JavaHelp2 -->
-		<!--  not sure -->
+		<!--  not sure
 		<entry>
 			<artifactSpec>org.openoffice:jh</artifactSpec>
 			<dependencyLine>javahelp2</dependencyLine>
 			<jars>
 				<jar>jh.jar</jar>
 			</jars>
-		</entry>
-		<!--  not sure -->
+		</entry> -->
+		<!--  not sure
 		<entry>
 			<artifactSpec>com.sun.javahelp:jh</artifactSpec>
 			<dependencyLine>javahelp2</dependencyLine>
 			<jars>
 				<jar>jh.jar</jar>
 			</jars>
-		</entry>
+		</entry> -->
 
 		<!-- XStream -->
-		<!--  not sure -->
+		<!--  not sure
 		<entry>
 			<artifactSpec>com.thoughtworks.xstream:xstream</artifactSpec>
 			<dependencyLine>libxstream-java</dependencyLine>
 			<jars>
 				<jar>xstream.jar</jar>
 			</jars>
-		</entry>
+		</entry> -->
 
 		<!-- Miglayout -->
-		<!--  not sure -->
+		<!--  not sure
 		<entry>
 			<artifactSpec>com.miglayout:miglayout</artifactSpec>
 			<dependencyLine>libmiglayout-java</dependencyLine>
 			<jars>
 				<jar>miglayout.jar</jar>
 			</jars>
-		</entry>
+		</entry> -->
 
 		<!-- Servlet API -->
-		<!--  not sure -->
+		<!--  not sure
 		<entry>
 			<artifactSpec>javax.servlet:servlet-api:2.3</artifactSpec>
 			<dependencyLine>libservlet2.3-java</dependencyLine>
 			<jars>
 				<jar>servlet-2.3.jar</jar>
 			</jars>
-		</entry>
+		</entry> -->
 
-		<!--  not sure -->
+		<!--  not sure
 		<entry>
 			<artifactSpec>javax.servlet:servlet-api:2.4</artifactSpec>
 			<dependencyLine>libservlet2.4-java</dependencyLine>
@@ -219,9 +214,9 @@
 				<jar>servlet-api-2.4.jar</jar>
 				<jar>jsp-api-2.0.jar</jar>
 			</jars>
-		</entry>
+		</entry> -->
 
-		<!--  not sure -->
+		<!--  not sure
 		<entry>
 			<artifactSpec>javax.servlet:servlet-api:2.5</artifactSpec>
 			<dependencyLine>libservlet2.5-java</dependencyLine>
@@ -230,7 +225,7 @@
 				<jar>jsp-api-2.1.jar</jar>
 				<jar>el-api-2.1</jar>
 			</jars>
-		</entry>
+		</entry> -->
 		
 		<!-- This replaces proprietary Java Activation Framework with GNU JAF. -->
 		<!--  ok -->
@@ -285,22 +280,22 @@
 				<jar>gnumail-providers.jar</jar>
 			</jars>
 		</entry>
-		<!--  ok -->	
+		<!--  not ok
 		<entry>
 			<artifactSpec>org.bouncycastle.jce:bouncycastle-jdk14-provider</artifactSpec>
 			<dependencyLine>bouncycastle</dependencyLine>
 			<jars>
 				<jar>bcprov.jar</jar>
 			</jars>
-		</entry>
-		<!--  ok -->	
+		</entry> -->
+		<!--  not ok
 		<entry>
 			<artifactSpec>org.bouncycastle:bouncycastle-jdk16-provider</artifactSpec>
 			<dependencyLine>bouncycastle</dependencyLine>
 			<jars>
 				<jar>bcprov.jar</jar>
 			</jars>
-		</entry>
+		</entry> -->
 		<!--  ok -->	
 		<entry>
 			<artifactSpec>log4j:log4j</artifactSpec>
@@ -454,7 +449,7 @@
 			<entry>
 				<!-- ok -->
 				<artifactSpec>org.openoffice:XSLTFilter</artifactSpec>
-				<dependencyLine>openoffice.org-core</dependencyLine>
+				<dependencyLine>openoffice.org-xsltfilter</dependencyLine>
 				<jars>
 					<jar>XSLTFilter.jar</jar>
 				</jars>
@@ -568,18 +563,18 @@
 					<jar>commons-dbcp.jar</jar>
 				</jars>
 			</entry>
-			<!-- ok -->	
+			<!-- not there anymore 
 			<entry>
 				<artifactSpec>commons-fileupload:commons-fileupload</artifactSpec>
 				<dependencyLine>jakarta-commons-fileupload</dependencyLine>
 				<jars>
 					<jar>commons-fileupload.jar</jar>
 				</jars>
-			</entry>
+			</entry> -->	
 			<!-- ok -->
 			<entry>
 				<artifactSpec>commons-io:commons-io</artifactSpec>
-				<dependencyLine>jakarta-commons-io-java</dependencyLine>
+				<dependencyLine>jakarta-commons-io</dependencyLine>
 				<jars>
 					<jar>commons-io.jar</jar>
 				</jars>
@@ -614,15 +609,15 @@
 					<jar>commons-pool.jar</jar>
 				</jars>
 			</entry>
-			<!-- ok -->			
+			<!-- not provideda anymore		
 			<entry>
 				<artifactSpec>commons-cli:commons-cli</artifactSpec>
 				<dependencyLine>jakarta-commons-cli</dependencyLine>
 				<jars>
 					<jar>commons-cli.jar</jar>
 				</jars>
-			</entry>
-			<!-- ok -->	
+			</entry> -->	
+			<!-- not ok
 			<entry>
 				<artifactSpec>org.rxtx:rxtx</artifactSpec>
 				<versionSpec>[2,3)</versionSpec>
@@ -630,7 +625,7 @@
 				<jars>
 					<jar>RXTXcomm.jar</jar>
 				</jars>
-			</entry>
+			</entry> -->	
 			
 			<!-- dom4j:dom4j not available in distro -->
 			<entry>

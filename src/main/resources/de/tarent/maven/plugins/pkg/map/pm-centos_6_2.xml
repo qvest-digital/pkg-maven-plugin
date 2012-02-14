@@ -1,0 +1,21 @@
+<!--
+	Package maps document for CentOS 6.2
+-->
+<package-maps>
+	<version>1.0</version>
+	
+	<distro>
+		<id>centos_6_2</id>
+		<label>CentOS 6.2</label>		
+		<!--  
+			There were no new java packages or changes from CentOS 6.1 to 6.2,
+			so we will just inherit the old package map.			
+			http://wiki.centos.org/Manuals/ReleaseNotes/CentOS5.7#head-60e3a42c34a68e3154bc997a666bbda0fedffbfd					
+		-->
+		<inherit>centos_6_1</inherit>
+		<defaultJarPath>/usr/share/java</defaultJarPath>
+
+		<defaultJNIPath>/usr/lib/jni:/usr/lib</defaultJNIPath>
+	</distro>
+
+</package-maps>

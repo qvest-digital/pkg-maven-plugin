@@ -1,10 +1,14 @@
 package de.tarent.maven.plugins.pkg.map;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.junit.Test;
+import org.junit.internal.runners.JUnit4ClassRunner;
+import org.junit.runner.RunWith;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+@RunWith(JUnit4ClassRunner.class)
 public class LoadMapsTest extends TestCase {
 
 	/**
@@ -24,11 +28,17 @@ public class LoadMapsTest extends TestCase {
 			"ubuntu_karmic",
 			"ubuntu_lucid",
 			"centos_5_6",
+			"ubuntu_precise",
+			"centos_6",
+		  	"centos_6_1",
+			"centos_5_7",
+			"centos_6_2",
 	};
 
 	/**
 	 * Loads each package map to ensure that it can be successfully parsed.
 	 */
+	@Test
 	public void testLoadMaps()
 	{
 		for (String d : distros)

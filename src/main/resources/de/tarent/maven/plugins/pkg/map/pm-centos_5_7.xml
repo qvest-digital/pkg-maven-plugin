@@ -1,0 +1,20 @@
+<!--
+	Package maps document for CentOS 5.7
+-->
+<package-maps>
+	<version>1.0</version>
+	
+	<distro>
+		<id>centos_5_7</id>
+		<label>CentOS 5.7</label>
+		
+		<!--  
+			There were no new java packages or changes from CentOS 5.6 to 5.7,
+			so we will just inherit the old package map.			
+		-->
+		<inherit>centos_5_6</inherit>
+		<defaultJarPath>/usr/share/java</defaultJarPath>
+
+		<defaultJNIPath>/usr/lib/jni:/usr/lib</defaultJNIPath>
+	</distro>
+</package-maps>

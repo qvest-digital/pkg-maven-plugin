@@ -1,0 +1,14 @@
+<!--
+	Package maps document for CentOS 6.1
+-->
+<package-maps>
+	<version>1.0</version>
+	
+	<distro>
+		<id>centos_6_1</id>
+		<label>CentOS 6.1</label>
+		<inherit>centos_6</inherit>
+		<defaultJarPath>/usr/share/java</defaultJarPath>
+		<defaultJNIPath>/usr/lib/jni:/usr/lib</defaultJNIPath>
+	</distro>
+</package-maps>
