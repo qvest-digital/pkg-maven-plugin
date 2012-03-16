@@ -79,10 +79,17 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 	}
 	
 	@Test(expected=MojoExecutionException.class)
-	public void getLicenseForProjectWithoutLicenses() throws Exception{
+	public void getLicenseForProjectWithEmptyLicenseElement() throws Exception{
 		
 		Packaging p = (Packaging)mockEnvironment(RPMPOM, "pkg");
 		p.project.setLicenses(null);
+		Utils.getConsolidatedLicenseString(p.project);
+	}
+	
+	@Test(expected=MojoExecutionException.class)
+	public void getLicenseForProjectWithoutLicenseElement() throws Exception{
+		
+		Packaging p = (Packaging)mockEnvironment(RPMPOM, "pkg",false);
 		Utils.getConsolidatedLicenseString(p.project);
 	}
 	
