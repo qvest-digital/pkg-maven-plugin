@@ -696,10 +696,10 @@ public final class Utils {
 		Iterator<License> ite = null;
 		try {
 			ite = (Iterator<License>) project.getLicenses().iterator();
+			license.append(((License) ite.next()).getName());
 		} catch (Exception ex) {
 			throw new MojoExecutionException("Please provide at least one license in your POM.",ex);
 		}
-		license.append(((License) ite.next()).getName());
 		while (ite.hasNext()) {
 			license.append(", ");
 			license.append(((License) ite.next()).getName());
