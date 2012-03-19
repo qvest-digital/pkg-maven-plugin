@@ -59,6 +59,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -265,8 +267,24 @@ public void execute(Log l,
   {
 
     Utils.checkProgramAvailability("dpkg-deb");
+    String output = Utils.getProgramVersionOutput("dpkg-deb");
     
-    // Some external tools are only needed if the package is to be sign    
+    /* We will check if the minor version number is smaller than 15.
+       Problems have been reported regarding older versions of dpkg-deb and - what dpkg-deb
+       understands as version numbers - not containing numbers (bug #2912), e.g. "-SNAPSHOT".*/
+    
+    Pattern p = Pattern.compile("version (1\\.([0-9]{2})\\.([0-9]*\\.*)*)* ",Pattern.MULTILINE);
+    Matcher m =  p.matcher(output);
+    if(m.find()){
+	    l.info("dpkg-deb version: " +m.group(1));
+	    int versionNumber = Integer.parseInt(m.group(2));
+	    if(versionNumber<15 && workspaceSession.getHelper().getPackageVersion().contains("-SNAPSHOT")){
+	    	throw new MojoExecutionException("You are trying to build a snapshot with an older version of dpkg-deb. "+
+	    									 "You are advised to add a revision number to your package (e.g. r1) or "+
+	    									 "your package will not be built correctly.");
+	    }	
+    }
+    // Some external tools are only needed if the package is to be signed   
     if(workspaceSession.getTargetConfiguration().isSign()){
     	Utils.checkProgramAvailability("dpkg-distaddfile");
         Utils.checkProgramAvailability("gpg");

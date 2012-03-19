@@ -671,7 +671,4 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertTrue(debDependsOn("dependencysharedparent1","libdummyproject-sharedparent1-java_1.0.0_all.deb"));
         }
 	
-	
-	
-	
 }

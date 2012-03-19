@@ -183,6 +183,38 @@ public final class Utils {
 	}
 
 	/**
+	 * Checks whether a certain program is available.
+	 * 
+	 * <p>
+	 * It fails with a {@link MojoExecutionException} if the program is not
+	 * available.
+	 * 
+	 * @param programName
+	 * @throws MojoExecutionException
+	 */
+	public static String getProgramVersionOutput(String programName) throws MojoExecutionException {
+		return inputStreamToString(exec(new String[] { programName, "--version" }, null,
+				    " dpkg-deb is not available on your system. Check your installation!", "Error executing dpkg-deb"
+				    + ". Aborting!",null)).trim();
+	}
+
+	private static String inputStreamToString(InputStream in) {
+		
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+		StringBuilder stringBuilder = new StringBuilder();
+		String line = null;
+		try{
+			while ((line = bufferedReader.readLine()) != null) {
+			stringBuilder.append(line + "\n");
+			}
+			bufferedReader.close();
+		}catch(IOException ex){
+			new MojoExecutionException("Error reading input stream");
+		}			
+		return stringBuilder.toString();
+	}
+
+	/**
 	 * A method which makes executing programs easier.
 	 * 
 	 * @param args
