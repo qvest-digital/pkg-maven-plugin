@@ -101,6 +101,30 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertFalse(debIsSigned());
             assertEquals(0,returnFilesBasedOnFilename("pkg-tmp").length);
         }
+
+	/**
+	 * This test attempts the following:
+	 * 
+	 * Execute a target configuration which itself has parent configuration
+	 * Use the only distribution defined for this target
+	 * Create a DEB file with a specific revision
+	 * Include a main artifact (JAR) in the DEB file
+	 * At the end of the packaging process the directory pkg-tmp should not exist
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+    public void createDebForUbuntuLucidWithoutDependenciesContainingJarWithRevision()
+            throws Exception
+        {	
+			packagingPlugin = mockPackagingEnvironment(DEBPOM, "ubuntu_lucid_target_simple_with_revision");
+            packagingPlugin.execute();
+            assertTrue(numberOfDEBsIs(1));
+            assertTrue(debContainsMainArtifact());
+            assertFalse(debIsSigned());
+            assertEquals(0,returnFilesBasedOnFilename("pkg-tmp").length);
+            assertTrue(debRevisionIs("22")); //Magic number from DEBPOM
+        }
 	
 	@Test
     public void createDebForUbuntuLucidKeepPkgTmpDir()
@@ -152,6 +176,28 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
             assertTrue(numberOfRPMsIs(1));
             assertTrue(rpmContainsMainArtifact());
             assertFalse(rpmIsSigned());
+            assertTrue(rpmReleaseIs("1")); // No revision is the pom, so the rpm equivalent "release" should be 1 
+        }
+	
+	/**
+	 * This test attempts the following:
+	 * 
+	 * Execute a target configuration without parent
+	 * Use the only distribution defined for this target
+	 * Create a RPM file with a specific release number
+	 * Include a main artifact (JAR) in the RPM file 
+	 * 
+	*/
+	@Test
+    public void createRpmForCentOS_5_6WithoutDependenciesContainingJarWithSpecificRevision()
+            throws Exception
+        {	
+			packagingPlugin = mockPackagingEnvironment(RPMPOM,"centos_5_6_target_simple_with_revision");
+            packagingPlugin.execute();
+            assertTrue(numberOfRPMsIs(1));
+            assertTrue(rpmContainsMainArtifact());
+            assertFalse(rpmIsSigned());
+            assertTrue(rpmReleaseIs("22")); //Magic number comes from RPMPOM
         }
 	
 	/**

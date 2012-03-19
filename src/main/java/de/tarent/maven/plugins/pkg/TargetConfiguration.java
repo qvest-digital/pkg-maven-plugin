@@ -586,6 +586,11 @@ public class TargetConfiguration {
 	 * packaging (e.g. moved a file to the correct location).
 	 * 
 	 * <p>
+	 * NOTE: this field will also be used for the <i>release</i> field of Spec files 
+	 * in RPM packages. 
+	 * </p>
+	 * 
+	 * <p>
 	 * It is possible to use all kinds of strings for that. The ordering rules
 	 * of those is dependent on the underlying packaging system. Try to use
 	 * something sane like "r0", "r1" and so on.
@@ -870,18 +875,6 @@ public class TargetConfiguration {
 	 */
 	@MergeMe(defaultBoolean=false)
 	private Boolean sign;
-	
-	/**
-	 * Denotes the release of the package to build.
-	 * 
-	 * <p>This is an RPM-specific property and is equivalent to
-	 * Debian's <em>revision</em> property.</p>
-	 * 
-	 * <p>Default value is <code>unknown</code>.</p>
-	 * 
-	 */
-	@MergeMe(defaultString="unknown")
-	private String release;
 	
 	/**
 	 * Denotes the source of the package to build. As of now, this value is
@@ -1405,7 +1398,6 @@ public class TargetConfiguration {
 		appendBoolean(sb, "bundleAll", bundleAll);
 		appendBoolean(sb, "advancedStarter", advancedStarter);
 		appendBoolean(sb, "sign", sign);
-		appendStringDefault(sb, "release", release);
 		appendStringDefault(sb, "source", source);
 		sb.append("createWindowsExecutable: " + createWindowsExecutable + "\n");
 		sb.append("createOSXApp: " + createOSXApp + "\n");
@@ -1568,17 +1560,6 @@ public class TargetConfiguration {
 	public void setSign(boolean sign) {
 		this.sign = Boolean.valueOf(sign);
 	}
-
-	public String getRelease() {
-		checkIfReady();
-		return release;
-	}
-
-
-	public void setRelease(String release) {
-		this.release = release;
-	}
-
 
 	public String getSource() {
 		checkIfReady();

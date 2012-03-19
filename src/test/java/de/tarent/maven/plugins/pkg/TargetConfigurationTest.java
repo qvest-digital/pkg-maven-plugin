@@ -197,7 +197,7 @@ public class TargetConfigurationTest {
 		TargetConfiguration tc1 = new TargetConfiguration("tc1");
 		tc1.fixate();
 		
-		Assert.assertEquals("unknown", tc1.getRelease());
+		Assert.assertNull(tc1.getRevision());
 	}
 	
 	/**
@@ -210,10 +210,10 @@ public class TargetConfigurationTest {
 	public void testStringPropertyMerge_set_fixate() throws MojoExecutionException
 	{
 		TargetConfiguration tc1 = new TargetConfiguration("tc1");
-		tc1.setRelease("heavens");
+		tc1.setRevision("heavens");
 		tc1.fixate();
 		
-		Assert.assertEquals("heavens", tc1.getRelease());
+		Assert.assertEquals("heavens", tc1.getRevision());
 	}
 	
 	/**
@@ -226,13 +226,13 @@ public class TargetConfigurationTest {
 	public void testStringPropertyMerge_inherit() throws MojoExecutionException
 	{
 		TargetConfiguration tc1 = new TargetConfiguration("tc1");
-		tc1.setRelease("inheritme");
+		tc1.setRevision("inheritme");
 		
 		TargetConfiguration tc2 = new TargetConfiguration("tc2");
 		
 		Utils.mergeConfigurations(tc2, tc1);
 		
-		Assert.assertEquals("inheritme", tc2.getRelease());
+		Assert.assertEquals("inheritme", tc2.getRevision());
 	}
 	
 	/**
@@ -247,11 +247,11 @@ public class TargetConfigurationTest {
 		TargetConfiguration tc1 = new TargetConfiguration("tc1");
 		
 		TargetConfiguration tc2 = new TargetConfiguration("tc2");
-		tc1.setRelease("overrideme");
+		tc1.setRevision("overrideme");
 		
 		Utils.mergeConfigurations(tc2, tc1);
 		
-		Assert.assertEquals("overrideme", tc2.getRelease());
+		Assert.assertEquals("overrideme", tc2.getRevision());
 	}
 	
 	/**

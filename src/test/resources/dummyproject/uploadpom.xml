@@ -81,9 +81,7 @@
 									<username>test</username>
 								</urls>
 							</uploadParameters>
-							<revision>r0</revision>
 							<source>dummysource</source>
-							<release>dummyrelease</release>
 							<architecture>x86_64</architecture>
 						</targetConfiguration>		
 

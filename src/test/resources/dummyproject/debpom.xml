@@ -62,6 +62,12 @@
 								<distro>ubuntu_lucid</distro>
 							</distros>
 						</targetConfiguration>
+
+						<targetConfiguration>
+							<target>ubuntu_lucid_target_simple_with_revision</target>
+							<parent>ubuntu_lucid_target_simple</parent>
+							<revision>22</revision>
+						</targetConfiguration>
 						
 						<targetConfiguration>
 							<target>ubuntu_lucid_target_sharedparent1</target>
@@ -123,9 +129,7 @@
 							<distros>
 								<distro>ubuntu_lucid</distro>
 							</distros>
-							<revision>r0</revision>
 							<source>dummysource</source>
-							<release>dummyrelease</release>
 							<architecture>x86_64</architecture>
 							<manualDependencies>
 								<string>kdm</string>
@@ -146,9 +150,7 @@
 							<distros>
 								<distro>ubuntu_lucid</distro>
 							</distros>
-							<revision>r0</revision>
 							<source>dummysource</source>
-							<release>dummyrelease</release>
 							<architecture>x86_64</architecture>
 							<manualDependencies>
 								<string>kdm</string>

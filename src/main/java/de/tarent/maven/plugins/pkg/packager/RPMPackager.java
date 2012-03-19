@@ -244,7 +244,7 @@ public class RPMPackager extends Packager {
 			sgen.setSummary(ph.getProjectDescription());
 			sgen.setDescription(ph.getProjectDescription());
 			sgen.setLicense(ph.getLicense());
-			sgen.setRelease(dc.getRelease());
+			sgen.setRelease(dc.getRevision());
 			sgen.setSource(dc.getSource());
 			sgen.setUrl(ph.getProjectUrl());
 			sgen.setGroup(dc.getSection());
@@ -320,10 +320,9 @@ public class RPMPackager extends Packager {
 		if(ph.getPackageName()==null || ph.getPackageName().equals(UNKNOWN) ||
 		   ph.getPackageVersion()==null || ph.getPackageVersion().equals(UNKNOWN) ||
 		   ph.getProjectDescription()==null || ph.getProjectDescription().equals(UNKNOWN) ||
-		   ph.getLicense()==null || ph.getLicense().equals(UNKNOWN) ||
-		   dc.getRelease()==null || dc.getRelease().equals(UNKNOWN)){
-			String message = "At least PackageName, Version, Description, Summary, "+ 
-							 "License and Release are needed for the spec file.";
+		   ph.getLicense()==null || ph.getLicense().equals(UNKNOWN)){
+			String message = "At least PackageName, Version, Description and Summary "+ 
+							 "are needed for the spec file.";
 			throw new MojoExecutionException(message);
 		}
 	}

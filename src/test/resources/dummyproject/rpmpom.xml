@@ -43,7 +43,13 @@
 							<sign>true</sign>
 							<distros>
 								<distro>centos_5_6</distro>
-							</distros>
+							</distros>							
+						</targetConfiguration>
+						
+						<targetConfiguration>
+							<target>centos_5_6_target_simple_with_revision</target>
+							<parent>centos_5_6_target_simple</parent>
+							<revision>22</revision>
 						</targetConfiguration>
 
 						<targetConfiguration>
@@ -53,9 +59,7 @@
 								<distro>centos_5_6</distro>
 							</distros>
 							<section>misc</section>
-							<revision>r0</revision>
 							<source>dummysource</source>
-							<release>dummyrelease</release>
 							<architecture>x86_64</architecture>
 						</targetConfiguration>
 						
@@ -67,9 +71,7 @@
 								<distro>centos_5_6</distro>
 							</distros>
 
-							<revision>r0</revision>
 							<source>dummysource</source>
-							<release>dummyrelease</release>
 							<architecture>x86_64</architecture>
 							<manualDependencies>
 								<string>kdm</string>
@@ -84,9 +86,7 @@
 							<distros>
 								<distro>centos_5_6</distro>
 							</distros>
-							<revision>r0</revision>
 							<source>dummysource</source>
-							<release>dummyrelease</release>
 							<architecture>x86_64</architecture>
 							<manualDependencies>
 								<string>kdm</string>
@@ -108,9 +108,7 @@
 							<distros>
 								<distro>centos_5_6</distro>
 							</distros>
-							<revision>r0</revision>
 							<source>dummysource</source>
-							<release>dummyrelease</release>
 							<architecture>x86_64</architecture>
 							<manualDependencies>
 								<string>kdm</string>

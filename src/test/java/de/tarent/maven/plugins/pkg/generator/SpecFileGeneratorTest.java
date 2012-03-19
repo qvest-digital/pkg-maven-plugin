@@ -460,11 +460,11 @@ public class SpecFileGeneratorTest {
 	}
 	
 	@Test
-	public void testSetReleaseDefaultsToUnknownIfNullOrEmpty(){
+	public void testSetReleaseDefaultsTo1IfNullOrEmpty(){
 		specgenerator.setRelease(null);
-		Assert.assertEquals("unknown",specgenerator.getRelease());
+		Assert.assertEquals("1",specgenerator.getRelease());
 		specgenerator.setRelease("");
-		Assert.assertEquals("unknown",specgenerator.getRelease());		
+		Assert.assertEquals("1",specgenerator.getRelease());		
 	}
 	
 	@Test

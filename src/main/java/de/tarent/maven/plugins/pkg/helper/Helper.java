@@ -364,8 +364,13 @@ public class Helper {
 			rpmPackageName.append(instance.getPackageName());
 			rpmPackageName.append("-");
 			rpmPackageName.append(instance.getPackageVersion().replace("-", "_"));
-			rpmPackageName.append("-");
-			rpmPackageName.append(instance.targetConfiguration.getRelease());
+			if(instance.targetConfiguration.getRevision()!=null){
+				rpmPackageName.append("-");
+				rpmPackageName.append(instance.targetConfiguration.getRevision());
+			}else{
+				// Release version defaults to "1"
+				rpmPackageName.append("-1");
+			}
 			rpmPackageName.append(".");
 			rpmPackageName.append(getArchitecture(instance));
 			return rpmPackageName.toString();

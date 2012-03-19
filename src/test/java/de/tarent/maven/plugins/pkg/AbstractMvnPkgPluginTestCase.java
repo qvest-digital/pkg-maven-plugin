@@ -357,6 +357,11 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		final Pattern p = Pattern.compile(Pattern.quote(s)+".*");
 		return rpmContains(p,"-R");
 	}	
+	
+	protected boolean rpmReleaseIs(String s) throws MojoExecutionException, IOException {
+		final Pattern p = Pattern.compile("Release.*"+Pattern.quote(s)+".*");
+		return rpmContains(p,"-i");
+	}
 
 	protected boolean debDependsOn(String s) throws MojoExecutionException, IOException {
 		final Pattern p = Pattern.compile("Depends:.*"+Pattern.quote(s)+".*");
@@ -371,6 +376,11 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	protected boolean debDependsOn(String s, String filename) throws MojoExecutionException, IOException {
 		final Pattern p = Pattern.compile("Depends:.*"+Pattern.quote(s)+".*");
 		return debContains(p, "--info", filename);
+	}		
+
+	protected boolean debRevisionIs(String s) throws MojoExecutionException, IOException {
+		final Pattern p = Pattern.compile("Version:.*-"+Pattern.quote(s));
+		return debContains(p, "--info");
 	}
 	
 	protected List<License> createLicenseList(String ... strings)

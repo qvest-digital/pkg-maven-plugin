@@ -120,9 +120,7 @@
 							<distros>
 								<distro>izpack</distro>
 							</distros>
-							<revision>r0</revision>
 							<source>dummysource</source>
-							<release>dummyrelease</release>
 							<architecture>x86_64</architecture>
 							<manualDependencies>
 								<string>kdm</string>

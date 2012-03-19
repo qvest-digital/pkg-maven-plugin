@@ -88,9 +88,7 @@
 								<distro>centos_5_6</distro>
 							</distros>
 							<section>misc</section>
-							<revision>r0</revision>
 							<source>dummysource</source>
-							<release>dummyrelease</release>
 							<architecture>x86_64</architecture>
 						</targetConfiguration>
 

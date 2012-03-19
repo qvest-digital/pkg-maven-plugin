@@ -61,7 +61,7 @@ public class SpecFileGenerator {
 
 	private String license = UNKNOWN;
 
-	private String release = UNKNOWN;
+	private String release;
 
 	private String dependencies;
 
@@ -254,10 +254,11 @@ public class SpecFileGenerator {
 		if (release != null && !release.isEmpty()){
 			this.release = release;
 		}else{
+			// Release can not be empty. If so, it will be set to 1 
 			if(logger!=null){
-				logger.debug("release not set");
-			}
-			this.release = UNKNOWN;
+				logger.debug("release not set. fallback value is \"1\"");
+			}			
+			this.release = "1";
 		}
 	}
 
