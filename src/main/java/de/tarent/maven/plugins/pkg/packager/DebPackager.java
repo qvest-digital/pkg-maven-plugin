@@ -57,6 +57,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -76,6 +77,7 @@ import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
+import de.tarent.maven.plugins.pkg.helper.ArtifactInclusionStrategy;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 import de.tarent.maven.plugins.pkg.signing.DebianSigner;
@@ -144,7 +146,7 @@ public void execute(Log l,
     
     // A set which will be filled with the artifacts which need to be bundled with the
     // application.
-    Set<Artifact> bundledArtifacts = null;
+    Set<Artifact> bundledArtifacts = new HashSet<Artifact>();
     Path bcp = new Path();
     Path cp = new Path();
     
@@ -157,9 +159,7 @@ public void execute(Log l,
 	// here.
 	
 	ph.prepareInitialDirectories();
-	
-	byteAmount += ph.copyProjectArtifact();
-	
+		
 	byteAmount += ph.copyFiles();
 	
 	generateConffilesFile(l, conffilesFile, targetConfiguration, ph);
@@ -168,12 +168,11 @@ public void execute(Log l,
 	
 	byteAmount += ph.createCopyrightFile();
 	
-	// The user may want to avoid including dependencies
-	if(targetConfiguration.isBundleDependencyArtifacts()){
-		bundledArtifacts = ph.bundleDependencies(bcp, cp);
-		byteAmount += ph.copyArtifacts(bundledArtifacts);
-	}
+	ArtifactInclusionStrategy aiStrategy = workspaceSession.getArtifactInclusionStrategy();
+	ArtifactInclusionStrategy.Result result = aiStrategy.processArtifacts(ph);
 	
+	byteAmount += result.getByteAmount();
+
 	// Create classpath line, copy bundled jars and generate wrapper
 	// start script only if the project is an application.
 	if (targetConfiguration.getMainClass() != null)
@@ -182,7 +181,13 @@ public void execute(Log l,
 	    // bundledArtifacts = ph.createClasspathLine(bcp, cp);
 		ph.createClasspathLine(bcp, cp);
 	    ph.generateWrapperScript(bcp, cp, false);
-	  }
+	 }
+
+	// The user may want to avoid including dependencies
+	if(targetConfiguration.isBundleDependencyArtifacts()){
+		bundledArtifacts = ph.bundleDependencies(result.getResolvedDependencies(), bcp, cp);
+		byteAmount += ph.copyArtifacts(bundledArtifacts);
+	}
 	
 	generateControlFile(l,
 						targetConfiguration,
@@ -190,7 +195,7 @@ public void execute(Log l,
 			            controlFile,
 			            packageName,
 			            packageVersion,
-			            ph.createDependencyLine(),
+			            ph.createDependencyLine(result.getResolvedDependencies()),
 			            ph.createRecommendsLine(),
 			            ph.createSuggestsLine(),
 			            ph.createProvidesLine(),

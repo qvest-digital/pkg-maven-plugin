@@ -912,6 +912,9 @@ public class TargetConfiguration {
 	 */
 	@MergeMe(defaultBoolean=true)
 	private Boolean bundleDependencyArtifacts;
+
+	@MergeMe(defaultString="default")
+	private String artifactInclusion;
 	
 	public TargetConfiguration() {
 		// Intentionally empty.
@@ -1155,6 +1158,14 @@ public class TargetConfiguration {
 	public String getWrapperScriptName() {
 		checkIfReady();
 		return wrapperScriptName;
+	}
+
+	public String getArtifactInclusion() {
+		return artifactInclusion;
+	}
+
+	public void setArtifactInclusion(String artifactInclusion) {
+		this.artifactInclusion = artifactInclusion;
 	}
 
 	public boolean isAdvancedStarter() {

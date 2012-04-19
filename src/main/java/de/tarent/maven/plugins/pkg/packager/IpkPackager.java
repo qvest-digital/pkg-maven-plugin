@@ -66,6 +66,7 @@ import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.ControlFileGenerator;
+import de.tarent.maven.plugins.pkg.helper.ArtifactInclusionStrategy;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 
 /**
@@ -107,17 +108,18 @@ public class IpkPackager extends Packager
 	
     ph.prepareInitialDirectories();
 
-    byteAmount += ph.copyProjectArtifact();
-    
     byteAmount += ph.copyFiles();
     
     byteAmount += ph.copyScripts();
     
     byteAmount += ph.createCopyrightFile();
 
-	// The user may want to avoid including dependencies
+	ArtifactInclusionStrategy aiStrategy = workspaceSession.getArtifactInclusionStrategy();
+	ArtifactInclusionStrategy.Result result = aiStrategy.processArtifacts(ph);
+
+    // The user may want to avoid including dependencies
 	if(distroConfig.isBundleDependencyArtifacts()){
-		bundledArtifacts = ph.bundleDependencies(bcp, cp);
+		bundledArtifacts = ph.bundleDependencies(result.getResolvedDependencies(), bcp, cp);
 		byteAmount += ph.copyArtifacts(bundledArtifacts);
 	}
 	
@@ -138,7 +140,7 @@ public class IpkPackager extends Packager
                         controlFile,
                         packageName,
                         packageVersion,
-                        ph.createDependencyLine(),
+                        ph.createDependencyLine(result.getResolvedDependencies()),
                         byteAmount);
 
     createPackage(l, ph, ph.getBasePkgDir());

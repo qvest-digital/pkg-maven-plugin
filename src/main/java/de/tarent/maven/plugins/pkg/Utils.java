@@ -645,7 +645,8 @@ public final class Utils {
 	 * @throws ProjectBuildingException
 	 * @throws InvalidDependencyVersionException
 	 */
-	public static Set findArtifacts(ArtifactFilter filter, 
+	@SuppressWarnings("unchecked")
+	public static Set<Artifact> findArtifacts(ArtifactFilter filter, 
 										  ArtifactFactory factory,
 										  ArtifactResolver resolver,
 										  MavenProject project, 
@@ -663,7 +664,7 @@ public final class Utils {
 																		metadataSource,
 																		filter);
 
-		return result.getArtifacts();
+		return (Set<Artifact>) result.getArtifacts();
 	}
 	
 	/**

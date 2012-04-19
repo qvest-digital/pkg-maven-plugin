@@ -144,7 +144,7 @@ public class IzPackPackager extends Packager
     Set<Artifact> bundledArtifacts = null;
     Path bcp = new Path();
     Path cp = new Path();
-    
+    Set<Artifact> deps = ph.resolveProjectDependencies();
 
 	prepareDirectories(l,
 					   workspaceSession.getMojo().getTempRoot(),
@@ -155,16 +155,11 @@ public class IzPackPackager extends Packager
 	
 	unpackIzPack(l, izPackEmbeddedJarFile, izPackEmbeddedRoot);
 	
-	ph.bundleDependencies(bcp, cp);
+	ph.bundleDependencies(deps, bcp, cp);
 	
-	bundledArtifacts = ph.bundleDependencies(bcp, cp);
-
-	// The user may want to avoid including dependencies
-	if(distroConfig.isBundleDependencyArtifacts()){
-		bundledArtifacts = ph.bundleDependencies(bcp, cp);
-		ph.copyArtifacts(bundledArtifacts);
-	}
-	
+	// IzPack does not support the exclusion of dependencies.
+	bundledArtifacts = ph.bundleDependencies(deps, bcp, cp);
+	ph.copyArtifacts(bundledArtifacts);
 	ph.copyProjectArtifact();
 	
 	ph.copyFiles();

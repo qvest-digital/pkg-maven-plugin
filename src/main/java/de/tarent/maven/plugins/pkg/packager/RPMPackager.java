@@ -66,6 +66,7 @@ import de.tarent.maven.plugins.pkg.TargetConfiguration;
 import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.generator.SpecFileGenerator;
+import de.tarent.maven.plugins.pkg.helper.ArtifactInclusionStrategy;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 
 /**
@@ -101,7 +102,6 @@ public class RPMPackager extends Packager {
 	    ph.setDstStarterDir(new File(ph.getBaseBuildDir(),ph.getTargetStarterDir().toString()));
 	    ph.setDstWrapperScriptFile(new File(ph.getBaseBuildDir(),ph.getTargetWrapperScriptFile().toString()));
 	    
-	    ph.copyProjectArtifact();	    
 		ph.copyFiles();
 		
 		l.debug(ph.getPackageName());
@@ -116,9 +116,12 @@ public class RPMPackager extends Packager {
 	    Path bcp = new Path();
 	    Path cp = new Path();
 
-		// The user may want to avoid including dependencies
+		ArtifactInclusionStrategy aiStrategy = workspaceSession.getArtifactInclusionStrategy();
+		ArtifactInclusionStrategy.Result result = aiStrategy.processArtifacts(ph);
+
+	    // The user may want to avoid including dependencies
 		if(distroConfig.isBundleDependencyArtifacts()){
-			bundledArtifacts = ph.bundleDependencies(bcp, cp);
+			bundledArtifacts = ph.bundleDependencies(result.getResolvedDependencies(), bcp, cp);
 			ph.copyArtifacts(bundledArtifacts);
 		}
 		
@@ -137,7 +140,7 @@ public class RPMPackager extends Packager {
 		try {
 	        
 	        
-			generateSPECFile(l, ph, distroConfig, specFile);
+			generateSPECFile(l, ph, distroConfig, result.getResolvedDependencies(), specFile);
 			l.info("SPEC file generated.");
 			createPackage(l, workspaceSession, specFile);
 			l.info("Package created.");
@@ -228,7 +231,7 @@ public class RPMPackager extends Packager {
 	 * @throws IOException 
 	 */
 	private void generateSPECFile(Log l, Helper ph, TargetConfiguration dc,
-			File specFile) throws MojoExecutionException, IOException {
+			Set<Artifact> resolvedDependencies, File specFile) throws MojoExecutionException, IOException {
 		l.info("Creating SPEC file: " + specFile.getAbsolutePath());
 		SpecFileGenerator sgen = new SpecFileGenerator();
 		sgen.setLogger(l);
@@ -248,7 +251,7 @@ public class RPMPackager extends Packager {
 			sgen.setSource(dc.getSource());
 			sgen.setUrl(ph.getProjectUrl());
 			sgen.setGroup(dc.getSection());
-			sgen.setDependencies(ph.createDependencyLine());
+			sgen.setDependencies(ph.createDependencyLine(resolvedDependencies));
 			
 			// Following parameters are not mandatory
 			l.info("Adding optional parameters to SPEC file.");

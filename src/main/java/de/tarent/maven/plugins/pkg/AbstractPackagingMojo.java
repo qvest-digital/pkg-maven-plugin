@@ -99,6 +99,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 
+import de.tarent.maven.plugins.pkg.helper.ArtifactInclusionStrategy;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
@@ -601,6 +602,9 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 		AbstractPackagingMojo mojo = ws.getMojo();
 		TargetConfiguration tc = ws.getTargetConfiguration();
 		Map<String, TargetConfiguration> tcMap = ws.getTargetConfigurationMap();
+		
+		ArtifactInclusionStrategy strategy = ArtifactInclusionStrategy.getStrategyInstance(tc.getArtifactInclusion());
+		ws.setArtifactInclusionStrategy(strategy);
 
 		// At first we create the various work objects that we need to process
 		// the

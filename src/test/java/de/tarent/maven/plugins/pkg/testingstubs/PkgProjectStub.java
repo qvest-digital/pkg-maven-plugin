@@ -2,12 +2,16 @@ package de.tarent.maven.plugins.pkg.testingstubs;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Build;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.codehaus.plexus.util.ReaderFactory;
 /**
@@ -43,6 +47,8 @@ public class PkgProjectStub
         setUrl( model.getUrl() );
         setPackaging( model.getPackaging() );
         
+        setRemoteArtifactRepositories(Collections.emptyList());
+        
         Build build = new Build();
         build.setFinalName( model.getArtifactId() );
         build.setDirectory( getBasedir() + "/target" );
@@ -51,7 +57,10 @@ public class PkgProjectStub
         build.setTestSourceDirectory( getBasedir() + "/src/test/java" );
         build.setTestOutputDirectory( getBasedir() + "/target/test-classes" );
         setBuild( build );
+        
+        setDependencies(model.getDependencies());
         this.setDependencyArtifacts(new HashSet());
+        
         List compileSourceRoots = new ArrayList();
         compileSourceRoots.add( getBasedir() + "/src/main/java" );
         setCompileSourceRoots( compileSourceRoots );
@@ -59,8 +68,6 @@ public class PkgProjectStub
         List testCompileSourceRoots = new ArrayList();
         testCompileSourceRoots.add( getBasedir() + "/src/test/java" );
         setTestCompileSourceRoots( testCompileSourceRoots );
-        
-        
         
     }
 

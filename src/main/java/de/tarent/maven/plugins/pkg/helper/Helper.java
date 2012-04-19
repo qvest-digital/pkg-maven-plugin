@@ -1300,8 +1300,8 @@ public class Helper {
 	   * @return
 	   * @throws MojoExecutionException
 	   */
-		public Set<Artifact> bundleDependencies(Path bcp, Path cp) throws MojoExecutionException {
-			return bundleDependencies(l, getTargetBundledJarDir(), bcp, cp, getTargetArtifactFile());
+		public Set<Artifact> bundleDependencies(Set<Artifact> resolvedDependencies, Path bcp, Path cp) throws MojoExecutionException {
+			return bundleDependencies(l, resolvedDependencies, getTargetBundledJarDir(), bcp, cp, getTargetArtifactFile());
 		}
 
 	  /**
@@ -1316,6 +1316,7 @@ public class Helper {
 	   * @throws MojoExecutionException
 	   */
 	  protected final Set<Artifact> bundleDependencies(final Log l,
+			  final Set<Artifact> resolvedDependencies,
               final File targetJarPath,
               final Path bcp,
               final Path cp,
@@ -1326,68 +1327,6 @@ public class Helper {
 			
 		    l.info("Copying dependencies into package");
 		
-		    Set dependencies = new HashSet();
-		    try
-		      {
-		        // Notice only compilation dependencies which are Jars.
-		        // Shared Libraries ("so") are filtered out because the
-		        // JNI dependency is solved by the system already.
-		    	
-		    	// Here a filter for depencies of the COMPILE scope is created
-		        AndArtifactFilter compileFilter = new AndArtifactFilter();
-		        compileFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE));
-		        compileFilter.add(new TypeArtifactFilter("jar"));
-		
-		        // The result of the COMPILE filter will be added to the depencies set
-		        dependencies.addAll(Utils.findArtifacts(compileFilter, apm.getFactory(), apm.getResolver(), 
-		        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
-		        		apm.getRemoteRepos(), apm.getMetadataSource()));
-
-		    	// Here a filter for depencies of the RUNTIME scope is created
-		        AndArtifactFilter runtimeFilter = new AndArtifactFilter();
-		        runtimeFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME));
-		        runtimeFilter.add(new TypeArtifactFilter("jar"));
-
-		        // The result of the RUNTIME filter will be added to the depencies set
-		        dependencies.addAll(Utils.findArtifacts(runtimeFilter, apm.getFactory(), apm.getResolver(), 
-		        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
-		        		apm.getRemoteRepos(), apm.getMetadataSource()));
-
-		        // Here a filter for depencies of the PROVIDED scope is created
-		        AndArtifactFilter providedFilter = new AndArtifactFilter();
-		        providedFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_PROVIDED));
-		        providedFilter.add(new TypeArtifactFilter("jar"));
-		        
-		        // The result of the PROVIDED filter will be added to the depencies set
-		        dependencies.addAll(Utils.findArtifacts(providedFilter, apm.getFactory(), apm.getResolver(), 
-		        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
-		        		apm.getRemoteRepos(), apm.getMetadataSource()));	     
-		        
-		      }
-		    catch (ArtifactNotFoundException anfe)
-		      {
-		        throw new MojoExecutionException(
-		                                         "Exception while resolving dependencies",
-		                                         anfe);
-		      }
-		    catch (InvalidDependencyVersionException idve)
-		      {
-		        throw new MojoExecutionException(
-		                                         "Exception while resolving dependencies",
-		                                         idve);
-		      }
-		    catch (ProjectBuildingException pbe)
-		      {
-		        throw new MojoExecutionException(
-		                                         "Exception while resolving dependencies",
-		                                         pbe);
-		      }
-		    catch (ArtifactResolutionException are)
-		      {
-		        throw new MojoExecutionException(
-		                                         "Exception while resolving dependencies",
-		                                         are);
-		      }
 		
 		    Visitor v = new Visitor()
 		    {
@@ -1448,7 +1387,7 @@ public class Helper {
 		
 		    };
 		
-		    packageMap.iterateDependencyArtifacts(l, dependencies, v, true);
+		    packageMap.iterateDependencyArtifacts(l, resolvedDependencies, v, true);
 		    
 		    // Add the custom jar files to the classpath
 		    for (Iterator<JarFile> ite = targetConfiguration.getJarFiles().iterator(); ite.hasNext();)
@@ -1478,13 +1417,79 @@ public class Helper {
 		  return createPackageLine(targetConfiguration.getConflicts());
 	  }
 	  
+	  public Set<Artifact> resolveProjectDependencies() throws MojoExecutionException {
+		    Set<Artifact> resolvedDeps = new HashSet<Artifact>();
+		    try
+		      {
+		        // Notice only compilation dependencies which are Jars.
+		        // Shared Libraries ("so") are filtered out because the
+		        // JNI dependency is solved by the system already.
+		    	
+		    	// Here a filter for depencies of the COMPILE scope is created
+		        AndArtifactFilter compileFilter = new AndArtifactFilter();
+		        compileFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE));
+		        compileFilter.add(new TypeArtifactFilter("jar"));
+		
+		        // The result of the COMPILE filter will be added to the depencies set
+		        resolvedDeps.addAll(Utils.findArtifacts(compileFilter, apm.getFactory(), apm.getResolver(), 
+		        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
+		        		apm.getRemoteRepos(), apm.getMetadataSource()));
+
+		    	// Here a filter for depencies of the RUNTIME scope is created
+		        AndArtifactFilter runtimeFilter = new AndArtifactFilter();
+		        runtimeFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME));
+		        runtimeFilter.add(new TypeArtifactFilter("jar"));
+
+		        // The result of the RUNTIME filter will be added to the depencies set
+		        resolvedDeps.addAll(Utils.findArtifacts(runtimeFilter, apm.getFactory(), apm.getResolver(), 
+		        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
+		        		apm.getRemoteRepos(), apm.getMetadataSource()));
+
+		        // Here a filter for depencies of the PROVIDED scope is created
+		        AndArtifactFilter providedFilter = new AndArtifactFilter();
+		        providedFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_PROVIDED));
+		        providedFilter.add(new TypeArtifactFilter("jar"));
+		        
+		        // The result of the PROVIDED filter will be added to the depencies set
+		        resolvedDeps.addAll(Utils.findArtifacts(providedFilter, apm.getFactory(), apm.getResolver(), 
+		        		apm.getProject(), apm.getProject().getArtifact(), apm.getLocalRepo(), 
+		        		apm.getRemoteRepos(), apm.getMetadataSource()));	     
+		      }
+		    catch (ArtifactNotFoundException anfe)
+		      {
+		        throw new MojoExecutionException(
+		                                         "Exception while resolving dependencies",
+		                                         anfe);
+		      }
+		    catch (InvalidDependencyVersionException idve)
+		      {
+		        throw new MojoExecutionException(
+		                                         "Exception while resolving dependencies",
+		                                         idve);
+		      }
+		    catch (ProjectBuildingException pbe)
+		      {
+		        throw new MojoExecutionException(
+		                                         "Exception while resolving dependencies",
+		                                         pbe);
+		      }
+		    catch (ArtifactResolutionException are)
+		      {
+		        throw new MojoExecutionException(
+		                                         "Exception while resolving dependencies",
+		                                         are);
+		      }
+		  
+		    return resolvedDeps;
+	  }
+	  
 	/**
 	   * Investigates the project's runtime dependencies and creates a dependency
 	   * line suitable for the control file from them.
 	   * 
 	   * @return
 	   */
-	  public final String createDependencyLine() throws MojoExecutionException
+	  public final String createDependencyLine(Set<Artifact> resolvedDependencies) throws MojoExecutionException
 	  {
 	    String defaults = packageMap.getDefaultDependencyLine();
 	    StringBuffer manualDeps = new StringBuffer();
@@ -1521,50 +1526,6 @@ public class Helper {
 	    if (targetConfiguration.isBundleAll()){
 	      return Utils.joinDependencyLines(defaults, manualDeps.toString());
 	    }
-	    Set runtimeDeps = null;
-	
-	    try
-	      {
-	        AndArtifactFilter andFilter = new AndArtifactFilter();
-	        andFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_COMPILE));
-	        andFilter.add(new TypeArtifactFilter("jar"));
-	
-	        runtimeDeps = Utils.findArtifacts(andFilter, apm.getFactory(), apm.getResolver(), 
-	        		apm.getProject(), apm.getProject().getArtifact(), 
-	        		apm.getLocalRepo(), apm.getRemoteRepos(), apm.getMetadataSource());
-	
-	        andFilter = new AndArtifactFilter();
-	        andFilter.add(new ScopeArtifactFilter(Artifact.SCOPE_RUNTIME));
-	        andFilter.add(new TypeArtifactFilter("jar"));
-	
-	        runtimeDeps.addAll(Utils.findArtifacts(andFilter, apm.getFactory(), apm.getResolver(), 
-	        		apm.getProject(), apm.getProject().getArtifact(), 
-	        		apm.getLocalRepo(), apm.getRemoteRepos(), apm.getMetadataSource()));
-	      }
-	    catch (ArtifactNotFoundException anfe)
-	      {
-	        throw new MojoExecutionException(
-	                                         "Exception while resolving dependencies",
-	                                         anfe);
-	      }
-	    catch (InvalidDependencyVersionException idve)
-	      {
-	        throw new MojoExecutionException(
-	                                         "Exception while resolving dependencies",
-	                                         idve);
-	      }
-	    catch (ProjectBuildingException pbe)
-	      {
-	        throw new MojoExecutionException(
-	                                         "Exception while resolving dependencies",
-	                                         pbe);
-	      }
-	    catch (ArtifactResolutionException are)
-	      {
-	        throw new MojoExecutionException(
-	                                         "Exception while resolving dependencies",
-	                                         are);
-	      }
 	
 	    final StringBuilder line = new StringBuilder();
 	
@@ -1599,7 +1560,7 @@ public class Helper {
 	      }
 	    };
 	
-	    packageMap.iterateDependencyArtifacts(l, runtimeDeps, v, true);
+	    packageMap.iterateDependencyArtifacts(l, resolvedDependencies, v, true);
 	
 	    return Utils.joinDependencyLines(line.toString(), manualDeps.toString());
 	  }

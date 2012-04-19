@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.junit.After;
@@ -284,7 +286,8 @@ public class HelperTest extends AbstractMvnPkgPluginTestCase{
 		targetConfiguration.setTarget("foo");
 		targetConfiguration.fixate();
 
-		String line = helper.createDependencyLine();
+		Set<Artifact> deps = helper.resolveProjectDependencies();
+		String line = helper.createDependencyLine(deps);
 		Assert.assertEquals(elString, line);
 	}
 	
@@ -328,7 +331,8 @@ public class HelperTest extends AbstractMvnPkgPluginTestCase{
 		resolvedConfigurations.add(t2);
 		resolvedConfigurations.add(t3);
 		
-		String line = helper.createDependencyLine();
+		Set<Artifact> deps = helper.resolveProjectDependencies();
+		String line = helper.createDependencyLine(deps);
 		Assert.assertEquals("dummyproject-t1, dummyproject-t2, dummyproject-t3", line);
 	}
 }

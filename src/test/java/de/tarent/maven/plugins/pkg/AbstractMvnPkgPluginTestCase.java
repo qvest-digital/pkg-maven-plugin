@@ -179,7 +179,8 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 				 packagingPlugin.finalName +  "." + 
 				 packagingPlugin.project.getPackaging());
 		f.createNewFile();
-		PkgArtifactStub artifactStub = new PkgArtifactStub(f);	
+
+		PkgArtifactStub artifactStub = new PkgArtifactStub(f);
         packagingPlugin.project.setArtifact(artifactStub);
         
         return packagingPlugin;

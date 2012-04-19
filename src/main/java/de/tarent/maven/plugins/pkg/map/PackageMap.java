@@ -217,11 +217,11 @@ public class PackageMap
     return mapping.hasNoPackages;
   }
 
-  public void iterateDependencyArtifacts(Log l, Collection deps, Visitor v, boolean bundleNonExisting)
+  public void iterateDependencyArtifacts(Log l, Collection<Artifact> deps, Visitor v, boolean bundleNonExisting)
   {
-   for (Iterator ite = deps.iterator(); ite.hasNext(); )
+   for (Iterator<Artifact> ite = deps.iterator(); ite.hasNext(); )
      {
-       Artifact a = (Artifact) ite.next();
+       Artifact a = ite.next();
        String aid = a.getArtifactId();
        
        // Bundle dependencies which have been explicitly

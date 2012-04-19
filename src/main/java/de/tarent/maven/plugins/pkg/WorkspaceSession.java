@@ -3,6 +3,7 @@ package de.tarent.maven.plugins.pkg;
 import java.util.List;
 import java.util.Map;
 
+import de.tarent.maven.plugins.pkg.helper.ArtifactInclusionStrategy;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 import de.tarent.maven.plugins.pkg.packager.Packager;
@@ -40,6 +41,8 @@ public class WorkspaceSession {
 	Map<String, TargetConfiguration> targetConfigurationMap;
 	
 	List<TargetConfiguration> resolvedRelations;
+	
+	ArtifactInclusionStrategy artifactInclusionStrategy;
 
 	public AbstractPackagingMojo getMojo() {
 		return mojo;
@@ -96,6 +99,15 @@ public class WorkspaceSession {
 
 	public void setResolvedRelations(List<TargetConfiguration> resolvedRelations) {
 		this.resolvedRelations = resolvedRelations;
+	}
+
+	public ArtifactInclusionStrategy getArtifactInclusionStrategy() {
+		return artifactInclusionStrategy;
+	}
+
+	public void setArtifactInclusionStrategy(
+			ArtifactInclusionStrategy artifactInclusionStrategy) {
+		this.artifactInclusionStrategy = artifactInclusionStrategy;
 	}
 
 }
