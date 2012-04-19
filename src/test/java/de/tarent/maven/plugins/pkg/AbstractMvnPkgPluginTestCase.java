@@ -58,6 +58,10 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	 */
 	protected static final String UPLOADPOM = "uploadpom.xml";
 	/**
+	 * Name of the pom used for artifact inclusion strategy packaging tests 
+	 */
+	protected static final String INCLUSIONSTRATEGIESPOM = "inclusionstrategiespom.xml";
+	/**
 	 * This is the key fingerprint for Test User MVNPKGPLUGIN <no@address.com></br>
 	 * It is needed for test purposes
 	 */
@@ -246,7 +250,7 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		try{
 			out = IOUtils.toString(Utils.exec(new String[]{"dpkg",debArgs,
 				returnFilesFoundBasedOnSuffix("deb")[0].getAbsolutePath()},TARGETDIR,
-				"Failure checking contents", "Failure opening rpm file"));
+				"Failure checking contents", "Failure opening deb file"));
 		}catch (IOException e) {
 			throw new MojoExecutionException(e.getMessage(),e);
 		}
@@ -315,6 +319,13 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	protected boolean debContainsMainArtifact() throws MojoExecutionException, IOException {
 		final Pattern p = Pattern.compile(".*"+
 										  Pattern.quote(packagingPlugin.project.getArtifact().getFile().getName())+
+										  ".*");
+		return debContains(p, "-c");		
+	}
+
+	protected boolean debContainsFile(String name) throws MojoExecutionException, IOException {
+		final Pattern p = Pattern.compile(".*"+
+										  Pattern.quote(name)+
 										  ".*");
 		return debContains(p, "-c");		
 	}
