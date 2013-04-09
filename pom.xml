@@ -42,6 +42,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -51,7 +52,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.1</version>
+				<version>2.4</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -63,10 +64,10 @@
 					</archive>
 				</configuration>
 			</plugin>
-		    <plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>1.0</version>
+				<version>1.2</version>
 				<executions>
 					<execution>
 						<phase>validate</phase>
@@ -79,7 +80,7 @@
 					<doCheck>false</doCheck>
 					<doUpdate>true</doUpdate>
 				</configuration>
-		    </plugin>
+			</plugin>
 			<!-- 
 			<plugin>
 				<groupId>de.tarent.maven.plugins</groupId>
@@ -103,7 +104,8 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId> maven-project-info-reports-plugin </artifactId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>1.6</version>
 				<reportSets>
 					<reportSet>
 						<reports>
@@ -119,11 +121,14 @@
 				</reportSets>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-changelog-plugin</artifactId>
+				<version>2.2</version>
 			</plugin>
 		</plugins>
 	</reporting>
@@ -195,7 +200,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.4</version>
+			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -233,13 +238,6 @@
 			<version>${plexus-archiver.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.0.1</version>
-			<type>pom</type>
-			<scope>compile</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.maven.plugin-testing</groupId>
 			<artifactId>maven-plugin-testing-harness</artifactId>
