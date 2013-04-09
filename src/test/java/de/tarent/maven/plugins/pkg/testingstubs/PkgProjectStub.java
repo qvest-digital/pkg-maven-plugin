@@ -6,12 +6,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Build;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.codehaus.plexus.util.ReaderFactory;
 /**
