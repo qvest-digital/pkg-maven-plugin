@@ -198,7 +198,7 @@ public final class Utils {
 				    + ". Aborting!",null)).trim();
 	}
 
-	private static String inputStreamToString(InputStream in) {
+	private static String inputStreamToString(InputStream in) throws MojoExecutionException {
 		
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
 		StringBuilder stringBuilder = new StringBuilder();
@@ -207,10 +207,15 @@ public final class Utils {
 			while ((line = bufferedReader.readLine()) != null) {
 			stringBuilder.append(line + "\n");
 			}
-			bufferedReader.close();
 		}catch(IOException ex){
-			new MojoExecutionException("Error reading input stream");
-		}			
+			throw new MojoExecutionException("Error reading input stream");
+		} finally {
+			try {
+				bufferedReader.close();
+			} catch (IOException e) {
+				throw new MojoExecutionException("Error closing reader");
+			}
+		}
 		return stringBuilder.toString();
 	}
 
