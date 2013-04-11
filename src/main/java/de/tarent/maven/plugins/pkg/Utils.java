@@ -724,6 +724,7 @@ public final class Utils {
 	 * @return
 	 * @throws MojoExecutionException
 	 */
+	@SuppressWarnings("unchecked")
 	public static String getConsolidatedLicenseString(MavenProject project) throws MojoExecutionException {
 		StringBuilder license = new StringBuilder();
 		Iterator<License> ite = null;
