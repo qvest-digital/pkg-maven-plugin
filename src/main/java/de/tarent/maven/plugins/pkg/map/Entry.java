@@ -99,8 +99,11 @@ public class Entry
 	  if (o instanceof Entry)
 	  {
 		Entry that = (Entry) o;
-		return (this.artifactSpec == null && that.artifactSpec == null || this.artifactSpec.equals(that.artifactSpec))
-			&& (this.versionRange == null && that.versionRange == null || this.versionRange.equals(that.versionRange));
+		
+		return ((this.artifactSpec == null && that.artifactSpec == null) || 
+				(this.artifactSpec != null && that.artifactSpec != null && this.artifactSpec.equals(that.artifactSpec)))
+			&& ((this.versionRange == null && that.versionRange == null) || 
+					(this.versionRange !=null && that.versionRange !=null && this.versionRange.equals(that.versionRange)));
 	  }
 	  
 	  return false;
