@@ -58,7 +58,7 @@ public class _StarterTest {
 
 		m.invoke(null, new Object[] { args });
 
-		Assert.assertEquals(args, last_args);
+		Assert.assertArrayEquals(args, last_args);
 	}
 
 	public static String[] last_args;
