@@ -20,13 +20,13 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.internal.runners.JUnit4ClassRunner;
+import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runner.RunWith;
 
 import de.tarent.maven.plugins.pkg.testingstubs.PkgArtifactStub;
 import de.tarent.maven.plugins.pkg.testingstubs.PkgProjectStub;
 
-@RunWith(JUnit4ClassRunner.class)
+@RunWith(BlockJUnit4ClassRunner.class)
 public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase {
 
 	Packaging packagingPlugin;
@@ -426,24 +426,28 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	}
 
 	
-	protected boolean filecontains(File file, String lookup) throws IOException {
-		FileInputStream fis = new FileInputStream(file);
+	protected boolean filecontains(File file, String lookup) {
+		FileInputStream fis = null;
+		BufferedReader in = null;
+		String currentLine = "";
+		Boolean ret = false;
 
 		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
-			try{
-				String currentLine = "";
-				while ((currentLine = in.readLine()) != null) {
-					if (currentLine.indexOf(lookup) != -1)
-						return true;
+			fis = new FileInputStream(file);
+			in = new BufferedReader(new InputStreamReader(fis));
+			while ((currentLine = in.readLine()) != null) {
+				if (currentLine.indexOf(lookup) != -1) {
+					ret = true;
+					break;
 				}
-			}finally{
-				IOUtils.closeQuietly(in);
 			}
+		} catch (IOException ioe) {
+			
 		} finally {
-			IOUtils.closeQuietly(fis);		
+			IOUtils.closeQuietly(fis);
+			IOUtils.closeQuietly(in);
 		}
-		return false;
+		return ret;
 	}
 	
 	/**
