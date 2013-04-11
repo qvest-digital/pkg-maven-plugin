@@ -29,8 +29,8 @@ public class UploadParameters {
 	 */
 	private String password;
 	
-	static final Pattern USERNAMEPATTERN = Pattern.compile("%USERNAME%");
-	static final Pattern PASSWORDPATTERN = Pattern.compile("%PASSWORD%");
+	private static final Pattern USERNAMEPATTERN = Pattern.compile("%USERNAME%");
+	private static final Pattern PASSWORDPATTERN = Pattern.compile("%PASSWORD%");
 	
 	public String parseUrlPlaceholders(String url) {
 		
