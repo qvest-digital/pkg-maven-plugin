@@ -80,7 +80,7 @@ public class PackageMap
 {
   private Mapping mapping;
   
-  private Set bundleOverrides;
+  private Set<String> bundleOverrides;
   
   /**
    * Creates a <code>PackageMap</code< instance which can then be used to query the mapping
@@ -95,7 +95,7 @@ public class PackageMap
   public PackageMap(URL packageMapURL,
                     URL auxPackageMapURL,
                     String distribution,
-                    Set bundleOverrides)
+                    Set<String> bundleOverrides)
     throws MojoExecutionException
   {
     this.bundleOverrides = bundleOverrides;
