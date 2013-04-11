@@ -102,7 +102,7 @@ public class HelperTest extends AbstractMvnPkgPluginTestCase{
 			}
 
 			@Override
-			public void iterateDependencyArtifacts(Log l, Collection deps,
+			public void iterateDependencyArtifacts(Log l, Collection<Artifact> deps,
 					Visitor v, boolean bundleNonExisting) {
 				packageMap.iterateDependencyArtifacts(l, deps, v, bundleNonExisting);
 			}
