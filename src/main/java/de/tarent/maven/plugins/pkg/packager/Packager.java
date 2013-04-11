@@ -30,13 +30,12 @@ import org.apache.maven.plugin.logging.Log;
 
 import de.tarent.maven.plugins.pkg.WorkspaceSession;
 
-public abstract class Packager
-{
-  
-  public abstract void execute(Log l,
-		  					   WorkspaceSession workspaceSession) throws MojoExecutionException;
-  
-  public abstract void checkEnvironment(Log l,
-		  								WorkspaceSession workspaceSession) throws MojoExecutionException;
-                      
+public abstract class Packager {
+
+	public abstract void execute(Log l, WorkspaceSession workspaceSession)
+			throws MojoExecutionException;
+
+	public abstract void checkEnvironment(Log l,
+			WorkspaceSession workspaceSession) throws MojoExecutionException;
+
 }

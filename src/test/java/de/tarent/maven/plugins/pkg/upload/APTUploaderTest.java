@@ -15,52 +15,57 @@ import de.tarent.maven.plugins.pkg.Upload;
 import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
+public class APTUploaderTest extends AbstractMvnPkgPluginTestCase {
 
-public class APTUploaderTest extends AbstractMvnPkgPluginTestCase{
-	
 	@Before
-	public void setUp() throws Exception{
+	public void setUp() throws Exception {
 		super.setUp();
 	}
-	
+
 	@After
-	public void tearDown() throws Exception{
+	public void tearDown() throws Exception {
 		super.tearDown();
 	}
-	
+
 	@Test
-	public void testConstructor() throws Exception{
+	public void testConstructor() throws Exception {
 		Upload up = mockUploadEnvironment(UPLOADPOM);
 		WorkspaceSession ws = new WorkspaceSession();
-		PackageMap expectedPackageMap = new PackageMap(null, null, "dull", new HashSet<String>());
+		PackageMap expectedPackageMap = new PackageMap(null, null, "dull",
+				new HashSet<String>());
 		String expectedRepo = "localrepo";
 		ws.setPackageMap(expectedPackageMap);
 		ws.setMojo(up);
 		APTUploader au = new APTUploader(ws, expectedRepo);
-		
-		Assert.assertEquals(expectedPackageMap,(PackageMap)getValueOfFieldInObject("packageMap",au));
-		Assert.assertEquals(expectedPackageMap.getPackaging(),(String)getValueOfFieldInObject("packagingType",au));
-		Assert.assertEquals(expectedRepo,(String)getValueOfFieldInObject("repo",au));
-		Assert.assertEquals(up.getLog(),(Log)getValueOfFieldInObject("l",au));
-		Assert.assertEquals(ws.getMojo().getBuildDir(),(File)getValueOfFieldInObject("base",au));
+
+		Assert.assertEquals(expectedPackageMap,
+				(PackageMap) getValueOfFieldInObject("packageMap", au));
+		Assert.assertEquals(expectedPackageMap.getPackaging(),
+				(String) getValueOfFieldInObject("packagingType", au));
+		Assert.assertEquals(expectedRepo,
+				(String) getValueOfFieldInObject("repo", au));
+		Assert.assertEquals(up.getLog(), (Log) getValueOfFieldInObject("l", au));
+		Assert.assertEquals(ws.getMojo().getBuildDir(),
+				(File) getValueOfFieldInObject("base", au));
 	}
-	
-	private Upload mockUploadEnvironment(String pomFilename) throws Exception{		
-		 return (Upload)mockEnvironment(pomFilename,"upload",true);		
+
+	private Upload mockUploadEnvironment(String pomFilename) throws Exception {
+		return (Upload) mockEnvironment(pomFilename, "upload", true);
 	}
-	
-	private Object getValueOfFieldInObject(String needle,Object obj) throws IllegalArgumentException, IllegalAccessException{
-		
+
+	private Object getValueOfFieldInObject(String needle, Object obj)
+			throws IllegalArgumentException, IllegalAccessException {
+
 		Field[] allFields = APTUploader.class.getDeclaredFields();
-		
+
 		for (int i = 0; i < allFields.length; i++) {
-			if(allFields[i].getName().equals(needle)){
+			if (allFields[i].getName().equals(needle)) {
 				allFields[i].setAccessible(true);
-				return allFields[i].get(obj); 
-			}	
+				return allFields[i].get(obj);
+			}
 		}
+
 		return null;
-		
 	}
 
 }

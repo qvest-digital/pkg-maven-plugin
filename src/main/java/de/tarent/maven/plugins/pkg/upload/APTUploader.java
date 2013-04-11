@@ -43,68 +43,71 @@ import de.tarent.maven.plugins.pkg.map.PackageMap;
  * 
  * @author Fabian K&ouml;ster (f.koester@tarent.de) tarent GmbH Bonn
  */
-public class APTUploader implements IPkgUploader{
-	
+public class APTUploader implements IPkgUploader {
+
 	/**
-	 * Defines the Repository-ID to use for dupload. For use on the command-line. 
+	 * Defines the Repository-ID to use for dupload. For use on the
+	 * command-line.
 	 * 
 	 */
 	protected String repo;
-	
+
 	protected PackageMap packageMap;
 	protected String packagingType;
 	protected Log l;
 	private File base;
-	
+
 	/**
 	 * The command to use for uploading packages
 	 */
 	static String uploadCmd = "dupload";
 
 	/**
-	 * Checks if the external requirements for this tool are satisfied 
+	 * Checks if the external requirements for this tool are satisfied
+	 * 
 	 * @param l
 	 * @throws MojoExecutionException
 	 */
 	protected void checkEnvironment(Log l) throws MojoExecutionException {
-	    Utils.checkProgramAvailability("dupload");
+		Utils.checkProgramAvailability("dupload");
 	}
-	
-	public APTUploader(WorkspaceSession ws, String repo){
+
+	public APTUploader(WorkspaceSession ws, String repo) {
 		this.packageMap = ws.getPackageMap();
-		this.packagingType= packageMap.getPackaging();
+		this.packagingType = packageMap.getPackaging();
 		this.repo = repo;
 		this.l = ws.getMojo().getLog();
 		this.base = ws.getMojo().getBuildDir();
 	}
-	
+
 	/**
-	 * Calls the command defined in the <code>uploadCmd</code>-variable to upload the package to
-	 * a APT-Repository. The APT-repository is defined in the dupload-configuration (Probably located in /etc/dupload.conf).
+	 * Calls the command defined in the <code>uploadCmd</code>-variable to
+	 * upload the package to a APT-Repository. The APT-repository is defined in
+	 * the dupload-configuration (Probably located in /etc/dupload.conf).
 	 * 
-	 * If you do not want to use the standard-repository which is configured int dupload's $default_host-varible, you can specify
-	 * an other repository using the 'repo'-variable.
+	 * If you do not want to use the standard-repository which is configured int
+	 * dupload's $default_host-varible, you can specify an other repository
+	 * using the 'repo'-variable.
 	 * 
 	 * @param l
 	 * @param base
 	 * @throws MojoExecutionException
 	 */
-	public void uploadPackage() throws MojoExecutionException  { 
+	public void uploadPackage() throws MojoExecutionException {
 		checkEnvironment(l);
 		l.info("calling " + uploadCmd + " to upload package");
-		
+
 		String[] command;
-		
-		if(repo != null && repo.length() > 0) {
+
+		if (repo != null && repo.length() > 0) {
 			command = new String[] { uploadCmd, "--to", repo };
 		} else {
 			command = new String[] { uploadCmd };
 		}
-		Utils.exec(command ,
-				base,
-				"Uploading package failed.",
-		"Error while uploading package.");
-		
+		Utils.exec(command, base, "Uploading package failed.",
+				"Error while uploading package.");
+
 		l.info("package uploaded sucessfully.");
 	}
+
 }

@@ -1,7 +1,5 @@
 package de.tarent.maven.plugins.pkg.generator;
 
-
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -32,8 +30,8 @@ public class SpecFileGeneratorTest {
 	@Before
 	public void setUp() throws IOException {
 		specgenerator = new SpecFileGenerator();
-		spec = File.createTempFile("SPECFileGeneratorTest","out");
-		dummytestscript = File.createTempFile("dummytestscript",null);
+		spec = File.createTempFile("SPECFileGeneratorTest", "out");
+		dummytestscript = File.createTempFile("dummytestscript", null);
 	}
 
 	@Test
@@ -77,20 +75,20 @@ public class SpecFileGeneratorTest {
 			IOException {
 
 		List<AuxFile> files = new ArrayList<AuxFile>();
-		
+
 		AuxFile testfile1 = new AuxFile("/file1");
-		
+
 		AuxFile testfile2 = new AuxFile("/file2");
 		testfile2.setOwner("user");
 		testfile2.setGroup("user");
 		testfile2.setUserRead(true);
 		testfile2.setGroupRead(true);
 		testfile2.setOthersRead(true);
-		
-		files.add(testfile1);
-		files.add(testfile2);	
 
-		specgenerator.setFiles(files);		
+		files.add(testfile1);
+		files.add(testfile2);
+
+		specgenerator.setFiles(files);
 		generateSpecWithMinimumInfo();
 
 		String lookup1 = "%files";
@@ -102,429 +100,429 @@ public class SpecFileGeneratorTest {
 		assertTrue("Could not find string", filecontains(lookup2));
 		assertTrue("Could not find string", filecontains(lookup3));
 		assertTrue("Could not find string", filecontains(lookup4));
-
 	}
-	
+
 	@Test
-	public void testWriteCleanCommandsSection() throws MojoExecutionException, IOException{
-		
+	public void testWriteCleanCommandsSection() throws MojoExecutionException,
+			IOException {
+
 		String command = "sample clean command";
 		List<String> commands = new ArrayList<String>();
 		commands.add(command);
-		
+
 		specgenerator.setCleancommands(commands);
 		generateSpecWithMinimumInfo();
-		
+
 		String header = "%clean";
-		
+
 		assertEquals(commands, specgenerator.getCleancommands());
 		assertTrue(filecontains(header));
 		assertTrue(filecontains(command));
-		
 	}
-	
+
 	@Test
-	public void testWriteBuildCommandsSection() throws MojoExecutionException, IOException{
-		
+	public void testWriteBuildCommandsSection() throws MojoExecutionException,
+			IOException {
+
 		String command = "sample build command";
 		List<String> commands = new ArrayList<String>();
 		commands.add(command);
-		
+
 		specgenerator.setBuildcommands(commands);
 		generateSpecWithMinimumInfo();
-		
+
 		String header = "%build";
-		
+
 		assertEquals(commands, specgenerator.getBuildcommands());
 		assertTrue(filecontains(header));
 		assertTrue(filecontains(command));
-		
-		
 	}
-	
+
 	@Test
-	public void testWriteInstallCommandsSection() throws MojoExecutionException, IOException{
-		
+	public void testWriteInstallCommandsSection()
+			throws MojoExecutionException, IOException {
+
 		String command = "sample install command";
 		List<String> commands = new ArrayList<String>();
 		commands.add(command);
-		
+
 		specgenerator.setInstallcommands(commands);
 		generateSpecWithMinimumInfo();
-		
+
 		String header = "%install";
-		
+
 		assertEquals(commands, specgenerator.getInstallcommands());
 		assertTrue(filecontains(header));
 		assertTrue(filecontains(command));
-		
-		
 	}
-	
+
 	@Test
-	public void testWritePreInstallCommandsSection() throws MojoExecutionException, IOException{
-		
+	public void testWritePreInstallCommandsSection()
+			throws MojoExecutionException, IOException {
+
 		String command = "sample preinstall command";
 		List<String> commands = new ArrayList<String>();
 		commands.add(command);
-		
+
 		specgenerator.setPreinstallcommands(commands);
 		generateSpecWithMinimumInfo();
-		
-		String header = "%pre";		
+
+		String header = "%pre";
 		assertEquals(commands, specgenerator.getPreinstallcommands());
 		assertTrue(filecontains(header));
 		assertTrue(filecontains(command));
-		
-		
 	}
-	
+
 	@Test
-	public void testWritePostInstallCommandsSection() throws MojoExecutionException, IOException{
-		
+	public void testWritePostInstallCommandsSection()
+			throws MojoExecutionException, IOException {
+
 		String command = "sample postinstall command";
 		List<String> commands = new ArrayList<String>();
 		commands.add(command);
-		
+
 		specgenerator.setPostinstallcommands(commands);
 		generateSpecWithMinimumInfo();
-		
+
 		String header = "%post";
-		
+
 		assertEquals(commands, specgenerator.getPostinstallcommands());
 		assertTrue(filecontains(header));
 		assertTrue(filecontains(command));
-		
-		
 	}
-	
+
 	@Test
-	public void testWritePreUnInstallCommandsSection() throws MojoExecutionException, IOException{
-		
+	public void testWritePreUnInstallCommandsSection()
+			throws MojoExecutionException, IOException {
+
 		String command = "sample preuninstall command";
 		List<String> commands = new ArrayList<String>();
 		commands.add(command);
-		
+
 		specgenerator.setPreuninstallcommands(commands);
 		generateSpecWithMinimumInfo();
-		
+
 		String header = "%preun";
-		
+
 		assertEquals(commands, specgenerator.getPreuninstallcommands());
 		assertTrue(filecontains(header));
 		assertTrue(filecontains(command));
-		
-		
 	}
-	
+
 	@Test
-	public void testWritePostUnInstallCommandsSection() throws MojoExecutionException, IOException{
-		
+	public void testWritePostUnInstallCommandsSection()
+			throws MojoExecutionException, IOException {
+
 		String command = "sample postuninstall command";
 		List<String> commands = new ArrayList<String>();
 		commands.add(command);
-		
+
 		specgenerator.setPostuninstallcommands(commands);
 		generateSpecWithMinimumInfo();
-		
+
 		String header = "%postun";
-		
+
 		assertEquals(commands, specgenerator.getPostuninstallcommands());
 		assertTrue(filecontains(header));
 		assertTrue(filecontains(command));
-		
-		
 	}
-	
-	@Test
-	public void testSetPreInstallCommandsFromEmptyFileCreatesEmptyArrayList() throws IOException{
 
-		specgenerator.setPreinstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		assertEquals(0,specgenerator.getPreinstallcommands().size());
-		
-	}
-	
 	@Test
-	public void testSetPreInstallCommandsFromFileCreatesArrayList() throws IOException{
-		
+	public void testSetPreInstallCommandsFromEmptyFileCreatesEmptyArrayList()
+			throws IOException {
+
+		specgenerator.setPreinstallcommandsFromFile(
+				dummytestscript.getParentFile(), dummytestscript.getName());
+		assertEquals(0, specgenerator.getPreinstallcommands().size());
+	}
+
+	@Test
+	public void testSetPreInstallCommandsFromFileCreatesArrayList()
+			throws IOException {
+
 		PrintWriter w = new PrintWriter(dummytestscript);
 		w.println("echo 'echo!'");
 		w.close();
-		specgenerator.setPreinstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		assertEquals(1,specgenerator.getPreinstallcommands().size());
-		
+		specgenerator.setPreinstallcommandsFromFile(
+				dummytestscript.getParentFile(), dummytestscript.getName());
+		assertEquals(1, specgenerator.getPreinstallcommands().size());
 	}
-	
-	@Test
-	public void testSetPreUninstallCommandsFromEmptyFileCreatesEmptyArrayList() throws IOException{
 
-		specgenerator.setPreuninstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		assertEquals(0,specgenerator.getPreuninstallcommands().size());
-		
-	}
-	
 	@Test
-	public void testSetPreUninstallCommandsFromFileCreatesArrayList() throws IOException{
-		
+	public void testSetPreUninstallCommandsFromEmptyFileCreatesEmptyArrayList()
+			throws IOException {
+
+		specgenerator.setPreuninstallcommandsFromFile(
+				dummytestscript.getParentFile(), dummytestscript.getName());
+		assertEquals(0, specgenerator.getPreuninstallcommands().size());
+	}
+
+	@Test
+	public void testSetPreUninstallCommandsFromFileCreatesArrayList()
+			throws IOException {
+
 		PrintWriter w = new PrintWriter(dummytestscript);
 		w.println("echo 'echo!'");
 		w.close();
-		specgenerator.setPreuninstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		assertEquals(1,specgenerator.getPreuninstallcommands().size());
-		
+		specgenerator.setPreuninstallcommandsFromFile(
+				dummytestscript.getParentFile(), dummytestscript.getName());
+		assertEquals(1, specgenerator.getPreuninstallcommands().size());
 	}
-	
-	@Test
-	public void testSetPostInstallCommandsFromEmptyFileCreatesEmptyArrayList() throws IOException{
 
-		specgenerator.setPostinstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		assertEquals(0,specgenerator.getPostinstallcommands().size());
-		
-	}
-	
 	@Test
-	public void testSetPostInstallCommandsFromFileCreatesArrayList() throws IOException{
-		
+	public void testSetPostInstallCommandsFromEmptyFileCreatesEmptyArrayList()
+			throws IOException {
+
+		specgenerator.setPostinstallcommandsFromFile(
+				dummytestscript.getParentFile(), dummytestscript.getName());
+		assertEquals(0, specgenerator.getPostinstallcommands().size());
+	}
+
+	@Test
+	public void testSetPostInstallCommandsFromFileCreatesArrayList()
+			throws IOException {
+
 		PrintWriter w = new PrintWriter(dummytestscript);
 		w.println("echo 'echo!'");
 		w.close();
-		specgenerator.setPostinstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		assertEquals(1,specgenerator.getPostinstallcommands().size());
-		
+		specgenerator.setPostinstallcommandsFromFile(
+				dummytestscript.getParentFile(), dummytestscript.getName());
+		assertEquals(1, specgenerator.getPostinstallcommands().size());
 	}
-	
-	@Test
-	public void testSetPostUninstallCommandsFromEmptyFileCreatesEmptyArrayList() throws IOException{
 
-		specgenerator.setPostuninstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		assertEquals(0,specgenerator.getPostuninstallcommands().size());
-		
-	}
-	
 	@Test
-	public void testSetPostUninstallCommandsFromFileCreatesArrayList() throws IOException{
-		
+	public void testSetPostUninstallCommandsFromEmptyFileCreatesEmptyArrayList()
+			throws IOException {
+
+		specgenerator.setPostuninstallcommandsFromFile(
+				dummytestscript.getParentFile(), dummytestscript.getName());
+		assertEquals(0, specgenerator.getPostuninstallcommands().size());
+	}
+
+	@Test
+	public void testSetPostUninstallCommandsFromFileCreatesArrayList()
+			throws IOException {
+
 		PrintWriter w = new PrintWriter(dummytestscript);
 		w.println("echo 'echo!'");
 		w.close();
-		specgenerator.setPostuninstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		assertEquals(1,specgenerator.getPostuninstallcommands().size());
-		
+		specgenerator.setPostuninstallcommandsFromFile(
+				dummytestscript.getParentFile(), dummytestscript.getName());
+		assertEquals(1, specgenerator.getPostuninstallcommands().size());
 	}
 
-	
 	@Test
-	public void testSetPreInstallCommandsFromFileNullCreatesEmptyArrayList() throws IOException{
+	public void testSetPreInstallCommandsFromFileNullCreatesEmptyArrayList()
+			throws IOException {
 
 		specgenerator.setPreinstallcommandsFromFile(null, null);
-		assertEquals(0,specgenerator.getPreinstallcommands().size());
-		
-	} 
-	
+		assertEquals(0, specgenerator.getPreinstallcommands().size());
+	}
+
 	@Test
-	public void testSetPreUninstallCommandsFromFileNullCreatesEmptyArrayList() throws IOException{
+	public void testSetPreUninstallCommandsFromFileNullCreatesEmptyArrayList()
+			throws IOException {
 
 		specgenerator.setPreuninstallcommandsFromFile(null, null);
-		assertEquals(0,specgenerator.getPreuninstallcommands().size());
-		
-	} 
-	
+		assertEquals(0, specgenerator.getPreuninstallcommands().size());
+	}
+
 	@Test
-	public void testSetPostInstallCommandsFromFileNullCreatesEmptyArrayList() throws IOException{
+	public void testSetPostInstallCommandsFromFileNullCreatesEmptyArrayList()
+			throws IOException {
 
 		specgenerator.setPostinstallcommandsFromFile(null, null);
-		assertEquals(0,specgenerator.getPostinstallcommands().size());
-		
+		assertEquals(0, specgenerator.getPostinstallcommands().size());
 	}
-	
+
 	@Test
-	public void testSetPostUninstallCommandsFromFileNullCreatesEmptyArrayList() throws IOException{
+	public void testSetPostUninstallCommandsFromFileNullCreatesEmptyArrayList()
+			throws IOException {
 
 		specgenerator.setPostuninstallcommandsFromFile(null, null);
-		assertEquals(0,specgenerator.getPostuninstallcommands().size());
-		
-	} 
-	
+		assertEquals(0, specgenerator.getPostuninstallcommands().size());
+	}
+
 	@Test
-	public void testSetBuildCommandsFromNullCreatesEmptyArrayList() throws IOException{
+	public void testSetBuildCommandsFromNullCreatesEmptyArrayList()
+			throws IOException {
 
 		specgenerator.setBuildcommands(null);
-		assertEquals(0,specgenerator.getBuildcommands().size());
-		
-	} 
-	
+		assertEquals(0, specgenerator.getBuildcommands().size());
+	}
+
 	@Test
-	public void testSetBuildCommandsFromFileCreatesArrayList() throws IOException{
-		
+	public void testSetBuildCommandsFromFileCreatesArrayList()
+			throws IOException {
+
 		List<String> setBuildcommands = new ArrayList<String>();
 		setBuildcommands.add("test1");
 		setBuildcommands.add("test2");
 		setBuildcommands.add("test3");
 		specgenerator.setBuildcommands(setBuildcommands);
-		assertEquals(3,specgenerator.getBuildcommands().size());
-		
-	} 
-	
+		assertEquals(3, specgenerator.getBuildcommands().size());
+	}
+
 	@Test
-	public void testSetInstallCommandsFromNullCreatesEmptyArrayList() throws IOException{
+	public void testSetInstallCommandsFromNullCreatesEmptyArrayList()
+			throws IOException {
 
 		specgenerator.setInstallcommands(null);
-		assertEquals(0,specgenerator.getInstallcommands().size());
-		
-	} 
-	
+		assertEquals(0, specgenerator.getInstallcommands().size());
+	}
+
 	@Test
-	public void testSetInstallCommandsFromArrayList() throws IOException{
-		
+	public void testSetInstallCommandsFromArrayList() throws IOException {
+
 		List<String> setInstallCommands = new ArrayList<String>();
 		setInstallCommands.add("test1");
 		setInstallCommands.add("test2");
 		setInstallCommands.add("test3");
 		specgenerator.setInstallcommands(setInstallCommands);
-		assertEquals(3,specgenerator.getInstallcommands().size());
-		
-	} 
+		assertEquals(3, specgenerator.getInstallcommands().size());
+	}
+
 	@Test
-	public void testSetPostInstallCommandsFromNullArrayCreatesEmptyArrayList(){
-		
+	public void testSetPostInstallCommandsFromNullArrayCreatesEmptyArrayList() {
+
 		specgenerator.setPostinstallcommands(null);
-		assertEquals(0,specgenerator.getPostinstallcommands().size());
-		
+		assertEquals(0, specgenerator.getPostinstallcommands().size());
 	}
+
 	@Test
-	public void testSetPostUninstallCommandsFromNullArrayCreatesEmptyArrayList(){
-		
+	public void testSetPostUninstallCommandsFromNullArrayCreatesEmptyArrayList() {
+
 		specgenerator.setPostuninstallcommands(null);
-		assertEquals(0,specgenerator.getPostuninstallcommands().size());
-		
+		assertEquals(0, specgenerator.getPostuninstallcommands().size());
 	}
+
 	@Test
-	public void testSetPreInstallCommandsFromNullArrayCreatesEmptyArrayList(){
-		
+	public void testSetPreInstallCommandsFromNullArrayCreatesEmptyArrayList() {
+
 		specgenerator.setPreinstallcommands(null);
-		assertEquals(0,specgenerator.getPreinstallcommands().size());
-		
+		assertEquals(0, specgenerator.getPreinstallcommands().size());
 	}
+
 	@Test
-	public void testSetPreUninstallCommandsFromNullArrayCreatesEmptyArrayList(){
-		
+	public void testSetPreUninstallCommandsFromNullArrayCreatesEmptyArrayList() {
+
 		specgenerator.setPreuninstallcommands(null);
-		assertEquals(0,specgenerator.getPreuninstallcommands().size());
-		
+		assertEquals(0, specgenerator.getPreuninstallcommands().size());
 	}
+
 	@Test
-	public void testSetCleanCommandsFromNullArrayCreatesEmptyArrayList(){
-		
+	public void testSetCleanCommandsFromNullArrayCreatesEmptyArrayList() {
+
 		specgenerator.setCleancommands(null);
-		assertEquals(0,specgenerator.getCleancommands().size());
-		
+		assertEquals(0, specgenerator.getCleancommands().size());
 	}
-	
+
 	@Test
-	public void testSetPrepareCommandsFromArrayList() throws IOException{
-		
+	public void testSetPrepareCommandsFromArrayList() throws IOException {
+
 		List<String> setPrepareCommands = new ArrayList<String>();
 		setPrepareCommands.add("test1");
 		setPrepareCommands.add("test2");
 		setPrepareCommands.add("test3");
 		specgenerator.setPreparecommands(setPrepareCommands);
-		assertEquals(3,specgenerator.getPreparecommands().size());
-		
-	} 
+		assertEquals(3, specgenerator.getPreparecommands().size());
+	}
+
 	@Test
-	public void testSetPrepareCommandsFromNullArrayCreatesEmptyArrayList(){
-		
+	public void testSetPrepareCommandsFromNullArrayCreatesEmptyArrayList() {
+
 		specgenerator.setPreparecommands(null);
-		assertEquals(0,specgenerator.getPreparecommands().size());
-		
+		assertEquals(0, specgenerator.getPreparecommands().size());
 	}
+
 	@Test
-	public void testSetArchDefaultsToNoarchIfNullOrEmpty(){
+	public void testSetArchDefaultsToNoarchIfNullOrEmpty() {
 		specgenerator.setArch(null);
-		assertEquals("noarch",specgenerator.getArch());
+		assertEquals("noarch", specgenerator.getArch());
 		specgenerator.setArch("");
-		assertEquals("noarch",specgenerator.getArch());		
+		assertEquals("noarch", specgenerator.getArch());
 	}
-	
+
 	@Test
-	public void testSetGroupDefaultsToUnknownIfNullOrEmpty(){
+	public void testSetGroupDefaultsToUnknownIfNullOrEmpty() {
 		specgenerator.setGroup(null);
-		assertEquals("unknown",specgenerator.getGroup());
+		assertEquals("unknown", specgenerator.getGroup());
 		specgenerator.setGroup("");
-		assertEquals("unknown",specgenerator.getGroup());		
+		assertEquals("unknown", specgenerator.getGroup());
 	}
-	
+
 	@Test
-	public void testSetLicenseDefaultsToUnknownIfNullOrEmpty(){
+	public void testSetLicenseDefaultsToUnknownIfNullOrEmpty() {
 		specgenerator.setLicense(null);
-		assertEquals("unknown",specgenerator.getLicense());
+		assertEquals("unknown", specgenerator.getLicense());
 		specgenerator.setLicense("");
-		assertEquals("unknown",specgenerator.getLicense());		
+		assertEquals("unknown", specgenerator.getLicense());
 	}
-	
+
 	@Test
-	public void testSetReleaseDefaultsTo1IfNullOrEmpty(){
+	public void testSetReleaseDefaultsTo1IfNullOrEmpty() {
 		specgenerator.setRelease(null);
-		assertEquals("1",specgenerator.getRelease());
+		assertEquals("1", specgenerator.getRelease());
 		specgenerator.setRelease("");
-		assertEquals("1",specgenerator.getRelease());		
+		assertEquals("1", specgenerator.getRelease());
 	}
-	
+
 	@Test
-	public void testSetUrlDefaultsToUnknownDotComIfNullOrEmpty(){
+	public void testSetUrlDefaultsToUnknownDotComIfNullOrEmpty() {
 		specgenerator.setUrl(null);
-		assertEquals("http://unknown.com",specgenerator.getUrl());
+		assertEquals("http://unknown.com", specgenerator.getUrl());
 		specgenerator.setUrl("");
-		assertEquals("http://unknown.com",specgenerator.getUrl());		
+		assertEquals("http://unknown.com", specgenerator.getUrl());
 	}
-	
+
 	@Test
-	public void testSetSummaryDefaultsToUnknownIfNullOrEmpty(){
+	public void testSetSummaryDefaultsToUnknownIfNullOrEmpty() {
 		specgenerator.setSummary(null);
-		assertEquals("unknown",specgenerator.getSummary());
+		assertEquals("unknown", specgenerator.getSummary());
 		specgenerator.setSummary("");
-		assertEquals("unknown",specgenerator.getSummary());		
+		assertEquals("unknown", specgenerator.getSummary());
 	}
-	
+
 	@Test
-	public void testSetSourceDefaultsToUnknownIfNullOrEmpty(){
+	public void testSetSourceDefaultsToUnknownIfNullOrEmpty() {
 		specgenerator.setSource(null);
-		assertEquals("unknown",specgenerator.getSource());
+		assertEquals("unknown", specgenerator.getSource());
 		specgenerator.setSource("");
-		assertEquals("unknown",specgenerator.getSource());		
+		assertEquals("unknown", specgenerator.getSource());
 	}
-	
+
 	@Test
-	public void testSetVersionDefaultsToUnknownIfNullOrEmpty(){
+	public void testSetVersionDefaultsToUnknownIfNullOrEmpty() {
 		specgenerator.setVersion(null);
-		assertEquals("unknown",specgenerator.getVersion());
+		assertEquals("unknown", specgenerator.getVersion());
 		specgenerator.setVersion("");
-		assertEquals("unknown",specgenerator.getVersion());		
+		assertEquals("unknown", specgenerator.getVersion());
 	}
-	
+
 	@Test
-	public void testSetSuggestsDefaultsToUnknownIfNullOrEmpty(){
+	public void testSetSuggestsDefaultsToUnknownIfNullOrEmpty() {
 		specgenerator.setSuggests(null);
-		assertEquals("unknown",specgenerator.getSuggests());
+		assertEquals("unknown", specgenerator.getSuggests());
 		specgenerator.setSuggests("");
-		assertEquals("unknown",specgenerator.getSuggests());		
+		assertEquals("unknown", specgenerator.getSuggests());
 	}
-	
+
 	@Test
-	public void testSetDependenciesDefaultsToUnknownIfNullOrEmpty(){
+	public void testSetDependenciesDefaultsToUnknownIfNullOrEmpty() {
 		specgenerator.setDependencies(null);
-		assertEquals("unknown",specgenerator.getDependencies());
+		assertEquals("unknown", specgenerator.getDependencies());
 		specgenerator.setDependencies("");
-		assertEquals("unknown",specgenerator.getDependencies());		
+		assertEquals("unknown", specgenerator.getDependencies());
 	}
-	
+
 	@Test
-	public void testSetRecommendsDefaultsToUnknownIfNullOrEmpty(){
+	public void testSetRecommendsDefaultsToUnknownIfNullOrEmpty() {
 		specgenerator.setRecommends(null);
-		assertEquals("unknown",specgenerator.getRecommends());
+		assertEquals("unknown", specgenerator.getRecommends());
 		specgenerator.setRecommends("");
-		assertEquals("unknown",specgenerator.getRecommends());		
+		assertEquals("unknown", specgenerator.getRecommends());
 	}
+
 	@After
 	public void tearDown() {
 		spec.delete();
@@ -532,9 +530,10 @@ public class SpecFileGeneratorTest {
 			dummytestscript.delete();
 		}
 	}
-	
-	private void generateSpecWithMinimumInfo() throws MojoExecutionException, IOException{
-		
+
+	private void generateSpecWithMinimumInfo() throws MojoExecutionException,
+			IOException {
+
 		specgenerator.setArch("noarch");
 		specgenerator.setSummary("Short dummy summary");
 		specgenerator.setDependencies("dependency1,dependency2");
@@ -548,7 +547,6 @@ public class SpecFileGeneratorTest {
 		specgenerator.setLicense("huhu");
 		specgenerator.setRelease("haha");
 		specgenerator.generate(spec);
-		
 	}
 
 	private boolean filecontains(String lookup) throws IOException {
@@ -577,4 +575,3 @@ public class SpecFileGeneratorTest {
 	}
 
 }
-

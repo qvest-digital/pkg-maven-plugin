@@ -23,8 +23,6 @@
  * Elmar Geese, CEO tarent GmbH.
  */
 
-
-
 package de.tarent.maven.plugins.pkg;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -40,38 +38,34 @@ import de.tarent.maven.plugins.pkg.packager.Packager;
  * @requiresProject
  * @requiresDependencyResolution runtime
  */
-public class Packaging
-    extends AbstractPackagingMojo
-{
-  
-  /**
-   * Creates the package for a single given target configuration.
-   * 
-   * @param tc
-   * @param d
-   * @throws MojoExecutionException
-   * @throws MojoFailureException
-   */
+public class Packaging extends AbstractPackagingMojo {
+
+	/**
+	 * Creates the package for a single given target configuration.
+	 * 
+	 * @param tc
+	 * @param d
+	 * @throws MojoExecutionException
+	 * @throws MojoFailureException
+	 */
 	@Override
 	protected void executeTargetConfiguration(WorkspaceSession ws)
 			throws MojoExecutionException, MojoFailureException {
-	    Packager packager = Utils.getPackagerForPackaging(ws.getPackageMap().getPackaging());
-	    
-	    // Finally now that we know that our cool newly created work objects are
-	    // prepared and can be used (none of them is null) we stuff them 
-	    // into the session and run the actual packaging steps.
-	    ws.setPackager(packager);
-	    
-	    packager.checkEnvironment(getLog(), ws);
-	    
-	    packager.execute(getLog(), ws);
-  }
+		Packager packager = Utils.getPackagerForPackaging(ws.getPackageMap()
+				.getPackaging());
 
-public void setKeepPkgTmp(boolean b) {
-	keepPkgTmp = b;
-	
-}
-  
- 
+		// Finally now that we know that our cool newly created work objects are
+		// prepared and can be used (none of them is null) we stuff them
+		// into the session and run the actual packaging steps.
+		ws.setPackager(packager);
+
+		packager.checkEnvironment(getLog(), ws);
+
+		packager.execute(getLog(), ws);
+	}
+
+	public void setKeepPkgTmp(boolean b) {
+		keepPkgTmp = b;
+	}
 
 }

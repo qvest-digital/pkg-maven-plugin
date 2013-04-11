@@ -4,8 +4,9 @@ import java.util.Properties;
 
 /**
  * Merger for properties
+ * 
  * @author plafue
- *
+ * 
  */
 public class PropertiesMerger implements IMerge {
 
@@ -18,14 +19,14 @@ public class PropertiesMerger implements IMerge {
 	 * @param def
 	 * @return
 	 */
-	public Properties merge(Object child, Object parent,
-			Object def) {
-		Properties c = ((Properties)parent != null ? (Properties)((Properties)parent).clone() : (Properties)((Properties)def).clone());
+	public Properties merge(Object child, Object parent, Object def) {
+		Properties c = ((Properties) parent != null ? (Properties) ((Properties) parent)
+				.clone() : (Properties) ((Properties) def).clone());
 
-		if (child != null){
-			c.putAll((Properties)child);
+		if (child != null) {
+			c.putAll((Properties) child);
 		}
-		return (Properties)c;
+		return (Properties) c;
 	}
 
 }

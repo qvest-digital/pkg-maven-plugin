@@ -36,32 +36,36 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 import de.tarent.maven.plugins.pkg.annotations.MergeMe;
 
-
 /**
  * A <code>TargetConfiguration</code> provides the properties to configure the
  * packaging for a particular target.
  * 
- * <p>A target is a much more fine granular entity than a distribution. E.g. it may
- * denote a certain piece of hardware.<p> 
+ * <p>
+ * A target is a much more fine granular entity than a distribution. E.g. it may
+ * denote a certain piece of hardware.
+ * <p>
  * 
  * <p>
  * Except for the boolean properties every field can be accessed directly. The
  * boolean properties are using <code>Boolean</code> to allow them to be
  * <code>null</code> which means 'not set' and is an important state for the
- * merging of two <code>DistroConfiguration</code> instances.</p>
+ * merging of two <code>DistroConfiguration</code> instances.
+ * </p>
  * 
  * <p>
- * A TargetConfiguration may only be used once it has been merged or fixated. 
- * Otherwise unwanted behaviour may occur.</p>
+ * A TargetConfiguration may only be used once it has been merged or fixated.
+ * Otherwise unwanted behaviour may occur.
+ * </p>
  * 
  * @author Robert Schuster (robert.schuster@tarent.de)
  * 
  */
 public class TargetConfiguration {
-	
+
 	public TargetConfiguration(String target) {
 		this.target = target;
-	}	
+	}
+
 	/**
 	 * Denotes the name of this targetConfiguration.
 	 */
@@ -71,17 +75,21 @@ public class TargetConfiguration {
 	/**
 	 * Denotes whether a Windows executable is to be created.
 	 * 
-	 * <p>This is an IzPack specific property.</p>
+	 * <p>
+	 * This is an IzPack specific property.
+	 * </p>
 	 */
-	@MergeMe(defaultBoolean=true)
+	@MergeMe(defaultBoolean = true)
 	private Boolean createWindowsExecutable;
 
 	/**
 	 * Denotes whether an OS X executable is to be created.
 	 * 
-	 * <p>This is an IzPack specific property.</p>
+	 * <p>
+	 * This is an IzPack specific property.
+	 * </p>
 	 */
-	@MergeMe(defaultBoolean=true)
+	@MergeMe(defaultBoolean = true)
 	private Boolean createOSXApp;
 
 	/**
@@ -94,7 +102,7 @@ public class TargetConfiguration {
 	 * the parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultBoolean=false)
+	@MergeMe(defaultBoolean = false)
 	private Boolean advancedStarter;
 
 	/**
@@ -106,7 +114,7 @@ public class TargetConfiguration {
 	 * the parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultBoolean=false)
+	@MergeMe(defaultBoolean = false)
 	private Boolean aotCompile;
 
 	/**
@@ -118,15 +126,17 @@ public class TargetConfiguration {
 	 * parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultString="all")
+	@MergeMe(defaultString = "all")
 	private String architecture;
 
 	/**
 	 * Denotes a list of {@link AuxFile} instances specifying additional files
 	 * that need to be added to the package.
 	 * 
-	 * <p>AuxFiles must be stored under "src/main/auxfiles" for the plugin to 
-	 * be able to find them.</p>
+	 * <p>
+	 * AuxFiles must be stored under "src/main/auxfiles" for the plugin to be
+	 * able to find them.
+	 * </p>
 	 * 
 	 * <p>
 	 * Default is <code>null</code>, after merging it is an empty list or the
@@ -147,7 +157,7 @@ public class TargetConfiguration {
 	 * bindir prepended by the prefix is used for executables!
 	 * </p>
 	 */
-	@MergeMe(defaultString="")
+	@MergeMe(defaultString = "")
 	private String bindir;
 
 	/**
@@ -161,17 +171,18 @@ public class TargetConfiguration {
 	 * bindir prepended by the prefix is used for executables!
 	 * </p>
 	 */
-	@MergeMe(defaultString="")
+	@MergeMe(defaultString = "")
 	private String sbindir;
-	
+
 	/**
 	 * List of files which are installed into the directory for executable.
 	 */
 	@MergeMe
 	private List<BinFile> binFiles;
-	
+
 	/**
-	 * List of files which are installed into the directory for executables meant for root.
+	 * List of files which are installed into the directory for executables
+	 * meant for root.
 	 */
 	@MergeMe
 	private List<SBinFile> sBinFiles;
@@ -187,7 +198,7 @@ public class TargetConfiguration {
 	 * the parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultBoolean=false)
+	@MergeMe(defaultBoolean = false)
 	private Boolean bundleAll;
 
 	/**
@@ -211,7 +222,7 @@ public class TargetConfiguration {
 	 * Default value is <code>null</code>, after merging it is the empty string
 	 * (meaning the default bundled jar dir is used) or the parent's value.
 	 */
-	@MergeMe(defaultString="")
+	@MergeMe(defaultString = "")
 	private String bundledJarDir;
 
 	/**
@@ -224,7 +235,7 @@ public class TargetConfiguration {
 	 * datadir prepended by the prefix is used.
 	 * </p>
 	 */
-	@MergeMe(defaultString="")
+	@MergeMe(defaultString = "")
 	private String datadir;
 
 	/**
@@ -245,7 +256,7 @@ public class TargetConfiguration {
 	 * datarootdir prepended by the prefix is used.
 	 * </p>
 	 */
-	@MergeMe(defaultString="")
+	@MergeMe(defaultString = "")
 	private String datarootdir;
 
 	/**
@@ -265,14 +276,14 @@ public class TargetConfiguration {
 	@MergeMe
 	private Set<String> distros = new HashSet<String>();
 
-
 	/**
-	 * Set default distribution to package for. This is only needed when distros.size()>1.
+	 * Set default distribution to package for. This is only needed when
+	 * distros.size()>1.
 	 * 
 	 */
-	@MergeMe(defaultValueIsNull=true)
+	@MergeMe(defaultValueIsNull = true)
 	private String defaultDistro;
-	
+
 	/**
 	 * Denotes the name of the gcj-dbtool executable. This allows the use of
 	 * e.g. "gcj-dbtool-4.2" or "gcj-dbtool-4.3" depending on the targeted
@@ -283,7 +294,7 @@ public class TargetConfiguration {
 	 * or the parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultString="gcj-dbtool")
+	@MergeMe(defaultString = "gcj-dbtool")
 	private String gcjDbToolExec;
 
 	/**
@@ -295,7 +306,7 @@ public class TargetConfiguration {
 	 * parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultString="gcj")
+	@MergeMe(defaultString = "gcj")
 	private String gcjExec;
 
 	/**
@@ -306,7 +317,7 @@ public class TargetConfiguration {
 	 * <code>installer.xml</code> or the parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultString="installer.xml")
+	@MergeMe(defaultString = "installer.xml")
 	public String izPackInstallerXml;
 
 	/**
@@ -343,7 +354,7 @@ public class TargetConfiguration {
 	 * parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultString="/usr/lib/jni")
+	@MergeMe(defaultString = "/usr/lib/jni")
 	private String jniLibraryPath;
 
 	/**
@@ -356,22 +367,24 @@ public class TargetConfiguration {
 	 * the parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultValueIsNull=true)
+	@MergeMe(defaultValueIsNull = true)
 	private String mainClass;
 
 	/**
 	 * Denotes the value of the maintainer field in common packaging systems. It
 	 * is basically an email address.
 	 * 
-	 * <p>When used toghether with <code><sign></code>, this string must match 
-	 * the Name and email address stored in the key that will be used.</p>
+	 * <p>
+	 * When used toghether with <code><sign></code>, this string must match the
+	 * Name and email address stored in the key that will be used.
+	 * </p>
 	 * 
 	 * <p>
 	 * Default is <code>null</code>, after merging it is <code>null</code> or
 	 * the parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultValueIsNull=true)
+	@MergeMe(defaultValueIsNull = true)
 	private String maintainer;
 
 	/**
@@ -475,8 +488,8 @@ public class TargetConfiguration {
 	private List<String> replaces;
 
 	/**
-	 * Denotes the value of the "-Xmx"argument in the wrapper script 
-	 * for this configuration.
+	 * Denotes the value of the "-Xmx"argument in the wrapper script for this
+	 * configuration.
 	 * 
 	 * <p>
 	 * Default is <code>null</code>, after merging it is <code>null</code> or
@@ -487,8 +500,8 @@ public class TargetConfiguration {
 	private String maxJavaMemory;
 
 	/**
-	 * Specifies the {@link TargetConfiguration} from which this one inherits all
-	 * non-set values or from which collections are merged.
+	 * Specifies the {@link TargetConfiguration} from which this one inherits
+	 * all non-set values or from which collections are merged.
 	 * 
 	 */
 	String parent;
@@ -508,7 +521,7 @@ public class TargetConfiguration {
 	 * If unset it is <code>null</code> and no script is used.
 	 * </p>
 	 */
-	@MergeMe(defaultValueIsNull=true)
+	@MergeMe(defaultValueIsNull = true)
 	private String postinstScript;
 
 	/**
@@ -526,7 +539,7 @@ public class TargetConfiguration {
 	 * If unset it is <code>null</code> and no script is used.
 	 * </p>
 	 */
-	@MergeMe(defaultValueIsNull=true)
+	@MergeMe(defaultValueIsNull = true)
 	private String postrmScript;
 
 	/**
@@ -541,7 +554,7 @@ public class TargetConfiguration {
 	 * parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultString="/")
+	@MergeMe(defaultString = "/")
 	private String prefix;
 
 	/**
@@ -559,7 +572,7 @@ public class TargetConfiguration {
 	 * If unset it is <code>null</code> and no script is used.
 	 * </p>
 	 */
-	@MergeMe(defaultValueIsNull=true)
+	@MergeMe(defaultValueIsNull = true)
 	private String preinstScript;
 
 	/**
@@ -577,7 +590,7 @@ public class TargetConfiguration {
 	 * If unset it is <code>null</code> and no script is used.
 	 * </p>
 	 */
-	@MergeMe(defaultValueIsNull=true)
+	@MergeMe(defaultValueIsNull = true)
 	private String prermScript;
 
 	/**
@@ -586,8 +599,8 @@ public class TargetConfiguration {
 	 * packaging (e.g. moved a file to the correct location).
 	 * 
 	 * <p>
-	 * NOTE: this field will also be used for the <i>release</i> field of Spec files 
-	 * in RPM packages. 
+	 * NOTE: this field will also be used for the <i>release</i> field of Spec
+	 * files in RPM packages.
 	 * </p>
 	 * 
 	 * <p>
@@ -606,21 +619,21 @@ public class TargetConfiguration {
 	 * parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultValueIsNull=true)
+	@MergeMe(defaultValueIsNull = true)
 	private String revision;
-	
+
 	/**
 	 * Denotes a suffix which is added to the package name.
 	 * 
 	 */
-	@MergeMe(defaultValueIsNull=true)
+	@MergeMe(defaultValueIsNull = true)
 	private String packageNameSuffix;
 
 	/**
 	 * Denotes a suffix which is added to the package version.
 	 * 
 	 */
-	@MergeMe(defaultValueIsNull=true)
+	@MergeMe(defaultValueIsNull = true)
 	private String packageVersionSuffix;
 
 	/**
@@ -631,7 +644,7 @@ public class TargetConfiguration {
 	 * value.
 	 * </p>
 	 */
-	@MergeMe(defaultString="libs")
+	@MergeMe(defaultString = "libs")
 	private String section;
 
 	/**
@@ -656,16 +669,16 @@ public class TargetConfiguration {
 	 * 
 	 * <p>
 	 * Default is <code>null</code>, after merging it is the empty string
-	 * (meaning the default location (<code>src/main/auxfiles</code>) is used
-	 * or the parent's value.
+	 * (meaning the default location (<code>src/main/auxfiles</code>) is used or
+	 * the parent's value.
 	 * </p>
 	 */
 	@MergeMe
 	private String srcAuxFilesDir;
 
 	/**
-	 * Denotes the source directory into which the packager looks for
-	 * executable files.
+	 * Denotes the source directory into which the packager looks for executable
+	 * files.
 	 * 
 	 * <p>
 	 * Default is <code>null</code>, after merging it is the empty string
@@ -677,8 +690,8 @@ public class TargetConfiguration {
 	private String srcBinFilesDir;
 
 	/**
-	 * Denotes the source directory into which the packager looks for
-	 * executable files for the root user.
+	 * Denotes the source directory into which the packager looks for executable
+	 * files for the root user.
 	 * 
 	 * <p>
 	 * Default is <code>null</code>, after merging it is the empty string
@@ -776,8 +789,8 @@ public class TargetConfiguration {
 	private String srcJNIFilesDir;
 
 	/**
-	 * Denotes the directory in which the packager looks for system configuration 
-	 * files to copy into the package.
+	 * Denotes the directory in which the packager looks for system
+	 * configuration files to copy into the package.
 	 * 
 	 * <p>
 	 * Default is <code>null</code>, after merging it is an empty string or the
@@ -801,10 +814,12 @@ public class TargetConfiguration {
 	private String sysconfdir;
 
 	/**
-	 * Denotes a list of configuration files. 
+	 * Denotes a list of configuration files.
 	 * 
-	 * <p>These are copied to their respective destination suitable 
-	 * for the chosen target system.</p>
+	 * <p>
+	 * These are copied to their respective destination suitable for the chosen
+	 * target system.
+	 * </p>
 	 * 
 	 * <p>
 	 * Default is <code>null</code>, after merging it is an empty list or the
@@ -837,7 +852,7 @@ public class TargetConfiguration {
 	 * the parent's value.
 	 * </p>
 	 */
-	@MergeMe(defaultValueIsNull=true)
+	@MergeMe(defaultValueIsNull = true)
 	private String wrapperScriptName;
 
 	/**
@@ -865,57 +880,64 @@ public class TargetConfiguration {
 	 */
 	@MergeMe
 	private String customCodeWindows;
-	
+
 	/**
-	 * Denothes wether the package should be signed or not. As of now, this value is
-	 * only taken in consideration when building RPM packages.
+	 * Denothes wether the package should be signed or not. As of now, this
+	 * value is only taken in consideration when building RPM packages.
 	 * 
-	 * <p>Default value is <code>false</code>.</p>
+	 * <p>
+	 * Default value is <code>false</code>.
+	 * </p>
 	 * 
 	 */
-	@MergeMe(defaultBoolean=false)
+	@MergeMe(defaultBoolean = false)
 	private Boolean sign;
-	
+
 	/**
-	 * Denotes the source of the package to build. As of now, this value is
-	 * only taken in consideration when building RPM packages.
+	 * Denotes the source of the package to build. As of now, this value is only
+	 * taken in consideration when building RPM packages.
 	 * 
-	 * <p>Default value is <code>unknown</code>.</p>
+	 * <p>
+	 * Default value is <code>unknown</code>.
+	 * </p>
 	 * 
 	 */
 	@MergeMe
 	private String source;
-	
+
 	/**
 	 * Contains a list of urls to use when calling the pkg:upload target.
-	 * <p>Tested URI schemas are file://, scpexe://, ftp:// 
-	 * (other protocols supported by Codehaus Wagon API may also work).</p>
+	 * <p>
+	 * Tested URI schemas are file://, scpexe://, ftp:// (other protocols
+	 * supported by Codehaus Wagon API may also work).
+	 * </p>
 	 */
 	private UploadParameters uploadParameters;
-	
+
 	/**
 	 * Denotes dependencies to other target configurations.
 	 */
 	@MergeMe
 	private List<String> relations;
-	
-	/**
-	 *  Denotes of this configuration is ready to be used. This flag is only set
-	 *  if this configuration has been merged at least once or "fixated". Otherwise
-	 *  some members needed for the configuration to be used may not have been 
-	 *  initialized properly.
-	 */
-	private boolean ready;	
 
 	/**
-	 * Denotes whether the dependencies (i.e. external Jars) for the package should be included in it.
+	 * Denotes of this configuration is ready to be used. This flag is only set
+	 * if this configuration has been merged at least once or "fixated".
+	 * Otherwise some members needed for the configuration to be used may not
+	 * have been initialized properly.
 	 */
-	@MergeMe(defaultBoolean=true)
+	private boolean ready;
+
+	/**
+	 * Denotes whether the dependencies (i.e. external Jars) for the package
+	 * should be included in it.
+	 */
+	@MergeMe(defaultBoolean = true)
 	private Boolean bundleDependencyArtifacts;
 
-	@MergeMe(defaultString="default")
+	@MergeMe(defaultString = "default")
 	private String artifactInclusion;
-	
+
 	public TargetConfiguration() {
 		// Intentionally empty.
 	}
@@ -954,12 +976,12 @@ public class TargetConfiguration {
 		checkIfReady();
 		return dataFiles;
 	}
-	
+
 	public List<? extends BinFile> getBinFiles() {
 		checkIfReady();
 		return binFiles;
 	}
-	
+
 	public List<? extends SBinFile> getSBinFiles() {
 		checkIfReady();
 		return sBinFiles;
@@ -1218,7 +1240,7 @@ public class TargetConfiguration {
 	public void setDataFiles(List<DataFile> dataFiles) {
 		this.dataFiles = dataFiles;
 	}
-	
+
 	public void setBinFiles(List<BinFile> binFiles) {
 		this.binFiles = binFiles;
 	}
@@ -1376,11 +1398,11 @@ public class TargetConfiguration {
 		appendStringDefault(sb, "target", target);
 		appendStringDefault(sb, "parent", parent);
 		appendStringDefault(sb, "defaultDistro", defaultDistro);
-		//appendStringDefault(sb, "chosenDistro", chosenDistro);
-		
+		// appendStringDefault(sb, "chosenDistro", chosenDistro);
+
 		sb.append("\n");
 		appendStringCollection(sb, "distros", distros);
-		
+
 		sb.append("\n");
 		sb.append("basic packaging options:\n");
 		appendStringDefault(sb, "maintainer", maintainer);
@@ -1395,14 +1417,14 @@ public class TargetConfiguration {
 		appendStringNotSet(sb, "bundledJarDir", getBundledJarDir());
 		appendStringNotSet(sb, "jniLibraryPath", jniLibraryPath);
 		appendStringDefault(sb, "izPackInstallerXml", izPackInstallerXml);
-		
+
 		sb.append("\n");
 		sb.append("packaging scripts:\n");
 		appendStringNotSet(sb, "preinstScript", preinstScript);
 		appendStringNotSet(sb, "prermScript", prermScript);
 		appendStringNotSet(sb, "postinstScript", postinstScript);
 		appendStringNotSet(sb, "postrmScript", postrmScript);
-		
+
 		sb.append("\n");
 		sb.append("packaging flags:\n");
 		appendBoolean(sb, "aotCompile", aotCompile);
@@ -1417,7 +1439,7 @@ public class TargetConfiguration {
 		sb.append("dependencies and packaged files:\n");
 		appendAuxFileList(sb, "jarFiles", jarFiles);
 		appendAuxFileList(sb, "jniFiles", jniFiles);
-		
+
 		appendStringCollection(sb, "manualDependencies", manualDependencies);
 		appendStringCollection(sb, "bundleDependencies", bundleDependencies);
 		appendStringCollection(sb, "recommends", recommends);
@@ -1425,13 +1447,13 @@ public class TargetConfiguration {
 		appendStringCollection(sb, "provides", provides);
 		appendStringCollection(sb, "conflicts", conflicts);
 		appendStringCollection(sb, "replaces", replaces);
-		
+
 		appendAuxFileList(sb, "auxFiles", auxFiles);
 		appendAuxFileList(sb, "binFiles", binFiles);
 		appendAuxFileList(sb, "datarootFiles", datarootFiles);
 		appendAuxFileList(sb, "dataFiles", dataFiles);
 		appendAuxFileList(sb, "sysconfFiles", sysconfFiles);
-		
+
 		sb.append("\n");
 		sb.append("start script options:\n");
 		appendStringNotSet(sb, "wrapperScriptName", wrapperScriptName);
@@ -1442,8 +1464,7 @@ public class TargetConfiguration {
 		sb.append("systemProperties:\n");
 		if (systemProperties != null) {
 			Iterator<?> ite = systemProperties.entrySet().iterator();
-			while (ite.hasNext())
-			{
+			while (ite.hasNext()) {
 				sb.append("\t" + ite.next() + "\n");
 			}
 		} else {
@@ -1459,7 +1480,7 @@ public class TargetConfiguration {
 		appendStringDefault(sb, "srcIzPackFilesDir", srcIzPackFilesDir);
 		appendStringDefault(sb, "srcJarFilesDir", srcJarFilesDir);
 		appendStringDefault(sb, "srcJNIFilesDir", srcJNIFilesDir);
-		
+
 		sb.append("\n");
 		sb.append("tool locations:\n");
 		appendStringDefault(sb, "gcjDbToolExec", gcjDbToolExec);
@@ -1467,38 +1488,36 @@ public class TargetConfiguration {
 
 		return sb.toString();
 	}
-	
-	private void appendBoolean(StringBuilder sb, String label, Boolean b)
-	{
+
+	private void appendBoolean(StringBuilder sb, String label, Boolean b) {
 		sb.append(label);
 		sb.append(": ");
 		sb.append((b == null || b.equals(Boolean.FALSE) ? "no" : "yes"));
 		sb.append("\n");
 	}
-	
-	private void appendStringNotSet(StringBuilder sb, String label, String string)
-	{
+
+	private void appendStringNotSet(StringBuilder sb, String label,
+			String string) {
 		sb.append(label);
 		sb.append(": ");
 		sb.append((string == null ? "(not set)" : string));
 		sb.append("\n");
 	}
-	
-	private void appendStringDefault(StringBuilder sb, String label, String string)
-	{
+
+	private void appendStringDefault(StringBuilder sb, String label,
+			String string) {
 		sb.append(label);
 		sb.append(": ");
 		sb.append((string == null ? "(default)" : string));
 		sb.append("\n");
 	}
-	
-	private void appendStringCollection(StringBuilder sb, String label, Collection<?> collection)
-	{
+
+	private void appendStringCollection(StringBuilder sb, String label,
+			Collection<?> collection) {
 		sb.append(label + ":\n");
 		if (collection != null && !collection.isEmpty()) {
 			Iterator<?> ite = collection.iterator();
-			while (ite.hasNext())
-			{
+			while (ite.hasNext()) {
 				sb.append("\t");
 				sb.append(ite.next());
 				sb.append("\n");
@@ -1507,9 +1526,9 @@ public class TargetConfiguration {
 			sb.append("\t(not set)\n");
 		}
 	}
-	
-	private void appendAuxFileList(StringBuilder sb, String name, List<? extends AuxFile> list)
-	{
+
+	private void appendAuxFileList(StringBuilder sb, String name,
+			List<? extends AuxFile> list) {
 		sb.append(name + ":\n");
 		if (list != null && !list.isEmpty()) {
 			Iterator<? extends AuxFile> ite = list.iterator();
@@ -1561,12 +1580,10 @@ public class TargetConfiguration {
 		this.customCodeWindows = customCodeWindows;
 	}
 
-
 	public boolean isSign() {
 		checkIfReady();
 		return sign.booleanValue();
 	}
-
 
 	public void setSign(boolean sign) {
 		this.sign = Boolean.valueOf(sign);
@@ -1577,7 +1594,6 @@ public class TargetConfiguration {
 		return source;
 	}
 
-
 	public void setSource(String source) {
 		this.source = source;
 	}
@@ -1587,11 +1603,9 @@ public class TargetConfiguration {
 		return bundledJarDir;
 	}
 
-
 	public void setBundledJarDir(String bundledJarDir) {
 		this.bundledJarDir = bundledJarDir;
 	}
-
 
 	public UploadParameters getUploadParameters() {
 		checkIfReady();
@@ -1603,20 +1617,18 @@ public class TargetConfiguration {
 		return relations;
 	}
 
-
 	public void setRelations(List<String> relations) {
 		this.relations = relations;
 	}
 
 	public void setTarget(String target) {
-		this.target=target;		
+		this.target = target;
 	}
-
 
 	public String getDefaultDistro() {
 		return defaultDistro;
 	}
-	
+
 	public void setDefaultDistro(String distro) {
 		this.defaultDistro = distro;
 	}
@@ -1648,14 +1660,15 @@ public class TargetConfiguration {
 	 * 
 	 * @return
 	 */
-	public TargetConfiguration fixate() throws MojoExecutionException{
-		return Utils.mergeConfigurations(this, new TargetConfiguration());		
+	public TargetConfiguration fixate() throws MojoExecutionException {
+		return Utils.mergeConfigurations(this, new TargetConfiguration());
 	}
-	
+
 	/**
-	 * Denotes if this configuration is ready to be used 
-	 * (i.e. all members have been initialized).<br/>
-	 * If false is returned unexpected behaviour may occur. 
+	 * Denotes if this configuration is ready to be used (i.e. all members have
+	 * been initialized).<br/>
+	 * If false is returned unexpected behaviour may occur.
+	 * 
 	 * @return
 	 */
 	public boolean isReady() {
@@ -1668,11 +1681,13 @@ public class TargetConfiguration {
 
 	private void checkIfReady() {
 		if (!ready)
-			throw new IllegalStateException(TargetConfiguration.class.getCanonicalName() + " was not ready to be used. Either call fixate() or merge().");
+			throw new IllegalStateException(
+					TargetConfiguration.class.getCanonicalName()
+							+ " was not ready to be used. Either call fixate() or merge().");
 	}
 
 	public boolean isBundleDependencyArtifacts() {
 		return bundleDependencyArtifacts;
 	}
-	
+
 }

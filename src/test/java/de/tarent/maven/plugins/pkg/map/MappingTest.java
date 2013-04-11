@@ -142,7 +142,8 @@ public class MappingTest extends TestCase {
 	 * Tests whether:
 	 * <ul>
 	 * <li>entries from parent are properly inherited to children</li>
-	 * <li>entries from parent, that are replaced in children are really replaced</li>
+	 * <li>entries from parent, that are replaced in children are really
+	 * replaced</li>
 	 * <li>entries added to children are not in parent</li>
 	 * </ul>
 	 * 
@@ -206,14 +207,14 @@ public class MappingTest extends TestCase {
 		jarFileNames = new HashSet<String>();
 		jarFileNames.add("new.jar");
 		assertEquals("child-new jarFileNames", jarFileNames, e.jarFileNames);
-
 	}
-	
+
 	/**
 	 * Tests whether:
 	 * <ul>
 	 * <li>entries from parent are properly inherited to children</li>
-	 * <li>entries from parent, that are replaced in children are really replaced</li>
+	 * <li>entries from parent, that are replaced in children are really
+	 * replaced</li>
 	 * <li>entries added to children are not in parent</li>
 	 * </ul>
 	 * 
@@ -225,9 +226,15 @@ public class MappingTest extends TestCase {
 		Mapping parent = new Mapping("parent");
 		parent.parent = null;
 		try {
-			parent.putEntry(new Entry("groupid:replace", VersionRange.createFromVersionSpec("[1.0,2.0)"), "libreplace1-java", null, false));
-			parent.putEntry(new Entry("groupid:replace", VersionRange.createFromVersionSpec("[2.0,3.0)"), "libreplace2-java", null, false));
-			parent.putEntry(new Entry("groupid:replace", VersionRange.createFromVersionSpec("[3.0,4.0)"), "libreplace3-java", null, false));
+			parent.putEntry(new Entry("groupid:replace", VersionRange
+					.createFromVersionSpec("[1.0,2.0)"), "libreplace1-java",
+					null, false));
+			parent.putEntry(new Entry("groupid:replace", VersionRange
+					.createFromVersionSpec("[2.0,3.0)"), "libreplace2-java",
+					null, false));
+			parent.putEntry(new Entry("groupid:replace", VersionRange
+					.createFromVersionSpec("[3.0,4.0)"), "libreplace3-java",
+					null, false));
 		} catch (InvalidVersionSpecificationException e) {
 			throw new IllegalStateException("invalid versions given", e);
 		}
@@ -235,16 +242,21 @@ public class MappingTest extends TestCase {
 		Mapping tchild = new Mapping("child");
 		try {
 			// Version 1 should be inherited.
-			
+
 			// Version 2 with new dependency line.
-			tchild.putEntry(new Entry("groupid:replace", VersionRange.createFromVersionSpec("[2.0,3.0)"), "libreplace2-java libreplace2-additional-java", null, false));
-			
+			tchild.putEntry(new Entry("groupid:replace", VersionRange
+					.createFromVersionSpec("[2.0,3.0)"),
+					"libreplace2-java libreplace2-additional-java", null, false));
+
 			// Version 3 with ignore property.
-			tchild.putEntry(Entry.createIgnoreEntry("groupid:replace", VersionRange.createFromVersionSpec("[3.0,4.0)")));
-			
+			tchild.putEntry(Entry.createIgnoreEntry("groupid:replace",
+					VersionRange.createFromVersionSpec("[3.0,4.0)")));
+
 			// Version 4 is new
-			tchild.putEntry(new Entry("groupid:replace", VersionRange.createFromVersionSpec("[4.0,5.0)"), "libreplace4-java", null, false));
-			
+			tchild.putEntry(new Entry("groupid:replace", VersionRange
+					.createFromVersionSpec("[4.0,5.0)"), "libreplace4-java",
+					null, false));
+
 		} catch (InvalidVersionSpecificationException e) {
 			throw new IllegalStateException("invalid versions given", e);
 		}
@@ -253,57 +265,79 @@ public class MappingTest extends TestCase {
 		Entry e;
 
 		// Should not exist
-		e = parent.getEntry("groupid", "replace", new DefaultArtifactVersion("0.5"));
+		e = parent.getEntry("groupid", "replace", new DefaultArtifactVersion(
+				"0.5"));
 		assertEquals("parent-replace-0.5", null, e);
 
 		// Should exist
-		e = parent.getEntry("groupid", "replace", new DefaultArtifactVersion("1.1"));
-		assertEquals("parent-replace-1.x artifactSpec", "groupid:replace", e.artifactSpec);
-		assertEquals("parent-replace-1.x dependencyLine", "libreplace1-java", e.dependencyLine);
-		
-		// Should exist
-		e = parent.getEntry("groupid", "replace", new DefaultArtifactVersion("2.5"));
-		assertEquals("parent-replace-2.x artifactSpec", "groupid:replace", e.artifactSpec);
-		assertEquals("parent-replace-2.x dependencyLine", "libreplace2-java", e.dependencyLine);
+		e = parent.getEntry("groupid", "replace", new DefaultArtifactVersion(
+				"1.1"));
+		assertEquals("parent-replace-1.x artifactSpec", "groupid:replace",
+				e.artifactSpec);
+		assertEquals("parent-replace-1.x dependencyLine", "libreplace1-java",
+				e.dependencyLine);
 
 		// Should exist
-		e = parent.getEntry("groupid", "replace", new DefaultArtifactVersion("3.0"));
-		assertEquals("parent-replace-3.x artifactSpec", "groupid:replace", e.artifactSpec);
-		assertEquals("parent-replace-3.x dependencyLine", "libreplace3-java", e.dependencyLine);
+		e = parent.getEntry("groupid", "replace", new DefaultArtifactVersion(
+				"2.5"));
+		assertEquals("parent-replace-2.x artifactSpec", "groupid:replace",
+				e.artifactSpec);
+		assertEquals("parent-replace-2.x dependencyLine", "libreplace2-java",
+				e.dependencyLine);
+
+		// Should exist
+		e = parent.getEntry("groupid", "replace", new DefaultArtifactVersion(
+				"3.0"));
+		assertEquals("parent-replace-3.x artifactSpec", "groupid:replace",
+				e.artifactSpec);
+		assertEquals("parent-replace-3.x dependencyLine", "libreplace3-java",
+				e.dependencyLine);
 
 		// Should not exist
-		e = parent.getEntry("groupid", "replace", new DefaultArtifactVersion("4.7"));
+		e = parent.getEntry("groupid", "replace", new DefaultArtifactVersion(
+				"4.7"));
 		assertEquals("parent-replace-4.x", null, e);
 
 		// Now on to the child
-		
+
 		// Should not exist
-		e = child.getEntry("groupid", "replace", new DefaultArtifactVersion("0.5"));
+		e = child.getEntry("groupid", "replace", new DefaultArtifactVersion(
+				"0.5"));
 		assertEquals("child-replace-0.5", null, e);
 
 		// Should exist (and stay the same as in parent)
-		e = child.getEntry("groupid", "replace", new DefaultArtifactVersion("1.1"));
-		assertEquals("child-replace-1.x artifactSpec", "groupid:replace", e.artifactSpec);
-		assertEquals("child-replace-1.x dependencyLine", "libreplace1-java", e.dependencyLine);
-		
+		e = child.getEntry("groupid", "replace", new DefaultArtifactVersion(
+				"1.1"));
+		assertEquals("child-replace-1.x artifactSpec", "groupid:replace",
+				e.artifactSpec);
+		assertEquals("child-replace-1.x dependencyLine", "libreplace1-java",
+				e.dependencyLine);
+
 		// Should exist (and should have different dependency line)
-		e = child.getEntry("groupid", "replace", new DefaultArtifactVersion("2.5"));
-		assertEquals("child-replace-2.x artifactSpec", "groupid:replace", e.artifactSpec);
-		assertEquals("child-replace-2.x dependencyLine", "libreplace2-java libreplace2-additional-java", e.dependencyLine);
+		e = child.getEntry("groupid", "replace", new DefaultArtifactVersion(
+				"2.5"));
+		assertEquals("child-replace-2.x artifactSpec", "groupid:replace",
+				e.artifactSpec);
+		assertEquals("child-replace-2.x dependencyLine",
+				"libreplace2-java libreplace2-additional-java",
+				e.dependencyLine);
 
 		// Should exist
-		e = child.getEntry("groupid", "replace", new DefaultArtifactVersion("3.0"));
-		assertEquals("child-replace-3.x artifactSpec", "groupid:replace", e.artifactSpec);
+		e = child.getEntry("groupid", "replace", new DefaultArtifactVersion(
+				"3.0"));
+		assertEquals("child-replace-3.x artifactSpec", "groupid:replace",
+				e.artifactSpec);
 		assertEquals("child-replace-3.x ignoreEntry", true, e.ignoreEntry);
 
 		// Should now exist
-		e = child.getEntry("groupid", "replace", new DefaultArtifactVersion("4.7"));
-		assertEquals("child-replace-4.x artifactSpec", "groupid:replace", e.artifactSpec);
-		assertEquals("child-replace-4.x dependencyLine", "libreplace4-java", e.dependencyLine);
-
-
+		e = child.getEntry("groupid", "replace", new DefaultArtifactVersion(
+				"4.7"));
+		assertEquals("child-replace-4.x artifactSpec", "groupid:replace",
+				e.artifactSpec);
+		assertEquals("child-replace-4.x dependencyLine", "libreplace4-java",
+				e.dependencyLine);
 	}
-	
+
 	private HashSet<String> createHashSet(String[] entries) {
 		HashSet<String> hs = new HashSet<String>();
 		for (String e : entries)
@@ -311,4 +345,5 @@ public class MappingTest extends TestCase {
 
 		return hs;
 	}
+
 }

@@ -11,66 +11,61 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.testing.stubs.MavenProjectStub;
 import org.codehaus.plexus.util.ReaderFactory;
+
 /**
- * Defines a stub project for testing purposes 
+ * Defines a stub project for testing purposes
+ * 
  * @author plafue
- *
+ * 
  */
-public class PkgProjectStub
-    extends MavenProjectStub
-{
-    /**
-     * Default constructor
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-	public PkgProjectStub(File pom)
-    {
-        MavenXpp3Reader pomReader = new MavenXpp3Reader();
-        Model model;
-        try
-        {
-            model = pomReader.read( ReaderFactory.newXmlReader( pom ) );
-            setModel( model );
-        }
-        catch ( Exception e )
-        {
-            throw new RuntimeException( e );
-        }
+public class PkgProjectStub extends MavenProjectStub {
+	/**
+	 * Default constructor
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public PkgProjectStub(File pom) {
+		MavenXpp3Reader pomReader = new MavenXpp3Reader();
+		Model model;
+		try {
+			model = pomReader.read(ReaderFactory.newXmlReader(pom));
+			setModel(model);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 
-        setGroupId( model.getGroupId() );
-        setArtifactId( model.getArtifactId() );
-        setVersion( model.getVersion() );
-        setName( model.getName() );
-        setUrl( model.getUrl() );
-        setPackaging( model.getPackaging() );
-        
-        setRemoteArtifactRepositories(Collections.emptyList());
-        
-        Build build = new Build();
-        build.setFinalName( model.getArtifactId() );
-        build.setDirectory( getBasedir() + "/target" );
-        build.setSourceDirectory( getBasedir() + "/src/main/java" );
-        build.setOutputDirectory( getBasedir() + "/target/classes" );
-        build.setTestSourceDirectory( getBasedir() + "/src/test/java" );
-        build.setTestOutputDirectory( getBasedir() + "/target/test-classes" );
-        setBuild( build );
-        
-        setDependencies(model.getDependencies());
-        this.setDependencyArtifacts(new HashSet());
-        
-        List compileSourceRoots = new ArrayList();
-        compileSourceRoots.add( getBasedir() + "/src/main/java" );
-        setCompileSourceRoots( compileSourceRoots );
+		setGroupId(model.getGroupId());
+		setArtifactId(model.getArtifactId());
+		setVersion(model.getVersion());
+		setName(model.getName());
+		setUrl(model.getUrl());
+		setPackaging(model.getPackaging());
 
-        List testCompileSourceRoots = new ArrayList();
-        testCompileSourceRoots.add( getBasedir() + "/src/test/java" );
-        setTestCompileSourceRoots( testCompileSourceRoots );
-        
-    }
+		setRemoteArtifactRepositories(Collections.emptyList());
 
-    /** {@inheritDoc} */
-    public File getBasedir()
-    {
-        return new File( super.getBasedir() + "/src/test/resources/dummyproject" );
-    }
+		Build build = new Build();
+		build.setFinalName(model.getArtifactId());
+		build.setDirectory(getBasedir() + "/target");
+		build.setSourceDirectory(getBasedir() + "/src/main/java");
+		build.setOutputDirectory(getBasedir() + "/target/classes");
+		build.setTestSourceDirectory(getBasedir() + "/src/test/java");
+		build.setTestOutputDirectory(getBasedir() + "/target/test-classes");
+		setBuild(build);
+
+		setDependencies(model.getDependencies());
+		this.setDependencyArtifacts(new HashSet());
+
+		List compileSourceRoots = new ArrayList();
+		compileSourceRoots.add(getBasedir() + "/src/main/java");
+		setCompileSourceRoots(compileSourceRoots);
+
+		List testCompileSourceRoots = new ArrayList();
+		testCompileSourceRoots.add(getBasedir() + "/src/test/java");
+		setTestCompileSourceRoots(testCompileSourceRoots);
+	}
+
+	/** {@inheritDoc} */
+	public File getBasedir() {
+		return new File(super.getBasedir() + "/src/test/resources/dummyproject");
+	}
+
 }

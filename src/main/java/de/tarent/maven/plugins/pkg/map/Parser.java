@@ -47,17 +47,19 @@ import de.tarent.maven.plugins.pkg.exception.XMLParserException;
 /**
  * A parser for the package maps XML document.
  * 
- * <p>When finished successfully it will contain a map of all parsed
- * distributions and their corresponding package map.</p> 
+ * <p>
+ * When finished successfully it will contain a map of all parsed distributions
+ * and their corresponding package map.
+ * </p>
  * 
  * @author Robert Schuster (robert.schuster@tarent.de)
- *
+ * 
  */
-class Parser
-  {
-    Map<String, Mapping> mappings = new HashMap<String, Mapping>();
-    
-	Parser(URL packageMapDocument, URL auxMapDocument) throws XMLParserException {
+class Parser {
+	Map<String, Mapping> mappings = new HashMap<String, Mapping>();
+
+	Parser(URL packageMapDocument, URL auxMapDocument)
+			throws XMLParserException {
 		// Initialize the XML parsing part.
 		Parser.State s;
 		try {
@@ -73,329 +75,290 @@ class Parser
 				parsePackageMaps(s);
 			}
 		} catch (Exception e) {
-			throw new XMLParserException("Error parsing packageMap.",e);
+			throw new XMLParserException("Error parsing packageMap.", e);
 		}
 
 	}
-    
-    private void handleInclude(Parser.State currentState, String includeUrl) throws XMLParserException
-    {
-      try
-      {
-        // Automagically handles relative and absolute URLs.
-        URL url = new URL(currentState.url, includeUrl);
-        Parser.State s = new State(url);
-        
-        s.nextMatch("package-maps");
-        parsePackageMaps(s);
-        
-      }
-      catch (MalformedURLException mfue)
-      {
-        throw new XMLParserException("URL in <include> tag is invalid '" + includeUrl + "'", mfue);
-      } catch (Exception e) {
-          throw new XMLParserException("URL in <include> tag is invalid '" + includeUrl + "'", e);
+
+	private void handleInclude(Parser.State currentState, String includeUrl)
+			throws XMLParserException {
+		try {
+			// Automagically handles relative and absolute URLs.
+			URL url = new URL(currentState.url, includeUrl);
+			Parser.State s = new State(url);
+
+			s.nextMatch("package-maps");
+			parsePackageMaps(s);
+
+		} catch (MalformedURLException mfue) {
+			throw new XMLParserException("URL in <include> tag is invalid '"
+					+ includeUrl + "'", mfue);
+		} catch (Exception e) {
+			throw new XMLParserException("URL in <include> tag is invalid '"
+					+ includeUrl + "'", e);
+		}
 	}
-    }
-    
-    private void parsePackageMaps(Parser.State s) throws Exception
-    {
-      s.nextMatch("version");
-      
-      String vc = s.nextElement();
-      if (Double.parseDouble(vc) != 1.0) {
-        throw new Exception("unsupported document: document version " + vc + " is not supported");
-      }
-      s.nextElement();
-      while (s.token != null)
-        {
-          if (s.peek("distro"))
-          {
-            parseDistro(s);
-          }
-          else if (s.peek("include"))
-            {
-              handleInclude(s, s.nextElement());
-              s.nextElement();
-            }
-          else{
-            throw new Exception("malformed document: unexpected token " + s.token);
-          }
-        }
-      
-    }
-    
-    private void parseDistro(Parser.State s) throws Exception
-    {
-      s.nextMatch("id");
-      Mapping distroMapping = getMappingImpl(s.nextElement());
-      s.nextMatch("label");
-      distroMapping.label = s.nextElement();
-      
-      s.nextElement();
-      // Either "inherit" or "packaging".
-      if (s.peek("inherit")) {
-        distroMapping.parent = s.nextElement();
-      } else if(s.peek("packaging")) {
-        distroMapping.packaging = s.nextElement();
-      } else {
-        throw new Exception("malformed document: unexpected token '" + s.token + "'. Expected either <inherit> or <packaging>.");
-      }
-      s.nextElement();
-      // debian naming parameter is optional
-      if (s.peek("debianNaming"))
-        {
-          distroMapping.debianNaming = Boolean.valueOf(s.nextElement().toString());
-          s.nextElement();
-        }
-      
-      // repoName parameter is optional
-      if (s.peek("repoName"))
-        {
-          distroMapping.repoName = s.nextElement();
-          s.nextElement();
-        }
-      
-      // Default bin (scripts) path is optional
-      if (s.peek("defaultBinPath"))
-        {
-          distroMapping.defaultBinPath = s.nextElement();
-          s.nextElement();
-        }
-      
-      // Default bin (scripts) path is optional
-      if (s.peek("defaultSBinPath"))
-        {
-          distroMapping.defaultSBinPath = s.nextElement();
-          s.nextElement();
-        }
-      
-      // Default jar path is optional
-      if (s.peek("defaultJarPath"))
-        {
-          distroMapping.defaultJarPath = s.nextElement();
-          s.nextElement();
-        }
 
-      // Default JNI path is optional
-      if (s.peek("defaultJNIPath"))
-        {
-          distroMapping.defaultJNIPath = s.nextElement();
-          s.nextElement();
-        }
-      
-      // Default dependency line is optional
-      if (s.peek("defaultDependencyLine"))
-        {
-          distroMapping.defaultDependencyLine = s.nextElement();
-          s.nextElement();
-        }
-      
-      if (s.peek("map"))
-        {
-          parseMap(s, distroMapping);
-        }
-      else if (s.peek("noPackages"))
-        {
-          distroMapping.hasNoPackages = true;
-          s.nextElement();
-        }
-      
-    }
-    
-    private void parseMap(Parser.State s, Mapping distroMapping) throws XMLParserException
-    {
-      s.nextElement();
-      while (s.peek("entry"))
-        {
-          parseEntry(s, distroMapping);
-        }
-    }
+	private void parsePackageMaps(Parser.State s) throws Exception {
+		s.nextMatch("version");
 
-    private void parseEntry(Parser.State s, Mapping distroMapping) throws XMLParserException
-    {
-      String artifactSpec;
-      String dependencyLine;
-      VersionRange versionRange = null;
-      
-      s.nextMatch("artifactSpec");
-      dependencyLine = getArtifactId(artifactSpec = s.nextElement());
-      
-      s.nextElement();
-      if (s.peek("versionSpec"))
-      {
-    	  try {
-			versionRange = VersionRange.createFromVersionSpec(s.nextElement());
-		} catch (InvalidVersionSpecificationException e) {
-			throw new IllegalStateException("package map contains invalid version spec.", e);
+		String vc = s.nextElement();
+		if (Double.parseDouble(vc) != 1.0) {
+			throw new Exception("unsupported document: document version " + vc
+					+ " is not supported");
+		}
+		
+		s.nextElement();
+		while (s.token != null) {
+			if (s.peek("distro")) {
+				parseDistro(s);
+			} else if (s.peek("include")) {
+				handleInclude(s, s.nextElement());
+				s.nextElement();
+			} else {
+				throw new Exception("malformed document: unexpected token "
+						+ s.token);
+			}
+		}
+	}
+
+	private void parseDistro(Parser.State s) throws Exception {
+		s.nextMatch("id");
+		Mapping distroMapping = getMappingImpl(s.nextElement());
+		s.nextMatch("label");
+		distroMapping.label = s.nextElement();
+
+		s.nextElement();
+		// Either "inherit" or "packaging".
+		if (s.peek("inherit")) {
+			distroMapping.parent = s.nextElement();
+		} else if (s.peek("packaging")) {
+			distroMapping.packaging = s.nextElement();
+		} else {
+			throw new Exception("malformed document: unexpected token '"
+					+ s.token + "'. Expected either <inherit> or <packaging>.");
 		}
 		s.nextElement();
-      }
-      
-      if (s.peek("ignore"))
-        {
-          distroMapping.putEntry(Entry.createIgnoreEntry(artifactSpec, versionRange));
-          s.nextElement();
-          return;
-        }
-      else if (s.peek("bundle"))
-        {
-          distroMapping.putEntry(Entry.createBundleEntry(artifactSpec, versionRange));
-          s.nextElement();
-          return;
-        }
-      else if (s.peek("dependencyLine"))
-        {
-          dependencyLine = s.nextElement();
-          s.nextElement();
-        }
-      
-      boolean isBootClaspath = false;
-      if (s.peek("boot"))
-        {
-          isBootClaspath = true;
-          s.nextElement();
-        }
-      
-      HashSet<String> jarFileNames = new HashSet<String>();
-      if (s.peek("jars"))
-        {
-          try {
-			parseJars(s, jarFileNames);
-		} catch (Exception e) {
-			throw new XMLParserException("Error while parsing jars", e);
+		// debian naming parameter is optional
+		if (s.peek("debianNaming")) {
+			distroMapping.debianNaming = Boolean.valueOf(s.nextElement()
+					.toString());
+			s.nextElement();
 		}
-        }
-      
-      distroMapping.putEntry(
-    		  new Entry(artifactSpec, versionRange, dependencyLine, jarFileNames, isBootClaspath));
-    }
-    
-    /**
-     * Returns the artifactId of an artifactSpec string. Eg. "foo" from "org.baz:foo". 
-     * 
-     * @param artifactSpec
-     * @return
-     */
-    private String getArtifactId(String artifactSpec)
-    {
-      return artifactSpec.substring(artifactSpec.indexOf(':') + 1);
-    }
 
-    private void parseJars(Parser.State s, Set<String> jarFileNames) throws Exception
-    {
-      s.nextElement();
-      while (s.peek("jar"))
-        {
-          jarFileNames.add(s.nextElement());
-          s.nextElement();
-        }
-    }
+		// repoName parameter is optional
+		if (s.peek("repoName")) {
+			distroMapping.repoName = s.nextElement();
+			s.nextElement();
+		}
 
-    Mapping getMapping(String distro)
-    {
-      Mapping m = (Mapping) mappings.get(distro);
-      
-      if (m == null) {
-        mappings.put(distro, m = new Mapping(distro));
-      } else if (m.parent != null)
-        {
-          return new Mapping(m, getMapping(m.parent));
-        }
-      
-      return m;
-    }
-    
-    private Mapping getMappingImpl(String distro)
-    {
-      Mapping m = (Mapping) mappings.get(distro);
-      
-      if (m == null) {
-        mappings.put(distro, m = new Mapping(distro));
-      }
-      return m;
-    }
-    
-    private static class State
-    {
-      String token;
-      
-      XmlPullParser parser;
-      
-      URL url;
-      
-      State(URL url) throws XMLParserException
-      {
-        parser = new MXParser();
-        
-        this.url = url;
-        
-        try
-        {
-          parser.setInput(url.openStream(), null);
-        }
-        catch (XmlPullParserException xmlppe)
-        {
-          throw new XMLParserException("XML document malformed", xmlppe);
-        }
-        catch (IOException ioe)
-        {
-          throw new XMLParserException("I/O error when accessing XML document: " + url, ioe);
-        }
+		// Default bin (scripts) path is optional
+		if (s.peek("defaultBinPath")) {
+			distroMapping.defaultBinPath = s.nextElement();
+			s.nextElement();
+		}
 
-      }
-      
-      String nextElement() throws XMLParserException
-      {
-        do
-          {
-            try 
-            {
-              switch (parser.next())
-              {
-                case XmlPullParser.START_TAG:
-//                  System.err.println("start: " + parser.getName());
-                  return token = parser.getName();
-                case XmlPullParser.END_TAG:
-//                  System.err.println("end");
-                  continue;
-                case XmlPullParser.END_DOCUMENT:
-                  return token = null;
-                case XmlPullParser.TEXT:
-                  // We don't care about whitespace characters.
-                  if (parser.isWhitespace()) {
-                    continue;
-                  }
-//                  System.err.println("text: " + parser.getText());
-                  
-                  return token = parser.getText();
-              }
-            }
-            catch (XmlPullParserException xmlppe)
-            {
-              throw new XMLParserException("XML document malformed", xmlppe);
-            }
-            catch (IOException ioe)
-            {
-              throw new XMLParserException("I/O error when accessing XML document: " + url, ioe);
-            }
-          }
-        while (true);
-      }
+		// Default bin (scripts) path is optional
+		if (s.peek("defaultSBinPath")) {
+			distroMapping.defaultSBinPath = s.nextElement();
+			s.nextElement();
+		}
 
-      private void nextMatch(String expected) throws XMLParserException
-      {
-        nextElement();
-        if (!expected.equals(token)) {
-          throw new XMLParserException("malformed document: expected " + expected + " got '" + token + "'");
-        }
-      }
+		// Default jar path is optional
+		if (s.peek("defaultJarPath")) {
+			distroMapping.defaultJarPath = s.nextElement();
+			s.nextElement();
+		}
 
-      private boolean peek(String expected)
-      {
-        return expected.equals(token);
-      }
-      
-    }
-    
-  }
+		// Default JNI path is optional
+		if (s.peek("defaultJNIPath")) {
+			distroMapping.defaultJNIPath = s.nextElement();
+			s.nextElement();
+		}
+
+		// Default dependency line is optional
+		if (s.peek("defaultDependencyLine")) {
+			distroMapping.defaultDependencyLine = s.nextElement();
+			s.nextElement();
+		}
+
+		if (s.peek("map")) {
+			parseMap(s, distroMapping);
+		} else if (s.peek("noPackages")) {
+			distroMapping.hasNoPackages = true;
+			s.nextElement();
+		}
+	}
+
+	private void parseMap(Parser.State s, Mapping distroMapping)
+			throws XMLParserException {
+		s.nextElement();
+		while (s.peek("entry")) {
+			parseEntry(s, distroMapping);
+		}
+	}
+
+	private void parseEntry(Parser.State s, Mapping distroMapping)
+			throws XMLParserException {
+		String artifactSpec;
+		String dependencyLine;
+		VersionRange versionRange = null;
+
+		s.nextMatch("artifactSpec");
+		dependencyLine = getArtifactId(artifactSpec = s.nextElement());
+
+		s.nextElement();
+		if (s.peek("versionSpec")) {
+			try {
+				versionRange = VersionRange.createFromVersionSpec(s
+						.nextElement());
+			} catch (InvalidVersionSpecificationException e) {
+				throw new IllegalStateException(
+						"package map contains invalid version spec.", e);
+			}
+			s.nextElement();
+		}
+
+		if (s.peek("ignore")) {
+			distroMapping.putEntry(Entry.createIgnoreEntry(artifactSpec,
+					versionRange));
+			s.nextElement();
+			return;
+		} else if (s.peek("bundle")) {
+			distroMapping.putEntry(Entry.createBundleEntry(artifactSpec,
+					versionRange));
+			s.nextElement();
+			return;
+		} else if (s.peek("dependencyLine")) {
+			dependencyLine = s.nextElement();
+			s.nextElement();
+		}
+
+		boolean isBootClaspath = false;
+		if (s.peek("boot")) {
+			isBootClaspath = true;
+			s.nextElement();
+		}
+
+		HashSet<String> jarFileNames = new HashSet<String>();
+		if (s.peek("jars")) {
+			try {
+				parseJars(s, jarFileNames);
+			} catch (Exception e) {
+				throw new XMLParserException("Error while parsing jars", e);
+			}
+		}
+
+		distroMapping.putEntry(new Entry(artifactSpec, versionRange,
+				dependencyLine, jarFileNames, isBootClaspath));
+	}
+
+	/**
+	 * Returns the artifactId of an artifactSpec string. Eg. "foo" from
+	 * "org.baz:foo".
+	 * 
+	 * @param artifactSpec
+	 * @return
+	 */
+	private String getArtifactId(String artifactSpec) {
+		return artifactSpec.substring(artifactSpec.indexOf(':') + 1);
+	}
+
+	private void parseJars(Parser.State s, Set<String> jarFileNames)
+			throws Exception {
+		s.nextElement();
+		while (s.peek("jar")) {
+			jarFileNames.add(s.nextElement());
+			s.nextElement();
+		}
+	}
+
+	Mapping getMapping(String distro) {
+		Mapping m = (Mapping) mappings.get(distro);
+
+		if (m == null) {
+			mappings.put(distro, m = new Mapping(distro));
+		} else if (m.parent != null) {
+			return new Mapping(m, getMapping(m.parent));
+		}
+
+		return m;
+	}
+
+	private Mapping getMappingImpl(String distro) {
+		Mapping m = (Mapping) mappings.get(distro);
+
+		if (m == null) {
+			mappings.put(distro, m = new Mapping(distro));
+		}
+		return m;
+	}
+
+	private static class State {
+		String token;
+
+		XmlPullParser parser;
+
+		URL url;
+
+		State(URL url) throws XMLParserException {
+			parser = new MXParser();
+
+			this.url = url;
+
+			try {
+				parser.setInput(url.openStream(), null);
+			} catch (XmlPullParserException xmlppe) {
+				throw new XMLParserException("XML document malformed", xmlppe);
+			} catch (IOException ioe) {
+				throw new XMLParserException(
+						"I/O error when accessing XML document: " + url, ioe);
+			}
+		}
+
+		String nextElement() throws XMLParserException {
+			do {
+				try {
+					switch (parser.next()) {
+					case XmlPullParser.START_TAG:
+						// System.err.println("start: " + parser.getName());
+						return token = parser.getName();
+					case XmlPullParser.END_TAG:
+						// System.err.println("end");
+						continue;
+					case XmlPullParser.END_DOCUMENT:
+						return token = null;
+					case XmlPullParser.TEXT:
+						// We don't care about whitespace characters.
+						if (parser.isWhitespace()) {
+							continue;
+						}
+						// System.err.println("text: " + parser.getText());
+
+						return token = parser.getText();
+					}
+				} catch (XmlPullParserException xmlppe) {
+					throw new XMLParserException("XML document malformed",
+							xmlppe);
+				} catch (IOException ioe) {
+					throw new XMLParserException(
+							"I/O error when accessing XML document: " + url,
+							ioe);
+				}
+			} while (true);
+		}
+
+		private void nextMatch(String expected) throws XMLParserException {
+			nextElement();
+			if (!expected.equals(token)) {
+				throw new XMLParserException("malformed document: expected "
+						+ expected + " got '" + token + "'");
+			}
+		}
+
+		private boolean peek(String expected) {
+			return expected.equals(token);
+		}
+	}
+
+}

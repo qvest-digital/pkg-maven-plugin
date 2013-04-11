@@ -6,12 +6,14 @@ import java.util.regex.Pattern;
 
 /**
  * Stores parameters for the upload goal.
+ * 
  * @author plafue
- *
+ * 
  */
 public class UploadParameters {
 	/**
 	 * List of urls to upload a Package to.
+	 * 
 	 * @parameter
 	 * @required
 	 */
@@ -21,57 +23,66 @@ public class UploadParameters {
 	 */
 	private String toDir;
 	/**
-	 * Optional parameter to specify a username. This will them replace the %USERNAME% placeholder in the url. 
+	 * Optional parameter to specify a username. This will them replace the
+	 * %USERNAME% placeholder in the url.
 	 */
-	private String username;	
+	private String username;
 	/**
-	 * Optional parameter to specify a password. This will them replace the %PASSWORD% placeholder in the url. 
+	 * Optional parameter to specify a password. This will them replace the
+	 * %PASSWORD% placeholder in the url.
 	 */
 	private String password;
-	
-	private static final Pattern USERNAMEPATTERN = Pattern.compile("%USERNAME%");
-	private static final Pattern PASSWORDPATTERN = Pattern.compile("%PASSWORD%");
-	
+
+	private static final Pattern USERNAMEPATTERN = Pattern
+			.compile("%USERNAME%");
+	private static final Pattern PASSWORDPATTERN = Pattern
+			.compile("%PASSWORD%");
+
 	public String parseUrlPlaceholders(String url) {
-		
+
 		Matcher m;
-		
-		if(username!=null){
+
+		if (username != null) {
 			m = USERNAMEPATTERN.matcher(url);
-			while(m.find()){
+			while (m.find()) {
 				url = m.replaceAll(username);
 			}
 		}
-		if(password!=null){
+		if (password != null) {
 			m = PASSWORDPATTERN.matcher(url);
-			while(m.find()){
+			while (m.find()) {
 				url = m.replaceAll(password);
 			}
 		}
 		return url;
 	}
-	
-	public List<String> getUrls(){
+
+	public List<String> getUrls() {
 		return urls;
 	}
-	
+
 	public String getToDir() {
 		return toDir;
 	}
+
 	public void setToDir(String toDir) {
 		this.toDir = toDir;
 	}
+
 	public String getUsername() {
 		return username;
 	}
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
 	public String getPassword() {
 		return password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 }

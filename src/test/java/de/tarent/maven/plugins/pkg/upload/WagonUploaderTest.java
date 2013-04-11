@@ -24,75 +24,89 @@ import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
 
-public class WagonUploaderTest extends AbstractMvnPkgPluginTestCase{
-	
+public class WagonUploaderTest extends AbstractMvnPkgPluginTestCase {
+
 	File expectedPackageFile;
 	WagonUploader wu;
 	String expectedUrl;
 	WorkspaceSession ws;
 	Upload up;
-	
+
 	@Before
-	public void setUp() throws Exception{
+	public void setUp() throws Exception {
 		super.setUp();
 		up = mockUploadEnvironment(UPLOADPOM);
 		ws = new WorkspaceSession();
-		PackageMap expectedPackageMap = new PackageMap(null, null, "dull", new HashSet<String>());
+		PackageMap expectedPackageMap = new PackageMap(null, null, "dull",
+				new HashSet<String>());
 		ws.setPackageMap(expectedPackageMap);
 		ws.setMojo(up);
 		expectedUrl = "someurl";
 		Helper h = new Helper();
-		h.init(up, expectedPackageMap, new TargetConfiguration().fixate(), new ArrayList<TargetConfiguration>(),"ubuntu-lucid");
+		h.init(up, expectedPackageMap, new TargetConfiguration().fixate(),
+				new ArrayList<TargetConfiguration>(), "ubuntu-lucid");
 		ws.setHelper(h);
-		expectedPackageFile = new File(ws.getMojo().getTempRoot().getParentFile(), ws.getHelper().getPackageFileName());
+		expectedPackageFile = new File(ws.getMojo().getTempRoot()
+				.getParentFile(), ws.getHelper().getPackageFileName());
 		wu = new WagonUploader(ws, expectedUrl);
-		
-		
 	}
-	
+
 	@After
-	public void tearDown() throws Exception{
+	public void tearDown() throws Exception {
 		super.tearDown();
 	}
-	
+
 	@Test
-	public void testConstructor() throws Exception{
-		Assert.assertEquals(expectedUrl, (String)getValueOfFieldInObject("url",wu));
-		Assert.assertEquals(up.getLog(), (Log)getValueOfFieldInObject("l",wu));
-		Assert.assertEquals(ws.getMojo().getProject(), (MavenProject)getValueOfFieldInObject("project",wu));
-		Assert.assertEquals(ws.getMojo().getPluginManager(), (PluginManager)getValueOfFieldInObject("pluginManager",wu));
-		Assert.assertEquals(ws.getMojo().getSession(), (MavenSession)getValueOfFieldInObject("session",wu));
-		Assert.assertEquals(expectedPackageFile, (File)getValueOfFieldInObject("packageFile",wu));
+	public void testConstructor() throws Exception {
+		Assert.assertEquals(expectedUrl,
+				(String) getValueOfFieldInObject("url", wu));
+		Assert.assertEquals(up.getLog(), (Log) getValueOfFieldInObject("l", wu));
+		Assert.assertEquals(ws.getMojo().getProject(),
+				(MavenProject) getValueOfFieldInObject("project", wu));
+		Assert.assertEquals(ws.getMojo().getPluginManager(),
+				(PluginManager) getValueOfFieldInObject("pluginManager", wu));
+		Assert.assertEquals(ws.getMojo().getSession(),
+				(MavenSession) getValueOfFieldInObject("session", wu));
+		Assert.assertEquals(expectedPackageFile,
+				(File) getValueOfFieldInObject("packageFile", wu));
 	}
-	
+
 	@Test
-	public void generateUploadElements() throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, SecurityException, NoSuchMethodException{	
-		Method m = WagonUploader.class.getDeclaredMethod("generateUploadElements",new Class[]{File.class, String.class});
+	public void generateUploadElements() throws IllegalArgumentException,
+			IllegalAccessException, InvocationTargetException,
+			SecurityException, NoSuchMethodException {
+		Method m = WagonUploader.class.getDeclaredMethod(
+				"generateUploadElements", new Class[] { File.class,
+						String.class });
 		m.setAccessible(true);
-		Element[] elementArray = (Element[]) m.invoke(wu,new Object[]{expectedPackageFile,expectedUrl});
+		Element[] elementArray = (Element[]) m.invoke(wu, new Object[] {
+				expectedPackageFile, expectedUrl });
 		Element element0 = elementArray[0];
 		Element element1 = elementArray[1];
-		
-		assertTrue(element0.toDom().toString().contains("<fromFile>"+expectedPackageFile+"</fromFile>"));
-		assertTrue(element1.toDom().toString().contains("<url>"+expectedUrl+"</url>"));
+
+		assertTrue(element0.toDom().toString()
+				.contains("<fromFile>" + expectedPackageFile + "</fromFile>"));
+		assertTrue(element1.toDom().toString()
+				.contains("<url>" + expectedUrl + "</url>"));
 	}
-	
-	private Upload mockUploadEnvironment(String pomFilename) throws Exception{		
-		 return (Upload)mockEnvironment(pomFilename,"upload",true);		
+
+	private Upload mockUploadEnvironment(String pomFilename) throws Exception {
+		return (Upload) mockEnvironment(pomFilename, "upload", true);
 	}
-	
-	private Object getValueOfFieldInObject(String needle,Object obj) throws IllegalArgumentException, IllegalAccessException{
-		
+
+	private Object getValueOfFieldInObject(String needle, Object obj)
+			throws IllegalArgumentException, IllegalAccessException {
+
 		Field[] allFields = WagonUploader.class.getDeclaredFields();
-		
+
 		for (int i = 0; i < allFields.length; i++) {
-			if(allFields[i].getName().equals(needle)){
+			if (allFields[i].getName().equals(needle)) {
 				allFields[i].setAccessible(true);
-				return allFields[i].get(obj); 
-			}	
+				return allFields[i].get(obj);
+			}
 		}
+
 		return null;
-		
 	}
 
 }

@@ -15,7 +15,6 @@ public class MvnPkgPluginPackaging_ArtifactInclusionTest extends
 
 	@After
 	public void tearDown() throws Exception {
-
 		super.tearDown();
 	}
 
@@ -27,26 +26,26 @@ public class MvnPkgPluginPackaging_ArtifactInclusionTest extends
 	public Packaging mockPackagingEnvironment(String pomFilename, String target)
 			throws Exception {
 		return (Packaging) mockEnvironment(pomFilename, "pkg", true, target);
-
 	}
 
 	@Test
-	public void testDefaultArtifactInclusionStrategy()
-			throws Exception, MojoExecutionException {
+	public void testDefaultArtifactInclusionStrategy() throws Exception,
+			MojoExecutionException {
 		packagingPlugin = mockPackagingEnvironment(INCLUSIONSTRATEGIESPOM,
 				"default_inclusionstrategy");
 		packagingPlugin.execute();
 		assertTrue(numberOfDEBsIs(1));
 		assertTrue(debContainsMainArtifact());
-		
-		// TODO: For this to work the artifact resolution needs to work for mocked POMs
+
+		// TODO: For this to work the artifact resolution needs to work for
+		// mocked POMs
 		// first. It does not do that however and it seems difficult to achieve.
-		//assertTrue(debContainsFile("usr/share/java/DummyProject/commons-io-2.0.1.jar"));
+		// assertTrue(debContainsFile("usr/share/java/DummyProject/commons-io-2.0.1.jar"));
 	}
 
 	@Test
-	public void testNoneArtifactInclusionStrategy()
-			throws Exception, MojoExecutionException {
+	public void testNoneArtifactInclusionStrategy() throws Exception,
+			MojoExecutionException {
 		packagingPlugin = mockPackagingEnvironment(INCLUSIONSTRATEGIESPOM,
 				"none_inclusionstrategy");
 		packagingPlugin.execute();
@@ -56,8 +55,8 @@ public class MvnPkgPluginPackaging_ArtifactInclusionTest extends
 	}
 
 	@Test
-	public void testProjectArtifactInclusionStrategy()
-			throws Exception, MojoExecutionException {
+	public void testProjectArtifactInclusionStrategy() throws Exception,
+			MojoExecutionException {
 		packagingPlugin = mockPackagingEnvironment(INCLUSIONSTRATEGIESPOM,
 				"project_inclusionstrategy");
 		packagingPlugin.execute();
@@ -67,17 +66,18 @@ public class MvnPkgPluginPackaging_ArtifactInclusionTest extends
 	}
 
 	@Test
-	public void testDependenciesArtifactInclusionStrategy()
-			throws Exception, MojoExecutionException {
+	public void testDependenciesArtifactInclusionStrategy() throws Exception,
+			MojoExecutionException {
 		packagingPlugin = mockPackagingEnvironment(INCLUSIONSTRATEGIESPOM,
 				"dependencies_inclusionstrategy");
 		packagingPlugin.execute();
 		assertTrue(numberOfDEBsIs(1));
 		assertFalse(debContainsMainArtifact());
-		
-		// TODO: For this to work the artifact resolution needs to work for mocked POMs
+
+		// TODO: For this to work the artifact resolution needs to work for
+		// mocked POMs
 		// first. It does not do that however and it seems difficult to achieve.
-		//assertTrue(debContainsFile("usr/share/java/DummyProject/commons-io-2.0.1.jar"));
+		// assertTrue(debContainsFile("usr/share/java/DummyProject/commons-io-2.0.1.jar"));
 	}
-	
+
 }

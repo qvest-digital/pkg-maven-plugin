@@ -288,7 +288,6 @@ public class DebPackager extends Packager {
 			Utils.checkProgramAvailability("gpg");
 			Utils.checkProgramAvailability("ar");
 		}
-
 	}
 
 	/**
@@ -528,7 +527,8 @@ public class DebPackager extends Packager {
 			e1.printStackTrace();
 		}
 
-		/* We will create a FileOutputStream in order to write in the debian
+		/*
+		 * We will create a FileOutputStream in order to write in the debian
 		 * package
 		 */
 		FileOutputStream fos = null;
@@ -564,7 +564,7 @@ public class DebPackager extends Packager {
 						"Error closing output stream to debian package");
 			}
 		}
-		
+
 		// Here we clean the artifacts created while signing
 		File f = new File(tempRoot.getParentFile(), "debian-binary");
 		f.delete();

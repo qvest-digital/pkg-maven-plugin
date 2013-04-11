@@ -30,262 +30,225 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-/** Simple generator for Debian- or IPK-style control files.
+/**
+ * Simple generator for Debian- or IPK-style control files.
  * 
  * @author Robert Schuster (r.schuster@tarent.de)
- *
+ * 
  */
-public class ControlFileGenerator
-{
-  
-  private String packageName;
-  
-  private String version;
-  
-  private String section;
-  
-  private String dependencies;
-  
-  private String recommends;
-  
-  private String suggests;
-  
-  private String provides;
-  
-  private String conflicts;
-  
-  private String replaces;
-  
-  private long installedSize;
-  
-  private String maintainer;
-  
-  private String shortDescription;
-  
-  private String description;
-  
-  private String architecture;
-  
-  private String oe;
-  
-  private String homepage;
-  
-  private String source;
-  
-  public ControlFileGenerator()
-  {
-    
-  }
-  
-  public String getOE()
-  {
-    return oe;
-  }
-  
-  public void setOE(String newOE)
-  {
-    oe = newOE;
-  }
+public class ControlFileGenerator {
 
-  public String getArchitecture()
-  {
-    return architecture;
-  }
+	private String packageName;
 
-  public void setArchitecture(String architecture)
-  {
-    this.architecture = architecture;
-  }
+	private String version;
 
-  public String getDependencies()
-  {
-    return dependencies;
-  }
+	private String section;
 
-  public void setDependencies(String dependencies)
-  {
-    this.dependencies = dependencies;
-  }
-  
-  public String getRecommends()
-  {
-    return recommends;
-  }
+	private String dependencies;
 
-  public void setRecommends(String recommends)
-  {
-    this.recommends = recommends;
-  }
-  
-  public String getSuggests()
-  {
-    return suggests;
-  }
+	private String recommends;
 
-  public void setSuggests(String suggests)
-  {
-    this.suggests = suggests;
-  }
-  
-  public String getProvides()
-  {
-    return provides;
-  }
+	private String suggests;
 
-  public void setProvides(String provides)
-  {
-    this.provides = provides;
-  }
-  
-  public String getConflicts()
-  {
-    return conflicts;
-  }
+	private String provides;
 
-  public void setConflicts(String conflicts)
-  {
-    this.conflicts = conflicts;
-  }
-  
-  public String getReplaces()
-  {
-    return replaces;
-  }
+	private String conflicts;
 
-  public void setReplaces(String replaces)
-  {
-    this.replaces = replaces;
-  }
+	private String replaces;
 
-  public String getDescription()
-  {
-    return description;
-  }
+	private long installedSize;
 
-  public void setDescription(String description)
-  {
-    this.description = description;
-  }
+	private String maintainer;
 
-  public long getInstalledSize()
-  {
-    return installedSize;
-  }
+	private String shortDescription;
 
-  public void setInstalledSize(long installedSize)
-  {
-    this.installedSize = installedSize;
-  }
+	private String description;
 
-  public String getMaintainer()
-  {
-    return maintainer;
-  }
+	private String architecture;
 
-  public void setMaintainer(String maintainer)
-  {
-    this.maintainer = maintainer;
-  }
+	private String oe;
 
-  public String getPackageName()
-  {
-    return packageName;
-  }
+	private String homepage;
 
-  public void setPackageName(String packageName)
-  {
-    this.packageName = packageName;
-  }
+	private String source;
 
-  public String getSection()
-  {
-    return section;
-  }
+	public ControlFileGenerator() {
 
-  public void setSection(String section)
-  {
-    this.section = section;
-  }
+	}
 
-  public String getShortDescription()
-  {
-    return shortDescription;
-  }
+	public String getOE() {
+		return oe;
+	}
 
-  public void setShortDescription(String shortDescription)
-  {
-    this.shortDescription = shortDescription;
-  }
+	public void setOE(String newOE) {
+		oe = newOE;
+	}
 
-  public String getVersion()
-  {
-    return version;
-  }
+	public String getArchitecture() {
+		return architecture;
+	}
 
-  public void setVersion(String version)
-  {
-    this.version = version;
-  }
-  public String getHomepage()
-  {
-    return homepage;
-  }
+	public void setArchitecture(String architecture) {
+		this.architecture = architecture;
+	}
 
-  public void setHomepage(String homepage)
-  {
-    this.homepage = homepage;
-  }
+	public String getDependencies() {
+		return dependencies;
+	}
 
-  public String getSource()
-  {
-    return source;
-  }
+	public void setDependencies(String dependencies) {
+		this.dependencies = dependencies;
+	}
 
-  public void setSource(String source)
-  {
-    this.source = source;
-  }
+	public String getRecommends() {
+		return recommends;
+	}
 
-  public void generate(File f) throws IOException
-  {
-    PrintWriter w = new PrintWriter(new FileOutputStream(f));
-    
-    writeEntry(w, "Package", packageName);
-    writeEntry(w, "Version", version);
-    writeEntry(w, "Section", section);
-    writeEntry(w, "Depends", dependencies);
-    writeEntry(w, "Recommends", recommends);
-    writeEntry(w, "Suggests", suggests);
-    writeEntry(w, "Provides", provides);
-    writeEntry(w, "Conflicts", conflicts);
-    writeEntry(w, "Replaces", replaces);
-    writeEntry(w, "Priority", "optional");
-    writeEntry(w, "Architecture", architecture);
-    writeEntry(w, "OE", oe);
-    writeEntry(w, "Homepage", homepage);
-    writeEntry(w, "Installed-Size", installedSize);
-    writeEntry(w, "Maintainer", maintainer);
-    writeEntry(w, "Description", shortDescription);
-    writeEntry(w, "Source", source);
-    
-    if (description != null) {
-      w.println(" " + description);
-    }
-    w.close();
-  }
-  
-  protected void writeEntry(PrintWriter w, String name, String value)
-  {
-    if (value != null) {
-      w.println(name + ": " +  value);
-    }
-  }
+	public void setRecommends(String recommends) {
+		this.recommends = recommends;
+	}
 
-  protected void writeEntry(PrintWriter w, String name, long value)
-  {
-    if (value != 0) {
-      w.println(name + ": " +  value);
-    }
-  }
-  
+	public String getSuggests() {
+		return suggests;
+	}
+
+	public void setSuggests(String suggests) {
+		this.suggests = suggests;
+	}
+
+	public String getProvides() {
+		return provides;
+	}
+
+	public void setProvides(String provides) {
+		this.provides = provides;
+	}
+
+	public String getConflicts() {
+		return conflicts;
+	}
+
+	public void setConflicts(String conflicts) {
+		this.conflicts = conflicts;
+	}
+
+	public String getReplaces() {
+		return replaces;
+	}
+
+	public void setReplaces(String replaces) {
+		this.replaces = replaces;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public long getInstalledSize() {
+		return installedSize;
+	}
+
+	public void setInstalledSize(long installedSize) {
+		this.installedSize = installedSize;
+	}
+
+	public String getMaintainer() {
+		return maintainer;
+	}
+
+	public void setMaintainer(String maintainer) {
+		this.maintainer = maintainer;
+	}
+
+	public String getPackageName() {
+		return packageName;
+	}
+
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
+	}
+
+	public String getSection() {
+		return section;
+	}
+
+	public void setSection(String section) {
+		this.section = section;
+	}
+
+	public String getShortDescription() {
+		return shortDescription;
+	}
+
+	public void setShortDescription(String shortDescription) {
+		this.shortDescription = shortDescription;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public String getHomepage() {
+		return homepage;
+	}
+
+	public void setHomepage(String homepage) {
+		this.homepage = homepage;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public void generate(File f) throws IOException {
+		PrintWriter w = new PrintWriter(new FileOutputStream(f));
+
+		writeEntry(w, "Package", packageName);
+		writeEntry(w, "Version", version);
+		writeEntry(w, "Section", section);
+		writeEntry(w, "Depends", dependencies);
+		writeEntry(w, "Recommends", recommends);
+		writeEntry(w, "Suggests", suggests);
+		writeEntry(w, "Provides", provides);
+		writeEntry(w, "Conflicts", conflicts);
+		writeEntry(w, "Replaces", replaces);
+		writeEntry(w, "Priority", "optional");
+		writeEntry(w, "Architecture", architecture);
+		writeEntry(w, "OE", oe);
+		writeEntry(w, "Homepage", homepage);
+		writeEntry(w, "Installed-Size", installedSize);
+		writeEntry(w, "Maintainer", maintainer);
+		writeEntry(w, "Description", shortDescription);
+		writeEntry(w, "Source", source);
+
+		if (description != null) {
+			w.println(" " + description);
+		}
+		w.close();
+	}
+
+	protected void writeEntry(PrintWriter w, String name, String value) {
+		if (value != null) {
+			w.println(name + ": " + value);
+		}
+	}
+
+	protected void writeEntry(PrintWriter w, String name, long value) {
+		if (value != 0) {
+			w.println(name + ": " + value);
+		}
+	}
+
 }

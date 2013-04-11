@@ -68,342 +68,336 @@ import de.tarent.maven.plugins.pkg.Utils;
 import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.helper.Helper;
 
-public class IzPackPackager extends Packager
-{
-  private static final String IZPACK_EMBEDDED_JAR = "izpack-embedded.jar";
-  
-  public void execute(Log l,
-                      WorkspaceSession workspaceSession
-                      ) throws MojoExecutionException
-  {
+public class IzPackPackager extends Packager {
+	private static final String IZPACK_EMBEDDED_JAR = "izpack-embedded.jar";
 
-	TargetConfiguration distroConfig = workspaceSession.getTargetConfiguration();
-	Helper ph = workspaceSession.getHelper();
-	
-    // The root directory into which everything from srcRoot is copied
-    // into (inside the outputDirectory).
-    File packagingBaseDir = new File(workspaceSession.getMojo().getTempRoot(), "izpack-packaging");
-    ph.setBasePkgDir(packagingBaseDir);
-    ph.setDstAuxDir(packagingBaseDir);
-    
-    ph.setTargetSysconfDir(new File("${INSTALL_PATH}"));
-    ph.setDstSysconfDir(packagingBaseDir);
+	public void execute(Log l, WorkspaceSession workspaceSession)
+			throws MojoExecutionException {
 
-    ph.setTargetDatarootDir(new File("${INSTALL_PATH}"));
-    ph.setDstDatarootDir(packagingBaseDir);
-    
-    ph.setTargetDataDir(new File("${INSTALL_PATH}"));
-    ph.setDstDataDir(packagingBaseDir);
-    
-    // The root directory into which the jars from the dependencies
-    // are put.
-    ph.setDstBundledJarDir(new File(packagingBaseDir, "lib"));
-    ph.setTargetBundledJarDir(new File("%{INSTALL_PATH}", "lib"));
-    
-    // Sets where to copy the JNI libraries
-    ph.setTargetJNIDir(new File("%{INSTALL_PATH}", "lib"));
-    ph.setDstJNIDir(new File(packagingBaseDir, "lib"));
-    
-    // Overrides default dst artifact file.
-    ph.setDstArtifactFile(new File(ph.getDstBundledJarDir(), ph.getArtifactId() + ".jar"));
-    
-    // The root directory into which the starter and the classpath
-    // properties file are put.
-    ph.setDstStarterDir(new File(packagingBaseDir, "_starter"));
-    ph.setTargetStarterDir(new File("%{INSTALL_PATH}", "_starter"));
-    
-    // The XML file for IzPack which describes how to generate the installer. 
-    File installerXmlFile = new File(packagingBaseDir, distroConfig.getIzPackInstallerXml());
-    File modifiedInstallerXmlFile = new File(packagingBaseDir, "modified-" + distroConfig.getIzPackInstallerXml());
-    
-    // The resulting Jar file which contains the runnable installer.
-    File resultFile = new File(ph.getOutputDirectory(), ph.getPackageName() + "-" + ph.getPackageVersion() + "-installer.jar");
+		TargetConfiguration distroConfig = workspaceSession
+				.getTargetConfiguration();
+		Helper ph = workspaceSession.getHelper();
 
-    File resultFileWindows = new File(ph.getOutputDirectory(), ph.getPackageName() + "-" + ph.getPackageVersion() + "-installer.exe");
+		// The root directory into which everything from srcRoot is copied
+		// into (inside the outputDirectory).
+		File packagingBaseDir = new File(workspaceSession.getMojo()
+				.getTempRoot(), "izpack-packaging");
+		ph.setBasePkgDir(packagingBaseDir);
+		ph.setDstAuxDir(packagingBaseDir);
 
-    File resultFileOSX = new File(ph.getOutputDirectory(), ph.getPackageName() + "-" + ph.getPackageVersion() + "-installer.app");
-    
-    // targetBinDir does not occur within any script. Therefore there is no need to
-    // fumble with ${INSTALL_PATH}. The targetBinDir property will still be used to create
-    // dstWrapperScriptFile but by setting it to "" it does not have any negative effect.
-    // TODO: By splitting the target/dst variants from the actual filename this could
-    // implemented more elegantly.
-    ph.setTargetBinDir(new File(""));
-    ph.setDstBinDir(packagingBaseDir);
-    
-    File wrapperScriptFile = ph.getDstWrapperScriptFile();
-    File windowsWrapperScriptFile = ph.getDstWindowsWrapperScriptFile();
+		ph.setTargetSysconfDir(new File("${INSTALL_PATH}"));
+		ph.setDstSysconfDir(packagingBaseDir);
 
-     // The destination file for the embedded IzPack installation.
-    File izPackEmbeddedJarFile = new File(workspaceSession.getMojo().getTempRoot(), IZPACK_EMBEDDED_JAR);
-    
-    // The directory in which the embedded IzPack installation is unpacked
-    // at runtime.
-    File izPackEmbeddedRoot = new File(workspaceSession.getMojo().getTempRoot(), "izpack-embedded");
-    
-    Set<Artifact> bundledArtifacts = null;
-    Path bcp = new Path();
-    Path cp = new Path();
-    Set<Artifact> deps = ph.resolveProjectDependencies();
+		ph.setTargetDatarootDir(new File("${INSTALL_PATH}"));
+		ph.setDstDatarootDir(packagingBaseDir);
 
-	prepareDirectories(l,
-					   workspaceSession.getMojo().getTempRoot(),
-	                   izPackEmbeddedRoot,
-	                   ph.getSrcIzPackFilesDir(),
-	                   packagingBaseDir,
-	                   ph.getDstBundledJarDir());
-	
-	unpackIzPack(l, izPackEmbeddedJarFile, izPackEmbeddedRoot);
-	
-	ph.bundleDependencies(deps, bcp, cp);
-	
-	// IzPack does not support the exclusion of dependencies.
-	bundledArtifacts = ph.bundleDependencies(deps, bcp, cp);
-	ph.copyArtifacts(bundledArtifacts);
-	ph.copyProjectArtifact();
-	
-	ph.copyFiles();
-	
-	l.info("parsing installer xml file: " + installerXmlFile);
-	IzPackDescriptor desc = new IzPackDescriptor(installerXmlFile, "Unable to parse installer xml file.");
-	
-	l.info("adding/modifying basic information");
-	desc.fillInfo(l, ph.getPackageName(), ph.getPackageVersion(), ph.getProjectUrl());
-	
-	desc.removeAotPack();
-	
-	ph.createClasspathLine(bcp, cp);
-	ph.generateWrapperScript(bcp, cp, true);
-	
-	if (distroConfig.isAdvancedStarter()){
-	  desc.addStarter("_starter", "_classpath");
+		ph.setTargetDataDir(new File("${INSTALL_PATH}"));
+		ph.setDstDataDir(packagingBaseDir);
+
+		// The root directory into which the jars from the dependencies
+		// are put.
+		ph.setDstBundledJarDir(new File(packagingBaseDir, "lib"));
+		ph.setTargetBundledJarDir(new File("%{INSTALL_PATH}", "lib"));
+
+		// Sets where to copy the JNI libraries
+		ph.setTargetJNIDir(new File("%{INSTALL_PATH}", "lib"));
+		ph.setDstJNIDir(new File(packagingBaseDir, "lib"));
+
+		// Overrides default dst artifact file.
+		ph.setDstArtifactFile(new File(ph.getDstBundledJarDir(), ph
+				.getArtifactId() + ".jar"));
+
+		// The root directory into which the starter and the classpath
+		// properties file are put.
+		ph.setDstStarterDir(new File(packagingBaseDir, "_starter"));
+		ph.setTargetStarterDir(new File("%{INSTALL_PATH}", "_starter"));
+
+		// The XML file for IzPack which describes how to generate the
+		// installer.
+		File installerXmlFile = new File(packagingBaseDir,
+				distroConfig.getIzPackInstallerXml());
+		File modifiedInstallerXmlFile = new File(packagingBaseDir, "modified-"
+				+ distroConfig.getIzPackInstallerXml());
+
+		// The resulting Jar file which contains the runnable installer.
+		File resultFile = new File(ph.getOutputDirectory(), ph.getPackageName()
+				+ "-" + ph.getPackageVersion() + "-installer.jar");
+
+		File resultFileWindows = new File(ph.getOutputDirectory(),
+				ph.getPackageName() + "-" + ph.getPackageVersion()
+						+ "-installer.exe");
+
+		File resultFileOSX = new File(ph.getOutputDirectory(),
+				ph.getPackageName() + "-" + ph.getPackageVersion()
+						+ "-installer.app");
+
+		// targetBinDir does not occur within any script. Therefore there is no
+		// need to
+		// fumble with ${INSTALL_PATH}. The targetBinDir property will still be
+		// used to create
+		// dstWrapperScriptFile but by setting it to "" it does not have any
+		// negative effect.
+		// TODO: By splitting the target/dst variants from the actual filename
+		// this could
+		// implemented more elegantly.
+		ph.setTargetBinDir(new File(""));
+		ph.setDstBinDir(packagingBaseDir);
+
+		File wrapperScriptFile = ph.getDstWrapperScriptFile();
+		File windowsWrapperScriptFile = ph.getDstWindowsWrapperScriptFile();
+
+		// The destination file for the embedded IzPack installation.
+		File izPackEmbeddedJarFile = new File(workspaceSession.getMojo()
+				.getTempRoot(), IZPACK_EMBEDDED_JAR);
+
+		// The directory in which the embedded IzPack installation is unpacked
+		// at runtime.
+		File izPackEmbeddedRoot = new File(workspaceSession.getMojo()
+				.getTempRoot(), "izpack-embedded");
+
+		Set<Artifact> bundledArtifacts = null;
+		Path bcp = new Path();
+		Path cp = new Path();
+		Set<Artifact> deps = ph.resolveProjectDependencies();
+
+		prepareDirectories(l, workspaceSession.getMojo().getTempRoot(),
+				izPackEmbeddedRoot, ph.getSrcIzPackFilesDir(),
+				packagingBaseDir, ph.getDstBundledJarDir());
+
+		unpackIzPack(l, izPackEmbeddedJarFile, izPackEmbeddedRoot);
+
+		ph.bundleDependencies(deps, bcp, cp);
+
+		// IzPack does not support the exclusion of dependencies.
+		bundledArtifacts = ph.bundleDependencies(deps, bcp, cp);
+		ph.copyArtifacts(bundledArtifacts);
+		ph.copyProjectArtifact();
+
+		ph.copyFiles();
+
+		l.info("parsing installer xml file: " + installerXmlFile);
+		IzPackDescriptor desc = new IzPackDescriptor(installerXmlFile,
+				"Unable to parse installer xml file.");
+
+		l.info("adding/modifying basic information");
+		desc.fillInfo(l, ph.getPackageName(), ph.getPackageVersion(),
+				ph.getProjectUrl());
+
+		desc.removeAotPack();
+
+		ph.createClasspathLine(bcp, cp);
+		ph.generateWrapperScript(bcp, cp, true);
+
+		if (distroConfig.isAdvancedStarter()) {
+			desc.addStarter("_starter", "_classpath");
+		}
+		l.info("adding wrapper script information.");
+		desc.addUnixWrapperScript(wrapperScriptFile.getName(),
+				ph.getProjectDescription());
+		desc.addWindowsWrapperScript(windowsWrapperScriptFile.getName(),
+				ph.getProjectDescription());
+
+		l.info("writing modified installer xml file.");
+		desc.finish(modifiedInstallerXmlFile,
+				"Unable to write modified installer xml file.");
+
+		createInstaller(l, ph.getJavaExec(), izPackEmbeddedRoot,
+				packagingBaseDir, modifiedInstallerXmlFile, resultFile);
+
+		if (distroConfig.isCreateWindowsExecutable()) {
+			createWindowsExecutable(l, ph.get7ZipExec(), izPackEmbeddedRoot,
+					resultFile, resultFileWindows);
+		}
+		if (distroConfig.isCreateOSXApp()) {
+			createOSXExecutable(l, izPackEmbeddedRoot, resultFile,
+					resultFileOSX);
+		}
+
+		/*
+		 * When the Mojo fails to complete its task the work directory will be
+		 * left in an unclean state to make it easier to debug problems.
+		 * 
+		 * However the work dir will be cleaned up when the task is run next
+		 * time.
+		 */
 	}
-	l.info("adding wrapper script information.");
-	desc.addUnixWrapperScript(wrapperScriptFile.getName(), ph.getProjectDescription());
-	desc.addWindowsWrapperScript(windowsWrapperScriptFile.getName(), ph.getProjectDescription());
-	
-	l.info("writing modified installer xml file.");
-	desc.finish(modifiedInstallerXmlFile, "Unable to write modified installer xml file.");
-	
-	createInstaller(l,
-	                ph.getJavaExec(),
-	                izPackEmbeddedRoot,
-	                packagingBaseDir,
-	                modifiedInstallerXmlFile,
-	                resultFile);
-	
-	if (distroConfig.isCreateWindowsExecutable()){
-		createWindowsExecutable(l,
-                                ph.get7ZipExec(),
-                                izPackEmbeddedRoot,
-                                resultFile,
-                                resultFileWindows);
+
+	/**
+	 * Validates arguments and tests tools.
+	 * 
+	 * @throws MojoExecutionException
+	 */
+	public void checkEnvironment(Log l, WorkspaceSession workspaceSession)
+			throws MojoExecutionException {
+		Helper ph = workspaceSession.getHelper();
+		TargetConfiguration targetConfiguration = workspaceSession
+				.getTargetConfiguration();
+
+		l.info("java executable          : " + ph.getJavaExec());
+		l.info("7zip executable          : " + ph.get7ZipExec());
+		l.info("create OS X app          : "
+				+ (targetConfiguration.isCreateOSXApp() ? "yes" : "no"));
+		l.info("create Windows setup file: "
+				+ (targetConfiguration.isCreateWindowsExecutable() ? "yes"
+						: "no"));
+
+		Utils.checkProgramAvailability(ph.getJavaExec());
+
+		if (targetConfiguration.isCreateWindowsExecutable()) {
+			Utils.checkProgramAvailability(ph.get7ZipExec());
+		}
 	}
-	if (distroConfig.isCreateOSXApp()){
-		createOSXExecutable(l, izPackEmbeddedRoot, resultFile, resultFileOSX);
+
+	/**
+	 * Creates the temporary and package base directory.
+	 * 
+	 * @param l
+	 * @param basePkgDir
+	 * @throws MojoExecutionException
+	 */
+	private void prepareDirectories(Log l, File tempRoot,
+			File izPackEmbeddedRoot, File srcDir, File tempDescriptorRoot,
+			File libraryRoot) throws MojoExecutionException {
+		l.info("creating temporary directory: " + tempRoot.getAbsolutePath());
+
+		if (!tempRoot.exists() && !tempRoot.mkdirs()) {
+			throw new MojoExecutionException(
+					"Could not create temporary directory.");
+		}
+		l.info("cleaning the temporary directory");
+		try {
+			FileUtils.cleanDirectory(tempRoot);
+		} catch (IOException ioe) {
+			throw new MojoExecutionException(
+					"Exception while cleaning temporary directory.", ioe);
+		}
+
+		l.info("creating IzPack base directory: "
+				+ izPackEmbeddedRoot.getAbsolutePath());
+		if (!izPackEmbeddedRoot.mkdirs()) {
+			throw new MojoExecutionException(
+					"Could not create directory for the embedded IzPack installation.");
+		}
+		if (!tempDescriptorRoot.mkdirs()) {
+			throw new MojoExecutionException(
+					"Could not create base directory for the IzPack descriptor.");
+		}
+		l.info("copying IzPack descriptor data");
+		try {
+			FileUtils.copyDirectory(srcDir, tempDescriptorRoot, Utils.FILTER);
+		} catch (IOException ioe) {
+			throw new MojoExecutionException(
+					"IOException while copying IzPack descriptor data.", ioe);
+		}
+
+		l.info("creating directory for dependencies: "
+				+ libraryRoot.getAbsolutePath());
+		if (!libraryRoot.mkdirs()) {
+			throw new MojoExecutionException(
+					"Could not create directory for the dependencies.");
+		}
 	}
-      
-    
-    /* When the Mojo fails to complete its task the work directory will be left
-     * in an unclean state to make it easier to debug problems.
-     * 
-     * However the work dir will be cleaned up when the task is run next time.
-     */
-  }
 
-  /** Validates arguments and tests tools.
-   * 
-   * @throws MojoExecutionException
-   */
-  public void checkEnvironment(Log l,
-		  					   WorkspaceSession workspaceSession) throws MojoExecutionException
-  {
-	Helper ph = workspaceSession.getHelper();
-	TargetConfiguration targetConfiguration = workspaceSession.getTargetConfiguration();
-	
-    l.info("java executable          : " + ph.getJavaExec());
-    l.info("7zip executable          : " + ph.get7ZipExec());
-    l.info("create OS X app          : " + (targetConfiguration.isCreateOSXApp() ? "yes" : "no"));
-    l.info("create Windows setup file: " + (targetConfiguration.isCreateWindowsExecutable() ? "yes" : "no"));
+	/**
+	 * Puts the embedded izpack jar from the (resource) classpath into the work
+	 * directory and unpacks it there.
+	 * 
+	 * @param l
+	 * @param izPackEmbeddedFile
+	 * @param izPackEmbeddedHomeDir
+	 * @throws MojoExecutionException
+	 */
+	private void unpackIzPack(Log l, File izPackEmbeddedFile,
+			File izPackEmbeddedHomeDir) throws MojoExecutionException {
+		l.info("storing embedded IzPack installation in " + izPackEmbeddedFile);
+		Utils.storeInputStream(
+				IzPackPackager.class.getResourceAsStream(IZPACK_EMBEDDED_JAR),
+				izPackEmbeddedFile,
+				"IOException while unpacking embedded IzPack installation.");
 
-    Utils.checkProgramAvailability(ph.getJavaExec());
-    
-    if (targetConfiguration.isCreateWindowsExecutable()){
-      Utils.checkProgramAvailability(ph.get7ZipExec());
-    }
-  }
+		l.info("unzipping embedded IzPack installation to"
+				+ izPackEmbeddedHomeDir);
+		int count = 0;
+		ZipFile zip = null;
+		try {
+			zip = new ZipFile(izPackEmbeddedFile);
+			Enumeration<? extends ZipEntry> e = zip.entries();
 
-  /**
-   * Creates the temporary and package base directory.
-   * 
-   * @param l
-   * @param basePkgDir
-   * @throws MojoExecutionException
-   */
-  private void prepareDirectories(Log l,
-                                  File tempRoot,
-                                  File izPackEmbeddedRoot,
-                                  File srcDir,
-                                  File tempDescriptorRoot,
-                                  File libraryRoot)
-      throws MojoExecutionException
-  {
-    l.info("creating temporary directory: " + tempRoot.getAbsolutePath());
+			while (e.hasMoreElements()) {
+				count++;
+				ZipEntry entry = (ZipEntry) e.nextElement();
+				File unpacked = new File(izPackEmbeddedHomeDir, entry.getName());
+				if (entry.isDirectory()) {
+					unpacked.mkdirs(); // TODO: Check success.
+				} else {
+					Utils.createFile(unpacked,
+							"Unable to create ZIP file entry ");
+					Utils.storeInputStream(zip.getInputStream(entry), unpacked,
+							"IOException while unpacking ZIP file entry.");
+				}
+			}
+		} catch (IOException ioe) {
+			throw new MojoExecutionException(
+					"IOException while unpacking embedded IzPack installation.",
+					ioe);
+		} finally {
+			if (zip != null) {
+				try {
+					zip.close();
+				} catch (IOException e) {
+					l.info(String.format(
+							"Error at closing zipfile %s caused by %s",
+							izPackEmbeddedFile.getName(), e.getMessage()));
+				}
+			}
+		}
+		l.info("unpacked " + count + " entries");
+	}
 
-    if (!tempRoot.exists() && !tempRoot.mkdirs()){
-      throw new MojoExecutionException("Could not create temporary directory.");
-    }
-    l.info("cleaning the temporary directory");
-    try
-    {
-      FileUtils.cleanDirectory(tempRoot);
-    }
-    catch (IOException ioe)
-    {
-      throw new MojoExecutionException("Exception while cleaning temporary directory.",
-                                       ioe);
-    }
+	private void createInstaller(Log l, String javaExec, File izPackHomeDir,
+			File izPackBaseDir, File izPackDescriptorFile,
+			File izPackInstallerFile) throws MojoExecutionException {
+		l.info("calling IzPack compiler to create installer package");
 
-    l.info("creating IzPack base directory: " + izPackEmbeddedRoot.getAbsolutePath());
-    if (!izPackEmbeddedRoot.mkdirs()){
-      throw new MojoExecutionException("Could not create directory for the embedded IzPack installation.");
-    }
-    if (!tempDescriptorRoot.mkdirs()){
-      throw new MojoExecutionException("Could not create base directory for the IzPack descriptor.");
-    }
-    l.info("copying IzPack descriptor data");
-    try
-    {
-      FileUtils.copyDirectory(srcDir, tempDescriptorRoot, Utils.FILTER);
-    }
-    catch (IOException ioe)
-    {
-      throw new MojoExecutionException("IOException while copying IzPack descriptor data.", ioe);
-    }
-    
-    l.info("creating directory for dependencies: " + libraryRoot.getAbsolutePath());
-    if (!libraryRoot.mkdirs()){
-      throw new MojoExecutionException("Could not create directory for the dependencies.");
-    }
-  }
-  
-  /**
-   * Puts the embedded izpack jar from the (resource) classpath into the work directory
-   * and unpacks it there.
-   * 
-   * @param l
-   * @param izPackEmbeddedFile
-   * @param izPackEmbeddedHomeDir
-   * @throws MojoExecutionException
-   */
-  private void unpackIzPack(Log l, File izPackEmbeddedFile, File izPackEmbeddedHomeDir)
-  throws MojoExecutionException {
-    l.info("storing embedded IzPack installation in " + izPackEmbeddedFile);
-    Utils.storeInputStream(IzPackPackager.class.getResourceAsStream(IZPACK_EMBEDDED_JAR),
-                           izPackEmbeddedFile,
-                           "IOException while unpacking embedded IzPack installation.");
-    
-    l.info("unzipping embedded IzPack installation to" + izPackEmbeddedHomeDir);
-    int count = 0;
-    ZipFile zip = null;
-    try {
-    zip = new ZipFile(izPackEmbeddedFile);
-    Enumeration<? extends ZipEntry> e = zip.entries();
-    
-    while (e.hasMoreElements()) {
-        count++;
-        ZipEntry entry = (ZipEntry) e.nextElement();
-        File unpacked = new File(izPackEmbeddedHomeDir,
-                                   entry.getName());
-        if (entry.isDirectory()) {
-          unpacked.mkdirs(); // TODO: Check success.
-        } else {
-            Utils.createFile(unpacked, "Unable to create ZIP file entry ");
-            Utils.storeInputStream(zip.getInputStream(entry), unpacked,
-                                   "IOException while unpacking ZIP file entry.");
-          }
-      }
-    } catch (IOException ioe) {
-      throw new MojoExecutionException("IOException while unpacking embedded IzPack installation.", ioe);
-    } finally {
-        if (zip != null) {
-            try {
-                zip.close();
-            } catch (IOException e) {
-                l.info(String.format(
-                        "Error at closing zipfile %s caused by %s",
-                        izPackEmbeddedFile.getName(), e.getMessage()));
-            }
-        }
-    }
-    l.info("unpacked " + count + " entries");
-  }
+		// Command-line argument ordering and naming suitable for IzPack 3.9.0
+		Utils.exec(
+				new String[] { javaExec, "-jar",
+						izPackHomeDir.getAbsolutePath() + "/lib/compiler.jar",
+						izPackDescriptorFile.getAbsolutePath(), "-h",
+						izPackHomeDir.getAbsolutePath(), "-b",
+						izPackBaseDir.getAbsolutePath(), "-o",
+						izPackInstallerFile.getAbsolutePath() }, izPackHomeDir,
+				"Unable to run IzPack.",
+				"IOException while trying to run IzPack.");
 
-  private void createInstaller(Log l,
-                               String javaExec,
-                               File izPackHomeDir,
-                               File izPackBaseDir,
-                               File izPackDescriptorFile,
-                               File izPackInstallerFile) throws MojoExecutionException
-  {
-    l.info("calling IzPack compiler to create installer package");
-    
-    // Command-line argument ordering and naming suitable for IzPack 3.9.0
-    Utils.exec(new String[] { 
-                             javaExec,
-                             "-jar",
-                             izPackHomeDir.getAbsolutePath() + "/lib/compiler.jar",
-                             izPackDescriptorFile.getAbsolutePath(),
-                             "-h",
-                             izPackHomeDir.getAbsolutePath(),
-                             "-b",
-                             izPackBaseDir.getAbsolutePath(),
-                             "-o",
-                             izPackInstallerFile.getAbsolutePath()
-    }, izPackHomeDir,
-    "Unable to run IzPack.",
-    "IOException while trying to run IzPack.");
-  
-  }
+	}
 
-	private void createWindowsExecutable(Log l,
-                                         String p7zipExec,
-                                         File izPackHomeDir,
-                                         File installerFile,
-                                         File windowsInstallerFile)
-	throws MojoExecutionException
-	{
+	private void createWindowsExecutable(Log l, String p7zipExec,
+			File izPackHomeDir, File installerFile, File windowsInstallerFile)
+			throws MojoExecutionException {
 		l.info("calling izpack2exe.py to create Windows installer binary");
 
-		Utils.exec(new String[] {
-		                         "python", "izpack2exe.py",
-		                         "--file=" + installerFile.getAbsolutePath(),
-		                         "--output=" + windowsInstallerFile.getAbsolutePath(),
-		                         "--with-7z=" + p7zipExec,
-                                 "--no-upx"
-		}, new File(izPackHomeDir, "utils/izpack2exe"),
-    "Unable to run izpack2exe script",
-    "IOException while trying to run iz2pack2exe script.");
+		Utils.exec(new String[] { "python", "izpack2exe.py",
+				"--file=" + installerFile.getAbsolutePath(),
+				"--output=" + windowsInstallerFile.getAbsolutePath(),
+				"--with-7z=" + p7zipExec, "--no-upx" }, new File(izPackHomeDir,
+				"utils/izpack2exe"), "Unable to run izpack2exe script",
+				"IOException while trying to run iz2pack2exe script.");
 
 	}
- 
-	private void createOSXExecutable(Log l,
-                                     File izPackHomeDir,
-                                     File installerFile,
-                                     File osxInstallerFile)
-	throws MojoExecutionException
-	{
+
+	private void createOSXExecutable(Log l, File izPackHomeDir,
+			File installerFile, File osxInstallerFile)
+			throws MojoExecutionException {
 		l.info("calling izpack2app.py to create OS X installer binary");
 
-		Utils.exec(new String[] {
-       "python", "izpack2app.py",
-       installerFile.getAbsolutePath(),
-       osxInstallerFile.getAbsolutePath(),
-		}, new File(izPackHomeDir, "utils/izpack2app"),
-    "Unable to run izpack2app script",
-    "IOException while trying to run iz2pack2app script.");
-
+		Utils.exec(
+				new String[] { "python", "izpack2app.py",
+						installerFile.getAbsolutePath(),
+						osxInstallerFile.getAbsolutePath(), }, new File(
+						izPackHomeDir, "utils/izpack2app"),
+				"Unable to run izpack2app script",
+				"IOException while trying to run iz2pack2app script.");
 	}
- 
-   
+
 }

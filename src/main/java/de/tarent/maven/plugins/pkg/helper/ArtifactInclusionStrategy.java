@@ -11,7 +11,7 @@ public abstract class ArtifactInclusionStrategy {
 	protected ArtifactInclusionStrategy() {
 		// Intentionally do nothing.
 	}
-	
+
 	public static ArtifactInclusionStrategy getStrategyInstance(String id) {
 		if (id.equals("dependencies")) {
 			return new IncludeDependenciesStrategy();
@@ -40,16 +40,19 @@ public abstract class ArtifactInclusionStrategy {
 	public static final class Result {
 		Set<Artifact> resolvedDependencies;
 		long byteAmount;
-		
+
 		public Set<Artifact> getResolvedDependencies() {
 			return resolvedDependencies;
 		}
+
 		public void setResolvedDependencies(Set<Artifact> resolvedDependencies) {
 			this.resolvedDependencies = resolvedDependencies;
 		}
+
 		public long getByteAmount() {
 			return byteAmount;
 		}
+
 		public void setByteAmount(long byteAmount) {
 			this.byteAmount = byteAmount;
 		}
@@ -72,10 +75,10 @@ public abstract class ArtifactInclusionStrategy {
 				throws MojoExecutionException {
 			// Intentionally do nothing.
 		}
-
 	}
 
-	static class IncludeProjectArtifactStrategy extends ArtifactInclusionStrategy {
+	static class IncludeProjectArtifactStrategy extends
+			ArtifactInclusionStrategy {
 
 		@Override
 		protected void processArtifactsImpl(Helper h, Result result)
@@ -83,7 +86,7 @@ public abstract class ArtifactInclusionStrategy {
 			result.byteAmount += h.copyProjectArtifact();
 		}
 	}
-	
+
 	static class IncludeDependenciesStrategy extends ArtifactInclusionStrategy {
 
 		@Override

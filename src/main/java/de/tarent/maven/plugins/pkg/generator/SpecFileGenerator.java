@@ -92,8 +92,9 @@ public class SpecFileGenerator {
 	private String prefix;
 
 	private List<String> preparecommands = new ArrayList<String>();
-	
+
 	private Log logger;
+
 	public Log getLogger() {
 		return logger;
 	}
@@ -101,7 +102,6 @@ public class SpecFileGenerator {
 	public void setLogger(Log logger) {
 		this.logger = logger;
 	}
-
 
 	private PrintWriter w;
 
@@ -131,10 +131,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setDependencies(String dependencies) {
-		if (dependencies != null && !dependencies.isEmpty()){
+		if (dependencies != null && !dependencies.isEmpty()) {
 			this.dependencies = dependencies;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.error("dependencies not set");
 			}
 			this.dependencies = UNKNOWN;
@@ -146,10 +146,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setRecommends(String recommends) {
-		if (recommends != null){
+		if (recommends != null) {
 			this.description = recommends;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.error("recommends not set");
 			}
 			this.recommends = UNKNOWN;
@@ -161,10 +161,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setSuggests(String suggests) {
-		if (suggests != null){
+		if (suggests != null) {
 			this.description = suggests;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.error("suggests not set");
 			}
 			this.suggests = UNKNOWN;
@@ -176,10 +176,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setDescription(String description) {
-		if (description != null){
+		if (description != null) {
 			this.description = description;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.error("description not set");
 			}
 			this.description = UNKNOWN;
@@ -191,10 +191,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setPackageName(String packageName) {
-		if (packageName != null){
+		if (packageName != null) {
 			this.packageName = packageName;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.error("packageName not set");
 			}
 			this.packageName = UNKNOWN;
@@ -206,10 +206,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setVersion(String version) {
-		if (version != null && !version.isEmpty()){
+		if (version != null && !version.isEmpty()) {
 			this.version = version.replace("-", "_");
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.error("version not set");
 			}
 			this.version = UNKNOWN;
@@ -221,11 +221,11 @@ public class SpecFileGenerator {
 	}
 
 	public void setSource(String source) {
-		if (source != null && !source.isEmpty()){
+		if (source != null && !source.isEmpty()) {
 			this.source = source;
-		}else{
-			if(logger!=null){
-				logger.error("source not set");				
+		} else {
+			if (logger != null) {
+				logger.error("source not set");
 			}
 			this.source = UNKNOWN;
 		}
@@ -236,10 +236,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setSummary(String summary) {
-		if (summary != null && !summary.isEmpty()){
+		if (summary != null && !summary.isEmpty()) {
 			this.summary = summary;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("summary not set");
 			}
 			this.summary = UNKNOWN;
@@ -251,13 +251,13 @@ public class SpecFileGenerator {
 	}
 
 	public void setRelease(String release) {
-		if (release != null && !release.isEmpty()){
+		if (release != null && !release.isEmpty()) {
 			this.release = release;
-		}else{
-			// Release can not be empty. If so, it will be set to 1 
-			if(logger!=null){
+		} else {
+			// Release can not be empty. If so, it will be set to 1
+			if (logger != null) {
 				logger.debug("release not set. fallback value is \"1\"");
-			}			
+			}
 			this.release = "1";
 		}
 	}
@@ -267,10 +267,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setUrl(String url) {
-		if (url != null && !url.isEmpty()){
+		if (url != null && !url.isEmpty()) {
 			this.url = url;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.error("url not set");
 			}
 			this.url = "http://unknown.com";
@@ -282,10 +282,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setLicense(String license) {
-		if (license != null&& !license.isEmpty()){
+		if (license != null && !license.isEmpty()) {
 			this.license = license;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.error("license not set");
 			}
 			this.license = UNKNOWN;
@@ -297,10 +297,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setGroup(String group) {
-		if (group != null && !group.isEmpty()){
+		if (group != null && !group.isEmpty()) {
 			this.group = group;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("group not set");
 			}
 			this.group = UNKNOWN;
@@ -312,10 +312,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setArch(String arch) {
-		if (arch != null && !arch.isEmpty()){
+		if (arch != null && !arch.isEmpty()) {
 			this.arch = arch;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("arch not set");
 			}
 			this.arch = "noarch";
@@ -326,11 +326,11 @@ public class SpecFileGenerator {
 		return buildcommands;
 	}
 
-	public void setBuildcommands(List<String> setBuildcommands) {		
-		if (setBuildcommands != null){
+	public void setBuildcommands(List<String> setBuildcommands) {
+		if (setBuildcommands != null) {
 			this.buildcommands = new ArrayList<String>(setBuildcommands);
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("buildcommands not set");
 			}
 			this.buildcommands = new ArrayList<String>();
@@ -342,10 +342,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setInstallcommands(List<String> installcommands) {
-		if (installcommands != null){
+		if (installcommands != null) {
 			this.installcommands = new ArrayList<String>(installcommands);
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("installcommands not set");
 			}
 			this.installcommands = new ArrayList<String>();
@@ -357,10 +357,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setCleancommands(List<String> cleancommands) {
-		if (cleancommands != null){
+		if (cleancommands != null) {
 			this.cleancommands = new ArrayList<String>(cleancommands);
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("cleancommands not set");
 			}
 			this.cleancommands = new ArrayList<String>();
@@ -372,10 +372,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setFiles(List<? extends AuxFile> files) {
-		if (files != null){
+		if (files != null) {
 			this.files = new ArrayList<AuxFile>(files);
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("files not set");
 			}
 			this.files = new ArrayList<AuxFile>();
@@ -387,10 +387,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setVendor(String vendor) {
-		if (vendor != null){
+		if (vendor != null) {
 			this.vendor = vendor;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("vendor not set");
 			}
 			this.vendor = UNKNOWN;
@@ -402,10 +402,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setPackager(String packager) {
-		if (packager != null){
+		if (packager != null) {
 			this.packager = packager;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("packager not set");
 			}
 			this.packager = UNKNOWN;
@@ -417,26 +417,25 @@ public class SpecFileGenerator {
 	}
 
 	public void setPrefix(String prefix) {
-		if (prefix != null){
+		if (prefix != null) {
 			this.prefix = prefix;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("prefix not set");
 			}
 			this.prefix = "/";
 		}
 	}
 
-
 	public List<String> getPreparecommands() {
 		return preparecommands;
 	}
 
 	public void setPreparecommands(List<String> preparecommands) {
-		if (preparecommands != null){
+		if (preparecommands != null) {
 			this.preparecommands = preparecommands;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("preparecommands not set");
 			}
 			this.preparecommands = new ArrayList<String>();
@@ -448,10 +447,10 @@ public class SpecFileGenerator {
 	}
 
 	public void setPreinstallcommands(List<String> preinstallcommands) {
-		if (preinstallcommands != null){
+		if (preinstallcommands != null) {
 			this.preinstallcommands = preinstallcommands;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("preinstallcommands not set");
 			}
 			this.preinstallcommands = new ArrayList<String>();
@@ -463,103 +462,115 @@ public class SpecFileGenerator {
 	}
 
 	public void setPostinstallcommands(List<String> postinstallcommands) {
-		if (postinstallcommands != null){
+		if (postinstallcommands != null) {
 			this.postinstallcommands = postinstallcommands;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("postinstallcommands not set");
 			}
 			this.postinstallcommands = new ArrayList<String>();
 		}
 	}
-	
-	public void setPreinstallcommandsFromFile(File parent, String fileName) throws IOException {
-		if(parent != null && fileName != null && parent.exists() && !fileName.isEmpty()){
-			setPreinstallcommands(generateArrayListFromExternalFile(parent, fileName));
-		}else{
-			if(logger!=null){
+
+	public void setPreinstallcommandsFromFile(File parent, String fileName)
+			throws IOException {
+		if (parent != null && fileName != null && parent.exists()
+				&& !fileName.isEmpty()) {
+			setPreinstallcommands(generateArrayListFromExternalFile(parent,
+					fileName));
+		} else {
+			if (logger != null) {
 				logger.debug("Error setting preinstall commands.");
 			}
 			this.preinstallcommands = new ArrayList<String>();
 		}
 	}
-	
-	public void setPostinstallcommandsFromFile(File parent, String filePath) throws IOException {
-		if(parent != null && filePath != null && parent.exists() && !filePath.isEmpty()){
-			setPostinstallcommands(generateArrayListFromExternalFile(parent, filePath));
-		}else{
-			if(logger!=null){
+
+	public void setPostinstallcommandsFromFile(File parent, String filePath)
+			throws IOException {
+		if (parent != null && filePath != null && parent.exists()
+				&& !filePath.isEmpty()) {
+			setPostinstallcommands(generateArrayListFromExternalFile(parent,
+					filePath));
+		} else {
+			if (logger != null) {
 				logger.debug("Error setting postinstall commands.");
 			}
 			this.postinstallcommands = new ArrayList<String>();
 		}
 	}
-	
+
 	public List<String> getPreuninstallcommands() {
 		return preuninstallcommands;
 	}
 
 	public void setPreuninstallcommands(List<String> preuninstallcommands) {
-		if (preuninstallcommands != null){
+		if (preuninstallcommands != null) {
 			this.preuninstallcommands = preuninstallcommands;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("preuninstallcommands not set");
 			}
 			this.preuninstallcommands = new ArrayList<String>();
 		}
 	}
 
-	
-	public void setPreuninstallcommandsFromFile(File parent, String filePath) throws IOException {
-		if(parent != null && filePath != null && parent.exists() && !filePath.isEmpty()){
-			setPreuninstallcommands(generateArrayListFromExternalFile(parent, filePath));
-		}else{
-			if(logger!=null){
+	public void setPreuninstallcommandsFromFile(File parent, String filePath)
+			throws IOException {
+		if (parent != null && filePath != null && parent.exists()
+				&& !filePath.isEmpty()) {
+			setPreuninstallcommands(generateArrayListFromExternalFile(parent,
+					filePath));
+		} else {
+			if (logger != null) {
 				logger.debug("Error setting preuninstall commands.");
 			}
 			this.preuninstallcommands = new ArrayList<String>();
 		}
 
 	}
-	
+
 	public List<String> getPostuninstallcommands() {
 		return postuninstallcommands;
 	}
 
 	public void setPostuninstallcommands(List<String> postuninstallcommands) {
-		if (postuninstallcommands != null){
+		if (postuninstallcommands != null) {
 			this.postuninstallcommands = postuninstallcommands;
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("postuninstallcommands not set");
 			}
 			this.postuninstallcommands = new ArrayList<String>();
 		}
 	}
-	
-	public void setPostuninstallcommandsFromFile(File parent, String filePath)  throws IOException {
-		
-		if(parent != null && filePath != null && parent.exists() && !filePath.isEmpty()){
-			setPostuninstallcommands(generateArrayListFromExternalFile(parent, filePath));
-		}else{
-			if(logger!=null){
+
+	public void setPostuninstallcommandsFromFile(File parent, String filePath)
+			throws IOException {
+
+		if (parent != null && filePath != null && parent.exists()
+				&& !filePath.isEmpty()) {
+			setPostuninstallcommands(generateArrayListFromExternalFile(parent,
+					filePath));
+		} else {
+			if (logger != null) {
 				logger.debug("Error setting postuninstall commands.");
 			}
 			this.postuninstallcommands = new ArrayList<String>();
 		}
 	}
-	
+
 	/**
 	 * Writes the spec file based on available parameters
+	 * 
 	 * @param f
 	 * @throws MojoExecutionException
 	 * @throws IOException
 	 */
-	public void generate(File f) throws  MojoExecutionException, IOException {
-				
+	public void generate(File f) throws MojoExecutionException, IOException {
+
 		w = new PrintWriter(new FileOutputStream(f));
-		
+
 		writeEntry("Summary", summary);
 		writeEntry("Name", packageName);
 		writeEntry("Version", version);
@@ -580,7 +591,7 @@ public class SpecFileGenerator {
 		writeCommandsSection("build", buildcommands);
 		writeCommandsSection("install", installcommands);
 		writeCommandsSection("clean", cleancommands);
-		
+
 		writeCommandsSection("pre", preinstallcommands);
 		writeCommandsSection("post", postinstallcommands);
 		writeCommandsSection("preun", preuninstallcommands);
@@ -589,124 +600,128 @@ public class SpecFileGenerator {
 
 		w.close();
 	}
-	
+
 	/**
 	 * Creates a section with the given title and the provided text
+	 * 
 	 * @param w
 	 * @param sectionTitle
 	 * @param text
 	 */
 	private void writeTextSection(String sectionTitle, String text) {
-		if (text!=null && !text.isEmpty()) {
+		if (text != null && !text.isEmpty()) {
 			w.print("%");
 			w.println(sectionTitle);
 			w.println(text);
-			
-		}else{
-			if(logger!=null){
-				logger.info("Skipping empty text section "+sectionTitle);
-			}
-		}
-	}
-	
-	/**
-	 * Creates a section with the given title, and iterates through the collection,
-	 * printing a new line with the contents of the collection. 
-	 * @param w
-	 * @param sectionTitle
-	 * @param commands
-	 */
-	private void writeCommandsSection(String sectionTitle, List<String> commands) {
-		if (commands!=null&&!commands.isEmpty()) {
-			w.print("%");
-			w.println(sectionTitle);
-			for(String s:commands){
-				w.println(s);
-			}
-		}else{
-			if(logger!=null){
-				logger.info("Skipping empty commands section "+sectionTitle);
+
+		} else {
+			if (logger != null) {
+				logger.info("Skipping empty text section " + sectionTitle);
 			}
 		}
 	}
 
 	/**
-	 * Creates a section with the given title, and iterates through the filelist.
-	 * If the file has no rights set, it will default to 755 owner: root, group: root 
+	 * Creates a section with the given title, and iterates through the
+	 * collection, printing a new line with the contents of the collection.
+	 * 
+	 * @param w
+	 * @param sectionTitle
+	 * @param commands
+	 */
+	private void writeCommandsSection(String sectionTitle, List<String> commands) {
+		if (commands != null && !commands.isEmpty()) {
+			w.print("%");
+			w.println(sectionTitle);
+			for (String s : commands) {
+				w.println(s);
+			}
+		} else {
+			if (logger != null) {
+				logger.info("Skipping empty commands section " + sectionTitle);
+			}
+		}
+	}
+
+	/**
+	 * Creates a section with the given title, and iterates through the
+	 * filelist. If the file has no rights set, it will default to 755 owner:
+	 * root, group: root
+	 * 
 	 * @param w
 	 * @param files
 	 */
 	private void writeFilesSection(List<AuxFile> files) {
-		if (files!=null&&!files.isEmpty()) {
+		if (files != null && !files.isEmpty()) {
 			w.println("%files");
 			w.println("%defattr(755,root,root)");
-			
+
 			for (AuxFile f : files) {
-				if(f.getOctalPermission()>=0){
+				if (f.getOctalPermission() >= 0) {
 					w.print("%attr(");
 					w.print(f.getOctalPermission());
 					w.print(",");
 					w.print(f.getOwner());
 					w.print(",");
 					w.print(f.getGroup());
-					w.print(") ");				
-				}else{
-					if(logger!=null){
-						logger.debug("No attributes found for "+f.getTo());
+					w.print(") ");
+				} else {
+					if (logger != null) {
+						logger.debug("No attributes found for " + f.getTo());
 					}
 				}
 				w.println(f.getTo());
 			}
 
-		}else{
-			if(logger!=null){
+		} else {
+			if (logger != null) {
 				logger.debug("Skipping empty files section (Is this a meta-package?)...");
 			}
 		}
 	}
-	
 
 	protected void writeEntry(String name, String value) {
-		if (value != null){
-			if (logger!=null){
+		if (value != null) {
+			if (logger != null) {
 				logger.debug(name + ": " + value);
 			}
 			w.println(name + ": " + value);
-		}else{
-			if (logger!=null){
-			logger.debug(name + " not set!");
+		} else {
+			if (logger != null) {
+				logger.debug(name + " not set!");
 			}
 		}
-	}	
+	}
 
 	/**
 	 * Takes the path to a script and turns it into an ArrayList<String>
+	 * 
 	 * @param scriptName
 	 * @return
 	 * @throws MojoExecutionException
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	private List<String> generateArrayListFromExternalFile(File parent, String scriptName) throws IOException{
-		
-		ArrayList<String> arrayList = new ArrayList<String>();	
+	private List<String> generateArrayListFromExternalFile(File parent,
+			String scriptName) throws IOException {
+
+		ArrayList<String> arrayList = new ArrayList<String>();
 		File inputFile = new File(parent, scriptName);
 		FileInputStream fstream = new FileInputStream(inputFile);
 		DataInputStream in = new DataInputStream(fstream);
-		
+
 		BufferedReader inputReader;
-		if(logger!=null){
-			logger.info("Attempting to process script " + inputFile );
+		if (logger != null) {
+			logger.info("Attempting to process script " + inputFile);
 		}
 		inputReader = new BufferedReader(new InputStreamReader(in));
-			
+
 		String strLine;
-		while((strLine = inputReader.readLine()) != null){
+		while ((strLine = inputReader.readLine()) != null) {
 			arrayList.add(strLine);
 		}
 		inputReader.close();
-		
+
 		return arrayList;
 	}
-	
 
 }

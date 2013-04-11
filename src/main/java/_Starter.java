@@ -37,91 +37,92 @@ import java.util.LinkedList;
 import org.apache.commons.io.IOUtils;
 
 /**
- * This class is added to each application that uses the advanced starter
- * and is therefore licensed under the GPL plus linking exception (see
- * disclaimer).
+ * This class is added to each application that uses the advanced starter and is
+ * therefore licensed under the GPL plus linking exception (see disclaimer).
  * 
- * <p>The class' main method reads a "_classpath" file from the
- * resources, gathers the real main classname from it and constructs
- * a complex classpath.</p>
+ * <p>
+ * The class' main method reads a "_classpath" file from the resources, gathers
+ * the real main classname from it and constructs a complex classpath.
+ * </p>
  * 
- * <p>Slashes in filenames are replaced with the platform-specific separator
- * char. Occurances of the real separator char in the filename causes no
- * harm.</p>
+ * <p>
+ * Slashes in filenames are replaced with the platform-specific separator char.
+ * Occurances of the real separator char in the filename causes no harm.
+ * </p>
  * 
- * <p>The starter class can be used on Windows systems when the maximum length
- * of a command-line is a problem for an application.</p>
+ * <p>
+ * The starter class can be used on Windows systems when the maximum length of a
+ * command-line is a problem for an application.
+ * </p>
  * 
  * @author Robert Schuster
  * 
  */
 public class _Starter {
-	
+
 	private static String parse(String resource, LinkedList<URL> urls) {
 		String mainClassName = null;
-		
-		try
-		  {
-		    BufferedReader reader = new BufferedReader(new InputStreamReader(
-		    		_Starter.class.getResourceAsStream(resource)));
-		    
-		    String line = null;
-		    while ((line = reader.readLine()) != null)
-		      {
-		    	// Lines starting with a dash are comments
-		    	if (line.startsWith("#")){
-		    	  continue;
-		    	} else if (mainClassName == null) 
-		    	{
-		    		mainClassName = line; // The first non-dashed line is evaluated here.
-		    	} else
-		    	  {
-		    		// Afterwards every other line is interpreted as a class path entry.
-					String fixedFilename = line.replace('/', File.separatorChar);
-					try
-					  {
-					    urls.add(new File(fixedFilename).toURI().toURL());
-					  }
-					catch (MalformedURLException mue)
-					  {
-						System.err.println("Unable to handle classpath entry: " + fixedFilename + " Ignoring ...");
-					  }
-		    	  }
-		      }
-		  }
-		catch (IOException ioe)
-		  {
+
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					_Starter.class.getResourceAsStream(resource)));
+
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				// Lines starting with a dash are comments
+				if (line.startsWith("#")) {
+					continue;
+				} else if (mainClassName == null) {
+					// The first non-dashed line is evaluated here.
+					mainClassName = line;
+				} else {
+					// Afterwards every other line is interpreted as a class
+					// path entry.
+					String fixedFilename = line
+							.replace('/', File.separatorChar);
+					try {
+						urls.add(new File(fixedFilename).toURI().toURL());
+					} catch (MalformedURLException mue) {
+						System.err.println(String.format("Unable "
+								+ "to handle "
+								+ "classpath entry: %s Ignoring ...",
+								fixedFilename));
+					}
+				}
+			}
+		} catch (IOException ioe) {
 			throw new RuntimeException("Unable to load _classpath", ioe);
-		  }
-		
+		}
+
 		return mainClassName;
 	}
 
 	public static void main(String[] args) {
 		LinkedList<URL> urls = new LinkedList<URL>();
 		String mainClassName = parse("_classpath", urls);
-		
-		URLClassLoader ucl = new URLClassLoader((URL[]) urls.toArray(new URL[urls.size()]));
+
+		URLClassLoader ucl = new URLClassLoader(
+				(URL[]) urls.toArray(new URL[urls.size()]));
 		Method m = null;
-		try
-		  {
-		    Class<?> klazz = ucl.loadClass(mainClassName);
-		    
-		    m = klazz.getMethod("main", new Class[] { String[].class });
-		  }
-		catch (ClassNotFoundException e)
-		  {
-			throw new RuntimeException("Unable to load main class " + mainClassName, e);
-		  } catch (SecurityException e) {
-				throw new RuntimeException("SecurityManager prohibited operation", e);
+		try {
+			Class<?> klazz = ucl.loadClass(mainClassName);
+			m = klazz.getMethod("main", new Class[] { String[].class });
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("Unable to load main class "
+					+ mainClassName, e);
+		} catch (SecurityException e) {
+			throw new RuntimeException("SecurityManager prohibited operation",
+					e);
 		} catch (NoSuchMethodException e) {
-			throw new RuntimeException("Unable to find a main() method in class " + mainClassName, e);
+			throw new RuntimeException(
+					"Unable to find a main() method in class " + mainClassName,
+					e);
 		} finally {
 			IOUtils.closeQuietly(ucl);
 		}
-		
+
 		try {
-			m.invoke(null, new Object[]{ args });
+			m.invoke(null, new Object[] { args });
 		} catch (IllegalArgumentException e) {
 			throw new RuntimeException("Unable to execute main() method", e);
 		} catch (IllegalAccessException e) {

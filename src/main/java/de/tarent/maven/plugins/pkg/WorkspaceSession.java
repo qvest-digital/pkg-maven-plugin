@@ -19,7 +19,8 @@ import de.tarent.maven.plugins.pkg.packager.Packager;
  * should hand out the {@link WorkspaceSession} instance.
  * </p>
  * 
- * <p>This class is supposed to contain mid level work objects. Do not put low
+ * <p>
+ * This class is supposed to contain mid level work objects. Do not put low
  * level stuff like a path or individual string properties here. Conversely if
  * you somewhere get a work object instance from anything else than either a
  * method's arguments or a {@link WorkspaceSession} instance it is breaking the
@@ -31,17 +32,17 @@ public class WorkspaceSession {
 	AbstractPackagingMojo mojo;
 
 	TargetConfiguration targetConfiguration;
-	
+
 	PackageMap packageMap;
-	
+
 	Helper helper;
-	
+
 	Packager packager;
 
 	Map<String, TargetConfiguration> targetConfigurationMap;
-	
+
 	List<TargetConfiguration> resolvedRelations;
-	
+
 	ArtifactInclusionStrategy artifactInclusionStrategy;
 
 	public AbstractPackagingMojo getMojo() {
@@ -51,7 +52,7 @@ public class WorkspaceSession {
 	public void setMojo(AbstractPackagingMojo mojo) {
 		this.mojo = mojo;
 	}
-	
+
 	public TargetConfiguration getTargetConfiguration() {
 		return targetConfiguration;
 	}

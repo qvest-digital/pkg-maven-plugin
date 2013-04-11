@@ -78,167 +78,186 @@ public class RPMPackager extends Packager {
 
 	private static final String UNKNOWN = "unknown";
 
-
-
 	@Override
 	public void execute(Log l, WorkspaceSession workspaceSession)
 			throws MojoExecutionException {
-		TargetConfiguration distroConfig = workspaceSession.getTargetConfiguration();
+		TargetConfiguration distroConfig = workspaceSession
+				.getTargetConfiguration();
 		Helper ph = workspaceSession.getHelper();
-		
+
 		// Configure the Helper for RPM use.
 		ph.setStrategy(Helper.RPM_STRATEGY);
-		
+
 		ph.prepareInitialDirectories();
-		
-		//Setting all destination directories to /BUILD/ + target name
-		ph.setDstSBinDir(new File(ph.getBaseBuildDir(),ph.getTargetSBinDir().toString()));
-		ph.setDstBinDir(new File(ph.getBaseBuildDir(),ph.getTargetBinDir().toString()));
-	    ph.setDstSysconfDir(new File(ph.getBaseBuildDir(),ph.getTargetSysconfDir().toString()));
-	    ph.setDstDatarootDir(new File(ph.getBaseBuildDir(),ph.getTargetDatarootDir().toString()));
-	    ph.setDstDataDir(new File(ph.getBaseBuildDir(),ph.getTargetDataDir().toString()));
-	    ph.setDstJNIDir(new File(ph.getBaseBuildDir(),ph.getTargetJNIDir().toString()));	    
-	    ph.setDstBundledJarDir(new File(ph.getBaseBuildDir(),ph.getTargetBundledJarDir().toString()));
-	    ph.setDstStarterDir(new File(ph.getBaseBuildDir(),ph.getTargetStarterDir().toString()));
-	    ph.setDstWrapperScriptFile(new File(ph.getBaseBuildDir(),ph.getTargetWrapperScriptFile().toString()));
-	    
+
+		// Setting all destination directories to /BUILD/ + target name
+		ph.setDstSBinDir(new File(ph.getBaseBuildDir(), ph.getTargetSBinDir()
+				.toString()));
+		ph.setDstBinDir(new File(ph.getBaseBuildDir(), ph.getTargetBinDir()
+				.toString()));
+		ph.setDstSysconfDir(new File(ph.getBaseBuildDir(), ph
+				.getTargetSysconfDir().toString()));
+		ph.setDstDatarootDir(new File(ph.getBaseBuildDir(), ph
+				.getTargetDatarootDir().toString()));
+		ph.setDstDataDir(new File(ph.getBaseBuildDir(), ph.getTargetDataDir()
+				.toString()));
+		ph.setDstJNIDir(new File(ph.getBaseBuildDir(), ph.getTargetJNIDir()
+				.toString()));
+		ph.setDstBundledJarDir(new File(ph.getBaseBuildDir(), ph
+				.getTargetBundledJarDir().toString()));
+		ph.setDstStarterDir(new File(ph.getBaseBuildDir(), ph
+				.getTargetStarterDir().toString()));
+		ph.setDstWrapperScriptFile(new File(ph.getBaseBuildDir(), ph
+				.getTargetWrapperScriptFile().toString()));
+
 		ph.copyFiles();
-		
+
 		l.debug(ph.getPackageName());
 		l.debug(ph.getPackageVersion());
 		l.debug(ph.getBasePkgDir().getPath());
-		
 
-	    
-	    // A set which will be filled with the artifacts which need to be bundled with the
-	    // application.
-	    Set<Artifact> bundledArtifacts = null;
-	    Path bcp = new Path();
-	    Path cp = new Path();
+		// A set which will be filled with the artifacts which need to be
+		// bundled with the
+		// application.
+		Set<Artifact> bundledArtifacts = null;
+		Path bcp = new Path();
+		Path cp = new Path();
 
-		ArtifactInclusionStrategy aiStrategy = workspaceSession.getArtifactInclusionStrategy();
-		ArtifactInclusionStrategy.Result result = aiStrategy.processArtifacts(ph);
+		ArtifactInclusionStrategy aiStrategy = workspaceSession
+				.getArtifactInclusionStrategy();
+		ArtifactInclusionStrategy.Result result = aiStrategy
+				.processArtifacts(ph);
 
-	    // The user may want to avoid including dependencies
-		if(distroConfig.isBundleDependencyArtifacts()){
-			bundledArtifacts = ph.bundleDependencies(result.getResolvedDependencies(), bcp, cp);
+		// The user may want to avoid including dependencies
+		if (distroConfig.isBundleDependencyArtifacts()) {
+			bundledArtifacts = ph.bundleDependencies(
+					result.getResolvedDependencies(), bcp, cp);
 			ph.copyArtifacts(bundledArtifacts);
 		}
-		
+
 		// Create classpath line, copy bundled jars and generate wrapper
 		// start script only if the project is an application.
-		if (distroConfig.getMainClass() != null)
-		  {
-		    // TODO: Handle native library artifacts properly.
-		    // bundledArtifacts = ph.createClasspathLine(bcp, cp);
+		if (distroConfig.getMainClass() != null) {
+			// TODO: Handle native library artifacts properly.
+			// bundledArtifacts = ph.createClasspathLine(bcp, cp);
 			ph.createClasspathLine(bcp, cp);
-		    ph.generateWrapperScript(bcp, cp, false);
-		  }
+			ph.generateWrapperScript(bcp, cp, false);
+		}
 
-		File specFile = new File(ph.getBaseSpecsDir(), ph.getPackageName() + ".spec");
+		File specFile = new File(ph.getBaseSpecsDir(), ph.getPackageName()
+				+ ".spec");
 
 		try {
-	        
-	        
-			generateSPECFile(l, ph, distroConfig, result.getResolvedDependencies(), specFile);
+
+			generateSPECFile(l, ph, distroConfig,
+					result.getResolvedDependencies(), specFile);
 			l.info("SPEC file generated.");
 			createPackage(l, workspaceSession, specFile);
 			l.info("Package created.");
-			
+
 			File resultingPackage = copyRPMToTargetFolder(workspaceSession);
-			
+
 			l.info("Output of rpm -pqi :");
-			String out = IOUtils.toString(Utils.exec(new String[] {"rpm", "-pqi", resultingPackage.getAbsolutePath()},
-													 resultingPackage.getParentFile(),
-													 "RPM not found",
-													 "RPM not found"));
+			String out = IOUtils.toString(Utils.exec(new String[] { "rpm",
+					"-pqi", resultingPackage.getAbsolutePath() },
+					resultingPackage.getParentFile(), "RPM not found",
+					"RPM not found"));
 
 			l.info("=======================================");
-			for(String s: out.split("\\r?\\n")){l.info(s);}
+			for (String s : out.split("\\r?\\n")) {
+				l.info(s);
+			}
 			l.info("=======================================");
-			
-			
+
 		} catch (Exception ex) {
-			throw new MojoExecutionException(ex.toString(),ex);
+			throw new MojoExecutionException(ex.toString(), ex);
 		} finally {
 			try {
 				ph.restoreRpmMacrosFileBackup(l);
 			} catch (IOException e) {
-				throw new MojoExecutionException(e.toString(),e);
+				throw new MojoExecutionException(e.toString(), e);
 			}
 		}
 	}
 
 	/**
-	 * Copies the created artifact from 
-	 * @param l 
+	 * Copies the created artifact from
+	 * 
+	 * @param l
 	 * @param ph
 	 * @param distroConfig
 	 * @return
 	 * @throws IOException
 	 */
-	private File copyRPMToTargetFolder(WorkspaceSession ws) throws MojoExecutionException, IOException {
+	private File copyRPMToTargetFolder(WorkspaceSession ws)
+			throws MojoExecutionException, IOException {
 		Helper ph = ws.getHelper();
-		Log l = ws.getMojo().getLog(); 
-		StringBuilder rpmPackagePath= new StringBuilder(ph.getBaseBuildDir().getParent());				
+		Log l = ws.getMojo().getLog();
+		StringBuilder rpmPackagePath = new StringBuilder(ph.getBaseBuildDir()
+				.getParent());
 		rpmPackagePath.append("/RPMS/");
 		rpmPackagePath.append(ph.getArchitecture());
-		rpmPackagePath.append("/");		
+		rpmPackagePath.append("/");
 		String rpmPackageName = ph.getPackageFileName();
-		
-		File targetFile = new File(ws.getMojo().getTempRoot().getParentFile(),rpmPackageName);
-		
-		l.debug("Attempting to copy from "+ rpmPackagePath.toString() + rpmPackageName +
-				" to " + targetFile.getAbsolutePath());
-		
-		FileUtils.copyFile(new File(rpmPackagePath.toString(),rpmPackageName), targetFile);
-		
-		l.info("RPM file copied to " + targetFile.getAbsolutePath());		
+
+		File targetFile = new File(ws.getMojo().getTempRoot().getParentFile(),
+				rpmPackageName);
+
+		l.debug("Attempting to copy from " + rpmPackagePath.toString()
+				+ rpmPackageName + " to " + targetFile.getAbsolutePath());
+
+		FileUtils.copyFile(new File(rpmPackagePath.toString(), rpmPackageName),
+				targetFile);
+
+		l.info("RPM file copied to " + targetFile.getAbsolutePath());
 		return targetFile;
 	}
 
-
 	/**
-	 * Will prepare the custom Build Area by creating the .rpmmacrosfile
-	 * and will check for rpmbuild to exist.
+	 * Will prepare the custom Build Area by creating the .rpmmacrosfile and
+	 * will check for rpmbuild to exist.
 	 */
 	@Override
-	public void checkEnvironment(Log l, WorkspaceSession workspaceSession) throws MojoExecutionException {
+	public void checkEnvironment(Log l, WorkspaceSession workspaceSession)
+			throws MojoExecutionException {
 		Helper ph = workspaceSession.getHelper();
-		
-		checkneededfields(ph,workspaceSession.getTargetConfiguration());
+
+		checkneededfields(ph, workspaceSession.getTargetConfiguration());
 		try {
 			Utils.checkProgramAvailability("gpg");
 			Utils.checkProgramAvailability("rpmbuild");
-			l.info(IOUtils.toString(Utils.exec(new String[] {"rpm", "--version"},
-					null,"Calling rpm --version failed","ioError",null)).trim());
+			l.info(IOUtils.toString(
+					Utils.exec(new String[] { "rpm", "--version" }, null,
+							"Calling rpm --version failed", "ioError", null))
+					.trim());
 			ph.createRpmMacrosFile();
-			
+
 		} catch (IOException e) {
 			throw new MojoExecutionException(e.getMessage());
 		}
 	}
 
 	/**
-	 * Takes the parameters inside Packaging.Helper and generates the
-	 * spec file needed for rpmbuild to work.
+	 * Takes the parameters inside Packaging.Helper and generates the spec file
+	 * needed for rpmbuild to work.
 	 * 
 	 * @param l
 	 * @param ph
 	 * @param dc
 	 * @param specFile
 	 * @throws MojoExecutionException
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private void generateSPECFile(Log l, Helper ph, TargetConfiguration dc,
-			Set<Artifact> resolvedDependencies, File specFile) throws MojoExecutionException, IOException {
+			Set<Artifact> resolvedDependencies, File specFile)
+			throws MojoExecutionException, IOException {
 		l.info("Creating SPEC file: " + specFile.getAbsolutePath());
 		SpecFileGenerator sgen = new SpecFileGenerator();
 		sgen.setLogger(l);
-		try {				
+		try {
 			sgen.setLogger(l);
-			sgen.setBuildroot("%{_builddir}");		
-			//sgen.setCleancommands(generateCleanCommands(ph, dc));
+			sgen.setBuildroot("%{_builddir}");
+			// sgen.setCleancommands(generateCleanCommands(ph, dc));
 
 			// Following parameters MUST be provided for rpmbuild to work:
 			l.info("Adding mandatory parameters to SPEC file.");
@@ -252,7 +271,7 @@ public class RPMPackager extends Packager {
 			sgen.setUrl(ph.getProjectUrl());
 			sgen.setGroup(dc.getSection());
 			sgen.setDependencies(ph.createDependencyLine(resolvedDependencies));
-			
+
 			// Following parameters are not mandatory
 			l.info("Adding optional parameters to SPEC file.");
 			sgen.setArch(ph.getArchitecture());
@@ -260,15 +279,19 @@ public class RPMPackager extends Packager {
 			sgen.setPackager(dc.getMaintainer());
 			sgen.setFiles(ph.generateFilelist());
 
-			sgen.setPreinstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPreinstScript());	
-			sgen.setPostinstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPostinstScript());	
-			sgen.setPreuninstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPrermScript());
-			sgen.setPostuninstallcommandsFromFile(ph.getSrcAuxFilesDir(),dc.getPostrmScript());
-	
+			sgen.setPreinstallcommandsFromFile(ph.getSrcAuxFilesDir(),
+					dc.getPreinstScript());
+			sgen.setPostinstallcommandsFromFile(ph.getSrcAuxFilesDir(),
+					dc.getPostinstScript());
+			sgen.setPreuninstallcommandsFromFile(ph.getSrcAuxFilesDir(),
+					dc.getPrermScript());
+			sgen.setPostuninstallcommandsFromFile(ph.getSrcAuxFilesDir(),
+					dc.getPostrmScript());
+
 			l.info("Creating SPEC file: " + specFile.getAbsolutePath());
 			Utils.createFile(specFile, "spec");
 			sgen.generate(specFile);
-			
+
 		} catch (IOException ioe) {
 			throw new MojoExecutionException(
 					"IOException while creating SPEC file.", ioe);
@@ -279,53 +302,53 @@ public class RPMPackager extends Packager {
 	/**
 	 * Executes rpmbuild, that will generate the final rpm package.
 	 * 
-	 * If the parameter "sign" is set as true in pom, package will 
-	 * be signed with the Maintainer (Packager) name provided.
+	 * If the parameter "sign" is set as true in pom, package will be signed
+	 * with the Maintainer (Packager) name provided.
 	 * 
 	 * @param l
 	 * @param ph
 	 * @param specFile
 	 * @throws MojoExecutionException
 	 */
-	private void createPackage(Log l, WorkspaceSession workspaceSession, File specFile) 
-			throws MojoExecutionException {
-		
+	private void createPackage(Log l, WorkspaceSession workspaceSession,
+			File specFile) throws MojoExecutionException {
+
 		Helper ph = workspaceSession.getHelper();
 		TargetConfiguration dc = workspaceSession.getTargetConfiguration();
 		AbstractPackagingMojo apm = workspaceSession.getMojo();
 		l.info("Calling rpmbuild to create binary package");
-		l.info("Builddir is "+ph.getBaseBuildDir().toString());
-		String[] command;		
+		l.info("Builddir is " + ph.getBaseBuildDir().toString());
+		String[] command;
 		if (dc.isSign()) {
-			command = new String[] { "rpmbuild", "-bb", "--sign",					
-						"--buildroot", ph.getBaseBuildDir().toString(),
-						specFile.toString() };
+			command = new String[] { "rpmbuild", "-bb", "--sign",
+					"--buildroot", ph.getBaseBuildDir().toString(),
+					specFile.toString() };
 
 		} else {
 			command = new String[] { "rpmbuild", "-bb", "--buildroot",
-					ph.getBaseBuildDir().toString(),
-					specFile.toString() };
+					ph.getBaseBuildDir().toString(), specFile.toString() };
 		}
-		
-		if(apm.getSignPassPhrase()!=null && dc.isSign()){
+
+		if (apm.getSignPassPhrase() != null && dc.isSign()) {
 			Utils.exec(command, "'rpmbuild -bb' failed.",
-				"Error creating rpm file.",apm.getSignPassPhrase());
-		}else{
+					"Error creating rpm file.", apm.getSignPassPhrase());
+		} else {
 			Utils.exec(command, "'rpmbuild -bb' failed.",
-					"Error creating rpm file.");				
+					"Error creating rpm file.");
 		}
-		
+
 	}
-	
 
-
-	private void checkneededfields(Helper ph, TargetConfiguration dc) throws MojoExecutionException {
-		if(ph.getPackageName()==null || ph.getPackageName().equals(UNKNOWN) ||
-		   ph.getPackageVersion()==null || ph.getPackageVersion().equals(UNKNOWN) ||
-		   ph.getProjectDescription()==null || ph.getProjectDescription().equals(UNKNOWN) ||
-		   ph.getLicense()==null || ph.getLicense().equals(UNKNOWN)){
-			String message = "At least PackageName, Version, Description and Summary "+ 
-							 "are needed for the spec file.";
+	private void checkneededfields(Helper ph, TargetConfiguration dc)
+			throws MojoExecutionException {
+		if (ph.getPackageName() == null || ph.getPackageName().equals(UNKNOWN)
+				|| ph.getPackageVersion() == null
+				|| ph.getPackageVersion().equals(UNKNOWN)
+				|| ph.getProjectDescription() == null
+				|| ph.getProjectDescription().equals(UNKNOWN)
+				|| ph.getLicense() == null || ph.getLicense().equals(UNKNOWN)) {
+			String message = "At least PackageName, Version, Description and Summary "
+					+ "are needed for the spec file.";
 			throw new MojoExecutionException(message);
 		}
 	}

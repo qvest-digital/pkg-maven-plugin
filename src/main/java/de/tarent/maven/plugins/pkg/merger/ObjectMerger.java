@@ -1,9 +1,10 @@
 package de.tarent.maven.plugins.pkg.merger;
 
 /**
- * Merger for all Objects 
+ * Merger for all Objects
+ * 
  * @author plafue
- *
+ * 
  */
 public class ObjectMerger implements IMerge {
 
