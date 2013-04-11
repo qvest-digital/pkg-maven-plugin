@@ -1,8 +1,10 @@
 package de.tarent.maven.plugins.pkg.upload;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 
+import org.apache.maven.plugin.logging.Log;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,10 +43,10 @@ public class RepReproDeployerTest extends AbstractMvnPkgPluginTestCase{
 												 ws.getMojo().getBuildDir() + "/" + ws.getHelper().getPackageFileNameWithoutExtension() + ".changes"};
 		String[] generatedCommand = au.generateCommand();
 		
-		Assert.assertEquals(expectedPackageMap.getPackaging(),((PackageMap)getValueOfFieldInObject("packagingType",au)));
-		Assert.assertEquals(expectedRepo,getValueOfFieldInObject("repo",au));
-		Assert.assertEquals(ws.getMojo().getLog(),getValueOfFieldInObject("l",au));		
-		Assert.assertEquals(ws.getMojo().getBuildDir(),getValueOfFieldInObject("base",au));
+		Assert.assertEquals(expectedPackageMap.getPackaging(),(String)getValueOfFieldInObject("packagingType",au));
+		Assert.assertEquals(expectedRepo,(String)getValueOfFieldInObject("repo",au));
+		Assert.assertEquals(ws.getMojo().getLog(),(Log)getValueOfFieldInObject("l",au));		
+		Assert.assertEquals(ws.getMojo().getBuildDir(),(File)getValueOfFieldInObject("base",au));
 		
 		for(int i = 0; i < expectedCommand.length ; i++ ){
 			Assert.assertEquals(expectedCommand[i],generatedCommand[i]);
@@ -72,16 +74,16 @@ public class RepReproDeployerTest extends AbstractMvnPkgPluginTestCase{
 		
 	}
 	
-	public Upload mockUploadEnvironment(String pomFilename) throws Exception{		
+	private Upload mockUploadEnvironment(String pomFilename) throws Exception{		
 		 return (Upload)mockEnvironment(pomFilename,"upload",true, "reprepro_upload");
 	}
 	
-	public Object getValueOfFieldInObject(String needle,Object obj) throws IllegalArgumentException, IllegalAccessException{
+	private Object getValueOfFieldInObject(String needle,Object obj) throws IllegalArgumentException, IllegalAccessException{
 		
 		Field[] allFields = RepreproDeployer.class.getDeclaredFields();
 		
 		for (int i = 0; i < allFields.length; i++) {
-			if(allFields[i].getName()==needle){
+			if(allFields[i].getName().equals(needle)){
 				allFields[i].setAccessible(true);
 				return allFields[i].get(obj); 
 			}	

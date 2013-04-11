@@ -1,8 +1,10 @@
 package de.tarent.maven.plugins.pkg.upload;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 
+import org.apache.maven.plugin.logging.Log;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,23 +38,23 @@ public class APTUploaderTest extends AbstractMvnPkgPluginTestCase{
 		ws.setMojo(up);
 		APTUploader au = new APTUploader(ws, expectedRepo);
 		
-		Assert.assertEquals(expectedPackageMap,getValueOfFieldInObject("packageMap",au));
-		Assert.assertEquals(expectedPackageMap.getPackaging(),((PackageMap)getValueOfFieldInObject("packagingType",au)));
-		Assert.assertEquals(expectedRepo,getValueOfFieldInObject("repo",au));
-		Assert.assertEquals(up.getLog(),getValueOfFieldInObject("l",au));
-		Assert.assertEquals(ws.getMojo().getBuildDir(),getValueOfFieldInObject("base",au));
+		Assert.assertEquals(expectedPackageMap,(PackageMap)getValueOfFieldInObject("packageMap",au));
+		Assert.assertEquals(expectedPackageMap.getPackaging(),(String)getValueOfFieldInObject("packagingType",au));
+		Assert.assertEquals(expectedRepo,(String)getValueOfFieldInObject("repo",au));
+		Assert.assertEquals(up.getLog(),(Log)getValueOfFieldInObject("l",au));
+		Assert.assertEquals(ws.getMojo().getBuildDir(),(File)getValueOfFieldInObject("base",au));
 	}
 	
-	public Upload mockUploadEnvironment(String pomFilename) throws Exception{		
+	private Upload mockUploadEnvironment(String pomFilename) throws Exception{		
 		 return (Upload)mockEnvironment(pomFilename,"upload",true);		
 	}
 	
-	public Object getValueOfFieldInObject(String needle,Object obj) throws IllegalArgumentException, IllegalAccessException{
+	private Object getValueOfFieldInObject(String needle,Object obj) throws IllegalArgumentException, IllegalAccessException{
 		
 		Field[] allFields = APTUploader.class.getDeclaredFields();
 		
 		for (int i = 0; i < allFields.length; i++) {
-			if(allFields[i].getName()==needle){
+			if(allFields[i].getName().equals(needle)){
 				allFields[i].setAccessible(true);
 				return allFields[i].get(obj); 
 			}	

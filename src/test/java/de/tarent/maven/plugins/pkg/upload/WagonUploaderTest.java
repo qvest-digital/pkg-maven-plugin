@@ -7,6 +7,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.plugin.PluginManager;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -53,12 +57,12 @@ public class WagonUploaderTest extends AbstractMvnPkgPluginTestCase{
 	
 	@Test
 	public void testConstructor() throws Exception{
-		Assert.assertEquals(expectedUrl,getValueOfFieldInObject("url",wu));
-		Assert.assertEquals(up.getLog(),getValueOfFieldInObject("l",wu));
-		Assert.assertEquals(ws.getMojo().getProject(), getValueOfFieldInObject("project",wu));
-		Assert.assertEquals(ws.getMojo().getPluginManager(), getValueOfFieldInObject("pluginManager",wu));
-		Assert.assertEquals(ws.getMojo().getSession(), getValueOfFieldInObject("session",wu));
-		Assert.assertEquals(expectedPackageFile, getValueOfFieldInObject("packageFile",wu));
+		Assert.assertEquals(expectedUrl, (String)getValueOfFieldInObject("url",wu));
+		Assert.assertEquals(up.getLog(), (Log)getValueOfFieldInObject("l",wu));
+		Assert.assertEquals(ws.getMojo().getProject(), (MavenProject)getValueOfFieldInObject("project",wu));
+		Assert.assertEquals(ws.getMojo().getPluginManager(), (PluginManager)getValueOfFieldInObject("pluginManager",wu));
+		Assert.assertEquals(ws.getMojo().getSession(), (MavenSession)getValueOfFieldInObject("session",wu));
+		Assert.assertEquals(expectedPackageFile, (File)getValueOfFieldInObject("packageFile",wu));
 	}
 	
 	@Test
@@ -73,16 +77,16 @@ public class WagonUploaderTest extends AbstractMvnPkgPluginTestCase{
 		assertTrue(element1.toDom().toString().contains("<url>"+expectedUrl+"</url>"));
 	}
 	
-	public Upload mockUploadEnvironment(String pomFilename) throws Exception{		
+	private Upload mockUploadEnvironment(String pomFilename) throws Exception{		
 		 return (Upload)mockEnvironment(pomFilename,"upload",true);		
 	}
 	
-	public Object getValueOfFieldInObject(String needle,Object obj) throws IllegalArgumentException, IllegalAccessException{
+	private Object getValueOfFieldInObject(String needle,Object obj) throws IllegalArgumentException, IllegalAccessException{
 		
 		Field[] allFields = WagonUploader.class.getDeclaredFields();
 		
 		for (int i = 0; i < allFields.length; i++) {
-			if(allFields[i].getName()==needle){
+			if(allFields[i].getName().equals(needle)){
 				allFields[i].setAccessible(true);
 				return allFields[i].get(obj); 
 			}	
