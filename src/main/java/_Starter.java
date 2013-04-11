@@ -34,6 +34,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.LinkedList;
 
+import org.apache.commons.io.IOUtils;
+
 /**
  * This class is added to each application that uses the advanced starter
  * and is therefore licensed under the GPL plus linking exception (see
@@ -114,6 +116,8 @@ public class _Starter {
 				throw new RuntimeException("SecurityManager prohibited operation", e);
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException("Unable to find a main() method in class " + mainClassName, e);
+		} finally {
+			IOUtils.closeQuietly(ucl);
 		}
 		
 		try {
