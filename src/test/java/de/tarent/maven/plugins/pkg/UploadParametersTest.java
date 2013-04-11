@@ -1,9 +1,9 @@
 package de.tarent.maven.plugins.pkg;
 
-import org.junit.Test;
-
-import junit.framework.Assert;
 import junit.framework.TestCase;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 public class UploadParametersTest extends TestCase{
 

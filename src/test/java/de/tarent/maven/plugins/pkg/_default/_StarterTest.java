@@ -5,8 +5,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.LinkedList;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 public class _StarterTest {

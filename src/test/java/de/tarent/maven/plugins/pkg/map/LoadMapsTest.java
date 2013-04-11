@@ -1,14 +1,15 @@
 package de.tarent.maven.plugins.pkg.map;
 
-import org.apache.maven.plugin.MojoExecutionException;
-import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
-
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
-@RunWith(JUnit4ClassRunner.class)
+import org.apache.maven.plugin.MojoExecutionException;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
+
+
+@RunWith(BlockJUnit4ClassRunner.class)
 public class LoadMapsTest extends TestCase {
 
 	/**

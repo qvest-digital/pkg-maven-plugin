@@ -3,18 +3,15 @@ package de.tarent.maven.plugins.pkg.upload;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 
-import junit.framework.Assert;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Assert;
 
 import de.tarent.maven.plugins.pkg.AbstractMvnPkgPluginTestCase;
 import de.tarent.maven.plugins.pkg.Upload;
 import de.tarent.maven.plugins.pkg.WorkspaceSession;
 import de.tarent.maven.plugins.pkg.map.PackageMap;
-
-
 
 
 public class APTUploaderTest extends AbstractMvnPkgPluginTestCase{
