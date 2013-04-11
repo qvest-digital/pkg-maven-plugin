@@ -1,5 +1,10 @@
 package de.tarent.maven.plugins.pkg.generator;
 
+
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,8 +14,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -51,7 +54,7 @@ public class SpecFileGeneratorTest {
 		specgenerator.setRelease("haha");
 		specgenerator.generate(spec);
 
-		Assert.assertTrue(spec.exists());
+		assertTrue(spec.exists());
 	}
 
 	@Test
@@ -95,10 +98,10 @@ public class SpecFileGeneratorTest {
 		String lookup3 = "/file1";
 		String lookup4 = "%attr(444,user,user) /file2";
 
-		Assert.assertTrue("Could not find string", filecontains(lookup1));
-		Assert.assertTrue("Could not find string", filecontains(lookup2));
-		Assert.assertTrue("Could not find string", filecontains(lookup3));
-		Assert.assertTrue("Could not find string", filecontains(lookup4));
+		assertTrue("Could not find string", filecontains(lookup1));
+		assertTrue("Could not find string", filecontains(lookup2));
+		assertTrue("Could not find string", filecontains(lookup3));
+		assertTrue("Could not find string", filecontains(lookup4));
 
 	}
 	
@@ -114,9 +117,9 @@ public class SpecFileGeneratorTest {
 		
 		String header = "%clean";
 		
-		Assert.assertEquals(commands, specgenerator.getCleancommands());
-		Assert.assertTrue(filecontains(header));
-		Assert.assertTrue(filecontains(command));
+		assertEquals(commands, specgenerator.getCleancommands());
+		assertTrue(filecontains(header));
+		assertTrue(filecontains(command));
 		
 	}
 	
@@ -132,9 +135,9 @@ public class SpecFileGeneratorTest {
 		
 		String header = "%build";
 		
-		Assert.assertEquals(commands, specgenerator.getBuildcommands());
-		Assert.assertTrue(filecontains(header));
-		Assert.assertTrue(filecontains(command));
+		assertEquals(commands, specgenerator.getBuildcommands());
+		assertTrue(filecontains(header));
+		assertTrue(filecontains(command));
 		
 		
 	}
@@ -151,9 +154,9 @@ public class SpecFileGeneratorTest {
 		
 		String header = "%install";
 		
-		Assert.assertEquals(commands, specgenerator.getInstallcommands());
-		Assert.assertTrue(filecontains(header));
-		Assert.assertTrue(filecontains(command));
+		assertEquals(commands, specgenerator.getInstallcommands());
+		assertTrue(filecontains(header));
+		assertTrue(filecontains(command));
 		
 		
 	}
@@ -169,9 +172,9 @@ public class SpecFileGeneratorTest {
 		generateSpecWithMinimumInfo();
 		
 		String header = "%pre";		
-		Assert.assertEquals(commands, specgenerator.getPreinstallcommands());
-		Assert.assertTrue(filecontains(header));
-		Assert.assertTrue(filecontains(command));
+		assertEquals(commands, specgenerator.getPreinstallcommands());
+		assertTrue(filecontains(header));
+		assertTrue(filecontains(command));
 		
 		
 	}
@@ -188,9 +191,9 @@ public class SpecFileGeneratorTest {
 		
 		String header = "%post";
 		
-		Assert.assertEquals(commands, specgenerator.getPostinstallcommands());
-		Assert.assertTrue(filecontains(header));
-		Assert.assertTrue(filecontains(command));
+		assertEquals(commands, specgenerator.getPostinstallcommands());
+		assertTrue(filecontains(header));
+		assertTrue(filecontains(command));
 		
 		
 	}
@@ -207,9 +210,9 @@ public class SpecFileGeneratorTest {
 		
 		String header = "%preun";
 		
-		Assert.assertEquals(commands, specgenerator.getPreuninstallcommands());
-		Assert.assertTrue(filecontains(header));
-		Assert.assertTrue(filecontains(command));
+		assertEquals(commands, specgenerator.getPreuninstallcommands());
+		assertTrue(filecontains(header));
+		assertTrue(filecontains(command));
 		
 		
 	}
@@ -226,9 +229,9 @@ public class SpecFileGeneratorTest {
 		
 		String header = "%postun";
 		
-		Assert.assertEquals(commands, specgenerator.getPostuninstallcommands());
-		Assert.assertTrue(filecontains(header));
-		Assert.assertTrue(filecontains(command));
+		assertEquals(commands, specgenerator.getPostuninstallcommands());
+		assertTrue(filecontains(header));
+		assertTrue(filecontains(command));
 		
 		
 	}
@@ -237,9 +240,9 @@ public class SpecFileGeneratorTest {
 	public void testSetPreInstallCommandsFromEmptyFileCreatesEmptyArrayList() throws IOException{
 
 		specgenerator.setPreinstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		Assert.assertEquals(0,specgenerator.getPreinstallcommands().size());
+		assertEquals(0,specgenerator.getPreinstallcommands().size());
 		
-	} 
+	}
 	
 	@Test
 	public void testSetPreInstallCommandsFromFileCreatesArrayList() throws IOException{
@@ -248,17 +251,17 @@ public class SpecFileGeneratorTest {
 		w.println("echo 'echo!'");
 		w.close();
 		specgenerator.setPreinstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		Assert.assertEquals(1,specgenerator.getPreinstallcommands().size());
+		assertEquals(1,specgenerator.getPreinstallcommands().size());
 		
-	} 
+	}
 	
 	@Test
 	public void testSetPreUninstallCommandsFromEmptyFileCreatesEmptyArrayList() throws IOException{
 
 		specgenerator.setPreuninstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		Assert.assertEquals(0,specgenerator.getPreuninstallcommands().size());
+		assertEquals(0,specgenerator.getPreuninstallcommands().size());
 		
-	} 
+	}
 	
 	@Test
 	public void testSetPreUninstallCommandsFromFileCreatesArrayList() throws IOException{
@@ -267,17 +270,17 @@ public class SpecFileGeneratorTest {
 		w.println("echo 'echo!'");
 		w.close();
 		specgenerator.setPreuninstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		Assert.assertEquals(1,specgenerator.getPreuninstallcommands().size());
+		assertEquals(1,specgenerator.getPreuninstallcommands().size());
 		
-	} 
+	}
 	
 	@Test
 	public void testSetPostInstallCommandsFromEmptyFileCreatesEmptyArrayList() throws IOException{
 
 		specgenerator.setPostinstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		Assert.assertEquals(0,specgenerator.getPostinstallcommands().size());
+		assertEquals(0,specgenerator.getPostinstallcommands().size());
 		
-	} 
+	}
 	
 	@Test
 	public void testSetPostInstallCommandsFromFileCreatesArrayList() throws IOException{
@@ -286,17 +289,17 @@ public class SpecFileGeneratorTest {
 		w.println("echo 'echo!'");
 		w.close();
 		specgenerator.setPostinstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		Assert.assertEquals(1,specgenerator.getPostinstallcommands().size());
+		assertEquals(1,specgenerator.getPostinstallcommands().size());
 		
-	} 
+	}
 	
 	@Test
 	public void testSetPostUninstallCommandsFromEmptyFileCreatesEmptyArrayList() throws IOException{
 
 		specgenerator.setPostuninstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		Assert.assertEquals(0,specgenerator.getPostuninstallcommands().size());
+		assertEquals(0,specgenerator.getPostuninstallcommands().size());
 		
-	} 
+	}
 	
 	@Test
 	public void testSetPostUninstallCommandsFromFileCreatesArrayList() throws IOException{
@@ -305,16 +308,16 @@ public class SpecFileGeneratorTest {
 		w.println("echo 'echo!'");
 		w.close();
 		specgenerator.setPostuninstallcommandsFromFile(dummytestscript.getParentFile(), dummytestscript.getName());
-		Assert.assertEquals(1,specgenerator.getPostuninstallcommands().size());
+		assertEquals(1,specgenerator.getPostuninstallcommands().size());
 		
-	} 
+	}
 
 	
 	@Test
 	public void testSetPreInstallCommandsFromFileNullCreatesEmptyArrayList() throws IOException{
 
 		specgenerator.setPreinstallcommandsFromFile(null, null);
-		Assert.assertEquals(0,specgenerator.getPreinstallcommands().size());
+		assertEquals(0,specgenerator.getPreinstallcommands().size());
 		
 	} 
 	
@@ -322,7 +325,7 @@ public class SpecFileGeneratorTest {
 	public void testSetPreUninstallCommandsFromFileNullCreatesEmptyArrayList() throws IOException{
 
 		specgenerator.setPreuninstallcommandsFromFile(null, null);
-		Assert.assertEquals(0,specgenerator.getPreuninstallcommands().size());
+		assertEquals(0,specgenerator.getPreuninstallcommands().size());
 		
 	} 
 	
@@ -330,15 +333,15 @@ public class SpecFileGeneratorTest {
 	public void testSetPostInstallCommandsFromFileNullCreatesEmptyArrayList() throws IOException{
 
 		specgenerator.setPostinstallcommandsFromFile(null, null);
-		Assert.assertEquals(0,specgenerator.getPostinstallcommands().size());
+		assertEquals(0,specgenerator.getPostinstallcommands().size());
 		
-	} 
+	}
 	
 	@Test
 	public void testSetPostUninstallCommandsFromFileNullCreatesEmptyArrayList() throws IOException{
 
 		specgenerator.setPostuninstallcommandsFromFile(null, null);
-		Assert.assertEquals(0,specgenerator.getPostuninstallcommands().size());
+		assertEquals(0,specgenerator.getPostuninstallcommands().size());
 		
 	} 
 	
@@ -346,7 +349,7 @@ public class SpecFileGeneratorTest {
 	public void testSetBuildCommandsFromNullCreatesEmptyArrayList() throws IOException{
 
 		specgenerator.setBuildcommands(null);
-		Assert.assertEquals(0,specgenerator.getBuildcommands().size());
+		assertEquals(0,specgenerator.getBuildcommands().size());
 		
 	} 
 	
@@ -358,7 +361,7 @@ public class SpecFileGeneratorTest {
 		setBuildcommands.add("test2");
 		setBuildcommands.add("test3");
 		specgenerator.setBuildcommands(setBuildcommands);
-		Assert.assertEquals(3,specgenerator.getBuildcommands().size());
+		assertEquals(3,specgenerator.getBuildcommands().size());
 		
 	} 
 	
@@ -366,7 +369,7 @@ public class SpecFileGeneratorTest {
 	public void testSetInstallCommandsFromNullCreatesEmptyArrayList() throws IOException{
 
 		specgenerator.setInstallcommands(null);
-		Assert.assertEquals(0,specgenerator.getInstallcommands().size());
+		assertEquals(0,specgenerator.getInstallcommands().size());
 		
 	} 
 	
@@ -378,42 +381,42 @@ public class SpecFileGeneratorTest {
 		setInstallCommands.add("test2");
 		setInstallCommands.add("test3");
 		specgenerator.setInstallcommands(setInstallCommands);
-		Assert.assertEquals(3,specgenerator.getInstallcommands().size());
+		assertEquals(3,specgenerator.getInstallcommands().size());
 		
 	} 
 	@Test
 	public void testSetPostInstallCommandsFromNullArrayCreatesEmptyArrayList(){
 		
 		specgenerator.setPostinstallcommands(null);
-		Assert.assertEquals(0,specgenerator.getPostinstallcommands().size());
+		assertEquals(0,specgenerator.getPostinstallcommands().size());
 		
 	}
 	@Test
 	public void testSetPostUninstallCommandsFromNullArrayCreatesEmptyArrayList(){
 		
 		specgenerator.setPostuninstallcommands(null);
-		Assert.assertEquals(0,specgenerator.getPostuninstallcommands().size());
+		assertEquals(0,specgenerator.getPostuninstallcommands().size());
 		
 	}
 	@Test
 	public void testSetPreInstallCommandsFromNullArrayCreatesEmptyArrayList(){
 		
 		specgenerator.setPreinstallcommands(null);
-		Assert.assertEquals(0,specgenerator.getPreinstallcommands().size());
+		assertEquals(0,specgenerator.getPreinstallcommands().size());
 		
 	}
 	@Test
 	public void testSetPreUninstallCommandsFromNullArrayCreatesEmptyArrayList(){
 		
 		specgenerator.setPreuninstallcommands(null);
-		Assert.assertEquals(0,specgenerator.getPreuninstallcommands().size());
+		assertEquals(0,specgenerator.getPreuninstallcommands().size());
 		
 	}
 	@Test
 	public void testSetCleanCommandsFromNullArrayCreatesEmptyArrayList(){
 		
 		specgenerator.setCleancommands(null);
-		Assert.assertEquals(0,specgenerator.getCleancommands().size());
+		assertEquals(0,specgenerator.getCleancommands().size());
 		
 	}
 	
@@ -425,102 +428,102 @@ public class SpecFileGeneratorTest {
 		setPrepareCommands.add("test2");
 		setPrepareCommands.add("test3");
 		specgenerator.setPreparecommands(setPrepareCommands);
-		Assert.assertEquals(3,specgenerator.getPreparecommands().size());
+		assertEquals(3,specgenerator.getPreparecommands().size());
 		
 	} 
 	@Test
 	public void testSetPrepareCommandsFromNullArrayCreatesEmptyArrayList(){
 		
 		specgenerator.setPreparecommands(null);
-		Assert.assertEquals(0,specgenerator.getPreparecommands().size());
+		assertEquals(0,specgenerator.getPreparecommands().size());
 		
 	}
 	@Test
 	public void testSetArchDefaultsToNoarchIfNullOrEmpty(){
 		specgenerator.setArch(null);
-		Assert.assertEquals("noarch",specgenerator.getArch());
+		assertEquals("noarch",specgenerator.getArch());
 		specgenerator.setArch("");
-		Assert.assertEquals("noarch",specgenerator.getArch());		
+		assertEquals("noarch",specgenerator.getArch());		
 	}
 	
 	@Test
 	public void testSetGroupDefaultsToUnknownIfNullOrEmpty(){
 		specgenerator.setGroup(null);
-		Assert.assertEquals("unknown",specgenerator.getGroup());
+		assertEquals("unknown",specgenerator.getGroup());
 		specgenerator.setGroup("");
-		Assert.assertEquals("unknown",specgenerator.getGroup());		
+		assertEquals("unknown",specgenerator.getGroup());		
 	}
 	
 	@Test
 	public void testSetLicenseDefaultsToUnknownIfNullOrEmpty(){
 		specgenerator.setLicense(null);
-		Assert.assertEquals("unknown",specgenerator.getLicense());
+		assertEquals("unknown",specgenerator.getLicense());
 		specgenerator.setLicense("");
-		Assert.assertEquals("unknown",specgenerator.getLicense());		
+		assertEquals("unknown",specgenerator.getLicense());		
 	}
 	
 	@Test
 	public void testSetReleaseDefaultsTo1IfNullOrEmpty(){
 		specgenerator.setRelease(null);
-		Assert.assertEquals("1",specgenerator.getRelease());
+		assertEquals("1",specgenerator.getRelease());
 		specgenerator.setRelease("");
-		Assert.assertEquals("1",specgenerator.getRelease());		
+		assertEquals("1",specgenerator.getRelease());		
 	}
 	
 	@Test
 	public void testSetUrlDefaultsToUnknownDotComIfNullOrEmpty(){
 		specgenerator.setUrl(null);
-		Assert.assertEquals("http://unknown.com",specgenerator.getUrl());
+		assertEquals("http://unknown.com",specgenerator.getUrl());
 		specgenerator.setUrl("");
-		Assert.assertEquals("http://unknown.com",specgenerator.getUrl());		
+		assertEquals("http://unknown.com",specgenerator.getUrl());		
 	}
 	
 	@Test
 	public void testSetSummaryDefaultsToUnknownIfNullOrEmpty(){
 		specgenerator.setSummary(null);
-		Assert.assertEquals("unknown",specgenerator.getSummary());
+		assertEquals("unknown",specgenerator.getSummary());
 		specgenerator.setSummary("");
-		Assert.assertEquals("unknown",specgenerator.getSummary());		
+		assertEquals("unknown",specgenerator.getSummary());		
 	}
 	
 	@Test
 	public void testSetSourceDefaultsToUnknownIfNullOrEmpty(){
 		specgenerator.setSource(null);
-		Assert.assertEquals("unknown",specgenerator.getSource());
+		assertEquals("unknown",specgenerator.getSource());
 		specgenerator.setSource("");
-		Assert.assertEquals("unknown",specgenerator.getSource());		
+		assertEquals("unknown",specgenerator.getSource());		
 	}
 	
 	@Test
 	public void testSetVersionDefaultsToUnknownIfNullOrEmpty(){
 		specgenerator.setVersion(null);
-		Assert.assertEquals("unknown",specgenerator.getVersion());
+		assertEquals("unknown",specgenerator.getVersion());
 		specgenerator.setVersion("");
-		Assert.assertEquals("unknown",specgenerator.getVersion());		
+		assertEquals("unknown",specgenerator.getVersion());		
 	}
 	
 	@Test
 	public void testSetSuggestsDefaultsToUnknownIfNullOrEmpty(){
 		specgenerator.setSuggests(null);
-		Assert.assertEquals("unknown",specgenerator.getSuggests());
+		assertEquals("unknown",specgenerator.getSuggests());
 		specgenerator.setSuggests("");
-		Assert.assertEquals("unknown",specgenerator.getSuggests());		
+		assertEquals("unknown",specgenerator.getSuggests());		
 	}
 	
 	@Test
 	public void testSetDependenciesDefaultsToUnknownIfNullOrEmpty(){
 		specgenerator.setDependencies(null);
-		Assert.assertEquals("unknown",specgenerator.getDependencies());
+		assertEquals("unknown",specgenerator.getDependencies());
 		specgenerator.setDependencies("");
-		Assert.assertEquals("unknown",specgenerator.getDependencies());		
+		assertEquals("unknown",specgenerator.getDependencies());		
 	}
 	
 	@Test
 	public void testSetRecommendsDefaultsToUnknownIfNullOrEmpty(){
 		specgenerator.setRecommends(null);
-		Assert.assertEquals("unknown",specgenerator.getRecommends());
+		assertEquals("unknown",specgenerator.getRecommends());
 		specgenerator.setRecommends("");
-		Assert.assertEquals("unknown",specgenerator.getRecommends());		
+		assertEquals("unknown",specgenerator.getRecommends());		
 	}
 	@After
 	public void tearDown() {
@@ -550,20 +553,17 @@ public class SpecFileGeneratorTest {
 
 	private boolean filecontains(String lookup) throws IOException {
 		FileInputStream fis = new FileInputStream(spec);
+		BufferedReader in = new BufferedReader(new InputStreamReader(fis));
 
 		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
-			try{
-				String currentLine = "";
-				while ((currentLine = in.readLine()) != null) {
-					if (currentLine.indexOf(lookup) != -1)
-						return true;
-				}
-			}finally{
-				IOUtils.closeQuietly(in);
+			String currentLine = "";
+			while ((currentLine = in.readLine()) != null) {
+				if (currentLine.indexOf(lookup) != -1)
+					return true;
 			}
 		} finally {
-			IOUtils.closeQuietly(fis);			
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(fis);
 		}
 		return false;
 	}
@@ -574,7 +574,7 @@ public class SpecFileGeneratorTest {
 		p.println("Test command 2");
 		p.println("Test command 3");
 		p.close();
-
 	}
 
 }
+
