@@ -274,7 +274,7 @@ public final class Utils {
 			int exitValue = p.waitFor();
 			if (exitValue != 0) {				
 				print(p);
-				throw new MojoExecutionException("(Suproces exit value = "+exitValue+ " ) " +failureMsg);
+				throw new MojoExecutionException(String.format("(Subprocess exit value = %s) %s", exitValue, failureMsg));
 			}
 		} catch (IOException ioe) {
 			throw new MojoExecutionException(ioExceptionMsg + " :" + ioe.getMessage(), ioe);
