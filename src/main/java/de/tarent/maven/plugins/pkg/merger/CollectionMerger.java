@@ -22,7 +22,9 @@ public class CollectionMerger implements IMerge {
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	 public <T> Object merge(Object child, Object parent, Object def) throws InstantiationException, IllegalAccessException {
+	
+	@SuppressWarnings("unchecked")
+	public <T> Object merge(Object child, Object parent, Object def) throws InstantiationException, IllegalAccessException {
 						
 			def = (def==null)? new Object(): def;
 			

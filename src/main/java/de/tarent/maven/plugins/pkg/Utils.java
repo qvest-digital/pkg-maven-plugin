@@ -1045,6 +1045,7 @@ public final class Utils {
 	 * @return
 	 * @throws MojoExecutionException
 	 */
+	@SuppressWarnings("unchecked")
 	public static File getFileFromArchive(ArchiveFile archive, String needle) throws MojoExecutionException{
 		
 			

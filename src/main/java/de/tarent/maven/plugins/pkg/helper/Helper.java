@@ -1171,7 +1171,7 @@ public class Helper {
 	
 	    l.info("resolving dependency artifacts");
 	
-	    Set dependencies = new HashSet();
+	    Set<Artifact> dependencies = new HashSet<Artifact>();
 	    try
 	      {
 	        // Notice only compilation dependencies which are Jars.
@@ -1682,6 +1682,7 @@ public class Helper {
 		 * @throws MojoExecutionException
 		 * @throws IOException 
 		 */
+		@SuppressWarnings("unchecked")
 		public long createCopyrightFile() throws MojoExecutionException{
 			File copyright = new File(dstScriptDir,"copyright");
 			
