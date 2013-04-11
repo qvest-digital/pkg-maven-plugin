@@ -205,19 +205,37 @@ public class DebianSigner {
 	 * @param base
 	 * @throws MojoExecutionException
 	 */
-	protected void generateFileList(Log l, File base) throws MojoExecutionException  {
+	protected void generateFileList(Log l, File base) throws MojoExecutionException {
 		l.info("calling " + filesGenCmd + " to generate file-list");
 
+		/* Workaround for newer dpkg-distaddfile which needs locking on
+		 * debian/control instead of DEBIAN/control
+		 * 
+		 * we create debian/control temporary and remove it
+		 * after DEBIAN/files have been written
+		 */
+		
+		File tempControlDir = new File(tempRoot.getParentFile(), "debian");
+		File tempControlFile = new File(tempControlDir, "control");
+		
+		Utils.createFile(tempControlFile, "Could not create temporary debian/control file for " + filesGenCmd);
+		
 		File pathToFileListFile = new File(tempRoot, "files");
 
 		Utils.exec(new String[] {filesGenCmd,
 				"-f" + pathToFileListFile.getAbsolutePath(),
 				packageFileName,
 				section,
-		"optional"} ,
+		"optional"},
 		base,
 		"Generating file-list failed.",
 		"Error creating the file-list.");
+		
+		try {
+			FileUtils.deleteDirectory(tempControlDir);
+		} catch (IOException e) {
+			throw new MojoExecutionException("Could not delte temporary debian/ directory for " + filesGenCmd);
+		}
 	}
 	
 	/**
