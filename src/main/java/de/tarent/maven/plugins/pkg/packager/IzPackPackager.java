@@ -297,8 +297,7 @@ public class IzPackPackager extends Packager
    * @throws MojoExecutionException
    */
   private void unpackIzPack(Log l, File izPackEmbeddedFile, File izPackEmbeddedHomeDir)
-  throws MojoExecutionException
-  {
+  throws MojoExecutionException {
     l.info("storing embedded IzPack installation in " + izPackEmbeddedFile);
     Utils.storeInputStream(IzPackPackager.class.getResourceAsStream(IZPACK_EMBEDDED_JAR),
                            izPackEmbeddedFile,
@@ -306,32 +305,37 @@ public class IzPackPackager extends Packager
     
     l.info("unzipping embedded IzPack installation to" + izPackEmbeddedHomeDir);
     int count = 0;
-    try
-    {
-    ZipFile zip = new ZipFile(izPackEmbeddedFile);
+    ZipFile zip = null;
+    try {
+    zip = new ZipFile(izPackEmbeddedFile);
     Enumeration<? extends ZipEntry> e = zip.entries();
     
-    while (e.hasMoreElements())
-      {
+    while (e.hasMoreElements()) {
         count++;
         ZipEntry entry = (ZipEntry) e.nextElement();
         File unpacked = new File(izPackEmbeddedHomeDir,
                                    entry.getName());
-        if (entry.isDirectory()){
+        if (entry.isDirectory()) {
           unpacked.mkdirs(); // TODO: Check success.
-        }else{
+        } else {
             Utils.createFile(unpacked, "Unable to create ZIP file entry ");
             Utils.storeInputStream(zip.getInputStream(entry), unpacked,
                                    "IOException while unpacking ZIP file entry.");
           }
-            
       }
-    }
-    catch (IOException ioe)
-    {
+    } catch (IOException ioe) {
       throw new MojoExecutionException("IOException while unpacking embedded IzPack installation.", ioe);
+    } finally {
+        if (zip != null) {
+            try {
+                zip.close();
+            } catch (IOException e) {
+                l.info(String.format(
+                        "Error at closing zipfile %s caused by %s",
+                        izPackEmbeddedFile.getName(), e.getMessage()));
+            }
+        }
     }
-    
     l.info("unpacked " + count + " entries");
   }
 
