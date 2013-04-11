@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.junit.Assert;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.model.License;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.SystemStreamLog;
@@ -756,6 +757,7 @@ public class UtilsTest extends AbstractMvnPkgPluginTestCase{
 		  File f = Utils.getFileFromArchive(archive, "testfile");
 	      BufferedReader input =  new BufferedReader(new FileReader(f));
 		  assertTrue(input.readLine().equals("test contents"));
+		  IOUtils.closeQuietly(input);
 	}
 	
 	@Test(expected=MojoExecutionException.class)
