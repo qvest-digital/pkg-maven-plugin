@@ -34,8 +34,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.LinkedList;
 
-import org.apache.commons.io.IOUtils;
-
 /**
  * This class is added to each application that uses the advanced starter and is
  * therefore licensed under the GPL plus linking exception (see disclaimer).
@@ -63,10 +61,13 @@ public class _Starter {
 	private static String parse(String resource, LinkedList<URL> urls) {
 		String mainClassName = null;
 
+		if (resource == null) {
+			throw new RuntimeException("Unable to load _classpath resource is null");
+		}
+		
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				_Starter.class.getResourceAsStream(resource)));
 		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					_Starter.class.getResourceAsStream(resource)));
-
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				// Lines starting with a dash are comments
@@ -92,6 +93,12 @@ public class _Starter {
 			}
 		} catch (IOException ioe) {
 			throw new RuntimeException("Unable to load _classpath", ioe);
+		} finally {
+			try {
+				reader.close();
+			} catch (IOException e) {
+				throw new RuntimeException("Could not close the _classpath reader", e);
+			}
 		}
 
 		return mainClassName;
@@ -117,8 +124,6 @@ public class _Starter {
 			throw new RuntimeException(
 					"Unable to find a main() method in class " + mainClassName,
 					e);
-		} finally {
-			IOUtils.closeQuietly(ucl);
 		}
 
 		try {
