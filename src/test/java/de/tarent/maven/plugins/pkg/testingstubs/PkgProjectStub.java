@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
@@ -40,7 +41,8 @@ public class PkgProjectStub extends MavenProjectStub {
 		setUrl(model.getUrl());
 		setPackaging(model.getPackaging());
 
-		setRemoteArtifactRepositories(Collections.emptyList());
+		List<ArtifactRepository> artifacRepoList = Collections.emptyList();
+		setRemoteArtifactRepositories(artifacRepoList);
 
 		Build build = new Build();
 		build.setFinalName(model.getArtifactId());
