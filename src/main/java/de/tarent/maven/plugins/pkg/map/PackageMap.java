@@ -270,7 +270,7 @@ public class PackageMap {
 
 			Entry e;
 			try {
-				e = (Entry) mapping.getEntry(a.getGroupId(), aid,
+				e = mapping.getEntry(a.getGroupId(), aid,
 						a.getSelectedVersion());
 			} catch (OverConstrainedVersionException e1) {
 				throw new IllegalStateException(
