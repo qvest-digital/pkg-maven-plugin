@@ -1481,7 +1481,6 @@ public class Helper {
 		cp.append(targetArtifactFile.toString());
 
 		return bundled;
-
 	}
 
 	/**
