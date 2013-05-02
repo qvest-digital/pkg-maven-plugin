@@ -139,8 +139,9 @@ public class RPMPackager extends Packager {
 		// start script only if the project is an application.
 		if (distroConfig.getMainClass() != null) {
 			// TODO: Handle native library artifacts properly.
-			// bundledArtifacts = ph.createClasspathLine(bcp, cp);
-			ph.createClasspathLine(bcp, cp);
+			if (distroConfig.isBundleDependencyArtifacts()) {
+				ph.createClasspathLine(bcp, cp);
+			}
 			ph.generateWrapperScript(bcp, cp, false);
 		}
 

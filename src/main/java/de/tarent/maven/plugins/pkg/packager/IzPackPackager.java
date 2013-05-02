@@ -166,8 +166,6 @@ public class IzPackPackager extends Packager {
 
 		unpackIzPack(l, izPackEmbeddedJarFile, izPackEmbeddedRoot);
 
-		ph.bundleDependencies(deps, bcp, cp);
-
 		// IzPack does not support the exclusion of dependencies.
 		bundledArtifacts = ph.bundleDependencies(deps, bcp, cp);
 		ph.copyArtifacts(bundledArtifacts);
@@ -185,7 +183,6 @@ public class IzPackPackager extends Packager {
 
 		desc.removeAotPack();
 
-		ph.createClasspathLine(bcp, cp);
 		ph.generateWrapperScript(bcp, cp, true);
 
 		if (distroConfig.isAdvancedStarter()) {
