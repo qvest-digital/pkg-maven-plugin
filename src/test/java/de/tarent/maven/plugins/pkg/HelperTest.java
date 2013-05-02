@@ -362,5 +362,32 @@ public class HelperTest extends AbstractMvnPkgPluginTestCase {
 		Assert.assertEquals(
 				"dummyproject-t1, dummyproject-t2, dummyproject-t3", line);
 	}
+	
+	/**
+	 * Tests the successful of the classpath-
+	 * line created by {@link Helper#createClasspathLine}.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testCreateClasspathLine() throws Exception {
+		// Creates a PackageMap which has no influence on the
+		packageMap = new PackageMap(null, null, "default", null) {
+			@Override
+			public String getDefaultDependencyLine() {
+				return "";
+			}
+		};
+
+		targetConfiguration.setTarget("foo");
+		targetConfiguration.fixate();
+
+		Set<Artifact> deps = helper.resolveProjectDependencies();
+		
+		Path cp = new Path();
+		helper.bundleDependencies(deps, null, cp);
+		helper.createClasspathLine(null, cp);
+		Assert.assertEquals(cp.toUnixPath().contains("Dummy"), true);
+	}
 
 }
