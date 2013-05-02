@@ -178,6 +178,13 @@ public class DebPackager extends Packager {
 
 		byteAmount += result.getByteAmount();
 
+		// The user may want to avoid including dependencies
+		if (targetConfiguration.isBundleDependencyArtifacts()) {
+			bundledArtifacts = ph.bundleDependencies(
+					result.getResolvedDependencies(), bcp, cp);
+			byteAmount += ph.copyArtifacts(bundledArtifacts);
+		}
+		
 		// Create classpath line, copy bundled jars and generate wrapper
 		// start script only if the project is an application.
 		if (targetConfiguration.getMainClass() != null) {
@@ -185,13 +192,6 @@ public class DebPackager extends Packager {
 			// bundledArtifacts = ph.createClasspathLine(bcp, cp);
 			ph.createClasspathLine(bcp, cp);
 			ph.generateWrapperScript(bcp, cp, false);
-		}
-
-		// The user may want to avoid including dependencies
-		if (targetConfiguration.isBundleDependencyArtifacts()) {
-			bundledArtifacts = ph.bundleDependencies(
-					result.getResolvedDependencies(), bcp, cp);
-			byteAmount += ph.copyArtifacts(bundledArtifacts);
 		}
 
 		generateControlFile(l, targetConfiguration, ph, controlFile,
