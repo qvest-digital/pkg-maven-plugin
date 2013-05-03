@@ -129,7 +129,7 @@ public class IpkPackager extends Packager {
 		// start script only if the project is an application.
 		if (distroConfig.getMainClass() != null) {
 			// TODO: Handle native library artifacts properly.
-			if (distroConfig.isBundleDependencyArtifacts()) {
+			if (!distroConfig.isBundleDependencyArtifacts()) {
 				ph.createClasspathLine(bcp, cp);
 			}
 			ph.generateWrapperScript(bcp, cp, false);
