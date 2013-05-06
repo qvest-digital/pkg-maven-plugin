@@ -1,0 +1,120 @@
+PKG-MVN-Plugin
+==============
+
+Description
+-----------
+
+The PKG-MVN-Plugin provides a maven plugin for packaging maven projects to different targets. It supports on-the-fly generation of.deb, .rpm and .ipkg packages as well as the generation of IzPack-installer.
+
+One of the goals of this plugin was the clean handling of maven dependencies. For the distribution specific packaging targets, the plugin is able to translate the maven dependencies to platform specific (e.g. Debian) dependencies.
+
+Quick Start Guide
+-----------------
+
+This quick start guide covers the 4.X Release of the PKG-MVN-Plugin.
+ 
+Setting up the Repository
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To use the plugin, you have to configure the evolvis maven plugin repository in your '~/.m2/settings.xml' or the 'pom.xml' of your project.
+
+[source,xml]
+----
+<pluginRepositories>
+    <pluginRepository>
+        <id>evolvis-release-repository</id>
+        <name>evolvis.org release repository</name>
+        <url>http://maven-repo.evolvis.org/releases</url>
+        <snapshots>
+            <enabled>false</enabled>
+         </snapshots>
+    </pluginRepository>
+</pluginRepositories>
+----
+
+Available Goals
+~~~~~~~~~~~~~~~
+
+After configuring the plugin provides the following goals:
+
+pkg:pkg::
+    The packages are created based on the *targetConfigurations* (think
+    profiles) defined in your 'pom.xml'.
+pkg:upload::
+    The resulting packages are copied/uploaded to another location (i.e.
+    scpexe://, ftp://, [../../../ file://], and apt repositories among
+    others)   
+
+Sample Configuration
+~~~~~~~~~~~~~~~~~~~~
+
+This configuration creates a package for Ubuntu Lucid. This package will 
+be part of the section "devel", and will be provided with a starter script
+that will execute the mainClass when called. For a complete reference of 
+all possible parameters, please consult the User Manual.
+
+[source,xml]
+----
+[...]
+<plugins>
+    [...]
+    <plugin>
+        <groupId>de.tarent.maven.plugins</groupId>
+        <artifactId>maven-pkg-plugin</artifactId>
+        <version>4.0.3</version>
+ 
+        <configuration>
+ 
+            <target>desktop_deb</target>
+ 
+            <targetConfigurations>
+                <targetConfiguration>
+                    <target>desktop_deb</target>
+                    <defaultDistro>ubuntu_lucid</defaultDistro> <!-- Not needed if distros.size() == 1 -->
+                    <distros>
+                        <distro>ubuntu_lucid</distro>
+                        <distro>ubuntu_karmic</distro>
+                    </distros>
+                    <release>Release Number XX</release>
+                    <architecture>x86_64</architecture>
+                    <mainClass>org.test.project.MainClass</mainClass>
+                    <section>devel</section>
+                    <maintainer>Maintainer Name Jr.</maintainer>
+ 
+                    <!-- Following sections are not mandatory -->
+ 
+                    <revision>r0</revision>
+ 
+                    <manualDependencies>
+                        <string>kdm</string>
+                        [...]
+                    </manualDependencies>
+ 
+                    <sysconfFiles>
+                        <sysconfFile>
+                            <from>dummy.properties</from>
+                            <to>dummyProject/dummy.properties</to>
+                            <rename>true</rename>
+                        </sysconfFile>
+                        [...]
+                    </sysconfFiles>
+ 
+                    <uploadParameters>
+                        <urls>
+                            <url>scpexe://targetuploadserver/targetdir</url>
+                            <url>ftp://targetuploadserver2/targetdir</url>
+                            [...]
+                        </urls>
+                    </uploadParameters>
+                </targetConfiguration>
+                [...]
+            </targetConfigurations>
+        </configuration>
+    </plugin>
+    [...]
+</plugins>
+[...]
+----
+
+
+// vim: set syntax=asciidoc:  
