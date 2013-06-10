@@ -7,7 +7,7 @@
 
 	<include>pm-debian_etch.xml</include>
 	<include>pm-debian_lenny.xml</include>
-	
+
 	<include>pm-ubuntu_gutsy.xml</include>
 	<include>pm-ubuntu_hardy.xml</include>
 	<include>pm-ubuntu_intrepid.xml</include>
@@ -16,11 +16,11 @@
 	<include>pm-ubuntu_lucid.xml</include>
 	<include>pm-centos_5_6.xml</include>
 	<include>pm-ubuntu_precise.xml</include>
-	<include>pm-centos_6.xml</include> 
+	<include>pm-centos_6.xml</include>
 	<include>pm-centos_6_1.xml</include>
 	<include>pm-centos_6_2.xml</include>
 	<include>pm-centos_5_7.xml</include>
-	
+
 	<!-- Default Entry for IzPack packaging -->
 	<distro>
 		<id>izpack</id>
@@ -31,7 +31,7 @@
 		<defaultDependencyLine/>
 		<defaultJarPath>libs</defaultJarPath>
 		<defaultJNIPath>libs</defaultJNIPath>
-		
+
 		<!-- IzPack has no packages. :) -->
 		<noPackages/>
 	</distro>
