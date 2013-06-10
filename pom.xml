@@ -3,20 +3,20 @@
 
 	<groupId>de.tarent.maven.plugins</groupId>
 
-	<artifactId>maven-pkg-plugin</artifactId>
+	<artifactId>pkg-maven-plugin</artifactId>
 
 	<packaging>maven-plugin</packaging>
 
-	<version>4.0.12-SNAPSHOT</version>
+	<version>5.0.0-SNAPSHOT</version>
 
 	<name>Maven Packaging Plugin</name>
 
 	<description>Plugin to package a Maven project for different GNU/Linux distributions and IzPack.</description>
 
-	<url>http://mvn-pkg-plugin.evolvis.org/</url>
+	<url>https://github.com/tarent/pkg-maven-plugin</url>
 	<issueManagement>
-		<system>Evolvis</system>
-		<url>https://evolvis.org/tracker/?group_id=30</url>
+		<system>Github</system>
+		<url>https://github.com/tarent/pkg-maven-plugin/issues</url>
 	</issueManagement>
 	<inceptionYear>2006</inceptionYear>
 	
@@ -33,8 +33,8 @@
 
 	<!-- Source Code Management -->
 	<scm>
-		<developerConnection>scm:svn:svn+ssh://maven@scm.evolvis.org/svnroot/mvn-pkg-plugin/tags/maven-pkg-plugin-4.0</developerConnection>
-		<url>https://evolvis.org/plugins/scmsvn/viewcvs.php/trunk/tags/maven-pkg-plugin-4.0?root=mvn-pkg-plugin</url>
+		<developerConnection>scm:git:git://github.com/tarent/pkg-maven-plugin.git</developerConnection>
+		<url>https://github.com/tarent/pkg-maven-plugin</url>
 	</scm>
 
 	<build>
@@ -277,6 +277,18 @@
 
 	<developers>
 		<developer>
+			<id>woglinde</id>
+			<name>Henning Heinold</name>
+			<email>h.heinold@tarent.de</email>
+			<organization>tarent GmbH</organization>
+			<organizationUrl>http://www.tarent.de/</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		
+		<developer>
 			<id>fkoest</id>
 			<name>Fabian Koester</name>
 			<email>f.koester@tarent.de</email>
@@ -311,5 +323,6 @@
 			</roles>
 			<timezone>+1</timezone>
 		</developer>
+
 	</developers>
 </project>

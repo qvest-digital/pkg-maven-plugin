@@ -140,13 +140,13 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 
 	/**
 	 * This method mocks the packaging environment. It loads an external pom,
-	 * initialites the mvn-pkg-plugin and sets enough information for basic
+	 * initialites the pkg-maven-plugin and sets enough information for basic
 	 * tests to succeed. It can then be manipulated to achieve more complex
 	 * testing.
 	 * 
 	 * @param pom
 	 *            An external pom file containing at least the plugin section
-	 *            refferring to mvn-pkg-plugin. The file should be tored under
+	 *            refferring to pkg-maven-plugin. The file should be tored under
 	 *            src/test/resources/dummyproject/
 	 * @return
 	 * @throws Exception
@@ -165,7 +165,7 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		// file
 		packagingPlugin.project = new PkgProjectStub(pom);
 
-		// Parameters that are not part of the mvn-pkg-plugin section are
+		// Parameters that are not part of the pkg-maven-plugin section are
 		// somehow loaded into the project
 		// TODO: Find why this problem exists and/or a more elegant way to do
 		// this

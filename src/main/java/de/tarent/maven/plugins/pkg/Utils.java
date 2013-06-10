@@ -1176,7 +1176,7 @@ public final class Utils {
 
 				File extractedFile;
 				try {
-					extractedFile = File.createTempFile("mvn-pkg-plugin",
+					extractedFile = File.createTempFile("pkg-maven-plugin",
 							"temp", tempDir);
 				} catch (IOException ex) {
 					throw new MojoExecutionException(

@@ -142,7 +142,7 @@ public class PackageMap {
 	 * variants are "ipk", "deb" and "izpack".
 	 * 
 	 * <p>
-	 * <a href="http://mvn-pkg-plugin.evolvis.org">Implement rpm and make some
+	 * <a href="https://github.com/tarent/pkg-maven-plugin">Implement rpm and make some
 	 * people happy!</a>
 	 * </p>
 	 * 

@@ -76,7 +76,7 @@ public class DebianSigner {
 	 */
 	protected static String rfc2822DateCmd = "date";
 
-	protected static final String AUTOMATICGENERATIONDISCLAIMER = "Package automatically generated with mvn-pkg-plugin. "
+	protected static final String AUTOMATICGENERATIONDISCLAIMER = "Package automatically generated with pkg-maven-plugin. "
 			+ "No changes were provided when packaging.";
 
 	protected TargetConfiguration distroConfiguration;
