@@ -14,12 +14,15 @@
 	<include>pm-ubuntu_jaunty.xml</include>
 	<include>pm-ubuntu_karmic.xml</include>
 	<include>pm-ubuntu_lucid.xml</include>
-	<include>pm-centos_5_6.xml</include>
 	<include>pm-ubuntu_precise.xml</include>
+
+	<include>pm-centos_5_6.xml</include>
+	<include>pm-centos_5_7.xml</include>
+
 	<include>pm-centos_6.xml</include>
 	<include>pm-centos_6_1.xml</include>
 	<include>pm-centos_6_2.xml</include>
-	<include>pm-centos_5_7.xml</include>
+	<include>pm-centos_6_4.xml</include>
 
 	<!-- Default Entry for IzPack packaging -->
 	<distro>
