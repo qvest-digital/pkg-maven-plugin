@@ -34,7 +34,7 @@
 	<!-- Source Code Management -->
 	<scm>
 		<connection>scm:git:git@github.com:tarent/pkg-maven-plugin.git</connection>
-		<developerConnection>scm:git:git@github.com:tarent/pkg-maven-plugin.git</developerConnection>
+		<developerConnection>scm:git:git://github.com/tarent/pkg-maven-plugin.git</developerConnection>
 		<url>git@github.com:tarent/pkg-maven-plugin.git</url>
 	</scm>
 
