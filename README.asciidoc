@@ -11,8 +11,8 @@ One of the goals of this plugin was the clean handling of maven dependencies. Fo
 Quick Start Guide
 -----------------
 
-This quick start guide covers the 4.X Release of the PKG-MVN-Plugin.
- 
+This quick start guide covers the 4.X maven-pkg-plugin and 5.X pkg-maven-plugin.
+
 Setting up the Repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -43,14 +43,14 @@ pkg:pkg::
 pkg:upload::
     The resulting packages are copied/uploaded to another location (i.e.
     scpexe://, ftp://, [../../../ file://], and apt repositories among
-    others)   
+    others)
 
 Sample Configuration
 ~~~~~~~~~~~~~~~~~~~~
 
-This configuration creates a package for Ubuntu Lucid. This package will 
+This configuration creates a package for Ubuntu Lucid. This package will
 be part of the section "devel", and will be provided with a starter script
-that will execute the mainClass when called. For a complete reference of 
+that will execute the mainClass when called. For a complete reference of
 all possible parameters, please consult the User Manual.
 
 [source,xml]
@@ -61,12 +61,16 @@ all possible parameters, please consult the User Manual.
     <plugin>
         <groupId>de.tarent.maven.plugins</groupId>
         <artifactId>maven-pkg-plugin</artifactId>
-        <version>4.0.3</version>
- 
+        <version>4.0.11</version>
+        <!-- 5.x Release
+        <artifactId>pkg-maven-plugin</artifactId>
+        <version>5.0.1</version>
+        -->
+
         <configuration>
- 
+
             <target>desktop_deb</target>
- 
+
             <targetConfigurations>
                 <targetConfiguration>
                     <target>desktop_deb</target>
@@ -80,16 +84,16 @@ all possible parameters, please consult the User Manual.
                     <mainClass>org.test.project.MainClass</mainClass>
                     <section>devel</section>
                     <maintainer>Maintainer Name Jr.</maintainer>
- 
+
                     <!-- Following sections are not mandatory -->
- 
+
                     <revision>r0</revision>
- 
+
                     <manualDependencies>
                         <string>kdm</string>
                         [...]
                     </manualDependencies>
- 
+
                     <sysconfFiles>
                         <sysconfFile>
                             <from>dummy.properties</from>
@@ -98,7 +102,8 @@ all possible parameters, please consult the User Manual.
                         </sysconfFile>
                         [...]
                     </sysconfFiles>
- 
+
+                    <-- maven wagon is used internally -->
                     <uploadParameters>
                         <urls>
                             <url>scpexe://targetuploadserver/targetdir</url>
@@ -117,4 +122,4 @@ all possible parameters, please consult the User Manual.
 ----
 
 
-// vim: set syntax=asciidoc:  
+// vim: set syntax=asciidoc:

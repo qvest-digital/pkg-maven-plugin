@@ -31,8 +31,8 @@
 			</plugin>
 			<plugin>
 				<groupId>de.tarent.maven.plugins</groupId>
-				<artifactId>maven-pkg-plugin</artifactId>
-				<version>4.0</version>
+				<artifactId>pkg-maven-plugin</artifactId>
+				<version>5.0.0</version>
 				<configuration>
 					<targetConfigurations>
 						<targetConfiguration>

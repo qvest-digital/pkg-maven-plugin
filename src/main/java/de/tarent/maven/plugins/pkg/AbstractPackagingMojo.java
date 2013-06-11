@@ -50,7 +50,7 @@
 
 /* $Id: AbstractPackagingMojo.java,v 1.16 2007/08/07 11:29:59 robert Exp $
  *
- * maven-pkg-plugin, Packaging plugin for Maven2 
+ * pkg-maven-plugin, Packaging plugin for Maven2 
  * Copyright (C) 2007 tarent GmbH
  *
  * This program is free software; you can redistribute it and/or
@@ -583,7 +583,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 			}
 		}
 		getLog().info(
-				"Maven-pkg-plugin goal succesfully executed for "
+				"pkg-maven-plugin goal succesfully executed for "
 						+ finishedTargets.size() + " target(s).");
 		cleanUp();
 	}
