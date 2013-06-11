@@ -19,11 +19,11 @@
 		<url>https://github.com/tarent/pkg-maven-plugin/issues</url>
 	</issueManagement>
 	<inceptionYear>2006</inceptionYear>
-	
+
 	<prerequisites>
 		<maven>2.2</maven>
 	</prerequisites>
-	
+
 	<properties>
 		<maven.version>2.2.1</maven.version>
 		<commons-io.version>2.0.1</commons-io.version>
@@ -82,7 +82,7 @@
 					<doUpdate>true</doUpdate>
 				</configuration>
 			</plugin>
-			<!-- 
+			<!--
 			<plugin>
 				<groupId>de.tarent.maven.plugins</groupId>
 				<artifactId>mvn-gforge-plugin</artifactId>
@@ -97,7 +97,7 @@
 					<gForgeProject>mvn-pkg-plugin</gForgeProject>
 				</configuration>
 			</plugin>
-			 -->			
+			 -->
 		</plugins>
 	</build>
 
@@ -288,7 +288,7 @@
 			</roles>
 			<timezone>+1</timezone>
 		</developer>
-		
+
 		<developer>
 			<id>fkoest</id>
 			<name>Fabian Koester</name>
