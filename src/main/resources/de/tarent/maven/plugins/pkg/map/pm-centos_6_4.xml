@@ -17,7 +17,7 @@
 
 		<defaultJNIPath>/usr/lib/jni:/usr/lib</defaultJNIPath>
 
-		<defaultDependencyLine>java-1.7.0-openjdk</defaultDependencyLine>
+		<defaultDependencyLine>jpackage-utils</defaultDependencyLine>
 	</distro>
 
 </package-maps>
