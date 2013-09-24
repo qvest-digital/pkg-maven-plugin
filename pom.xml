@@ -7,7 +7,7 @@
 
 	<packaging>maven-plugin</packaging>
 
-	<version>5.0.3-SNAPSHOT</version>
+	<version>5.0.3</version>
 
 	<name>Maven Packaging Plugin</name>
 
