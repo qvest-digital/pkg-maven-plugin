@@ -64,7 +64,7 @@ all possible parameters, please consult the User Manual.
         <version>4.0.11</version>
         <!-- 5.x Release
         <artifactId>pkg-maven-plugin</artifactId>
-        <version>5.0.2</version>
+        <version>5.0.4</version>
         -->
 
         <configuration>
