@@ -938,6 +938,13 @@ public class TargetConfiguration {
 	@MergeMe(defaultString = "default")
 	private String artifactInclusion;
 
+    /**
+     * Denotes whether the dependencies (i.e. external Jars) for the package
+     * should be added to the classpath line in the wrapper script.
+     */
+    @MergeMe(defaultBoolean = false)
+    private Boolean ignoreDependenciesInClasspath;
+	
 	public TargetConfiguration() {
 		// Intentionally empty.
 	}
@@ -1689,5 +1696,13 @@ public class TargetConfiguration {
 	public boolean isBundleDependencyArtifacts() {
 		return bundleDependencyArtifacts;
 	}
+
+    public Boolean isIgnoreDependenciesInClasspath() {
+        return ignoreDependenciesInClasspath;
+    }
+
+    public void setIgnoreDependenciesInClasspath(Boolean ignoreDependenciesInClasspath) {
+        this.ignoreDependenciesInClasspath = ignoreDependenciesInClasspath;
+    }
 
 }
