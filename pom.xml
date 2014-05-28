@@ -1,84 +1,85 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>de.tarent.maven.plugins</groupId>
-	<artifactId>pkg-maven-plugin</artifactId>
-	<version>5.1.5-SNAPSHOT</version>
-	<packaging>maven-plugin</packaging>
+    <groupId>de.tarent.maven.plugins</groupId>
+    <artifactId>pkg-maven-plugin</artifactId>
+    <version>5.1.5-SNAPSHOT</version>
+    <packaging>maven-plugin</packaging>
 
-	<name>Maven Packaging Plugin</name>
-	<description>Plugin to package a Maven project for different GNU/Linux distributions and IzPack.</description>
-	<url>https://github.com/tarent/pkg-maven-plugin</url>
-	<issueManagement>
-		<system>Github</system>
-		<url>https://github.com/tarent/pkg-maven-plugin/issues</url>
-	</issueManagement>
-	<inceptionYear>2006</inceptionYear>
+    <name>Maven Packaging Plugin</name>
+    <description>Plugin to package a Maven project for different GNU/Linux distributions and IzPack.</description>
+    <url>https://github.com/tarent/pkg-maven-plugin</url>
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/tarent/pkg-maven-plugin/issues</url>
+    </issueManagement>
+    <inceptionYear>2006</inceptionYear>
 
-	<prerequisites>
-		<maven>2.2</maven>
-	</prerequisites>
+    <prerequisites>
+        <maven>2.2</maven>
+    </prerequisites>
 
-	<properties>
-		<maven.version>2.2.1</maven.version>
-		<commons-io.version>2.0.1</commons-io.version>
-		<commons-lang.version>2.6</commons-lang.version>
-		<plexus-archiver.version>2.0.1</plexus-archiver.version>
-	</properties>
+    <properties>
+        <maven.version>2.2.1</maven.version>
+        <commons-io.version>2.0.1</commons-io.version>
+        <commons-lang.version>2.6</commons-lang.version>
+        <plexus-archiver.version>2.0.1</plexus-archiver.version>
+    </properties>
 
-	<!-- Source Code Management -->
-	<scm>
-		<connection>scm:git:git@github.com:tarent/pkg-maven-plugin.git</connection>
-		<developerConnection>scm:git:git@github.com:tarent/pkg-maven-plugin.git</developerConnection>
-		<url>git@github.com:tarent/pkg-maven-plugin.git</url>
-	  <tag>HEAD</tag>
-  </scm>
+    <!-- Source Code Management -->
+    <scm>
+        <connection>scm:git:git@github.com:tarent/pkg-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:tarent/pkg-maven-plugin.git</developerConnection>
+        <url>git@github.com:tarent/pkg-maven-plugin.git</url>
+        <tag>HEAD</tag>
+    </scm>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					<encoding>utf-8</encoding>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<version>2.5</version>
-			</plugin>
-			<!--
-			<plugin>
-				<groupId>de.tarent.maven.plugins</groupId>
-				<artifactId>mvn-gforge-plugin</artifactId>
-				<configuration>
-					<gForgeAPIPort_address>
-						http://evolvis.org/soap/index.php</gForgeAPIPort_address>
-					<fileTypes>
-						<type>javadoc</type>
-						<type>sources</type>
-					</fileTypes>
-					<processorType>any</processorType>
-					<gForgeProject>mvn-pkg-plugin</gForgeProject>
-				</configuration>
-			</plugin>
-			 -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>utf-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5</version>
+            </plugin>
+            <!--
+                <plugin>
+                <groupId>de.tarent.maven.plugins</groupId>
+                <artifactId>mvn-gforge-plugin</artifactId>
+                <configuration>
+                <gForgeAPIPort_address>
+                http://evolvis.org/soap/index.php</gForgeAPIPort_address>
+                <fileTypes>
+                <type>javadoc</type>
+                <type>sources</type>
+                </fileTypes>
+                <processorType>any</processorType>
+                <gForgeProject>mvn-pkg-plugin</gForgeProject>
+                </configuration>
+                </plugin>
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -91,233 +92,233 @@
                     </dependency>
                 </dependencies>
             </plugin>
-		</plugins>
-        
-	</build>
+        </plugins>
 
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>1.6</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>dependencies</report>
-							<report>project-team</report>
-							<!--<report>mailing-list</report>-->
-							<!--<report>cim</report>-->
-							<!--<report>issue-tracking</report>-->
-							<!--<report>license</report>-->
-							<!--<report>scm</report>-->
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-changelog-plugin</artifactId>
-				<version>2.2</version>
-			</plugin>
-		</plugins>
-	</reporting>
+    </build>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>evolvis-release-repository</id>
-			<name>evolvis.org release repository</name>
-			<url>http://maven-repo.evolvis.org/releases</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>evolvis-snapshot-repository</id>
-			<name>evolvis.org snapshot repository</name>
-			<url>http://maven-repo.evolvis.org/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>1.6</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>dependencies</report>
+                            <report>project-team</report>
+                            <!--<report>mailing-list</report> -->
+                            <!--<report>cim</report> -->
+                            <!--<report>issue-tracking</report> -->
+                            <!--<report>license</report> -->
+                            <!--<report>scm</report> -->
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-changelog-plugin</artifactId>
+                <version>2.2</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
-	<!-- Repositories -->
-	<repositories>
-		<repository>
-			<id>evolvis-release-repository</id>
-			<name>evolvis.org release repository</name>
-			<url>http://maven-repo.evolvis.org/releases</url>
-		</repository>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>evolvis-release-repository</id>
+            <name>evolvis.org release repository</name>
+            <url>http://maven-repo.evolvis.org/releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>evolvis-snapshot-repository</id>
+            <name>evolvis.org snapshot repository</name>
+            <url>http://maven-repo.evolvis.org/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
 
-		<repository>
-			<id>evolvis-snapshot-repository</id>
-			<name>evolvis.org snapshot repository</name>
-			<url>http://maven-repo.evolvis.org/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
+    <!-- Repositories -->
+    <repositories>
+        <repository>
+            <id>evolvis-release-repository</id>
+            <name>evolvis.org release repository</name>
+            <url>http://maven-repo.evolvis.org/releases</url>
+        </repository>
 
-	<!--
-		BIG FAT WARNING: Maven IGNORES the user setting herein. You MUST
-		provide a proper setting in .m2/settings.xml instead.
-	-->
-	<distributionManagement>
+        <repository>
+            <id>evolvis-snapshot-repository</id>
+            <name>evolvis.org snapshot repository</name>
+            <url>http://maven-repo.evolvis.org/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
-		<repository>
-			<id>evolvis-release-repository</id>
-			<name>evolvis.org release repository</name>
-			<url>scpexe://maven@maven-repo.evolvis.org/var/www/maven_repo/releases</url>
-		</repository>
+    <!--
+        BIG FAT WARNING: Maven IGNORES the user setting herein. You MUST
+        provide a proper setting in .m2/settings.xml instead.
+    -->
+    <distributionManagement>
 
-		<snapshotRepository>
-			<id>evolvis-snapshot-repository</id>
-			<name>evolvis.org snapshot repository</name>
-			<url>scpexe://maven@maven-repo.evolvis.org/var/www/maven_repo/snapshots</url>
-		</snapshotRepository>
+        <repository>
+            <id>evolvis-release-repository</id>
+            <name>evolvis.org release repository</name>
+            <url>scpexe://maven@maven-repo.evolvis.org/var/www/maven_repo/releases</url>
+        </repository>
 
-	</distributionManagement>
+        <snapshotRepository>
+            <id>evolvis-snapshot-repository</id>
+            <name>evolvis.org snapshot repository</name>
+            <url>scpexe://maven@maven-repo.evolvis.org/var/www/maven_repo/snapshots</url>
+        </snapshotRepository>
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
+    </distributionManagement>
 
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-plugin-api</artifactId>
-			<version>${maven.version}</version>
-			<scope>compile</scope>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-project</artifactId>
-			<version>${maven.version}</version>
-			<scope>compile</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>${maven.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>${commons-io.version}</version>
-			<scope>compile</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-project</artifactId>
+            <version>${maven.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>${commons-lang.version}</version>
-			<scope>compile</scope>
-		</dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.codehaus.plexus</groupId>
-			<artifactId>plexus-archiver</artifactId>
-			<version>${plexus-archiver.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons-lang.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.apache.maven.plugin-testing</groupId>
-			<artifactId>maven-plugin-testing-harness</artifactId>
-			<version>1.2</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.twdata.maven</groupId>
-			<artifactId>mojo-executor</artifactId>
-			<version>1.5</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven.wagon</groupId>
-			<artifactId>wagon</artifactId>
-			<version>2.1</version>
-			<type>pom</type>
-			<scope>compile</scope>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-archiver</artifactId>
+            <version>${plexus-archiver.version}</version>
+        </dependency>
 
-	<licenses>
-		<license>
-			<name>GPLv2</name>
-			<url>http://www.gnu.org/copyleft/gpl.html</url>
-			<distribution>repo</distribution>
-		</license>
-		<license>
-			<name>GPLv2 + linking exception</name>
-			<url>http://www.gnu.org/software/classpath/license.html</url>
-			<distribution>repo</distribution>
-			<comments>License of the _Starter class only</comments>
-		</license>
-	</licenses>
+        <dependency>
+            <groupId>org.apache.maven.plugin-testing</groupId>
+            <artifactId>maven-plugin-testing-harness</artifactId>
+            <version>1.2</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.twdata.maven</groupId>
+            <artifactId>mojo-executor</artifactId>
+            <version>1.5</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon</artifactId>
+            <version>2.1</version>
+            <type>pom</type>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
-	<developers>
-		<developer>
-			<id>woglinde</id>
-			<name>Henning Heinold</name>
-			<email>h.heinold@tarent.de</email>
-			<organization>tarent GmbH</organization>
-			<organizationUrl>http://www.tarent.de/</organizationUrl>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
+    <licenses>
+        <license>
+            <name>GPLv2</name>
+            <url>http://www.gnu.org/copyleft/gpl.html</url>
+            <distribution>repo</distribution>
+        </license>
+        <license>
+            <name>GPLv2 + linking exception</name>
+            <url>http://www.gnu.org/software/classpath/license.html</url>
+            <distribution>repo</distribution>
+            <comments>License of the _Starter class only</comments>
+        </license>
+    </licenses>
 
-		<developer>
-			<id>fkoest</id>
-			<name>Fabian Koester</name>
-			<email>f.koester@tarent.de</email>
-			<organization>tarent GmbH</organization>
-			<organizationUrl>http://www.tarent.de/</organizationUrl>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
+    <developers>
+        <developer>
+            <id>woglinde</id>
+            <name>Henning Heinold</name>
+            <email>h.heinold@tarent.de</email>
+            <organization>tarent GmbH</organization>
+            <organizationUrl>http://www.tarent.de/</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
 
-		<developer>
-			<id>rschus</id>
-			<name>Robert Schuster</name>
-			<email>robert.schuster@tarent.de</email>
-			<organization>tarent GmbH</organization>
-			<organizationUrl>http://www.tarent.de/</organizationUrl>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
+        <developer>
+            <id>fkoest</id>
+            <name>Fabian Koester</name>
+            <email>f.koester@tarent.de</email>
+            <organization>tarent GmbH</organization>
+            <organizationUrl>http://www.tarent.de/</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
 
-		<developer>
-			<id>plafue</id>
-			<name>Pedro Lafuente</name>
-			<email>pedro.lafuente@tarent.de</email>
-			<organization>tarent GmbH</organization>
-			<organizationUrl>http://www.tarent.de/</organizationUrl>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
+        <developer>
+            <id>rschus</id>
+            <name>Robert Schuster</name>
+            <email>robert.schuster@tarent.de</email>
+            <organization>tarent GmbH</organization>
+            <organizationUrl>http://www.tarent.de/</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
 
-	</developers>
+        <developer>
+            <id>plafue</id>
+            <name>Pedro Lafuente</name>
+            <email>pedro.lafuente@tarent.de</email>
+            <organization>tarent GmbH</organization>
+            <organizationUrl>http://www.tarent.de/</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+
+    </developers>
 </project>
