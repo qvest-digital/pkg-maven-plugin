@@ -659,7 +659,7 @@ public class SpecFileGenerator {
 			for (AuxFile f : files) {
 				if (f.getOctalPermission() >= 0) {
 					w.print("%attr(");
-					w.print(f.getOctalPermission());
+					w.print("-");
 					w.print(",");
 					w.print(f.getOwner());
 					w.print(",");
