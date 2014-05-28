@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
@@ -199,6 +200,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * 
 	 */
 	@Test
+	@Ignore
 	public void createIpkForOpenmokoWithoutDependenciesContainingJar()
 			throws Exception {
 
@@ -282,6 +284,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * @throws Exception
 	 */
 	@Test
+	@Ignore
 	public void createIpkForOpenmokoWithManualDependenciesContainingJar()
 			throws Exception {
 		packagingPlugin = mockPackagingEnvironment(IPKPOM,
@@ -425,6 +428,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * @throws Exception
 	 */
 	@Test
+	@Ignore
 	public void createIpkWithAuxFileDependenciesContainingJar()
 			throws Exception, MojoExecutionException {
 		packagingPlugin = mockPackagingEnvironment(IPKPOM,
@@ -443,6 +447,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * @throws Exception
 	 */
 	@Test
+	@Ignore
 	public void createSignedDEB() throws Exception, MojoExecutionException {
 		CLEANTARGETDIRECTORYAFTERRUN = false;
 		packagingPlugin = mockPackagingEnvironment(DEBPOM,
@@ -536,6 +541,7 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 	 * @throws Exception
 	 */
 	@Test
+	@Ignore
 	public void executingMultipleSignedTargetsWithoutDependenciesContainingJar()
 			throws Exception, MojoExecutionException {
 		packagingPlugin = mockPackagingEnvironment(MIXEDPOM,
