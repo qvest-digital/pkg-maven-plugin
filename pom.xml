@@ -2,17 +2,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.tarent.maven.plugins</groupId>
-
 	<artifactId>pkg-maven-plugin</artifactId>
-
+	<version>5.1.5-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
-	<version>5.1.5-SNAPSHOT</version>
-
 	<name>Maven Packaging Plugin</name>
-
 	<description>Plugin to package a Maven project for different GNU/Linux distributions and IzPack.</description>
-
 	<url>https://github.com/tarent/pkg-maven-plugin</url>
 	<issueManagement>
 		<system>Github</system>
@@ -84,14 +79,20 @@
 				</configuration>
 			</plugin>
 			 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.wagon</groupId>
+                        <artifactId>wagon-ssh-external</artifactId>
+                        <version>2.6</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
 		</plugins>
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh</artifactId>
-				<version>1.0</version>
-			</extension>
-		</extensions>
+        
 	</build>
 
 	<reporting>
