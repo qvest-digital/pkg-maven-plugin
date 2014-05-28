@@ -1354,7 +1354,9 @@ public class Helper {
 
 		};
 
-		packageMap.iterateDependencyArtifacts(l, dependencies, v, true);
+        if (!targetConfiguration.isIgnoreDependenciesInClasspath()) {
+            packageMap.iterateDependencyArtifacts(l, dependencies, v, true);
+        }
 
 		// Add the custom jar files to the classpath
 		for (Iterator<JarFile> ite = targetConfiguration.getJarFiles()
