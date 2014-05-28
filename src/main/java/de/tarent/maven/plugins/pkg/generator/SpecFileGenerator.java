@@ -657,21 +657,21 @@ public class SpecFileGenerator {
 			w.println("%defattr(755,root,root)");
 
 			for (AuxFile f : files) {
-				if (f.getOctalPermission() >= 0) {
-					w.print("%attr(");
-					w.print("-");
-					w.print(",");
-					w.print(f.getOwner());
-					w.print(",");
-					w.print(f.getGroup());
-					w.print(") ");
-				} else {
-					if (logger != null) {
-						logger.debug("No attributes found for " + f.getTo());
-					}
-				}
-				w.println(f.getTo());
-			}
+                w.print("%attr(");
+
+                if (f.getOctalPermission() > 0) {
+                    w.print(f.getOctalPermission());
+                } else {
+                    w.print("-");
+                }
+
+                w.print(",");
+                w.print(f.getOwner());
+                w.print(",");
+                w.print(f.getGroup());
+                w.print(") ");
+                w.println(f.getTo());
+            }
 
 		} else {
 			if (logger != null) {
