@@ -1354,7 +1354,7 @@ public class Helper {
 
 		};
 
-        if (!targetConfiguration.isIgnoreDependenciesInClasspath()) {
+        if (!targetConfiguration.isIgnoreDependencies()) {
             packageMap.iterateDependencyArtifacts(l, dependencies, v, true);
         }
 
@@ -1631,7 +1631,9 @@ public class Helper {
 			}
 		};
 
-		packageMap.iterateDependencyArtifacts(l, resolvedDependencies, v, true);
+		if (!targetConfiguration.isIgnoreDependencies()) {
+		    packageMap.iterateDependencyArtifacts(l, resolvedDependencies, v, true);
+		}
 
 		return Utils
 				.joinDependencyLines(line.toString(), manualDeps.toString());
