@@ -943,7 +943,7 @@ public class TargetConfiguration {
      * should be added to the classpath line in the wrapper script.
      */
     @MergeMe(defaultBoolean = false)
-    private Boolean ignoreDependenciesInClasspath;
+    private Boolean ignoreDependencies;
 	
 	public TargetConfiguration() {
 		// Intentionally empty.
@@ -1697,12 +1697,12 @@ public class TargetConfiguration {
 		return bundleDependencyArtifacts;
 	}
 
-    public Boolean isIgnoreDependenciesInClasspath() {
-        return ignoreDependenciesInClasspath;
+    public Boolean isIgnoreDependencies() {
+        return ignoreDependencies;
     }
 
-    public void setIgnoreDependenciesInClasspath(Boolean ignoreDependenciesInClasspath) {
-        this.ignoreDependenciesInClasspath = ignoreDependenciesInClasspath;
+    public void setIgnoreDependencies(Boolean ignoreDependenciesInClasspath) {
+        this.ignoreDependencies = ignoreDependenciesInClasspath;
     }
 
 }

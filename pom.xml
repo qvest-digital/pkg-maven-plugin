@@ -3,7 +3,7 @@
 
     <groupId>de.tarent.maven.plugins</groupId>
     <artifactId>pkg-maven-plugin</artifactId>
-    <version>5.1.6-SNAPSHOT</version>
+    <version>5.2.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Maven Packaging Plugin</name>
