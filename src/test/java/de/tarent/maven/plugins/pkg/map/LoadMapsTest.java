@@ -15,7 +15,7 @@ public class LoadMapsTest extends TestCase {
 	 * Add the list of distros supported by the plugin here to ensure that all
 	 * the configuration files are parsed during the test step.
 	 */
-	private static final String[] distros = { "debian_etch", "debian_lenny",
+	private static final String[] distros = { "debian_etch", "debian_lenny", "debian_wheezy",
 			"maemo_bora", "maemo_chinook", "openmoko_2007.11", "ubuntu_gutsy",
 			"ubuntu_hardy", "ubuntu_intrepid", "ubuntu_jaunty",
 			"ubuntu_karmic", "ubuntu_lucid", "ubuntu_precise", "centos_5_6",
