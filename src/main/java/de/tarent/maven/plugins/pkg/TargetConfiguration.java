@@ -285,6 +285,12 @@ public class TargetConfiguration {
 	private String defaultDistro;
 
 	/**
+	 * Make the defaultDependencyLine configurable.
+	 */
+	@MergeMe(defaultValueIsNull = true)
+	private String defaultDependencyLine;
+
+	/**
 	 * Denotes the name of the gcj-dbtool executable. This allows the use of
 	 * e.g. "gcj-dbtool-4.2" or "gcj-dbtool-4.3" depending on the targeted
 	 * distribution.
@@ -1705,4 +1711,11 @@ public class TargetConfiguration {
         this.ignoreDependencies = ignoreDependenciesInClasspath;
     }
 
+    public String getDefaultDependencyLine() {
+        return defaultDependencyLine;
+    }
+
+    public void setDefaultDependencyLine(String defaultDependencyLine) {
+        this.defaultDependencyLine = defaultDependencyLine;
+    }
 }

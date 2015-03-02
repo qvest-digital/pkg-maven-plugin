@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.maven.plugins.test</groupId>
+    <artifactId>DummyProject</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    <name>Test pkg-maven-plugin</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>utf-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>de.tarent.maven.plugins</groupId>
+                <artifactId>pkg-maven-plugin</artifactId>
+                <version>5.0.0</version>
+                <configuration>
+                    <targetConfigurations>
+                        <targetConfiguration>
+                            <target>override</target>
+                            <defaultDependencyLine>
+                                openjdk-7-jre-headless</defaultDependencyLine>
+                            <distros>
+                                <distro>debian_wheezy</distro>
+                            </distros>
+                        </targetConfiguration>
+                        <targetConfiguration>
+                            <target>not_override</target>
+                            <distros>
+                                <distro>debian_wheezy</distro>
+                            </distros>
+                        </targetConfiguration>
+                    </targetConfigurations>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
