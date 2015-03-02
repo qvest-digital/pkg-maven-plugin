@@ -7,6 +7,7 @@
 
 	<include>pm-debian_etch.xml</include>
 	<include>pm-debian_lenny.xml</include>
+	<include>pm-debian_wheezy.xml</include>
 
 	<include>pm-ubuntu_gutsy.xml</include>
 	<include>pm-ubuntu_hardy.xml</include>
