@@ -62,6 +62,10 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 	 */
 	protected static final String INCLUSIONSTRATEGIESPOM = "inclusionstrategiespom.xml";
 	/**
+         * Name of the pom used for artifact inclusion strategy packaging tests
+         */
+        protected static final String DEFAULTDEPENDENCYLINE = "overridefaultdependencyline.xml";
+	/**
 	 * This is the key fingerprint for Test User MVNPKGPLUGIN
 	 * <no@address.com></br> It is needed for test purposes
 	 */

@@ -1564,7 +1564,7 @@ public class Helper {
 	 */
 	public final String createDependencyLine(Set<Artifact> resolvedDependencies)
 			throws MojoExecutionException {
-		String defaults = packageMap.getDefaultDependencyLine();
+		String defaults;
 		StringBuffer manualDeps = new StringBuffer();
 		Iterator<String> ite = targetConfiguration.getManualDependencies()
 				.iterator();
@@ -1591,6 +1591,20 @@ public class Helper {
 		if (manualDeps.length() >= 2) {
 			manualDeps.delete(manualDeps.length() - 2, manualDeps.length());
 		}
+
+		/*
+		 * The user can override the defaultDependencyLine from the package-map.
+		 * This is helpful for debian wheezy, when the app should use
+		 * openjdk-7-jre-headless instead of default-jre.
+		 */
+
+		if (targetConfiguration.getDefaultDependencyLine() != null &&
+		        !targetConfiguration.getDefaultDependencyLine().isEmpty()) {
+		    defaults = targetConfiguration.getDefaultDependencyLine();
+		} else {
+		    defaults = packageMap.getDefaultDependencyLine();
+		}
+
 		// If all dependencies should be bundled the package will only
 		// need the default Java dependencies of the system and the remainder
 		// of the method can be skipped.
