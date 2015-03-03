@@ -89,6 +89,13 @@ all possible parameters, please consult the User Manual.
 
                     <revision>r0</revision>
 
+                    <!-- Override the defaultDependencyLine from the distribution package maps.
+                         Be careful when using multiple distributions, because it will be
+                         overwritten for all distributions.
+                     -->
+                    <defaultDependencyLine>
+                                openjdk-7-jre-headless</defaultDependencyLine>
+
                     <manualDependencies>
                         <string>kdm</string>
                         [...]
