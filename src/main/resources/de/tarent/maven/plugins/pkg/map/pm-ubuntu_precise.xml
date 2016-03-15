@@ -129,6 +129,7 @@
             <!-- Apache Commons -->
             <entry>
                 <artifactSpec>commons-configuration:commons-configuration</artifactSpec>
+                <versionSpec>[1.7]</versionSpec>
                 <dependencyLine>libcommons-configuration-java</dependencyLine>
                 <jars>
                     <jar>commons-configuration.jar</jar>
@@ -137,6 +138,7 @@
 
             <entry>
                 <artifactSpec>commons-codec:commons-codec</artifactSpec>
+                <versionSpec>[1.5]</versionSpec>
                 <dependencyLine>libcommons-codec-java</dependencyLine>
                 <jars>
                     <jar>commons-codec.jar</jar>
@@ -292,6 +294,7 @@
 
             <entry>
                 <artifactSpec>org.bouncycastle:bcprov-jdk16</artifactSpec>
+                <versionSpec>[1.46]</versionSpec>
                 <dependencyLine>libbcprov-java</dependencyLine>
                 <jars>
                     <jar>bcprov.jar</jar>
@@ -300,6 +303,7 @@
 
             <entry>
                 <artifactSpec>log4j:log4j</artifactSpec>
+                <versionSpec>[1.2.16]</versionSpec>
                 <dependencyLine>liblog4j1.2-java</dependencyLine>
                 <jars>
                     <jar>log4j-1.2.jar</jar>
@@ -533,16 +537,16 @@
 
             <entry>
                 <artifactSpec>commons-collections:commons-collections</artifactSpec>
-                <versionSpec>[,3.0)</versionSpec>
+                <versionSpec>[2.1.1]</versionSpec>
                 <dependencyLine>libcommons-collections-java</dependencyLine>
                 <jars>
-                    <jar>commons-collections3.jar</jar>
+                    <jar>commons-collections.jar</jar>
                 </jars>
             </entry>
 
             <entry>
                 <artifactSpec>commons-collections:commons-collections</artifactSpec>
-                <versionSpec>[3.0,)</versionSpec>
+                <versionSpec>[3.2.1]</versionSpec>
                 <dependencyLine>libcommons-collections3-java</dependencyLine>
                 <jars>
                     <jar>commons-collections3.jar</jar>
@@ -599,14 +603,6 @@
             </entry>
 
             <entry>
-                <artifactSpec>commons-configuration:commons-configuration</artifactSpec>
-                <dependencyLine>libcommons-configuration-java</dependencyLine>
-                <jars>
-                    <jar>commons-configuration.jar</jar>
-                </jars>
-            </entry>
-
-            <entry>
                 <artifactSpec>commons-lang:commons-lang</artifactSpec>
                 <dependencyLine>libcommons-lang-java</dependencyLine>
                 <jars>
@@ -616,6 +612,7 @@
 
             <entry>
                 <artifactSpec>commons-logging:commons-logging</artifactSpec>
+                <versionSpec>[1.1.1]</versionSpec>
                 <dependencyLine>libcommons-logging-java</dependencyLine>
                 <jars>
                     <jar>commons-logging.jar</jar>
@@ -804,6 +801,7 @@
 
             <entry>
                 <artifactSpec>org.slf4j:slf4j-log4j12</artifactSpec>
+                <versionSpec>[1.6.4]</versionSpec>
                 <dependencyLine>libslf4j-java</dependencyLine>
                 <jars>
                     <jar>slf4j-log4j12.jar</jar>
@@ -812,6 +810,7 @@
 
             <entry>
                 <artifactSpec>org.slf4j:slf4j-api</artifactSpec>
+                <versionSpec>[1.6.4]</versionSpec>
                 <dependencyLine>libslf4j-java</dependencyLine>
                 <jars>
                     <jar>slf4j-api.jar</jar>
@@ -820,6 +819,7 @@
 
             <entry>
                 <artifactSpec>aopalliance:aopalliance</artifactSpec>
+                <versionSpec>[20070526]</versionSpec>
                 <dependencyLine>libaopalliance-java</dependencyLine>
                 <jars>
                     <jar>aopalliance.jar</jar>
@@ -836,6 +836,7 @@
 
             <entry>
                 <artifactSpec>org.aspectj:aspectjrt</artifactSpec>
+                <versionSpec>[1.6.12]</versionSpec>
                 <dependencyLine>aspectj</dependencyLine>
                 <jars>
                     <jar>aspectjrt.jar</jar>
