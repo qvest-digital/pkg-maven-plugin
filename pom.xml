@@ -3,7 +3,7 @@
 
     <groupId>de.tarent.maven.plugins</groupId>
     <artifactId>pkg-maven-plugin</artifactId>
-    <version>5.5.0</version>
+    <version>5.5.1-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Maven Packaging Plugin</name>
@@ -31,7 +31,7 @@
         <connection>scm:git:git@github.com:tarent/pkg-maven-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:tarent/pkg-maven-plugin.git</developerConnection>
         <url>git@github.com:tarent/pkg-maven-plugin.git</url>
-        <tag>pkg-maven-plugin-5.5.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <build>
