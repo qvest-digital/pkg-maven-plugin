@@ -1759,64 +1759,6 @@ public class Helper {
 		}
 	}
 
-	/**
-	 * Creates a copyright file under the DEBIAN directory of the package.</br>
-	 * 
-	 * The approach followed here is simplistic.
-	 * 
-	 * @return
-	 * @throws MojoExecutionException
-	 * @throws IOException
-	 */
-	@SuppressWarnings("unchecked")
-	public long createCopyrightFile() throws MojoExecutionException {
-		File copyright = new File(dstScriptDir, "copyright");
-
-		PrintWriter w = null;
-		Iterator<License> ite = null;
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-
-		try {
-			ite = ((List<License>) apm.getProject().getLicenses()).iterator();
-		} catch (Exception ex) {
-			/*
-			 * If an error occurs, it is most probably because no licences are
-			 * found. If this is the case we just return 0 (file is 0 bytes in
-			 * size)
-			 */
-			return 0;
-		}
-
-		try {
-			FileUtils.forceMkdir(copyright.getParentFile());
-			copyright.createNewFile();
-			w = new PrintWriter(new BufferedWriter(new FileWriter(copyright)));
-			w.println("Maintainer: " + targetConfiguration.getMaintainer());
-			w.println("Date: "
-					+ formatter.format(Calendar.getInstance().getTime()));
-
-			while (ite.hasNext()) {
-				License l = ite.next();
-				w.println("License:" + l.getName());
-				try {
-					w.print(Utils.getTextFromUrl(l.getUrl()));
-				} catch (MalformedURLException ex) {
-					// Nothing to worry about
-				}
-				w.println();
-			}
-		} catch (IOException ex) {
-			throw new MojoExecutionException("Error writing to copyright file",
-					ex);
-		} finally {
-			if (w != null) {
-				w.close();
-			}
-		}
-
-		return copyright.length();
-	}
-
 	public File getBaseBuildDir() {
 		return baseBuildDir;
 	}

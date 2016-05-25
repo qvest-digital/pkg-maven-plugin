@@ -455,12 +455,6 @@ public abstract class AbstractMvnPkgPluginTestCase extends AbstractMojoTestCase 
 		return licenses;
 	}
 
-	protected boolean debContainsCopyrightFile() throws MojoExecutionException,
-			IOException {
-		final Pattern p = Pattern.compile("lines.*copyright");
-		return debContains(p, "--info");
-	}
-
 	protected boolean debIsSigned() throws MojoExecutionException {
 		Utils.exec(new String[] { "ar", "x",
 				returnFilesFoundBasedOnSuffix("deb")[0].getAbsolutePath() },
