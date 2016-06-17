@@ -111,8 +111,6 @@ public class IpkPackager extends Packager {
 
 		byteAmount += ph.copyScripts();
 
-		byteAmount += ph.createCopyrightFile();
-
 		ArtifactInclusionStrategy aiStrategy = workspaceSession
 				.getArtifactInclusionStrategy();
 		ArtifactInclusionStrategy.Result result = aiStrategy

@@ -38,7 +38,6 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 		packagingPlugin.execute();
 		assertTrue(numberOfDEBsIs(1));
 		assertTrue(debContainsMainArtifact());
-		assertTrue(debContainsCopyrightFile());
 		assertFalse(debIsSigned());
 	}
 
@@ -55,7 +54,6 @@ public class MvnPkgPluginPackagingTest extends AbstractMvnPkgPluginTestCase {
 		packagingPlugin.execute();
 		assertTrue(numberOfDEBsIs(2));
 		assertTrue(debContainsMainArtifact());
-		assertTrue(debContainsCopyrightFile());
 		assertFalse(debIsSigned());
 	}
 
