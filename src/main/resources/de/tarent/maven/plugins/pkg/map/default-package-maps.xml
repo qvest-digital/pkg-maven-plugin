@@ -16,6 +16,7 @@
 	<include>pm-ubuntu_karmic.xml</include>
 	<include>pm-ubuntu_lucid.xml</include>
 	<include>pm-ubuntu_precise.xml</include>
+	<include>pm-ubuntu_trusty.xml</include>
 
 	<include>pm-centos_5_6.xml</include>
 	<include>pm-centos_5_7.xml</include>
