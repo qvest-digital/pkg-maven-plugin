@@ -18,7 +18,7 @@ public class LoadMapsTest extends TestCase {
 	private static final String[] distros = { "debian_etch", "debian_lenny", "debian_wheezy",
 			"maemo_bora", "maemo_chinook", "openmoko_2007.11", "ubuntu_gutsy",
 			"ubuntu_hardy", "ubuntu_intrepid", "ubuntu_jaunty",
-			"ubuntu_karmic", "ubuntu_lucid", "ubuntu_precise", "centos_5_6",
+			"ubuntu_karmic", "ubuntu_lucid", "ubuntu_precise", "ubuntu_trusty", "centos_5_6",
 			"centos_5_7", "centos_6", "centos_6_1", "centos_6_2", };
 
 	/**
