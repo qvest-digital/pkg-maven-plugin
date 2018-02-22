@@ -51,6 +51,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -73,7 +74,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.artifact.InvalidDependencyVersionException;
 import org.codehaus.plexus.archiver.ArchiveFile;
-import org.codehaus.plexus.archiver.ArchiveFile.Entry;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
@@ -1156,9 +1156,9 @@ public final class Utils {
 		final int BUFFER = 2048;
 		BufferedOutputStream dest = null;
 		BufferedInputStream is = null;
-		Entry entry;
+		ArchiveEntry entry;
 
-		Enumeration<? extends Entry> e;
+		Enumeration<? extends ArchiveEntry> e;
 		try {
 			e = archive.getEntries();
 		} catch (IOException ex) {

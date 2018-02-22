@@ -10,6 +10,16 @@ One of the goals of this plugin was the clean handling of maven dependencies. Fo
 
 This quick start guide covers the 4.X maven-pkg-plugin and 5.X pkg-maven-plugin.
 
+=== Use the Maven wrapper
+
+==== Create & Update
+
+    mvn -N io.takari:maven:wrapper -Dmaven=<version>
+
+==== Use
+
+    Instead of using e.g. `mvn clean install` you can use `./mvnw clean install`
+
 === Setting up the Repository
 
 To use the plugin, you have to configure the evolvis maven plugin repository in your '~/.m2/settings.xml' or the 'pom.xml' of your project.
