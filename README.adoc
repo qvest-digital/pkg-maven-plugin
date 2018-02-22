@@ -1,20 +1,16 @@
-PKG-MVN-Plugin
-==============
+= PKG-MVN-Plugin
 
-Description
------------
+== Description
 
 The PKG-MVN-Plugin provides a maven plugin for packaging maven projects to different targets. It supports on-the-fly generation of.deb, .rpm and .ipkg packages as well as the generation of IzPack-installer.
 
 One of the goals of this plugin was the clean handling of maven dependencies. For the distribution specific packaging targets, the plugin is able to translate the maven dependencies to platform specific (e.g. Debian) dependencies.
 
-Quick Start Guide
------------------
+== Quick Start Guide
 
 This quick start guide covers the 4.X maven-pkg-plugin and 5.X pkg-maven-plugin.
 
-Setting up the Repository
-~~~~~~~~~~~~~~~~~~~~~~~~~
+=== Setting up the Repository
 
 To use the plugin, you have to configure the evolvis maven plugin repository in your '~/.m2/settings.xml' or the 'pom.xml' of your project.
 
@@ -32,8 +28,7 @@ To use the plugin, you have to configure the evolvis maven plugin repository in 
 </pluginRepositories>
 ----
 
-Available Goals
-~~~~~~~~~~~~~~~
+=== Available Goals
 
 After configuring the plugin provides the following goals:
 
@@ -45,8 +40,7 @@ pkg:upload::
     scpexe://, ftp://, [../../../ file://], and apt repositories among
     others)
 
-Sample Configuration
-~~~~~~~~~~~~~~~~~~~~
+=== Sample Configuration
 
 This configuration creates a package for Ubuntu Lucid. This package will
 be part of the section "devel", and will be provided with a starter script
@@ -127,6 +121,3 @@ all possible parameters, please consult the User Manual.
 </plugins>
 [...]
 ----
-
-
-// vim: set syntax=asciidoc:
