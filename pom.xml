@@ -113,15 +113,13 @@
 
     <distributionManagement>
         <repository>
-            <id>evolvis-release-repository</id>
-            <name>evolvis.org release repository</name>
-            <url>scpexe://maven@maven-repo.evolvis.org/var/www/maven_repo/releases</url>
+            <id>tarent-maven-releases</id>
+            <url>https://repo-bn-01.lan.tarent.de/repository/maven-releases/</url>
         </repository>
 
         <snapshotRepository>
-            <id>evolvis-snapshot-repository</id>
-            <name>evolvis.org snapshot repository</name>
-            <url>scpexe://maven@maven-repo.evolvis.org/var/www/maven_repo/snapshots</url>
+            <id>tarent-maven-snapshots</id>
+            <url>https://repo-bn-01.lan.tarent.de/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
