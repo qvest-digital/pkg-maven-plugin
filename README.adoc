@@ -22,15 +22,14 @@ This quick start guide covers the 4.X maven-pkg-plugin and 5.X pkg-maven-plugin.
 
 === Setting up the Repository
 
-To use the plugin, you have to configure the evolvis maven plugin repository in your '~/.m2/settings.xml' or the 'pom.xml' of your project.
+To use the plugin, you have to configure the tarent maven plugin repository in your '~/.m2/settings.xml' or the 'pom.xml' of your project.
 
 [source,xml]
 ----
 <pluginRepositories>
     <pluginRepository>
-        <id>evolvis-release-repository</id>
-        <name>evolvis.org release repository</name>
-        <url>http://maven-repo.evolvis.org/releases</url>
+        <id>tarent-maven-releases</id>
+        <url>https://repo-bn-01.lan.tarent.de/repository/maven-releases/</url>
         <snapshots>
             <enabled>false</enabled>
          </snapshots>
