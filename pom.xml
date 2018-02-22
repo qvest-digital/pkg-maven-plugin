@@ -63,22 +63,6 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5</version>
             </plugin>
-            <!--
-                <plugin>
-                <groupId>de.tarent.maven.plugins</groupId>
-                <artifactId>mvn-gforge-plugin</artifactId>
-                <configuration>
-                <gForgeAPIPort_address>
-                http://evolvis.org/soap/index.php</gForgeAPIPort_address>
-                <fileTypes>
-                <type>javadoc</type>
-                <type>sources</type>
-                </fileTypes>
-                <processorType>any</processorType>
-                <gForgeProject>mvn-pkg-plugin</gForgeProject>
-                </configuration>
-                </plugin>
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -92,7 +76,6 @@
                 </dependencies>
             </plugin>
         </plugins>
-
     </build>
 
     <reporting>
@@ -128,55 +111,7 @@
         </plugins>
     </reporting>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>evolvis-release-repository</id>
-            <name>evolvis.org release repository</name>
-            <url>http://maven-repo.evolvis.org/releases</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>evolvis-snapshot-repository</id>
-            <name>evolvis.org snapshot repository</name>
-            <url>http://maven-repo.evolvis.org/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </pluginRepository>
-    </pluginRepositories>
-
-    <!-- Repositories -->
-    <repositories>
-        <repository>
-            <id>evolvis-release-repository</id>
-            <name>evolvis.org release repository</name>
-            <url>http://maven-repo.evolvis.org/releases</url>
-        </repository>
-
-        <repository>
-            <id>evolvis-snapshot-repository</id>
-            <name>evolvis.org snapshot repository</name>
-            <url>http://maven-repo.evolvis.org/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-    <!--
-        BIG FAT WARNING: Maven IGNORES the user setting herein. You MUST
-        provide a proper setting in .m2/settings.xml instead.
-    -->
     <distributionManagement>
-
         <repository>
             <id>evolvis-release-repository</id>
             <name>evolvis.org release repository</name>
@@ -188,7 +123,6 @@
             <name>evolvis.org snapshot repository</name>
             <url>scpexe://maven@maven-repo.evolvis.org/var/www/maven_repo/snapshots</url>
         </snapshotRepository>
-
     </distributionManagement>
 
     <dependencies>
