@@ -58,26 +58,19 @@ public class WagonUploaderTest extends AbstractMvnPkgPluginTestCase {
 
 	@Test
 	public void testConstructor() throws Exception {
-		Assert.assertEquals(expectedUrl,
-				(String) getValueOfFieldInObject("url", wu));
-		Assert.assertEquals(up.getLog(), (Log) getValueOfFieldInObject("l", wu));
-		Assert.assertEquals(ws.getMojo().getProject(),
-				(MavenProject) getValueOfFieldInObject("project", wu));
-		Assert.assertEquals(ws.getMojo().getPluginManager(),
-				(PluginManager) getValueOfFieldInObject("pluginManager", wu));
-		Assert.assertEquals(ws.getMojo().getSession(),
-				(MavenSession) getValueOfFieldInObject("session", wu));
-		Assert.assertEquals(expectedPackageFile,
-				(File) getValueOfFieldInObject("packageFile", wu));
+		Assert.assertEquals(expectedUrl, getValueOfFieldInObject("url", wu));
+		Assert.assertEquals(up.getLog(), getValueOfFieldInObject("l", wu));
+		Assert.assertEquals(ws.getMojo().getProject(), getValueOfFieldInObject("project", wu));
+		Assert.assertEquals(ws.getMojo().getPluginManager(), getValueOfFieldInObject("pluginManager", wu));
+		Assert.assertEquals(ws.getMojo().getSession(), getValueOfFieldInObject("session", wu));
+		Assert.assertEquals(expectedPackageFile, getValueOfFieldInObject("packageFile", wu));
 	}
 
 	@Test
 	public void generateUploadElements() throws IllegalArgumentException,
 			IllegalAccessException, InvocationTargetException,
 			SecurityException, NoSuchMethodException {
-		Method m = WagonUploader.class.getDeclaredMethod(
-				"generateUploadElements", new Class[] { File.class,
-						String.class });
+		Method m = WagonUploader.class.getDeclaredMethod("generateUploadElements", File.class, String.class);
 		m.setAccessible(true);
 		Element[] elementArray = (Element[]) m.invoke(wu, new Object[] {
 				expectedPackageFile, expectedUrl });

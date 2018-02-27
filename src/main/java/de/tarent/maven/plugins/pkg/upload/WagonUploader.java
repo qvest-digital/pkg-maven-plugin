@@ -3,13 +3,12 @@ package de.tarent.maven.plugins.pkg.upload;
 import java.io.File;
 
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.PluginManager;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.twdata.maven.mojoexecutor.MojoExecutor;
 import org.twdata.maven.mojoexecutor.MojoExecutor.Element;
-import org.twdata.maven.mojoexecutor.MojoExecutor.ExecutionEnvironmentM2;
 
 import de.tarent.maven.plugins.pkg.WorkspaceSession;
 
@@ -17,7 +16,7 @@ public class WagonUploader implements IPkgUploader {
 
 	private Log l;
 	private MavenProject project;
-	private PluginManager pluginManager;
+	private BuildPluginManager pluginManager;
 	private MavenSession session;
 	private String url;
 	private File packageFile;
@@ -37,11 +36,11 @@ public class WagonUploader implements IPkgUploader {
 	public void uploadPackage() throws MojoExecutionException {
 		try {
 			MojoExecutor
-					.executeMojoImpl(MojoExecutor.plugin("org.codehaus.mojo",
+					.executeMojo(MojoExecutor.plugin("org.codehaus.mojo",
 							"wagon-maven-plugin"), MojoExecutor
 							.goal("upload-single"), MojoExecutor
 							.configuration(generateUploadElements(packageFile,
-									url)), new ExecutionEnvironmentM2(project,
+									url)), new MojoExecutor.ExecutionEnvironment(project,
 							session, pluginManager));
 			l.info("Upload successful!");
 		} catch (Exception ex) {
@@ -56,7 +55,6 @@ public class WagonUploader implements IPkgUploader {
 	 * 
 	 * @param file
 	 * @param url
-	 * @param param
 	 * @return
 	 * @throws MojoExecutionException
 	 */

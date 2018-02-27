@@ -91,10 +91,7 @@ import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.PluginManager;
+import org.apache.maven.plugin.*;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
@@ -129,7 +126,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	 * @required
 	 * @readonly
 	 */
-	protected MavenProjectBuilder mavenProjectBuilder;
+	protected MavenProjectBuilder projectBuilder;
 
 	/**
 	 * Temporary directory that contains the files to be assembled.
@@ -308,7 +305,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	 * @component
 	 * @required
 	 */
-	protected PluginManager pluginManager;
+	protected BuildPluginManager pluginManager;
 
 	/**
 	 * This parameter allows overriding the deletion of the temp directory where
@@ -322,7 +319,7 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 		return session;
 	}
 
-	public PluginManager getPluginManager() {
+	public BuildPluginManager getPluginManager() {
 		return pluginManager;
 	}
 
@@ -411,7 +408,6 @@ public abstract class AbstractPackagingMojo extends AbstractMojo {
 	 * we allow the user to provide a comma separated list (Maven < 3.0.3 does
 	 * not transform comma separated values from the command line to String[]).
 	 * 
-	 * @param target
 	 * @return
 	 */
 	protected String[] getTargets() throws MojoExecutionException {
