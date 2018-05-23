@@ -689,7 +689,7 @@
             <entry>
                 <artifactSpec>org.aspectj:aspectjrt</artifactSpec>
                 <versionSpec>[1.6.12]</versionSpec>
-                <dependencyLine>aspectj</dependencyLine>
+                <dependencyLine>libaspectj-java</dependencyLine>
                 <jars>
                     <jar>aspectjrt.jar</jar>
                 </jars>
@@ -697,7 +697,8 @@
 
             <entry>
                 <artifactSpec>org.aspectj:aspectjweaver</artifactSpec>
-                <dependencyLine>aspectj</dependencyLine>
+                <versionSpec>[1.6.12]</versionSpec>
+                <dependencyLine>libaspectj-java</dependencyLine>
                 <jars>
                     <jar>aspectjweaver.jar</jar>
                 </jars>
