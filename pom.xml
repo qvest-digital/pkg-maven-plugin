@@ -23,7 +23,7 @@
         <maven.version>3.5.2</maven.version>
         <commons-io.version>2.7</commons-io.version>
         <commons-lang.version>2.6</commons-lang.version>
-        <plexus-archiver.version>3.5</plexus-archiver.version>
+        <plexus-archiver.version>4.8.0</plexus-archiver.version>
     </properties>
 
     <!-- Source Code Management -->
